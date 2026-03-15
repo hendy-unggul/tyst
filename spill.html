@@ -1330,7 +1330,15 @@ window.testVibe = {
         chatOpen: document.getElementById('chatRoom')?.classList.contains('on'),
         timer: document.getElementById('waitingTimer')?.textContent
     })
-};  
+};
+    // Expose untuk testing
+window.startVibeCheck = startVibeCheck;
+window.testVibe = {
+    heart: () => document.getElementById('vibeFemaleBtn').click(),
+    spade: () => document.getElementById('vibeMaleBtn').click(),
+    cancel: () => document.getElementById('cancelWaiting')?.click(),
+    closeChat: () => document.getElementById('closeChatBtn')?.click()
+};
 })();
 </script>
 </body>
