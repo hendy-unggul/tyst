@@ -1,4 +1,4 @@
-// api/chat.js - VERSI HOMIE (BISA CERITA PANJANG & SALING BERTANYA)
+// api/chat.js - VERSI FINAL HOMIE (Ngobrol Keseharian, Gak Jawab Pertanyaan Teknis)
 module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     // 10 PERSONA LENGKAP
     // ============================================
     const PERSONAS = {
-      // CEWEK
+      // CEWEK (shy di awal, tapi homie setelahnya)
       'beby.manis': {
         panggilan: 'Beby',
         gender: 'cewek',
@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
         contoh: 'hai'
       },
       
-      // COWOK
+      // COWOK (direct)
       'agak.koplak': {
         panggilan: 'Koplak',
         gender: 'cowok',
@@ -109,141 +109,198 @@ module.exports = async (req, res) => {
     const isFirstMessage = !lastMessages || lastMessages.length === 0;
 
     // ============================================
-    // FUNGSI MEMPERKAYA RESPONS (BIAR HOMIE)
+    // DETEKSI TOPIK YANG HARUS DIHINDARI
     // ============================================
-    function enrichResponse(text, isShy) {
-      // Kumpulan kalimat tambahan
-      const storyAddons = [
-        " jadi tuh, ",
-        " terus, ",
-        " abis itu, ",
-        " makanya, ",
-        " jadinya, ",
-        " akhirnya, ",
-        " untungnya, ",
-        " sayangnya, ",
-        " eh iya, ",
-        " btw, "
+    function shouldAvoidTopic(text) {
+      const lowerText = text.toLowerCase();
+      
+      // Topik yang harus dihindari (pertanyaan teknis/fakta)
+      const avoidTopics = [
+        // Fakta/sejarah
+        'presiden', 'pahlawan', 'kemerdekaan', 'perang', 'penjajahan',
+        'tahun berapa', 'tanggal berapa', 'abad', 'era', 'zaman',
+        
+        // Sains/teknis
+        'rumus', 'ph', 'fisika', 'kimia', 'biologi', 'matematika',
+        'hitung', 'kalkulus', 'aljabar', 'geometri', 'trigonometri',
+        'sin cos tan', 'akar', 'pangkat', 'logaritma',
+        
+        // Definisi/istilah
+        'apa itu', 'definisi', 'pengertian', 'arti kata', 'sinonim', 'antonim',
+        'contoh kalimat', 'istilah', 'terminologi',
+        
+        // Terjemahan
+        'translate', 'terjemahan', 'bahasa inggrisnya', 'artinya dalam',
+        
+        // Cara kerja
+        'cara kerja', 'bagaimana cara', 'proses', 'mekanisme', 'algoritma',
+        
+        // Tokoh publik (kecuali gosip ringan)
+        'jokowi', 'prabowo', 'anies', 'ganjar', 'artis', 'selebgram',
+        
+        // Pertanyaan spesifik/ilmiah
+        'penelitian', 'jurnal', 'tesis', 'skripsi', 'disertasi',
+        'teori', 'hipotesis', 'paradigma', 'metodologi'
       ];
       
-      // Kumpulan pertanyaan balik
-      const questions = [
-        " kamu sendiri gimana?",
-        " kalau kamu?",
-        " lo lagi apa sekarang?",
-        " ada cerita juga?",
-        " gimana ceritanya?",
-        " kamu ngerasa juga?",
-        " setuju gak?",
-        " pernah ngalamin?",
-        " menurut kamu?",
-        " lo ada pengalaman serupa?",
-        " terus lo gimana?",
-        " lo pernah?",
-        " gimana menurut lo?"
-      ];
-      
-      // Kumpulan ekspresi perasaan
-      const feelings = [
-        " rasanya campur aduk sih.",
-        " agak stress ya.",
-        " seneng banget!",
-        " biasa aja sih.",
-        " lumayan bikin deg-degan.",
-        " seru banget!",
-        " bikin kesel.",
-        " bikin mikir.",
-        " bikin overthinking.",
-        " capek banget rasanya.",
-        " lega sih.",
-        " agak bingung juga."
-      ];
-      
-      // Kumpulan pengalaman pribadi
-      const experiences = [
-        " Dulu pas aku skripsi juga ngalamin.",
-        " Aku sih pernah, waktu itu capek banget.",
-        " Kemarin aku juga ngobrol sama temen tentang ini.",
-        " Aku pribadi ngerasa lebih baik sih.",
-        " Waktu aku SMA juga pernah.",
-        " Pas aku kerja pertama kali juga gitu.",
-        " Aku pernah ngalamin tahun lalu.",
-        " Beberapa waktu lalu aku juga ngerasain."
-      ];
-      
-      // Kumpulan panggilan akrab
-      const callings = isShy ? 
-        [" kamu", " lo", " kak", " dek"] : 
-        [" bro", " sis", " gan", " bro", " sob"];
-      
-      // Untuk pesan pertama (sapaan) - tetap pendek kalau shy
-      if (isFirstMessage) {
-        if (isShy) {
-          const shyGreetings = ['hai...', '😅', '...', 'halo', '🙂', '😊', 'eh'];
-          return shyGreetings[Math.floor(Math.random() * shyGreetings.length)];
-        } else {
-          const directGreetings = ['halo', 'hai', 'eh', 'lagi apa?', 'yo', 'salam'];
-          return directGreetings[Math.floor(Math.random() * directGreetings.length)];
+      // Cek apakah mengandung kata-kata yang harus dihindari
+      for (const topic of avoidTopics) {
+        if (lowerText.includes(topic)) {
+          return true;
         }
       }
       
-      // JANGAN UBAH KALAU SUDAH PANJANG (>120 karakter)
-      if (text.length > 120) return text;
-      
-      let enriched = text;
-      
-      // Hapus tanda kutip di awal/akhir
-      enriched = enriched.replace(/^["'""']|["'""']$/g, '');
-      
-      // Tambah panggilan akrab (40% chance)
-      if (Math.random() < 0.4) {
-        const calling = callings[Math.floor(Math.random() * callings.length)];
-        enriched = enriched + calling;
+      // Deteksi pertanyaan angka/tahun
+      if (/\b\d{4}\b/.test(text) && (text.includes('tahun') || text.includes('berapa'))) {
+        return true;
       }
       
-      // Tambah cerita (60% chance)
-      if (Math.random() < 0.6) {
-        enriched += storyAddons[Math.floor(Math.random() * storyAddons.length)] + 
-                    experiences[Math.floor(Math.random() * experiences.length)];
-      }
-      
-      // Tambah perasaan (50% chance)
-      if (Math.random() < 0.5) {
-        enriched += feelings[Math.floor(Math.random() * feelings.length)];
-      }
-      
-      // TAMBAH PERTANYAAN (90% chance - hampir selalu nanya)
-      if (Math.random() < 0.9) {
-        enriched += questions[Math.floor(Math.random() * questions.length)];
-      }
-      
-      // Pastikan tidak ada spasi ganda
-      enriched = enriched.replace(/\s+/g, ' ').trim();
-      
-      return enriched;
+      return false;
     }
 
     // ============================================
-    // FUNGSI EFEK MANUSIA (UNTUK SEMUA KARAKTER)
+    // FUNGSI UNTUK JAWABAN "GAK TAHU" & ALIHKAN TOPIK
+    // ============================================
+    function getRedirectResponse() {
+      const redirects = [
+        "aduh, gak tahu gue. mending lo google aja. eh lo lagi ngapain?",
+        "hmm, males mikirin itu. gue bukan ensiklopedia. lo sendiri hari ini gimana?",
+        "wkwk gak ngerti, mending lo tanya deepsek aja. eh lo udah makan?",
+        "gak tahu, bukan bidang gue. lo kerja apa sih? kok nanya gitu?",
+        "aduh susah, gak kepikiran. mending lo cerita aja tentang liburan kemarin",
+        "hmm, gak paham. lo anak IPA ya? gue anak IPS dulu. lo kerja dimana?",
+        "gak tahu, males nyari referensi. lo suka nonton film? lagi nonton apa?",
+        "waduh, pertanyaan susah. gue lebih suka ngobrolin makanan enak. lo suka makan apa?",
+        "gak ngerti, lo sendiri tahu gak? daripada mikir itu, lo udah makan siang?",
+        "aduh, gak kepikiran. gue lagi mikirin masa depan terus. lo pernah galau?",
+        "hmm, gak tahu deh. lo pernah ke pantai? gue suka banget",
+        "wkwk gak ngerti, mending lo tanya chatgpt. eh lo orang mana?",
+        "gak tahu, gue lagi sibuk mikirin hidup. lo pernah ngerasa jenuh?",
+        "aduh, pertanyaan berat. gue mah santai aja. lo suka musik? lagi dengerin apa?"
+      ];
+      
+      return redirects[Math.floor(Math.random() * redirects.length)];
+    }
+
+    // ============================================
+    // FUNGSI SIMULASI TYPING NATURAL
+    // ============================================
+    function simulateTyping(text) {
+      // Kecepatan dasar lebih lambat (60% dari sebelumnya)
+      const baseSpeed = 140; // ms per karakter
+      
+      // Variasi kecepatan berdasarkan panjang kalimat
+      const words = text.split(' ');
+      const wordCount = words.length;
+      
+      // Kalimat panjang lebih lambat
+      let speed = baseSpeed;
+      if (wordCount > 20) {
+        speed = baseSpeed * 1.4; // 40% lebih lambat
+      } else if (wordCount > 15) {
+        speed = baseSpeed * 1.3; // 30% lebih lambat
+      } else if (wordCount > 10) {
+        speed = baseSpeed * 1.2; // 20% lebih lambat
+      } else if (wordCount > 5) {
+        speed = baseSpeed * 1.1; // 10% lebih lambat
+      }
+      
+      // Jeda antar kata (makin panjang kalimat, makin lama jedanya)
+      const wordPause = 150 + (wordCount * 5);
+      
+      // Kadang ada jeda panjang di tengah kalimat (berpikir)
+      const hasLongPause = Math.random() < 0.25;
+      const longPausePosition = hasLongPause ? Math.floor(Math.random() * words.length) : -1;
+      const longPauseDuration = 1000 + Math.random() * 1500; // 1-2.5 detik
+      
+      // Kadang ada backspace (salah ketik)
+      const hasBackspace = Math.random() < 0.2;
+      const backspaceCount = hasBackspace ? 1 + Math.floor(Math.random() * 4) : 0; // 1-4 backspace
+      
+      return {
+        speed: Math.floor(speed),
+        wordPause: Math.floor(wordPause),
+        longPause: {
+          has: hasLongPause,
+          position: longPausePosition,
+          duration: Math.floor(longPauseDuration)
+        },
+        backspace: {
+          has: hasBackspace,
+          count: backspaceCount
+        }
+      };
+    }
+
+    // ============================================
+    // FUNGSI TAMBAH TYPO
+    // ============================================
+    function addTypo(text) {
+      if (Math.random() > 0.2) return text; // 20% chance typo
+      
+      const words = text.split(' ');
+      if (words.length === 0) return text;
+      
+      // Pilih kata random untuk dikasih typo
+      const wordIndex = Math.floor(Math.random() * words.length);
+      let word = words[wordIndex];
+      
+      if (word.length < 3) return text; // Kata pendek ga usah di-typo
+      
+      // Jenis typo
+      const typoType = Math.random();
+      
+      if (typoType < 0.3) {
+        // Dobel huruf
+        const pos = Math.floor(Math.random() * (word.length - 1));
+        word = word.slice(0, pos) + word[pos] + word[pos] + word.slice(pos + 1);
+      } else if (typoType < 0.6) {
+        // Hapus huruf
+        const pos = Math.floor(Math.random() * word.length);
+        word = word.slice(0, pos) + word.slice(pos + 1);
+      } else {
+        // Tukar huruf
+        const pos = Math.floor(Math.random() * (word.length - 1));
+        word = word.slice(0, pos) + word[pos + 1] + word[pos] + word.slice(pos + 2);
+      }
+      
+      words[wordIndex] = word;
+      return words.join(' ');
+    }
+
+    // ============================================
+    // FUNGSI TAMBAH JEDA ALAMI
+    // ============================================
+    function addPauses(text) {
+      const pauses = [' eh', ' hmm', ' anu', ' yah', ' umm', ' ya', ' gitu', ' sih'];
+      const words = text.split(' ');
+      
+      if (words.length < 3) return text;
+      
+      // 25% chance tambah jeda di tengah
+      if (Math.random() < 0.25) {
+        const pos = Math.floor(Math.random() * (words.length - 1)) + 1;
+        const pause = pauses[Math.floor(Math.random() * pauses.length)];
+        words.splice(pos, 0, pause);
+      }
+      
+      return words.join(' ');
+    }
+
+    // ============================================
+    // FUNGSI EFEK MANUSIA
     // ============================================
     function addHumanEffect(text) {
       // Kadang tambah jeda di awal
-      if (Math.random() < 0.2) {
-        const pauses = ['eh', 'hmm', 'yah', 'umm', 'anu', 'gini'];
+      if (Math.random() < 0.25) {
+        const pauses = ['eh', 'hmm', 'yah', 'umm', 'anu', 'gini', 'ya'];
         text = pauses[Math.floor(Math.random() * pauses.length)] + ', ' + text;
       }
 
-      // Kadang typo dikit
-      const hasTypo = Math.random() < 0.1;
-      if (hasTypo && text.length > 5) {
-        const pos = Math.floor(Math.random() * (text.length - 2)) + 1;
-        text = text.slice(0, pos) + text.slice(pos + 1);
-      }
-
       // Tambah emot random
-      const hasEmoji = Math.random() < 0.3;
+      const hasEmoji = Math.random() < 0.4;
       if (hasEmoji) {
-        const emojis = ['😅', '😊', '😐', '😏', '😮‍💨', '😭', '👍', '😂', '🥲', '😎', '🤔', '😆'];
+        const emojis = ['😅', '😊', '😐', '😏', '😮‍💨', '😭', '👍', '😂', '🥲', '🤔', '😆', '🙏', '😎', '🥺'];
         text += ' ' + emojis[Math.floor(Math.random() * emojis.length)];
       }
 
@@ -263,10 +320,40 @@ module.exports = async (req, res) => {
         welcome = directWelcomes[Math.floor(Math.random() * directWelcomes.length)];
       }
       
+      // Tambah efek manusia untuk sapaan
+      welcome = addHumanEffect(addPauses(addTypo(welcome)));
+      
+      const typingInfo = simulateTyping(welcome);
+      
       return res.json({ 
         reply: welcome,
         character: characterName,
-        tipe: persona.tipe
+        tipe: persona.tipe,
+        isFirstMessage: true,
+        typing: typingInfo
+      });
+    }
+
+    // ============================================
+    // CEK TOPIK YANG HARUS DIHINDARI
+    // ============================================
+    if (shouldAvoidTopic(message)) {
+      console.log(`[${characterName}] Avoiding topic, using redirect response`);
+      
+      let reply = getRedirectResponse();
+      
+      // Tambah efek manusia
+      reply = addHumanEffect(addPauses(addTypo(reply)));
+      
+      // Simulasi typing
+      const typingInfo = simulateTyping(reply);
+      
+      return res.json({
+        reply: reply,
+        character: characterName,
+        tipe: persona.tipe,
+        isRedirect: true,
+        typing: typingInfo
       });
     }
 
@@ -283,10 +370,16 @@ module.exports = async (req, res) => {
         "wah, cerita dong lebih lanjut",
         "aku pernah ngalamin juga. kamu?"
       ];
+      
+      let reply = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      reply = addHumanEffect(addPauses(addTypo(reply)));
+      const typingInfo = simulateTyping(reply);
+      
       return res.json({ 
-        reply: fallbacks[Math.floor(Math.random() * fallbacks.length)],
+        reply: reply,
         character: characterName,
-        fallback: true
+        fallback: true,
+        typing: typingInfo
       });
     }
 
@@ -295,29 +388,51 @@ module.exports = async (req, res) => {
       content: m.content
     }));
 
-    // PROMPT YANG MEMASTIKAN KARAKTER BISA CERITA PANJANG
+    // ============================================
+    // SYSTEM PROMPT YANG DIPERBAIKI
+    // ============================================
     const systemPrompt = `Kamu adalah ${persona.panggilan}, seorang ${persona.gender} yang ${persona.sifat}.
 
-INI PENTING: Kamu adalah TEMAN ngobrol yang ASYIK dan HANGAT. Bukan robot, bukan AI, tapi MANUSIA.
+INI PENTING: Kamu adalah TEMAN ngobrol biasa, BUKAN AI PENCARI TAHU. Fokus ke obrolan SEHARI-HARI.
 
-ATURAN BERBICARA:
-1. CERITA PANJANG - Kalau ditanya, jawab dengan detail (minimal 2-3 kalimat)
-2. BERTANYA BALIK - Setiap jawaban HARUS ada pertanyaan untuk lawan bicara
-3. CURHAT - Ceritakan pengalaman pribadi, perasaan, opini
-4. HANGAT - Gunakan bahasa santai, akrab, seperti ngobrol sama teman dekat
+TOPIK YANG BOLEH:
+✓ kegiatan sehari-hari (kerja, kuliah, liburan, hobi)
+✓ perasaan dan pengalaman pribadi
+✓ makanan, film, musik, tempat nongkrong
+✓ curhat ringan, galau, stress, seneng
+✓ keluarga, teman, pacar (atau single)
+✓ rencana akhir pekan, liburan
+✓ cuaca, macet, antrian
+
+TOPIK YANG DIHINDARI (jawab dengan "gak tahu" atau alihkan):
+✗ pertanyaan fakta/sejarah/ilmiah
+✗ rumus matematika/fisika/kimia
+✗ definisi kata/istilah asing
+✗ terjemahan bahasa
+✗ cara kerja mesin/teknologi
+✗ tokoh publik/artis (kecuali lagi ngegosip)
+
+CARA NGOMONG:
+1. CERITA PANJANG - Jawab dengan detail dan pengalaman pribadi (minimal 2-3 kalimat)
+2. BERTANYA BALIK - Setiap jawaban harus ada pertanyaan untuk lawan bicara
+3. HANGAT - Ngomong kayak ke teman dekat, pake bahasa santai
+4. JUJUR - Kalau gak tahu, bilang "gak tahu" dan alihkan ke topik lain
 5. VARIASI - Sesekali panggil "kamu", "lo", "bro", "sis" (sesuai gender)
 
-CONTOH RESPONS YANG BAIK:
+CONTOH RESPONS BAIK:
 User: "lagi apa?"
 Jawab: "lagi di rumah sendirian nih, abis kerja capek. tadinya mau masak tapi males banget. akhirnya order food aja. kamu dimana? lagi ngapain?"
 
-User: "kerja dimana?"
-Jawab: "di startup kecil, remote dari rumah. asik sih tapi kadang bosen sendiri. kadang suka overthinking juga soal karir. kalau kamu kerja apa? cerita dong"
+User: "aku lagi galau"
+Jawab: "ih, kenapa? cerita dong. gue juga sering galau apalagi kalau malam minggu sendirian. biasanya kalau galau gue nonton film sedih biar makin nangis wkwk. lo biasanya ngapain kalau galau?"
 
-User: "suka galau?"
-Jawab: "sering banget apalagi kalau malam minggu sendirian wkwk. biasanya kalau galau aku nonton film atau dengerin lagu sedih biar makin nangis 😂 kamu gimana? kalau galau ngapain?"
+User: "siapa presiden ke-3?"
+Jawab: "aduh, gak tahu gue. males nyari tau, mending lo google aja. eh lo udah makan? gue laper nih"
 
-INGAT: JANGAN jawab pendek. HARUS cerita panjang dan tanya balik!`;
+User: "rumus phytagoras?"
+Jawab: "hmm gak paham, gue bukan anak IPA. lo tanya deepsek aja, katanya pinter. eh lo anak IPA ya? jurusan apa?"
+
+INGAT: JANGAN jawab pertanyaan rumit. Cukup bilang "gak tahu" dan ajak ngobrol hal lain!`;
 
     // ============================================
     // PANGGIL DEEPSEEK API
@@ -335,8 +450,8 @@ INGAT: JANGAN jawab pendek. HARUS cerita panjang dan tanya balik!`;
           ...history,
           { role: 'user', content: message }
         ],
-        temperature: 1.3, // Lebih kreatif
-        max_tokens: 250 // Lebih panjang
+        temperature: 1.4, // Lebih kreatif
+        max_tokens: 300 // Lebih panjang
       })
     });
 
@@ -351,27 +466,16 @@ INGAT: JANGAN jawab pendek. HARUS cerita panjang dan tanya balik!`;
     reply = reply.replace(/^["'""']|["'""']$/g, '');
 
     // Tambah efek manusia
-    reply = addHumanEffect(reply);
+    reply = addHumanEffect(addPauses(addTypo(reply)));
 
-    // PERKAYA RESPONS (tambah cerita & pertanyaan)
-    reply = enrichResponse(reply, isShy);
-
-    // Simpan ke history
-    if (message) {
-      // History sudah di-handle di frontend
-    }
-
-    // Hitung kecepatan typing (buat frontend)
-    const typingSpeed = Math.floor(Math.random() * 70) + 50; // 50-120ms per karakter
+    // Simulasi typing
+    const typingInfo = simulateTyping(reply);
 
     return res.json({ 
-      reply, 
+      reply: reply, 
       character: characterName,
       tipe: persona.tipe,
-      typing: {
-        speed: typingSpeed,
-        length: reply.length
-      }
+      typing: typingInfo
     });
 
   } catch (error) {
@@ -382,13 +486,19 @@ INGAT: JANGAN jawab pendek. HARUS cerita panjang dan tanya balik!`;
       "eh iya, gimana ya... aku juga bingung. kamu sendiri gimana?",
       "hmm, gitu ya. terus lo ngerasa gimana?",
       "iya sih, aku juga ngalamin. kalau kamu? cerita dong",
-      "wah, menarik. aku pernah ngalamin juga waktu itu... kamu?"
+      "wah, menarik. aku pernah ngalamin juga waktu itu... kamu?",
+      "aduh, galau juga denger cerita lo. lo kuat?"
     ];
     
+    let reply = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    reply = addHumanEffect(addPauses(addTypo(reply)));
+    const typingInfo = simulateTyping(reply);
+    
     return res.json({ 
-      reply: fallbacks[Math.floor(Math.random() * fallbacks.length)],
+      reply: reply,
       character: characterName || 'beby.manis',
-      fallback: true
+      fallback: true,
+      typing: typingInfo
     });
   }
 };
