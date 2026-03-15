@@ -711,62 +711,81 @@
         return el;
     }
     
-    // ========== FETCH 3 USER ENTRIES (FIFO) ==========
-    async function fetchUserEntries() {
-        try {
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/entries?select=*&is_ai=eq.false&order=created_at.desc&limit=3`, {
+   // ========== FETCH 3 USER ENTRIES TERAKHIR ==========
+async function fetchUserEntries() {
+    try {
+        const response = await fetch(
+            `${SUPABASE_URL}/rest/v1/entries?` + 
+            `select=*&` +
+            `is_ai=eq.false&` +
+            `order=created_at.desc&` +    // Terbaru di atas
+            `limit=3`,                     // Ambil 3 aja
+            {
                 headers: {
                     'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Content-Type': 'application/json'
                 }
-            });
-            
-            if (!response.ok) throw new Error('Failed to fetch');
-            
-            const data = await response.json();
-            
-            // Format data
-            userEntries = data.map(entry => ({
-                author: entry.user_id ? entry.user_id.substring(0, 8) : 'anonymous', // fallback kalo ga ada username
-                mood: entry.mood || 'chaotic',
-                content: entry.content || '...',
-                reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
-                created_at: entry.created_at,
-                is_ai: false
-            }));
-            
-            console.log('[Supabase] User entries loaded:', userEntries.length);
-            combineAndRender();
-            
-        } catch (error) {
-            console.error('[Supabase] Error fetching user entries:', error);
-            // Fallback data
-            userEntries = [
-                {
-                    author: 'beby.manis',
-                    mood: 'chaotic',
-                    content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
-                    reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
-                    is_ai: false
-                },
-                {
-                    author: 'chili.padi',
-                    mood: 'thriving',
-                    content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
-                    reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
-                    is_ai: false
-                },
-                {
-                    author: 'pretty.sad',
-                    mood: 'doom',
-                    content: 'ga semangat ngapa-ngapain 😭😭😭',
-                    reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
-                    is_ai: false
-                }
-            ];
-            combineAndRender();
+            }
+        );
+        
+        if (!response.ok) {
+            console.error('[Supabase] Response error:', response.status);
+            throw new Error('Failed to fetch');
         }
+        
+        const data = await response.json();
+        console.log('[Supabase] Raw data:', data);
+        
+        // Format data sesuai struktur yang kita butuh
+        userEntries = data.map(entry => ({
+            author: entry.user_id ? entry.user_id.substring(0, 8) : 'anonymous',
+            mood: entry.mood || 'chaotic',
+            content: entry.content || '...',
+            reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+            created_at: entry.created_at,
+            is_ai: false
+        }));
+        
+        console.log('[Supabase] User entries loaded:', userEntries.length);
+        
+        // Gabung dengan AI entries & render
+        combineAndRender();
+        
+    } catch (error) {
+        console.error('[Supabase] Error fetching user entries:', error);
+        
+        // Fallback data sesuai screenshot
+        userEntries = [
+            {
+                author: 'user1',
+                mood: 'thriving',
+                content: 'Ga usah nangis ketawa aj',
+                reactions: { cry: 0, fire: 0, skull: 0, upside: 0 },
+                created_at: '2026-03-14T15:40:05.214883+01:00',
+                is_ai: false
+            },
+            {
+                author: 'user2',
+                mood: 'doom',
+                content: 'ja surga janji, uds doom',
+                reactions: { cry: 0, fire: 0, skull: 0, upside: 0 },
+                created_at: '2026-03-14T15:24:28.674023+01:00',
+                is_ai: false
+            },
+            {
+                author: 'user3',
+                mood: 'surviving',
+                content: 'seharian menunggu janji i surviving',
+                reactions: { cry: 0, fire: 0, skull: 0, upside: 0 },
+                created_at: '2026-03-14T14:22:53.776277+00:00',
+                is_ai: false
+            }
+        ];
+        
+        combineAndRender();
     }
+}
     
     // ========== GENERATE AI ENTRIES (RANDOM) ==========
     function generateAIEntries(count = 6) {
