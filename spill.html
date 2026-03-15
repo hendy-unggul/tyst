@@ -1103,74 +1103,74 @@
         draw();
     }
     
-    // ========== VIBE CHECK - CARI TEMAN ==========
-    async function startVibeCheck(gender) {
-        console.log(`[Vibe] Mencari teman ${gender === 'heart' ? 'cewek' : 'cowok'}...`);
-        
-        const overlay = $('waitingOverlay');
-        const icon = $('waitingIcon');
-        const timerEl = $('waitingTimer');
-        
-        if (!overlay || !icon || !timerEl) return;
-        
-        icon.textContent = gender === 'heart' ? '❤️' : '♠️';
-        overlay.style.display = 'flex';
-        
-        let seconds = 15;
+   // ========== VIBE CHECK - CARI TEMAN ==========
+async function startVibeCheck(gender) {
+    console.log(`[Vibe] Mencari teman ${gender === 'heart' ? 'cewek' : 'cowok'}...`);
+    
+    const overlay = document.getElementById('waitingOverlay');
+    const icon = document.getElementById('waitingIcon');
+    const timerEl = document.getElementById('waitingTimer');
+    
+    if (!overlay || !icon || !timerEl) return;
+    
+    icon.textContent = gender === 'heart' ? '❤️' : '♠️';
+    overlay.style.display = 'flex';
+    
+    let seconds = 15;
+    timerEl.textContent = seconds;
+    
+    let foundRealUser = false;
+    
+    // COUNTDOWN TIMER 15 DETIK
+    const timer = setInterval(() => {
+        seconds--;
         timerEl.textContent = seconds;
         
-        let foundUser = false;
-        
-        // COUNTDOWN TIMER
-        const timer = setInterval(() => {
-            seconds--;
-            timerEl.textContent = seconds;
+        if (seconds <= 0) {
+            clearInterval(timer);
+            clearInterval(checkInterval);
             
-            if (seconds <= 0) {
-                clearInterval(timer);
-                clearInterval(checkInterval);
-                
-                if (!foundUser) {
-                    // 15 DETIK TIDAK DAPAT USER REAL → FALLBACK KE AI
-                    console.log('[Vibe] No real users, fallback to AI');
-                    overlay.style.display = 'none';
-                    
-                    // Pilih AI character berdasarkan gender
-                    const aiChar = selectAICharacter(gender);
-                    
-                    // Buka chat dengan AI (via DeepSeek)
-                    openAIChat(aiChar);
-                }
-            }
-        }, 1000);
-        
-        // CEK USER ONLINE SETIAP 2 DETIK (SIMULASI)
-        const checkInterval = setInterval(async () => {
-            // SIMULASI: 10% kemungkinan dapat user real
-            const hasUser = Math.random() < 0.1;
-            
-            if (hasUser && !foundUser) {
-                foundUser = true;
-                
-                console.log(`[Vibe] Found real user!`);
-                
-                clearInterval(timer);
-                clearInterval(checkInterval);
+            if (!foundRealUser) {
+                // ✅ 15 DETIK HABIS, TIDAK ADA REAL USER → FALLBACK KE DEEPSEEK
+                console.log('[Vibe] No real users found, falling back to DeepSeek API');
                 overlay.style.display = 'none';
                 
-                // Buka chat dengan user real (simulasi)
-                openRealUserChat();
+                // Pilih AI character berdasarkan gender
+                const aiChar = selectAICharacter(gender);
+                
+                // Buka chat dengan DeepSeek
+                openDeepSeekChat(aiChar);
             }
-        }, 2000);
+        }
+    }, 1000);
+    
+    // CEK REAL USER SETIAP 2 DETIK (UNTUK IMPLEMENTASI NANTI)
+    const checkInterval = setInterval(async () => {
+        // TODO: GANTI DENGAN CEK REAL USER DARI SUPABASE
+        // Untuk sekarang, langsung return array kosong agar fallback ke AI
+        const realUsers = [];
         
-        // CANCEL BUTTON
-        const cancelBtn = $('cancelWaiting');
-        cancelBtn.onclick = () => {
+        if (realUsers.length > 0 && !foundRealUser) {
+            foundRealUser = true;
+            console.log('[Vibe] Real user found!', realUsers[0]);
+            
             clearInterval(timer);
             clearInterval(checkInterval);
             overlay.style.display = 'none';
-        };
-    }
+            
+            // TODO: CONNECT KE REAL USER (WEBSOCKET)
+            // connectToRealUser(realUsers[0]);
+        }
+    }, 2000);
+    
+    // CANCEL BUTTON
+    const cancelBtn = document.getElementById('cancelWaiting');
+    cancelBtn.onclick = () => {
+        clearInterval(timer);
+        clearInterval(checkInterval);
+        overlay.style.display = 'none';
+    };
+}
     
     // ========== PILIH AI CHARACTER ==========
     function selectAICharacter(gender) {
