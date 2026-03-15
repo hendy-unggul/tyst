@@ -2023,28 +2023,43 @@
     
     // ========== INIT ==========
     window.addEventListener('load', async function() {
-        console.log('[App] Starting...');
-        console.log(`[App] Welcome, ${USERNAME}!`);
-        
-        const userEl = $('userNameDisplay');
-        if (userEl) {
-            userEl.textContent = '@' + USERNAME;
-        }
-        
-        const onlineEl = $('onlineCount');
-        if (onlineEl) {
-            const onlineCount = Math.floor(Math.random() * 20) + 10;
-            onlineEl.textContent = onlineCount + ' ONLINE';
-        }
-        
-        setTimeout(initRadar, 100);
-        initSettings();
-        initWhisper();
-        initBottomNav();
-        initVibeSlider();
-        
-        await fetchUserEntries();
-        initAIEntries();
+    console.log('[App] Starting...');
+    console.log(`[App] Welcome, ${USERNAME}!`);
+    
+    const userEl = $('userNameDisplay');
+    if (userEl) {
+        userEl.textContent = '@' + USERNAME;
+    }
+    
+    const onlineEl = $('onlineCount');
+    if (onlineEl) {
+        const onlineCount = Math.floor(Math.random() * 20) + 10;
+        onlineEl.textContent = onlineCount + ' ONLINE';
+    }
+    
+    setTimeout(initRadar, 100);
+    initSettings();
+    initWhisper();
+    initBottomNav();
+    initVibeSlider();
+    
+    // ✅ URUTAN YANG BENAR:
+    // 1. Fetch user entries dulu
+    await fetchUserEntries();  // ← Ini akan memanggil combineAndRender() di dalamnya
+    
+    // 2. Init AI entries SETELAH user entries
+    initAIEntries();  // ← Ini akan memanggil combineAndRender() lagi
+    
+    // 3. Jangan panggil combineAndRender() tambahan di sini
+    
+    const heartBtn = $('vibeFemaleBtn');
+    const spadeBtn = $('vibeMaleBtn');
+    const closeChatBtn = $('closeChatBtn');
+    const sendBtn = $('sendButton');
+    const chatInput = $('chatInput');
+    
+    // ... event listeners ...
+});
         
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
