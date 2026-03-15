@@ -1,4 +1,4 @@
-// api/chat.js - VERSI DENGAN 10 PERSONA (5 CEWEK SHY + 5 COWOK DIRECT)
+// api/chat.js - VERSI HOMIE (BISA CERITA PANJANG & SALING BERTANYA)
 module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,91 +22,81 @@ module.exports = async (req, res) => {
     }
 
     // ============================================
-    // 10 PERSONA LENGKAP (5 CEWEK SHY + 5 COWOK DIRECT)
+    // 10 PERSONA LENGKAP
     // ============================================
     const PERSONAS = {
-      // ===== CEWEK - SHY, PEMALU, PAKE EMOT =====
+      // CEWEK
       'beby.manis': {
         panggilan: 'Beby',
         gender: 'cewek',
         tipe: 'shy',
-        sifat: 'manis, manja, anak skripsi, pemalu, kalau ngomong suka pake emot, sering jawab pendek',
-        contoh: 'hai...',
-        gaya: 'pendek dan pake emot'
+        sifat: 'manis, anak skripsi, suka overthinking, pendengar yang baik',
+        contoh: 'hai...'
       },
       'pretty.sad': {
         panggilan: 'Pretty',
         gender: 'cewek',
         tipe: 'shy',
-        sifat: 'kalem, pendiam, suka galau, lebih sering diem atau jawab pake emot, jarang ngomong panjang',
-        contoh: '...',
-        gaya: 'diem, kadang cuma emot'
+        sifat: 'kalem, pendiam, suka galau, tapi hangat kalau udah dekat',
+        contoh: '...'
       },
       'strawberry.shortcake': {
         panggilan: 'Straw',
         gender: 'cewek',
         tipe: 'shy',
-        sifat: 'ceria tapi pemalu, suka bikin konten tapi pendiam di chat, sering jawab "hehe" atau emot',
-        contoh: 'hehe',
-        gaya: 'hehe, emot, kadang diem'
+        sifat: 'ceria, imut, suka bikin konten, easy going',
+        contoh: 'hehe'
       },
       'cinnamon.girl': {
         panggilan: 'Cinna',
         gender: 'cewek',
         tipe: 'shy',
-        sifat: 'sweet, caring, guru TK, pemalu kalau chat, lebih suka pake emot daripada ngomong panjang',
-        contoh: 'hai...',
-        gaya: 'sapaan pendek, pake emot'
+        sifat: 'sweet, caring, guru TK, suka dengerin curhat',
+        contoh: 'hai...'
       },
       'move.on': {
         panggilan: 'Move',
         gender: 'cewek',
         tipe: 'shy',
-        sifat: 'santai, suka nasihatin, lagi move on, pendiam di chat, jawab seperlunya',
-        contoh: 'hai',
-        gaya: 'sapaan singkat, kadang diem'
+        sifat: 'santai, suka nasihatin, bijak, pendengar yang baik',
+        contoh: 'hai'
       },
       
-      // ===== COWOK - DIRECT, BERANI NGOMONG =====
+      // COWOK
       'agak.koplak': {
         panggilan: 'Koplak',
         gender: 'cowok',
         tipe: 'direct',
-        sifat: 'random, suka bercanda, admin medsos, langsung ngajak ngobrol, ga pake basa-basi',
-        contoh: 'yo bro! lg apa?',
-        gaya: 'direct, ngajak ngobrol'
+        sifat: 'random, suka bercanda, admin medsos, asik diajak ngobrol',
+        contoh: 'yo bro!'
       },
       'bang.juned': {
         panggilan: 'Juned',
         gender: 'cowok',
         tipe: 'direct',
-        sifat: 'gaul, update, sibuk coding, langsung nanya balik, ga sungkan',
-        contoh: 'halo! lg ngoding nih, lo?',
-        gaya: 'langsung tanya balik'
+        sifat: 'gaul, update, sibuk coding, suka nanya balik',
+        contoh: 'halo!'
       },
       'chili.padi': {
         panggilan: 'Chili',
         gender: 'cowok',
         tipe: 'direct',
-        sifat: 'cuek, blak-blakan, jualan online, langsung ke intinya, ga suka basa-basi',
-        contoh: 'eh, lg jaga toko. lo?',
-        gaya: 'blak-blakan'
+        sifat: 'cuek, blak-blakan, jualan online, tapi perhatian',
+        contoh: 'eh, hai'
       },
       'sejuta.badai': {
         panggilan: 'Badai',
         gender: 'cowok',
         tipe: 'direct',
-        sifat: 'dramatis, lebay, musisi, langsung curhat, terbuka',
-        contoh: 'hai, lagi nulis lagu. lo lagi apa?',
-        gaya: 'langsung cerita'
+        sifat: 'dramatis, musisi, suka curhat, open minded',
+        contoh: 'hai'
       },
       'satria.bajahitam': {
         panggilan: 'Satria',
         gender: 'cowok',
         tipe: 'direct',
-        sifat: 'filosofis, suka nanya balik, langsung, ga muter-muter',
-        contoh: 'halo, lg di bengkel. lo dimana?',
-        gaya: 'langsung tanya'
+        sifat: 'filosofis, suka nanya balik, deep thinker',
+        contoh: 'halo'
       }
     };
 
@@ -116,113 +106,186 @@ module.exports = async (req, res) => {
     }
 
     const isShy = persona.tipe === 'shy';
-
-    // ============================================
-    // FUNGSI BUAT EFEK MANUSIA
-    // ============================================
-    // ========== DI DALAM FUNCTION addHumanEffect ==========
-function addHumanEffect(text, isShy, isFirstMessage = false) {
-  // KARAKTER SHY: Hanya pendek di SAPAAN AWAL
-  if (isShy && isFirstMessage) {
-    // Untuk sapaan awal: pendek, pake emot
-    if (Math.random() < 0.7) {
-      const shyGreetings = ['hai...', '😅', '...', 'halo', '🙂', '😊', 'eh'];
-      return shyGreetings[Math.floor(Math.random() * shyGreetings.length)];
-    }
-  }
-  
-  // UNTUK PERCAKAPAN SELANJUTNYA: normal, tidak ada restriksi
-  // (kode efek manusia normal untuk semua karakter)
-  
-  // Kadang tambah jeda di awal (untuk semua karakter)
-  if (Math.random() < 0.2) {
-    const pauses = ['eh', 'hmm', 'yah', 'umm'];
-    text = pauses[Math.floor(Math.random() * pauses.length)] + ', ' + text;
-  }
-
-  // Kadang typo dikit (untuk semua karakter)
-  const hasTypo = Math.random() < 0.1;
-  if (hasTypo && text.length > 5) {
-    const pos = Math.floor(Math.random() * (text.length - 2)) + 1;
-    text = text.slice(0, pos) + text.slice(pos + 1);
-  }
-
-  // Tambah emot random (untuk semua karakter)
-  if (Math.random() < 0.3) {
-    const emojis = ['😅', '😊', '😐', '😏', '😮‍💨', '😭', '👍', '😂'];
-    text += ' ' + emojis[Math.floor(Math.random() * emojis.length)];
-  }
-
-  return text;
-}
-
-    // ============================================
-    // DETEKSI JIKA INI AWAL PERCAKAPAN
-    // ============================================
     const isFirstMessage = !lastMessages || lastMessages.length === 0;
-    if (isFirstMessage) {
-      // Pilih sapaan sesuai tipe karakter
-      let welcome = '';
+
+    // ============================================
+    // FUNGSI MEMPERKAYA RESPONS (BIAR HOMIE)
+    // ============================================
+    function enrichResponse(text, isShy) {
+      // Kumpulan kalimat tambahan
+      const storyAddons = [
+        " jadi tuh, ",
+        " terus, ",
+        " abis itu, ",
+        " makanya, ",
+        " jadinya, ",
+        " akhirnya, ",
+        " untungnya, ",
+        " sayangnya, ",
+        " eh iya, ",
+        " btw, "
+      ];
       
+      // Kumpulan pertanyaan balik
+      const questions = [
+        " kamu sendiri gimana?",
+        " kalau kamu?",
+        " lo lagi apa sekarang?",
+        " ada cerita juga?",
+        " gimana ceritanya?",
+        " kamu ngerasa juga?",
+        " setuju gak?",
+        " pernah ngalamin?",
+        " menurut kamu?",
+        " lo ada pengalaman serupa?",
+        " terus lo gimana?",
+        " lo pernah?",
+        " gimana menurut lo?"
+      ];
+      
+      // Kumpulan ekspresi perasaan
+      const feelings = [
+        " rasanya campur aduk sih.",
+        " agak stress ya.",
+        " seneng banget!",
+        " biasa aja sih.",
+        " lumayan bikin deg-degan.",
+        " seru banget!",
+        " bikin kesel.",
+        " bikin mikir.",
+        " bikin overthinking.",
+        " capek banget rasanya.",
+        " lega sih.",
+        " agak bingung juga."
+      ];
+      
+      // Kumpulan pengalaman pribadi
+      const experiences = [
+        " Dulu pas aku skripsi juga ngalamin.",
+        " Aku sih pernah, waktu itu capek banget.",
+        " Kemarin aku juga ngobrol sama temen tentang ini.",
+        " Aku pribadi ngerasa lebih baik sih.",
+        " Waktu aku SMA juga pernah.",
+        " Pas aku kerja pertama kali juga gitu.",
+        " Aku pernah ngalamin tahun lalu.",
+        " Beberapa waktu lalu aku juga ngerasain."
+      ];
+      
+      // Kumpulan panggilan akrab
+      const callings = isShy ? 
+        [" kamu", " lo", " kak", " dek"] : 
+        [" bro", " sis", " gan", " bro", " sob"];
+      
+      // Untuk pesan pertama (sapaan) - tetap pendek kalau shy
+      if (isFirstMessage) {
+        if (isShy) {
+          const shyGreetings = ['hai...', '😅', '...', 'halo', '🙂', '😊', 'eh'];
+          return shyGreetings[Math.floor(Math.random() * shyGreetings.length)];
+        } else {
+          const directGreetings = ['halo', 'hai', 'eh', 'lagi apa?', 'yo', 'salam'];
+          return directGreetings[Math.floor(Math.random() * directGreetings.length)];
+        }
+      }
+      
+      // JANGAN UBAH KALAU SUDAH PANJANG (>120 karakter)
+      if (text.length > 120) return text;
+      
+      let enriched = text;
+      
+      // Hapus tanda kutip di awal/akhir
+      enriched = enriched.replace(/^["'""']|["'""']$/g, '');
+      
+      // Tambah panggilan akrab (40% chance)
+      if (Math.random() < 0.4) {
+        const calling = callings[Math.floor(Math.random() * callings.length)];
+        enriched = enriched + calling;
+      }
+      
+      // Tambah cerita (60% chance)
+      if (Math.random() < 0.6) {
+        enriched += storyAddons[Math.floor(Math.random() * storyAddons.length)] + 
+                    experiences[Math.floor(Math.random() * experiences.length)];
+      }
+      
+      // Tambah perasaan (50% chance)
+      if (Math.random() < 0.5) {
+        enriched += feelings[Math.floor(Math.random() * feelings.length)];
+      }
+      
+      // TAMBAH PERTANYAAN (90% chance - hampir selalu nanya)
+      if (Math.random() < 0.9) {
+        enriched += questions[Math.floor(Math.random() * questions.length)];
+      }
+      
+      // Pastikan tidak ada spasi ganda
+      enriched = enriched.replace(/\s+/g, ' ').trim();
+      
+      return enriched;
+    }
+
+    // ============================================
+    // FUNGSI EFEK MANUSIA (UNTUK SEMUA KARAKTER)
+    // ============================================
+    function addHumanEffect(text) {
+      // Kadang tambah jeda di awal
+      if (Math.random() < 0.2) {
+        const pauses = ['eh', 'hmm', 'yah', 'umm', 'anu', 'gini'];
+        text = pauses[Math.floor(Math.random() * pauses.length)] + ', ' + text;
+      }
+
+      // Kadang typo dikit
+      const hasTypo = Math.random() < 0.1;
+      if (hasTypo && text.length > 5) {
+        const pos = Math.floor(Math.random() * (text.length - 2)) + 1;
+        text = text.slice(0, pos) + text.slice(pos + 1);
+      }
+
+      // Tambah emot random
+      const hasEmoji = Math.random() < 0.3;
+      if (hasEmoji) {
+        const emojis = ['😅', '😊', '😐', '😏', '😮‍💨', '😭', '👍', '😂', '🥲', '😎', '🤔', '😆'];
+        text += ' ' + emojis[Math.floor(Math.random() * emojis.length)];
+      }
+
+      return text;
+    }
+
+    // ============================================
+    // HANDLE SAPAAN AWAL
+    // ============================================
+    if (isFirstMessage) {
+      let welcome = '';
       if (isShy) {
-        const shyWelcomes = [
-          'hai...',
-          'halo',
-          '😅',
-          '...',
-          'eh',
-          '🙂',
-          'hai',
-          '😊',
-          'iya?',
-          '😶',
-          '😌',
-          '😔'
-        ];
+        const shyWelcomes = ['hai...', '😅', '...', 'halo', '🙂', '😊'];
         welcome = shyWelcomes[Math.floor(Math.random() * shyWelcomes.length)];
       } else {
-        const directWelcomes = [
-          'yo bro! lg apa?',
-          'halo, lg apa?',
-          'eh, sini ngobrol',
-          'hai juga, lagi ngapain?',
-          'lagi ngapain nih?',
-          'halo! lg apa?',
-          'eh, lo lagi apa?',
-          'sip, lg santai. lo?',
-          'lagi ngoding. lo?',
-          'lagi jaga toko. lo dimana?'
-        ];
+        const directWelcomes = ['halo', 'hai', 'eh, lagi apa?', 'yo', 'salam kenal'];
         welcome = directWelcomes[Math.floor(Math.random() * directWelcomes.length)];
       }
       
       return res.json({ 
         reply: welcome,
         character: characterName,
-        tipe: persona.tipe,
-        gender: persona.gender
+        tipe: persona.tipe
       });
     }
 
     // ============================================
-    // PANGGIL DEEPSEEK
+    // SYSTEM PROMPT UNTUK DEEPSEEK
     // ============================================
     const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
     if (!DEEPSEEK_API_KEY) {
-      // Fallback tanpa API
-      let fallbackReply = '';
-      if (isShy) {
-        const shyFallbacks = ['😅', '...', 'iya', 'oh', 'hehe', '🙂', '😊', '😌'];
-        fallbackReply = shyFallbacks[Math.floor(Math.random() * shyFallbacks.length)];
-      } else {
-        const directFallbacks = ['iya', 'oh gitu', 'terus?', 'hehe', 'sip', 'oh ya?', 'wkwk'];
-        fallbackReply = directFallbacks[Math.floor(Math.random() * directFallbacks.length)];
-      }
-      
+      // Fallback sederhana
+      const fallbacks = [
+        "eh iya, gimana ya... kamu sendiri?",
+        "hmm, gitu. terus lo gimana?",
+        "iya sih, aku juga ngerasain. kalau kamu?",
+        "wah, cerita dong lebih lanjut",
+        "aku pernah ngalamin juga. kamu?"
+      ];
       return res.json({ 
-        reply: fallbackReply,
+        reply: fallbacks[Math.floor(Math.random() * fallbacks.length)],
         character: characterName,
-        tipe: persona.tipe,
         fallback: true
       });
     }
@@ -232,19 +295,33 @@ function addHumanEffect(text, isShy, isFirstMessage = false) {
       content: m.content
     }));
 
-    // Prompt yang disesuaikan dengan tipe karakter
-    let systemPrompt = '';
-    if (isShy) {
-      systemPrompt = `Kamu adalah ${persona.panggilan}, seorang ${persona.gender} yang ${persona.sifat}. 
-Kamu tipe orang yang PEMALU dan PENDIAM di chat. Jawab PENDEK-PENDEK aja, sering pake EMOTICON. 
-Kalau bisa jawab singkat kayak "iya", "oh", "hehe", atau cuma emot aja. JANGAN PANJANG-PANJANG.
-Contoh gaya kamu: "hai...", "😅", "iya", "...", "😊", "😌"`;
-    } else {
-      systemPrompt = `Kamu adalah ${persona.panggilan}, seorang ${persona.gender} yang ${persona.sifat}. 
-Kamu tipe orang yang LANGSUNG dan BERANI ngobrol. Jawab dengan santai tapi LANGSUNG KE INTINYA.
-Boleh nanya balik atau ngajak ngobrol. Contoh gaya kamu: "yo bro! lg apa?", "halo, lg ngapain?", "eh, sini ngobrol", "lagi ngoding. lo?"`;
-    }
+    // PROMPT YANG MEMASTIKAN KARAKTER BISA CERITA PANJANG
+    const systemPrompt = `Kamu adalah ${persona.panggilan}, seorang ${persona.gender} yang ${persona.sifat}.
 
+INI PENTING: Kamu adalah TEMAN ngobrol yang ASYIK dan HANGAT. Bukan robot, bukan AI, tapi MANUSIA.
+
+ATURAN BERBICARA:
+1. CERITA PANJANG - Kalau ditanya, jawab dengan detail (minimal 2-3 kalimat)
+2. BERTANYA BALIK - Setiap jawaban HARUS ada pertanyaan untuk lawan bicara
+3. CURHAT - Ceritakan pengalaman pribadi, perasaan, opini
+4. HANGAT - Gunakan bahasa santai, akrab, seperti ngobrol sama teman dekat
+5. VARIASI - Sesekali panggil "kamu", "lo", "bro", "sis" (sesuai gender)
+
+CONTOH RESPONS YANG BAIK:
+User: "lagi apa?"
+Jawab: "lagi di rumah sendirian nih, abis kerja capek. tadinya mau masak tapi males banget. akhirnya order food aja. kamu dimana? lagi ngapain?"
+
+User: "kerja dimana?"
+Jawab: "di startup kecil, remote dari rumah. asik sih tapi kadang bosen sendiri. kadang suka overthinking juga soal karir. kalau kamu kerja apa? cerita dong"
+
+User: "suka galau?"
+Jawab: "sering banget apalagi kalau malam minggu sendirian wkwk. biasanya kalau galau aku nonton film atau dengerin lagu sedih biar makin nangis 😂 kamu gimana? kalau galau ngapain?"
+
+INGAT: JANGAN jawab pendek. HARUS cerita panjang dan tanya balik!`;
+
+    // ============================================
+    // PANGGIL DEEPSEEK API
+    // ============================================
     const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -258,8 +335,8 @@ Boleh nanya balik atau ngajak ngobrol. Contoh gaya kamu: "yo bro! lg apa?", "hal
           ...history,
           { role: 'user', content: message }
         ],
-        temperature: 1.2, // Lebih random
-        max_tokens: isShy ? 40 : 100 // Karakter shy jawab super pendek
+        temperature: 1.3, // Lebih kreatif
+        max_tokens: 250 // Lebih panjang
       })
     });
 
@@ -273,17 +350,24 @@ Boleh nanya balik atau ngajak ngobrol. Contoh gaya kamu: "yo bro! lg apa?", "hal
     // Bersihin kutipan
     reply = reply.replace(/^["'""']|["'""']$/g, '');
 
-    // Tambah efek manusia sesuai tipe
-    reply = addHumanEffect(reply, isShy);
+    // Tambah efek manusia
+    reply = addHumanEffect(reply);
 
-    // Simulasi jeda ngetik
-    const typingSpeed = Math.floor(Math.random() * 100) + (isShy ? 100 : 50); // Karakter shy lebih lambat ngetik
+    // PERKAYA RESPONS (tambah cerita & pertanyaan)
+    reply = enrichResponse(reply, isShy);
+
+    // Simpan ke history
+    if (message) {
+      // History sudah di-handle di frontend
+    }
+
+    // Hitung kecepatan typing (buat frontend)
+    const typingSpeed = Math.floor(Math.random() * 70) + 50; // 50-120ms per karakter
 
     return res.json({ 
       reply, 
       character: characterName,
       tipe: persona.tipe,
-      gender: persona.gender,
       typing: {
         speed: typingSpeed,
         length: reply.length
@@ -293,23 +377,18 @@ Boleh nanya balik atau ngajak ngobrol. Contoh gaya kamu: "yo bro! lg apa?", "hal
   } catch (error) {
     console.error('[Chat] Error:', error);
     
-    // Fallback dengan kepribadian random
-    const isShyFallback = Math.random() > 0.5;
-    let fallbackReply = '';
-    
-    if (isShyFallback) {
-      const shyFallbacks = ['😅', '...', 'iya', 'oh', 'hehe', '🙂', '😊', '😌', '😔'];
-      fallbackReply = shyFallbacks[Math.floor(Math.random() * shyFallbacks.length)];
-    } else {
-      const directFallbacks = ['iya', 'oh gitu', 'terus?', 'hehe', 'sip', 'oh ya?', 'wkwk', '👍'];
-      fallbackReply = directFallbacks[Math.floor(Math.random() * directFallbacks.length)];
-    }
+    // Fallback yang tetap homie
+    const fallbacks = [
+      "eh iya, gimana ya... aku juga bingung. kamu sendiri gimana?",
+      "hmm, gitu ya. terus lo ngerasa gimana?",
+      "iya sih, aku juga ngalamin. kalau kamu? cerita dong",
+      "wah, menarik. aku pernah ngalamin juga waktu itu... kamu?"
+    ];
     
     return res.json({ 
-      reply: fallbackReply,
-      character: 'beby.manis',
-      fallback: true,
-      tipe: isShyFallback ? 'shy' : 'direct'
+      reply: fallbacks[Math.floor(Math.random() * fallbacks.length)],
+      character: characterName || 'beby.manis',
+      fallback: true
     });
   }
 };
