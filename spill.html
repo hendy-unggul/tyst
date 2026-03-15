@@ -1158,19 +1158,26 @@
     </div>
 </div>
 
-<!-- WHISPER OVERLAY -->
+<!-- WHISPER OVERLAY - VERSI BARU -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-box">
         <div class="whisper-title">✦ WHISPERER</div>
-        <div class="whisper-timer">Pesan akan hilang setelah 5 detik dibaca</div>
-        <textarea class="whisper-input" id="whisperInput" placeholder="Tulis pesan rahasia..." maxlength="200"></textarea>
+        <div class="whisper-timer">Kirim ke siapapun (ketik manual)</div>
+        
+        <!-- INPUT USERNAME TUJUAN -->
+        <input type="text" class="whisper-input" id="whisperTarget" 
+               placeholder="@username" maxlength="30" style="margin-bottom: 10px;">
+        
+        <!-- INPUT PESAN -->
+        <textarea class="whisper-input" id="whisperMessage" 
+                  placeholder="Tulis pesan rahasia..." maxlength="200" rows="3"></textarea>
+        
         <div class="whisper-actions">
             <button class="whisper-btn cancel" id="whisperCancel">BATAL</button>
             <button class="whisper-btn send" id="whisperSend">KIRIM</button>
         </div>
     </div>
 </div>
-
 <!-- CHAT ROOM -->
 <div class="chat-room" id="chatRoom">
     <div class="chat-head">
