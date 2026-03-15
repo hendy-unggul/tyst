@@ -360,7 +360,7 @@
             margin-bottom: 12px;
         }
         
-        /* REACTIONS HORISONTAL - YANG LU MINTA */
+        /* REACTIONS HORISONTAL */
         .spill-reactions {
             display: flex;
             gap: 8px;
@@ -498,6 +498,11 @@
             box-shadow: 3px 3px 0 #000;
         }
         
+        .chat-close:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 #000;
+        }
+        
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -540,6 +545,36 @@
         .chat-send:active {
             transform: translate(2px, 2px);
             box-shadow: 1px 1px 0 #000;
+        }
+        
+        .chat-send.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--tx);
+            color: var(--bg);
+            padding: 12px 22px;
+            z-index: 2000;
+            opacity: 0;
+            transition: 0.25s;
+            border: 2px solid #000;
+            box-shadow: 4px 4px 0 #000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.error {
+            background: var(--ap);
+            color: #fff;
         }
     </style>
 </head>
@@ -655,12 +690,16 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- MAIN SCRIPT - TIDAK PAKE SPILL GENERATOR -->
 <script>
 (function() {
     'use strict';
     
-    const $ = (id) => document.getElementById(id);
+    // ========== SAFE GET ELEMENT ==========
+    function $(id) {
+        const el = document.getElementById(id);
+        if (!el) console.warn('Element not found:', id);
+        return el;
+    }
     
     // ========== RADAR ASLI ==========
     let rdots = [];
@@ -674,8 +713,8 @@
     let radarInterval = null;
     
     function initRadar() {
-        const cv = $('#radarCanvas');
-        const ct = $('#radarCont');
+        const cv = $('radarCanvas');
+        const ct = $('radarCont');
         if (!cv || !ct) return;
         
         const resize = () => {
@@ -709,7 +748,7 @@
     }
     
     function spawnDots() {
-        const c = $('#radarDots');
+        const c = $('radarDots');
         if (!c) return;
         c.innerHTML = '';
         rdots = [];
@@ -905,7 +944,7 @@
     
     // ========== RENDER FUNCTION ==========
     window.renderSpills = function() {
-        const container = $('#spillsList');
+        const container = $('spillsList');
         if (!container) return;
         
         container.innerHTML = allEntries.map((spill, index) => {
@@ -938,7 +977,7 @@
             `;
         }).join('');
         
-        const meta = $('#feedMeta');
+        const meta = $('feedMeta');
         if (meta) meta.textContent = allEntries.length + ' spill';
     };
     
@@ -955,14 +994,14 @@
     function startVibeCheck(type) {
         console.log(`[Vibe] ${type} clicked`);
         
-        const overlay = $('#waitingOverlay');
-        const icon = $('#waitingIcon');
+        const overlay = $('waitingOverlay');
+        const icon = $('waitingIcon');
         if (overlay && icon) {
             icon.textContent = type === 'heart' ? '❤️' : '♠️';
             overlay.style.display = 'flex';
             
             let seconds = 15;
-            const timerEl = $('#waitingTimer');
+            const timerEl = $('waitingTimer');
             if (timerEl) timerEl.textContent = seconds;
             
             const timer = setInterval(() => {
@@ -975,39 +1014,14 @@
                 }
             }, 1000);
             
-            $('#cancelWaiting').onclick = () => {
-                clearInterval(timer);
-                overlay.style.display = 'none';
-            };
+            const cancelBtn = $('cancelWaiting');
+            if (cancelBtn) {
+                cancelBtn.onclick = () => {
+                    clearInterval(timer);
+                    overlay.style.display = 'none';
+                };
+            }
         }
-    }
-    
-    // ========== EVENT LISTENERS ==========
-    $('#vibeFemaleBtn').onclick = (e) => {
-        e.preventDefault();
-        startVibeCheck('heart');
-    };
-    
-    $('#vibeMaleBtn').onclick = (e) => {
-        e.preventDefault();
-        startVibeCheck('spade');
-    };
-    
-    $('#closeChatBtn').onclick = () => {
-        $('#chatRoom').classList.remove('on');
-    };
-    
-    $('#whisperBtn').onclick = () => {
-        alert('Fitur Whisperer (Premium)');
-    };
-    
-    // Vibe slider
-    const slider = $('#vibeSlider');
-    const pct = $('#vibePct');
-    if (slider && pct) {
-        slider.oninput = function() {
-            pct.textContent = this.value + '%';
-        };
     }
     
     // ========== INIT ==========
@@ -1015,14 +1029,14 @@
         console.log('[App] Starting...');
         
         // Set username
-        const userEl = $('#userNameDisplay');
+        const userEl = $('userNameDisplay');
         if (userEl) {
             const saved = localStorage.getItem('spill_username') || 'beby.manis';
             userEl.textContent = '@' + saved;
         }
         
         // Set online count
-        const onlineEl = $('#onlineCount');
+        const onlineEl = $('onlineCount');
         if (onlineEl) onlineEl.textContent = '21 ONLINE';
         
         // Init radar
@@ -1030,6 +1044,53 @@
         
         // Render spills
         window.renderSpills();
+        
+        // ===== TOMBOL HEART & SPADE - PASTIKAN ADA =====
+        const heartBtn = $('vibeFemaleBtn');
+        const spadeBtn = $('vibeMaleBtn');
+        const whisperBtn = $('whisperBtn');
+        const closeChatBtn = $('closeChatBtn');
+        const slider = $('vibeSlider');
+        const pct = $('vibePct');
+        
+        if (heartBtn) {
+            heartBtn.onclick = (e) => {
+                e.preventDefault();
+                startVibeCheck('heart');
+            };
+            console.log('✅ Heart button ready');
+        } else {
+            console.error('❌ Heart button not found');
+        }
+        
+        if (spadeBtn) {
+            spadeBtn.onclick = (e) => {
+                e.preventDefault();
+                startVibeCheck('spade');
+            };
+            console.log('✅ Spade button ready');
+        } else {
+            console.error('❌ Spade button not found');
+        }
+        
+        if (whisperBtn) {
+            whisperBtn.onclick = () => {
+                alert('✨ Whisperer mode (premium)');
+            };
+        }
+        
+        if (closeChatBtn) {
+            closeChatBtn.onclick = () => {
+                const room = $('chatRoom');
+                if (room) room.classList.remove('on');
+            };
+        }
+        
+        if (slider && pct) {
+            slider.oninput = function() {
+                pct.textContent = this.value + '%';
+            };
+        }
         
         console.log('[App] Ready!');
     });
