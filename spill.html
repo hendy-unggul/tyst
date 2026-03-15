@@ -362,7 +362,7 @@
         }
         
         .spill-mood.doom { 
-            background: var(--purple); 
+            background: #9900ff; 
             color: white; 
         }
         
@@ -409,7 +409,19 @@
         }
         
         .ai-badge {
-            display: none; /* AI badge disembunyikan */
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--bg);
+            border: 2px solid var(--as);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border-radius: 50%;
+            box-shadow: 2px 2px 0 #000;
         }
         
         /* WAITING OVERLAY */
@@ -560,6 +572,11 @@
             box-shadow: 1px 1px 0 #000;
         }
         
+        .chat-send.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
         .toast {
             position: fixed;
             bottom: 90px;
@@ -578,6 +595,11 @@
         .toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.error {
+            background: var(--ap);
+            color: #fff;
         }
         
         .empty-state {
@@ -711,45 +733,170 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
     
     // ========== STATE ==========
-    let userEntries = [];
-    let aiEntries = [];
+    let userEntries = [];      // entries dari user
+    let aiEntries = [];        // entries dari AI
     let allEntries = [];
     let aiGeneratorTimer = null;
     
-    // ========== USERNAME MAPPING ==========
-    const AVAILABLE_USERNAMES = [
-        'beby.manis', 'chili.padi', 'pretty.sad', 'sejuta.badai', 
-        'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam',
-        'malam.minggu', 'hujan.gerimis', 'kopi.pahit', 'luka.luka',
-        'senja.redup', 'kota.tua', 'patah.hati', 'move.on'
-    ];
-    
-    const usernameCache = new Map();
-    
-    function getUsernameFromUserId(userId) {
-        if (!userId) return 'anonymous';
-        if (usernameCache.has(userId)) return usernameCache.get(userId);
-        
-        let hash = 0;
-        for (let i = 0; i < userId.length; i++) {
-            hash = ((hash << 5) - hash) + userId.charCodeAt(i);
-            hash |= 0;
-        }
-        
-        const index = Math.abs(hash) % AVAILABLE_USERNAMES.length;
-        const username = AVAILABLE_USERNAMES[index];
-        usernameCache.set(userId, username);
-        
-        console.log(`[Username] Mapped ${userId.substring(0,8)}... → @${username}`);
-        return username;
-    }
-    
     // ========== SAFE GET ELEMENT ==========
     function $(id) {
-        return document.getElementById(id);
+        const el = document.getElementById(id);
+        if (!el) console.warn('Element not found:', id);
+        return el;
     }
     
-    // ========== RENDER FUNCTION ==========
+    // ========== FETCH USER ENTRIES ==========
+    async function fetchUserEntries() {
+        try {
+            console.log('[Supabase] Fetching entries...');
+            
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/entries?` + 
+                `select=*&` +
+                `order=created_at.desc&` +
+                `limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('[Supabase] Data received:', data);
+            
+            if (data && data.length > 0) {
+                // Format data sesuai struktur yang kita butuh
+                userEntries = data.map(entry => ({
+                    author: entry.user_id ? entry.user_id.substring(0, 8) : 'anonymous',
+                    mood: entry.mood || 'chaotic',
+                    content: entry.content || '...',
+                    reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+                    created_at: entry.created_at,
+                    is_ai: false
+                }));
+            } else {
+                // Pakai data dummy kalau kosong
+                userEntries = getDummyEntries();
+            }
+            
+        } catch (error) {
+            console.error('[Supabase] Error:', error);
+            userEntries = getDummyEntries();
+        }
+        
+        combineAndRender();
+    }
+    
+    // ========== DATA DUMMY ==========
+    function getDummyEntries() {
+        return [
+            {
+                author: 'beby.manis',
+                mood: 'chaotic',
+                content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
+                reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
+                created_at: new Date().toISOString(),
+                is_ai: false
+            },
+            {
+                author: 'chili.padi',
+                mood: 'thriving',
+                content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
+                reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
+                created_at: new Date(Date.now() - 3600000).toISOString(),
+                is_ai: false
+            },
+            {
+                author: 'pretty.sad',
+                mood: 'doom',
+                content: 'ga semangat ngapa-ngapain 😭😭😭',
+                reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
+                created_at: new Date(Date.now() - 7200000).toISOString(),
+                is_ai: false
+            }
+        ];
+    }
+    
+    // ========== GENERATE AI ENTRIES ==========
+    function generateAIEntries(count = 6) {
+        const authors = ['ai.bot', 'sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam'];
+        const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
+        
+        const contents = {
+            surviving: [
+                'deadline skripsi makin deket, anxiety naik turun 😮‍💨',
+                'capek banget hari ini, pengen rebahan aja 🥲'
+            ],
+            thriving: [
+                'alhamdulillah hari ini cuan! 💰',
+                'akhirnya sidang kelar, nilai A alhamdulillah'
+            ],
+            chaotic: [
+                'client minta revisi jam 11 malem, this is fine 🔥',
+                'hidup lagi kacau balau 🔥'
+            ],
+            doom: [
+                'motor mogok, dompet tipis, pacar ngambek. triple combo 🫠',
+                'udah 6 bulan nganggur, lamaran kerja ga ada yang dipanggil'
+            ]
+        };
+        
+        return Array(count).fill().map(() => {
+            const author = authors[Math.floor(Math.random() * authors.length)];
+            const mood = moods[Math.floor(Math.random() * moods.length)];
+            const contentList = contents[mood];
+            const content = contentList[Math.floor(Math.random() * contentList.length)];
+            
+            return {
+                author,
+                mood,
+                content,
+                reactions: {
+                    skull: Math.floor(Math.random() * 30) + 5,
+                    cry: Math.floor(Math.random() * 40) + 10,
+                    fire: Math.floor(Math.random() * 20) + 1,
+                    upside: Math.floor(Math.random() * 15) + 2
+                },
+                is_ai: true,
+                created_at: new Date(Date.now() - Math.random() * 86400000).toISOString()
+            };
+        });
+    }
+    
+    // ========== INIT AI ENTRIES ==========
+    function initAIEntries() {
+        aiEntries = generateAIEntries(6);
+        combineAndRender();
+        
+        // Generator setiap 2 menit (buat testing)
+        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
+        aiGeneratorTimer = setInterval(() => {
+            console.log('[AI] Generating new entry...');
+            const newEntry = generateAIEntries(1)[0];
+            aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
+            combineAndRender();
+        }, 120000); // 2 menit
+    }
+    
+    // ========== GABUNG & URUTKAN ==========
+    function combineAndRender() {
+        allEntries = [...userEntries, ...aiEntries];
+        
+        // Urutkan berdasarkan created_at (terbaru di atas)
+        allEntries.sort((a, b) => {
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
+        
+        renderSpills();
+    }
+    
+    // ========== RENDER SPILLS ==========
     function renderSpills() {
         const container = $('spillsList');
         if (!container) return;
@@ -762,7 +909,7 @@
         let html = '';
         allEntries.forEach((spill, index) => {
             html += `
-                <div class="spill-card">
+                <div class="spill-card" style="position: relative;">
                     <div class="spill-header">
                         <span class="spill-author">@${spill.author}</span>
                         <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
@@ -785,6 +932,8 @@
                             🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
                         </button>
                     </div>
+                    
+                    ${spill.is_ai ? '<div class="ai-badge">🤖</div>' : ''}
                 </div>
             `;
         });
@@ -795,135 +944,11 @@
         if (meta) meta.textContent = allEntries.length + ' spill';
     }
     
-    // ========== COMBINE FUNCTION ==========
-    function combineAndRender() {
-        allEntries = [...userEntries, ...aiEntries];
-        allEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        renderSpills();
-    }
-    
-    // ========== FETCH USER ENTRIES ==========
-    async function fetchUserEntries() {
-        try {
-            console.log('[Supabase] Fetching entries...');
-            
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/entries?` + 
-                `select=*&` +
-                `order=created_at.desc&` +
-                `limit=10`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-            
-            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-            
-            const data = await response.json();
-            console.log('[Supabase] Data received:', data.length, 'entries');
-            
-            if (data && data.length > 0) {
-                console.log('=== USERNAME MAPPING ===');
-                userEntries = data.map(entry => {
-                    const username = getUsernameFromUserId(entry.user_id);
-                    console.log(`${entry.user_id.substring(0,8)}... → @${username} : "${entry.content?.substring(0,30)}..."`);
-                    
-                    return {
-                        author: username,
-                        mood: entry.mood || 'chaotic',
-                        content: entry.content || '...',
-                        reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
-                        created_at: entry.created_at
-                    };
-                });
-                console.log('========================');
-            } else {
-                userEntries = getDummyEntries();
-            }
-            
-        } catch (error) {
-            console.error('[Supabase] Error:', error);
-            userEntries = getDummyEntries();
-        }
-        
-        combineAndRender();
-    }
-    
-    // ========== DATA DUMMY ==========
-    function getDummyEntries() {
-        return [
-            {
-                author: 'beby.manis',
-                mood: 'chaotic',
-                content: 'hari ini nangis karena liat mantan bahagia',
-                reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
-                created_at: new Date().toISOString()
-            },
-            {
-                author: 'chili.padi',
-                mood: 'thriving',
-                content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
-                reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
-                created_at: new Date(Date.now() - 3600000).toISOString()
-            }
-        ];
-    }
-    
-    // ========== GENERATE AI ENTRIES ==========
-    function generateAIEntries(count = 6) {
-        const authors = ['sejuta.badai', 'agak.koplak', 'cinnamon.girl', 'move.on', 'strawberry.shortcake', 'satria.bajahitam'];
-        const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
-        const contents = {
-            surviving: ['deadline skripsi makin deket 😮‍💨', 'capek banget hari ini 🥲', 'bangun tidur langsung overthinking'],
-            thriving: ['alhamdulillah hari ini cuan! 💰', 'sidang kelar nilai A', 'closing 3 client dalam sehari'],
-            chaotic: ['client minta revisi jam 11 malem 🔥', 'hidup lagi kacau balau', 'pagi dimarahin boss'],
-            doom: ['motor mogok, dompet tipis 🫠', '6 bulan nganggur', 'lamaran ga ada yang dipanggil']
-        };
-        
-        return Array(count).fill().map(() => {
-            const author = authors[Math.floor(Math.random() * authors.length)];
-            const mood = moods[Math.floor(Math.random() * moods.length)];
-            const contentList = contents[mood];
-            const content = contentList[Math.floor(Math.random() * contentList.length)];
-            const daysAgo = 7 + Math.floor(Math.random() * 23);
-            const timestamp = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
-            
-            return {
-                author,
-                mood,
-                content,
-                reactions: {
-                    skull: Math.floor(Math.random() * 30) + 5,
-                    cry: Math.floor(Math.random() * 40) + 10,
-                    fire: Math.floor(Math.random() * 20) + 1,
-                    upside: Math.floor(Math.random() * 15) + 2
-                },
-                created_at: timestamp.toISOString()
-            };
-        });
-    }
-    
-    // ========== INIT AI ENTRIES ==========
-    function initAIEntries() {
-        aiEntries = generateAIEntries(6);
-        combineAndRender();
-        
-        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
-        aiGeneratorTimer = setInterval(() => {
-            console.log('[AI] Generating new entry...');
-            const newEntry = generateAIEntries(1)[0];
-            aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
-            combineAndRender();
-        }, 180000);
-    }
-    
     // ========== REACTION HANDLER ==========
     window.reactToSpill = function(index, type) {
         const spill = allEntries[index];
         if (!spill) return;
+        
         spill.reactions[type] = (spill.reactions[type] || 0) + 1;
         renderSpills();
     };
@@ -979,17 +1004,19 @@
         if (!c) return;
         c.innerHTML = '';
         rdots = [];
+        const types = ['ai', 'purple', 'red', 'lime'];
         for (let i = 0; i < 8; i++) {
             const a = Math.random() * Math.PI * 2;
             const d = 12 + Math.random() * 70;
             const x = 50 + Math.cos(a) * d / 2;
             const y = 50 + Math.sin(a) * d / 2;
             const dot = document.createElement('div');
-            dot.className = 'radar-dot';
+            const type = types[Math.floor(Math.random() * types.length)];
+            dot.className = 'radar-dot ' + type;
             dot.style.left = x + '%';
             dot.style.top = y + '%';
             c.appendChild(dot);
-            rdots.push({ el: dot, x, y, vx: 0, vy: 0, id: i });
+            rdots.push({ el: dot, x, y, vx: 0, vy: 0, type, id: i });
         }
     }
     
@@ -1075,9 +1102,12 @@
                     const t = age / 55;
                     const ga = (1 - t) * (1 - t) * 0.9;
                     if (ga < 0.01) return;
+                    const col = d.type === 'purple' ? '191,90,242' :
+                               d.type === 'red' ? '255,45,85' :
+                               d.type === 'lime' ? '191,255,0' : '0,229,255';
                     const gr = ctx.createRadialGradient(px, py, 0, px, py, 16 * (1 - t) + 3);
-                    gr.addColorStop(0, `rgba(0,229,255,${ga})`);
-                    gr.addColorStop(1, `rgba(0,229,255,0)`);
+                    gr.addColorStop(0, `rgba(${col},${ga})`);
+                    gr.addColorStop(1, `rgba(${col},0)`);
                     ctx.beginPath();
                     ctx.arc(px, py, 16 * (1 - t) + 3, 0, Math.PI * 2);
                     ctx.fillStyle = gr;
@@ -1111,6 +1141,8 @@
                 if (seconds <= 0) {
                     clearInterval(timer);
                     overlay.style.display = 'none';
+                    
+                    // Buka chat room setelah waiting selesai
                     const room = $('chatRoom');
                     if (room) room.classList.add('on');
                 }
@@ -1130,19 +1162,25 @@
     window.addEventListener('load', async function() {
         console.log('[App] Starting...');
         
+        // Set username
         const userEl = $('userNameDisplay');
         if (userEl) {
-            userEl.textContent = '@' + (localStorage.getItem('spill_username') || 'beby.manis');
+            const saved = localStorage.getItem('spill_username') || 'beby.manis';
+            userEl.textContent = '@' + saved;
         }
         
+        // Set online count
         const onlineEl = $('onlineCount');
         if (onlineEl) onlineEl.textContent = '21 ONLINE';
         
+        // Init radar
         setTimeout(initRadar, 100);
         
+        // Fetch data
         await fetchUserEntries();
         initAIEntries();
         
+        // ===== TOMBOL HEART & SPADE =====
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
         const whisperBtn = $('whisperBtn');
@@ -1152,10 +1190,32 @@
         const slider = $('vibeSlider');
         const pct = $('vibePct');
         
-        if (heartBtn) heartBtn.onclick = (e) => { e.preventDefault(); startVibeCheck('heart'); };
-        if (spadeBtn) spadeBtn.onclick = (e) => { e.preventDefault(); startVibeCheck('spade'); };
-        if (whisperBtn) whisperBtn.onclick = () => alert('✨ Whisperer mode (premium)');
-        if (closeChatBtn) closeChatBtn.onclick = () => { const room = $('chatRoom'); if (room) room.classList.remove('on'); };
+        if (heartBtn) {
+            heartBtn.onclick = (e) => {
+                e.preventDefault();
+                startVibeCheck('heart');
+            };
+        }
+        
+        if (spadeBtn) {
+            spadeBtn.onclick = (e) => {
+                e.preventDefault();
+                startVibeCheck('spade');
+            };
+        }
+        
+        if (whisperBtn) {
+            whisperBtn.onclick = () => {
+                alert('✨ Whisperer mode (premium)');
+            };
+        }
+        
+        if (closeChatBtn) {
+            closeChatBtn.onclick = () => {
+                const room = $('chatRoom');
+                if (room) room.classList.remove('on');
+            };
+        }
         
         if (sendBtn && chatInput) {
             sendBtn.onclick = () => {
@@ -1169,11 +1229,16 @@
                     }
                 }
             };
-            chatInput.onkeypress = (e) => { if (e.key === 'Enter') sendBtn.click(); };
+            
+            chatInput.onkeypress = (e) => {
+                if (e.key === 'Enter') sendBtn.click();
+            };
         }
         
         if (slider && pct) {
-            slider.oninput = function() { pct.textContent = this.value + '%'; };
+            slider.oninput = function() {
+                pct.textContent = this.value + '%';
+            };
         }
         
         console.log('[App] Ready!');
