@@ -753,43 +753,38 @@ async function fetchUserEntries() {
         combineAndRender();
         
     } catch (error) {
-        console.error('[Supabase] Error fetching user entries:', error);
-        
-        // Fallback data sesuai screenshot
-        userEntries = [
-            {
-                author: 'user1',
-                mood: 'thriving',
-                content: 'Ga usah nangis ketawa aj',
-                reactions: { cry: 0, fire: 0, skull: 0, upside: 0 },
-                created_at: '2026-03-14T15:40:05.214883+01:00',
-                is_ai: false
-            },
-            {
-                author: 'user2',
-                mood: 'doom',
-                content: 'ja surga janji, uds doom',
-                reactions: { cry: 0, fire: 0, skull: 0, upside: 0 },
-                created_at: '2026-03-14T15:24:28.674023+01:00',
-                is_ai: false
-            },
-            {
-                author: 'user3',
-                mood: 'surviving',
-                content: 'seharian menunggu janji i surviving',
-                reactions: { cry: 0, fire: 0, skull: 0, upside: 0 },
-                created_at: '2026-03-14T14:22:53.776277+00:00',
-                is_ai: false
-            }
-        ];
-        
-        combineAndRender();
-    } catch (error) {
-        console.error('[Supabase] Error:', error);
-        // fallback...
-        userEntries = FALLBACK_DATA;
-        combineAndRender();
-    }
+    console.error('[Supabase] Error:', error);
+    
+    // Fallback data
+    const fallbackEntries = [
+        {
+            author: 'beby.manis',
+            mood: 'chaotic',
+            content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
+            reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
+            created_at: new Date().toISOString(),
+            is_ai: false
+        },
+        {
+            author: 'chili.padi',
+            mood: 'thriving',
+            content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
+            reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
+            created_at: new Date().toISOString(),
+            is_ai: false
+        },
+        {
+            author: 'pretty.sad',
+            mood: 'doom',
+            content: 'ga semangat ngapa-ngapain 😭😭😭',
+            reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
+            created_at: new Date().toISOString(),
+            is_ai: false
+        }
+    ];
+    
+    userEntries = fallbackEntries;
+    combineAndRender();
 }
     
     // ========== GENERATE AI ENTRIES (RANDOM) ==========
