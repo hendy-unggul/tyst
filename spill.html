@@ -1526,18 +1526,7 @@
     // ========== FETCH REAL USER ENTRIES ==========
     async function fetchUserEntries() {
         try {
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/entries?` + 
-                `select=*&` +
-                `order=created_at.desc&` +
-                `limit=10`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
+            const response = await fetch('/api/entries');
             
             if (!response.ok) throw new Error(`HTTP error ${response.status}`);
             
@@ -1545,20 +1534,20 @@
             
             if (data && data.length > 0) {
                 userEntries = data.map(entry => ({
-                    author: entry.username || getUsernameFromUserId(entry.user_id),
-                    mood: entry.mood || 'chaotic',
-                    content: entry.content || '...',
-                    reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+                    author: entry.author,
+                    mood: entry.mood,
+                    content: entry.content,
+                    reactions: entry.reactions,
                     created_at: entry.created_at,
                     is_ai: false
                 }));
             } else {
-                console.log('[Supabase] No entries, using dummy user entries');
+                console.log('[API] No entries, using dummy');
                 userEntries = getDummyUserEntries();
             }
             
         } catch (error) {
-            console.error('[Supabase] Error:', error);
+            console.error('[Fetch] Error:', error);
             userEntries = getDummyUserEntries();
         }
         
@@ -1602,22 +1591,22 @@
     }
     
     // ========== INIT AI ENTRIES ==========
-function initAIEntries() {
-    // Generate AI entries KALAU MASIH KOSONG
-    if (aiEntries.length === 0) {
-        console.log('[AI] Generating initial 6 entries...');
-        aiEntries = generateAIEntries(6);
+    function initAIEntries() {
+        // Generate AI entries KALAU MASIH KOSONG
+        if (aiEntries.length === 0) {
+            console.log('[AI] Generating initial 6 entries...');
+            aiEntries = generateAIEntries(6);
+        }
+        combineAndRender();  // ← Panggil sekali di sini
+        
+        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
+        aiGeneratorTimer = setInterval(() => {
+            console.log('[AI] Generating new entry...');
+            const newEntry = generateAIEntries(1)[0];
+            aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
+            combineAndRender();
+        }, 180000);
     }
-    combineAndRender();  // ← Panggil sekali di sini
-    
-    if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
-    aiGeneratorTimer = setInterval(() => {
-        console.log('[AI] Generating new entry...');
-        const newEntry = generateAIEntries(1)[0];
-        aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
-        combineAndRender();
-    }, 180000);
-}
     
     // ========== REACTION HANDLER ==========
     window.reactToSpill = function(index, type) {
@@ -2028,43 +2017,29 @@ function initAIEntries() {
     
     // ========== INIT ==========
     window.addEventListener('load', async function() {
-    console.log('[App] Starting...');
-    console.log(`[App] Welcome, ${USERNAME}!`);
-    
-    const userEl = $('userNameDisplay');
-    if (userEl) {
-        userEl.textContent = '@' + USERNAME;
-    }
-    
-    const onlineEl = $('onlineCount');
-    if (onlineEl) {
-        const onlineCount = Math.floor(Math.random() * 20) + 10;
-        onlineEl.textContent = onlineCount + ' ONLINE';
-    }
-    
-    setTimeout(initRadar, 100);
-    initSettings();
-    initWhisper();
-    initBottomNav();
-    initVibeSlider();
-    
-    // ✅ URUTAN YANG BENAR:
-    // 1. Fetch user entries dulu
-    await fetchUserEntries();  // ← Ini akan memanggil combineAndRender() di dalamnya
-    
-    // 2. Init AI entries SETELAH user entries
-    initAIEntries();  // ← Ini akan memanggil combineAndRender() lagi
-    
-    // 3. Jangan panggil combineAndRender() tambahan di sini
-    
-    const heartBtn = $('vibeFemaleBtn');
-    const spadeBtn = $('vibeMaleBtn');
-    const closeChatBtn = $('closeChatBtn');
-    const sendBtn = $('sendButton');
-    const chatInput = $('chatInput');
-    
-    // ... event listeners ...
-});
+        console.log('[App] Starting...');
+        console.log(`[App] Welcome, ${USERNAME}!`);
+        
+        const userEl = $('userNameDisplay');
+        if (userEl) {
+            userEl.textContent = '@' + USERNAME;
+        }
+        
+        const onlineEl = $('onlineCount');
+        if (onlineEl) {
+            const onlineCount = Math.floor(Math.random() * 20) + 10;
+            onlineEl.textContent = onlineCount + ' ONLINE';
+        }
+        
+        setTimeout(initRadar, 100);
+        initSettings();
+        initWhisper();
+        initBottomNav();
+        initVibeSlider();
+        
+        // ✅ URUTAN YANG BENAR:
+        await fetchUserEntries();  // Ambil user entries dulu
+        initAIEntries();           // Lalu generate AI entries
         
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
