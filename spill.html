@@ -323,6 +323,7 @@
             margin-bottom: 20px;
             padding: 16px;
             box-shadow: 4px 4px 0 #000;
+            position: relative;
         }
         
         .spill-header {
@@ -406,22 +407,6 @@
         .react-count {
             font-size: 11px;
             font-weight: bold;
-        }
-        
-        .ai-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--bg);
-            border: 2px solid var(--as);
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border-radius: 50%;
-            box-shadow: 2px 2px 0 #000;
         }
         
         /* WAITING OVERLAY */
@@ -733,10 +718,40 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
     
     // ========== STATE ==========
-    let userEntries = [];      // entries dari user
-    let aiEntries = [];        // entries dari AI
+    let userEntries = [];
     let allEntries = [];
     let aiGeneratorTimer = null;
+    
+    // ========== USERNAME MAPPING ==========
+    const usernameMap = new Map([
+        ['beby.manis', 'beby.manis'],
+        ['chili.padi', 'chili.padi'],
+        ['pretty.sad', 'pretty.sad'],
+        ['sejuta.badai', 'sejuta.badai'],
+        ['agak.koplak', 'agak.koplak'],
+        ['strawberry.shortcake', 'strawberry.shortcake'],
+        ['cinnamon.girl', 'cinnamon.girl'],
+        ['satria.bajahitam', 'satria.bajahitam']
+    ]);
+    
+    // Fallback username generator dari UUID
+    function generateUsernameFromId(userId) {
+        if (!userId) return 'anonymous';
+        
+        // Coba ambil dari localStorage dulu
+        const saved = localStorage.getItem('spill_username');
+        if (saved && usernameMap.has(saved)) return saved;
+        
+        // Generate username dari userId
+        const hash = userId.split('').reduce((a, b) => {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+        }, 0);
+        
+        const names = ['beby.manis', 'chili.padi', 'pretty.sad', 'sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam'];
+        const index = Math.abs(hash) % names.length;
+        return names[index];
+    }
     
     // ========== SAFE GET ELEMENT ==========
     function $(id) {
@@ -771,17 +786,20 @@
             console.log('[Supabase] Data received:', data);
             
             if (data && data.length > 0) {
-                // Format data sesuai struktur yang kita butuh
-                userEntries = data.map(entry => ({
-                    author: entry.user_id ? entry.user_id.substring(0, 8) : 'anonymous',
-                    mood: entry.mood || 'chaotic',
-                    content: entry.content || '...',
-                    reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
-                    created_at: entry.created_at,
-                    is_ai: false
-                }));
+                // Format data dengan username yang proper
+                userEntries = data.map(entry => {
+                    // Generate username dari user_id
+                    const username = generateUsernameFromId(entry.user_id);
+                    
+                    return {
+                        author: username,
+                        mood: entry.mood || 'chaotic',
+                        content: entry.content || '...',
+                        reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+                        created_at: entry.created_at
+                    };
+                });
             } else {
-                // Pakai data dummy kalau kosong
                 userEntries = getDummyEntries();
             }
             
@@ -801,48 +819,56 @@
                 mood: 'chaotic',
                 content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
                 reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
-                created_at: new Date().toISOString(),
-                is_ai: false
+                created_at: new Date().toISOString()
             },
             {
                 author: 'chili.padi',
                 mood: 'thriving',
                 content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
                 reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
-                created_at: new Date(Date.now() - 3600000).toISOString(),
-                is_ai: false
+                created_at: new Date(Date.now() - 3600000).toISOString()
             },
             {
                 author: 'pretty.sad',
                 mood: 'doom',
                 content: 'ga semangat ngapa-ngapain 😭😭😭',
                 reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
-                created_at: new Date(Date.now() - 7200000).toISOString(),
-                is_ai: false
+                created_at: new Date(Date.now() - 7200000).toISOString()
+            },
+            {
+                author: 'sejuta.badai',
+                mood: 'surviving',
+                content: 'deadline skripsi makin deket, anxiety naik turun 😮‍💨',
+                reactions: { skull: 8, cry: 15, fire: 3, upside: 2 },
+                created_at: new Date(Date.now() - 10800000).toISOString()
             }
         ];
     }
     
-    // ========== GENERATE AI ENTRIES ==========
+    // ========== GENERATE AI ENTRIES (STEALTH MODE - TANPA BADGE) ==========
     function generateAIEntries(count = 6) {
-        const authors = ['ai.bot', 'sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam'];
+        const authors = ['sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam', 'beby.manis'];
         const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
         
         const contents = {
             surviving: [
                 'deadline skripsi makin deket, anxiety naik turun 😮‍💨',
-                'capek banget hari ini, pengen rebahan aja 🥲'
+                'capek banget hari ini, pengen rebahan aja 🥲',
+                'bangun tidur langsung overthinking masa depan'
             ],
             thriving: [
                 'alhamdulillah hari ini cuan! 💰',
-                'akhirnya sidang kelar, nilai A alhamdulillah'
+                'akhirnya sidang kelar, nilai A alhamdulillah',
+                'hari ini closing 3 client dalam sehari'
             ],
             chaotic: [
                 'client minta revisi jam 11 malem, this is fine 🔥',
-                'hidup lagi kacau balau 🔥'
+                'hidup lagi kacau balau 🔥',
+                'hari ini chaotic banget: pagi dimarahin boss'
             ],
             doom: [
                 'motor mogok, dompet tipis, pacar ngambek. triple combo 🫠',
+                'rasanya pengen rebahan aja selamanya 🛌',
                 'udah 6 bulan nganggur, lamaran kerja ga ada yang dipanggil'
             ]
         };
@@ -863,7 +889,6 @@
                     fire: Math.floor(Math.random() * 20) + 1,
                     upside: Math.floor(Math.random() * 15) + 2
                 },
-                is_ai: true,
                 created_at: new Date(Date.now() - Math.random() * 86400000).toISOString()
             };
         });
@@ -871,29 +896,32 @@
     
     // ========== INIT AI ENTRIES ==========
     function initAIEntries() {
-        aiEntries = generateAIEntries(6);
-        combineAndRender();
-        
-        // Generator setiap 2 menit (buat testing)
-        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
-        aiGeneratorTimer = setInterval(() => {
-            console.log('[AI] Generating new entry...');
-            const newEntry = generateAIEntries(1)[0];
-            aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
-            combineAndRender();
-        }, 120000); // 2 menit
-    }
-    
-    // ========== GABUNG & URUTKAN ==========
-    function combineAndRender() {
+        const aiEntries = generateAIEntries(6);
         allEntries = [...userEntries, ...aiEntries];
         
-        // Urutkan berdasarkan created_at (terbaru di atas)
+        // Urutkan berdasarkan created_at
         allEntries.sort((a, b) => {
             return new Date(b.created_at) - new Date(a.created_at);
         });
         
         renderSpills();
+        
+        // Generator setiap 3 menit (stealth, tanpa badge)
+        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
+        aiGeneratorTimer = setInterval(() => {
+            console.log('[AI] Generating new entry...');
+            const newEntry = generateAIEntries(1)[0];
+            
+            // Hapus entry paling lama, tambah yang baru
+            allEntries = [newEntry, ...allEntries.slice(0, 8)];
+            
+            // Urutkan ulang
+            allEntries.sort((a, b) => {
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+            
+            renderSpills();
+        }, 180000); // 3 menit
     }
     
     // ========== RENDER SPILLS ==========
@@ -909,7 +937,7 @@
         let html = '';
         allEntries.forEach((spill, index) => {
             html += `
-                <div class="spill-card" style="position: relative;">
+                <div class="spill-card">
                     <div class="spill-header">
                         <span class="spill-author">@${spill.author}</span>
                         <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
@@ -932,8 +960,6 @@
                             🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
                         </button>
                     </div>
-                    
-                    ${spill.is_ai ? '<div class="ai-badge">🤖</div>' : ''}
                 </div>
             `;
         });
@@ -953,7 +979,7 @@
         renderSpills();
     };
     
-    // ========== RADAR ==========
+    // ========== RADAR (SAMA) ==========
     let rdots = [];
     let needleA = 0, needleO = 0, phA = Math.random() * Math.PI * 2;
     const BASE_OM = (60/4 * Math.PI * 2) / (60 * 60);
@@ -1142,7 +1168,6 @@
                     clearInterval(timer);
                     overlay.style.display = 'none';
                     
-                    // Buka chat room setelah waiting selesai
                     const room = $('chatRoom');
                     if (room) room.classList.add('on');
                 }
