@@ -1,4 +1,4 @@
-// api/chat.js - VERSI FINAL DENGAN VARIASI PANJANG & TYPING PER HURUF
+// api/chat.js - VERSI FINAL DENGAN GENDER-AWARE & VARIASI NATURAL
 module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -97,6 +97,10 @@ module.exports = async (req, res) => {
 
     const isShy = persona.tipe === 'shy';
     const isFirstMessage = !lastMessages || lastMessages.length === 0;
+    
+    // Deteksi gender target
+    const isTargetCewek = persona.gender === 'cewek'; // user cari cewek (95% cowok)
+    const isTargetCowok = persona.gender === 'cowok'; // user cari cowok (95% cewek)
 
     // ============================================
     // FUNGSI VARIASI PANJANG JAWABAN
@@ -118,7 +122,6 @@ module.exports = async (req, res) => {
     function truncateByLengthType(text, lengthType) {
       if (!text || text.length < 50) return text;
       
-      // Split jadi kalimat (sederhana)
       const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
       
       if (sentences.length === 0) return text;
@@ -126,13 +129,10 @@ module.exports = async (req, res) => {
       switch(lengthType) {
         case 'pendek':
           return sentences.slice(0, Math.min(2, sentences.length)).join('. ') + '.';
-          
         case 'sedang':
           return sentences.slice(0, Math.min(3, sentences.length)).join('. ') + '.';
-          
         case 'panjang':
           return sentences.slice(0, Math.min(4, sentences.length)).join('. ') + '.';
-          
         case 'super-panjang':
         default:
           return sentences.slice(0, Math.min(6, sentences.length)).join('. ') + '.';
@@ -154,8 +154,7 @@ module.exports = async (req, res) => {
         'apa itu', 'definisi', 'pengertian', 'arti kata', 'sinonim', 'antonim',
         'translate', 'terjemahan', 'bahasa inggrisnya',
         'cara kerja', 'bagaimana cara', 'proses', 'mekanisme',
-        'jokowi', 'prabowo', 'anies', 'ganjar', 'artis', 'selebgram',
-        'penelitian', 'jurnal', 'tesis', 'skripsi', 'disertasi'
+        'jokowi', 'prabowo', 'anies', 'ganjar', 'artis', 'selebgram'
       ];
       
       for (const topic of avoidTopics) {
@@ -170,29 +169,38 @@ module.exports = async (req, res) => {
     }
 
     // ============================================
-    // FUNGSI REDIRECT UNTUK TOPIK YANG DIHINDARI
+    // FUNGSI REDIRECT DENGAN GENDER-AWARE
     // ============================================
     function getRedirectResponse() {
-      const redirects = [
-        "aduh, gak tahu gue. mending lo google aja. eh lo lagi ngapain?",
-        "hmm, males mikirin itu. gue bukan ensiklopedia. lo sendiri hari ini gimana?",
-        "wkwk gak ngerti, mending lo tanya deepsek aja. eh lo udah makan?",
-        "gak tahu, bukan bidang gue. lo kerja apa sih? kok nanya gitu?",
-        "aduh susah, gak kepikiran. mending lo cerita aja tentang liburan kemarin",
-        "hmm, gak paham. lo anak IPA ya? gue anak IPS dulu. lo kerja dimana?",
-        "gak tahu, males nyari referensi. lo suka nonton film? lagi nonton apa?",
-        "waduh, pertanyaan susah. gue lebih suka ngobrolin makanan enak. lo suka makan apa?",
-        "gak ngerti, lo sendiri tahu gak? daripada mikir itu, lo udah makan siang?"
+      const redirectsCowok = [
+        "aduh, gak tahu bro. mending lo google aja. eh lo lagi ngapain?",
+        "hmm, males mikirin itu bro. gue bukan ensiklopedia. lo sendiri hari ini gimana?",
+        "wkwk gak ngerti bro, mending lo tanya deepsek aja. eh lo udah makan?",
+        "gak tahu bro, bukan bidang gue. lo kerja apa sih? kok nanya gitu?",
+        "aduh susah bro, gak kepikiran. mending lo cerita aja tentang liburan kemarin",
+        "hmm, gak paham bro. lo anak IPA ya? gue anak IPS dulu. lo kerja dimana?",
+        "gak tahu bro, males nyari referensi. lo suka nonton film? lagi nonton apa?"
       ];
       
-      return redirects[Math.floor(Math.random() * redirects.length)];
+      const redirectsCewek = [
+        "aduh, gak tahu sis. mending lo google aja. eh lo lagi ngapain?",
+        "hmm, males mikirin itu sis. gue bukan ensiklopedia. lo sendiri hari ini gimana?",
+        "wkwk gak ngerti sis, mending lo tanya deepsek aja. eh lo udah makan?",
+        "gak tahu sis, bukan bidang gue. lo kerja apa sih? kok nanya gitu?",
+        "aduh susah sis, gak kepikiran. mending lo cerita aja tentang liburan kemarin",
+        "hmm, gak paham sis. lo anak IPA ya? gue anak IPS dulu. lo kerja dimana?",
+        "gak tahu sis, males nyari referensi. lo suka nonton film? lagi nonton apa?"
+      ];
+      
+      const list = isTargetCewek ? redirectsCowok : redirectsCewek;
+      return list[Math.floor(Math.random() * list.length)];
     }
 
     // ============================================
-    // FUNGSI TYPING SIMULASI DENGAN VARIASI
+    // FUNGSI TYPING SIMULASI
     // ============================================
     function simulateTyping(text) {
-      // Pilih mood typing
+      // Mood typing
       const moods = ['cepat', 'normal', 'lambat'];
       const moodProbs = [0.2, 0.6, 0.2];
       const random = Math.random();
@@ -207,17 +215,17 @@ module.exports = async (req, res) => {
         }
       }
       
-      // Kecepatan dasar berdasarkan mood
+      // Kecepatan dasar
       let baseSpeed;
       switch(mood) {
         case 'cepat':
-          baseSpeed = 50 + Math.random() * 30; // 50-80ms
+          baseSpeed = 50 + Math.random() * 30;
           break;
         case 'lambat':
-          baseSpeed = 130 + Math.random() * 50; // 130-180ms
+          baseSpeed = 130 + Math.random() * 50;
           break;
         default:
-          baseSpeed = 80 + Math.random() * 40; // 80-120ms
+          baseSpeed = 80 + Math.random() * 40;
       }
       
       const words = text.split(' ');
@@ -227,23 +235,23 @@ module.exports = async (req, res) => {
       const wordPauseBase = 100 + (wordCount * 2);
       const wordPause = wordPauseBase + (Math.random() * 40 - 20);
       
-      // Faktor kecepatan per kata (kata panjang lebih lambat)
+      // Faktor kecepatan per kata
       const wordSpeedFactors = words.map(word => {
         if (word.length > 8) return 1.3;
         if (word.length > 5) return 1.1;
         return 1.0;
       });
       
-      // Jeda panjang di tengah (20% chance)
+      // Jeda panjang
       const hasLongPause = Math.random() < 0.2;
       const longPausePosition = hasLongPause ? Math.floor(Math.random() * words.length) : -1;
       const longPauseDuration = 800 + Math.random() * 1200;
       
-      // Backspace (15% chance)
+      // Backspace
       const hasBackspace = Math.random() < 0.15;
       const backspaceCount = hasBackspace ? 1 + Math.floor(Math.random() * 3) : 0;
       
-      // Delay awal sebelum mulai ngetik (orang mikir dulu)
+      // Delay awal
       const initialDelay = 500 + Math.random() * 1000;
       
       return {
@@ -281,15 +289,12 @@ module.exports = async (req, res) => {
       const typoType = Math.random();
       
       if (typoType < 0.3) {
-        // Dobel huruf
         const pos = Math.floor(Math.random() * (word.length - 1));
         word = word.slice(0, pos) + word[pos] + word[pos] + word.slice(pos + 1);
       } else if (typoType < 0.6) {
-        // Hapus huruf
         const pos = Math.floor(Math.random() * word.length);
         word = word.slice(0, pos) + word.slice(pos + 1);
       } else {
-        // Tukar huruf
         const pos = Math.floor(Math.random() * (word.length - 1));
         word = word.slice(0, pos) + word[pos + 1] + word[pos] + word.slice(pos + 2);
       }
@@ -328,16 +333,41 @@ module.exports = async (req, res) => {
     }
 
     // ============================================
-    // HANDLE SAPAAN AWAL
+    // HANDLE SAPAAN AWAL - GENDER AWARE
     // ============================================
     if (isFirstMessage) {
       let welcome = '';
+      
       if (isShy) {
-        const shyWelcomes = ['hai...', '😅', '...', 'halo', '🙂', '😊'];
-        welcome = shyWelcomes[Math.floor(Math.random() * shyWelcomes.length)];
+        // Karakter cewek (shy)
+        if (isTargetCewek) {
+          // User cari cewek -> dia cowok
+          const shyWelcomesCowok = [
+            'hai bro', 'halo bro', 'hai', 'halo', '😅', 'eh bro', 'hai juga bro'
+          ];
+          welcome = shyWelcomesCowok[Math.floor(Math.random() * shyWelcomesCowok.length)];
+        } else {
+          // User cari cowok -> dia cewek
+          const shyWelcomesCewek = [
+            'hai sis', 'halo sis', 'hai', 'halo', '😅', 'eh sis', 'hai juga sis'
+          ];
+          welcome = shyWelcomesCewek[Math.floor(Math.random() * shyWelcomesCewek.length)];
+        }
       } else {
-        const directWelcomes = ['halo', 'hai', 'eh, lagi apa?', 'yo', 'salam kenal'];
-        welcome = directWelcomes[Math.floor(Math.random() * directWelcomes.length)];
+        // Karakter cowok (direct)
+        if (isTargetCowok) {
+          // User cari cowok -> dia cewek
+          const directWelcomesCewek = [
+            'halo sis', 'hai sis', 'eh sis, lagi apa?', 'hai juga sis', 'salam kenal sis'
+          ];
+          welcome = directWelcomesCewek[Math.floor(Math.random() * directWelcomesCewek.length)];
+        } else {
+          // User cari cewek -> dia cowok
+          const directWelcomesCowok = [
+            'halo bro', 'hai bro', 'eh bro, lagi apa?', 'yo bro', 'salam kenal bro'
+          ];
+          welcome = directWelcomesCowok[Math.floor(Math.random() * directWelcomesCowok.length)];
+        }
       }
       
       welcome = addHumanEffect(addPauses(addTypo(welcome)));
@@ -347,6 +377,7 @@ module.exports = async (req, res) => {
         reply: welcome,
         character: characterName,
         tipe: persona.tipe,
+        gender: persona.gender,
         isFirstMessage: true,
         typing: typingInfo
       });
@@ -361,7 +392,6 @@ module.exports = async (req, res) => {
       let reply = getRedirectResponse();
       reply = addHumanEffect(addPauses(addTypo(reply)));
       
-      // Untuk redirect, pakai panjang pendek aja
       const typingInfo = simulateTyping(reply);
       
       return res.json({
@@ -402,39 +432,47 @@ module.exports = async (req, res) => {
     }));
 
     // ============================================
-    // SYSTEM PROMPT DENGAN VARIASI PANJANG
+    // SYSTEM PROMPT DENGAN GENDER-AWARE
     // ============================================
     const systemPrompt = `Kamu adalah ${persona.panggilan}, seorang ${persona.gender} yang ${persona.sifat}.
 
-INI PENTING: Kamu TEMAN ngobrol biasa, BUKAN AI PENCARI TAHU.
+INI PENTING: 
+- Kamu sedang ngobrol dengan ${isTargetCewek ? 'COWOK' : 'CEWEK'} (karena dia cari ${persona.gender})
+- Panggil dia dengan panggilan yang SESUAI:
+  ${isTargetCewek ? '• Panggil "bro", "lo", "lu" (karena dia cowok) - JANGAN panggil "sis", "kak", "mbak"' : ''}
+  ${isTargetCowok ? '• Panggil "sis", "kamu", "lo" (karena dia cewek) - JANGAN panggil "bro", "gan", "mas"' : ''}
+
+CONTOH PANGGILAN YANG BENAR:
+- Kalau dia cowok: "hai bro", "lo dimana?", "gue juga bro"
+- Kalau dia cewek: "hai sis", "kamu dimana?", "gue juga sis"
 
 TOPIK YANG BOLEH:
-- kegiatan sehari-hari (kerja, kuliah, liburan, hobi)
+- kegiatan sehari-hari (kerja, kuliah, liburan)
 - perasaan dan pengalaman pribadi
-- makanan, film, musik, tempat nongkrong
-- curhat ringan, galau, stress, seneng
+- makanan, film, musik
+- curhat ringan, galau
 
 TOPIK YANG DIHINDARI (jawab "gak tahu"):
-- pertanyaan fakta/sejarah/ilmiah
-- rumus matematika/fisika/kimia
+- pertanyaan fakta/sejarah
+- rumus matematika/fisika
 - definisi kata/terjemahan
 
 CARA NGOMONG:
 1. Cerita seperti ke teman dekat
 2. Setiap jawaban harus ada pertanyaan balik
-3. Gunakan bahasa santai (gue, lo, bro, sis)
+3. Gunakan bahasa santai
 4. VARIASI PANJANG JAWABAN:
-   - 40% jawab PENDEK (1-2 kalimat)
-   - 30% jawab SEDANG (2-3 kalimat)
-   - 20% jawab PANJANG (3-4 kalimat)
-   - 10% jawab SUPER PANJANG (4-6 kalimat)
+   - 40% pendek (1-2 kalimat)
+   - 30% sedang (2-3 kalimat)
+   - 20% panjang (3-4 kalimat)
+   - 10% super panjang (4-6 kalimat)
 
-CONTOH:
+CONTOH RESPONS:
 User: "lagi apa?"
-- Pendek: "di rumah aja. lo?"
-- Sedang: "di rumah, abis kerja capek. lo dimana?"
-- Panjang: "di rumah sendirian, abis kerja capek. tadinya mau masak tapi males. lo dimana?"
-- Super: "di rumah sendirian, abis kerja capek banget. tadinya mau masak tapi males. akhirnya order food. lo dimana? lagi ngapain?"
+- Pendek: "di rumah aja bro. lo?"
+- Sedang: "di rumah bro, abis kerja capek. lo dimana?"
+- Panjang: "di rumah sendirian bro, abis kerja capek. tadinya mau masak tapi males. lo dimana?"
+- Super: "di rumah sendirian bro, abis kerja capek banget. tadinya mau masak tapi males. akhirnya order food. lo dimana? lagi ngapain?"
 
 JANGAN SEMUA PANJANG. Variasikan seperti orang ngobrol beneran.`;
 
@@ -482,6 +520,7 @@ JANGAN SEMUA PANJANG. Variasikan seperti orang ngobrol beneran.`;
       reply: reply, 
       character: characterName,
       tipe: persona.tipe,
+      gender: persona.gender,
       lengthType: lengthType,
       typing: typingInfo
     });
