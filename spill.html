@@ -760,6 +760,62 @@
         return el;
     }
     
+    // ========== RENDER FUNCTION (DEFINED FIRST) ==========
+    function renderSpills() {
+        const container = $('spillsList');
+        if (!container) return;
+        
+        if (allEntries.length === 0) {
+            container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
+            return;
+        }
+        
+        let html = '';
+        allEntries.forEach((spill, index) => {
+            html += `
+                <div class="spill-card">
+                    <div class="spill-header">
+                        <span class="spill-author">@${spill.author}</span>
+                        <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
+                    </div>
+                    <div class="spill-content">
+                        ${spill.content}
+                    </div>
+                    
+                    <div class="spill-reactions">
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
+                            💀 <span class="react-count">${spill.reactions.skull || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
+                            😭 <span class="react-count">${spill.reactions.cry || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
+                            🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
+                            🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        
+        const meta = $('feedMeta');
+        if (meta) meta.textContent = allEntries.length + ' spill';
+    }
+    
+    // ========== COMBINE FUNCTION ==========
+    function combineAndRender() {
+        // Urutkan berdasarkan created_at
+        allEntries.sort((a, b) => {
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
+        
+        renderSpills();
+    }
+    
     // ========== FETCH USER ENTRIES ==========
     async function fetchUserEntries() {
         try {
@@ -803,12 +859,16 @@
                 userEntries = getDummyEntries();
             }
             
+            // Gabungkan dengan AI entries yang sudah ada
+            allEntries = [...userEntries, ...allEntries.filter(e => e.is_ai)];
+            combineAndRender();
+            
         } catch (error) {
             console.error('[Supabase] Error:', error);
             userEntries = getDummyEntries();
+            allEntries = [...userEntries, ...allEntries.filter(e => e.is_ai)];
+            combineAndRender();
         }
-        
-        combineAndRender();
     }
     
     // ========== DATA DUMMY ==========
@@ -889,7 +949,8 @@
                     fire: Math.floor(Math.random() * 20) + 1,
                     upside: Math.floor(Math.random() * 15) + 2
                 },
-                created_at: new Date(Date.now() - Math.random() * 86400000).toISOString()
+                created_at: new Date(Date.now() - Math.random() * 86400000).toISOString(),
+                is_ai: true // Flag internal, tidak dirender
             };
         });
     }
@@ -898,13 +959,7 @@
     function initAIEntries() {
         const aiEntries = generateAIEntries(6);
         allEntries = [...userEntries, ...aiEntries];
-        
-        // Urutkan berdasarkan created_at
-        allEntries.sort((a, b) => {
-            return new Date(b.created_at) - new Date(a.created_at);
-        });
-        
-        renderSpills();
+        combineAndRender();
         
         // Generator setiap 3 menit (stealth, tanpa badge)
         if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
@@ -912,62 +967,10 @@
             console.log('[AI] Generating new entry...');
             const newEntry = generateAIEntries(1)[0];
             
-            // Hapus entry paling lama, tambah yang baru
-            allEntries = [newEntry, ...allEntries.slice(0, 8)];
-            
-            // Urutkan ulang
-            allEntries.sort((a, b) => {
-                return new Date(b.created_at) - new Date(a.created_at);
-            });
-            
-            renderSpills();
+            // Tambah entry baru, hapus yang paling lama
+            allEntries = [newEntry, ...allEntries.slice(0, 9)];
+            combineAndRender();
         }, 180000); // 3 menit
-    }
-    
-    // ========== RENDER SPILLS ==========
-    function renderSpills() {
-        const container = $('spillsList');
-        if (!container) return;
-        
-        if (allEntries.length === 0) {
-            container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
-            return;
-        }
-        
-        let html = '';
-        allEntries.forEach((spill, index) => {
-            html += `
-                <div class="spill-card">
-                    <div class="spill-header">
-                        <span class="spill-author">@${spill.author}</span>
-                        <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
-                    </div>
-                    <div class="spill-content">
-                        ${spill.content}
-                    </div>
-                    
-                    <div class="spill-reactions">
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
-                            💀 <span class="react-count">${spill.reactions.skull || 0}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
-                            😭 <span class="react-count">${spill.reactions.cry || 0}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
-                            🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
-                            🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        container.innerHTML = html;
-        
-        const meta = $('feedMeta');
-        if (meta) meta.textContent = allEntries.length + ' spill';
     }
     
     // ========== REACTION HANDLER ==========
