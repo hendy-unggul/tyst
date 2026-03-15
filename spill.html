@@ -303,6 +303,20 @@
             padding: 18px;
         }
         
+        .sect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+        
+        .sect-title {
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
         .spill-card {
             background: var(--sf);
             border: 2px solid var(--bd2);
@@ -348,7 +362,7 @@
         }
         
         .spill-mood.doom { 
-            background: var(--purple); 
+            background: #9900ff; 
             color: white; 
         }
         
@@ -394,9 +408,20 @@
             font-weight: bold;
         }
         
-        /* HILANGKAN MOOD TAB */
-        .mood-scroll {
-            display: none;
+        .ai-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--bg);
+            border: 2px solid var(--as);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border-radius: 50%;
+            box-shadow: 2px 2px 0 #000;
         }
         
         /* WAITING OVERLAY */
@@ -576,6 +601,15 @@
             background: var(--ap);
             color: #fff;
         }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--txs);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            border: 2px dashed var(--bd2);
+        }
     </style>
 </head>
 <body>
@@ -643,7 +677,7 @@
         <div class="spills-sect">
             <div class="sect-header">
                 <div class="sect-title">SPILL TERKINI</div>
-                <span id="feedMeta">9 spill</span>
+                <span id="feedMeta">0 spill</span>
             </div>
             <div id="spillsList">
                 <div class="empty-state">🍃 MEMUAT SPILL...</div>
@@ -699,8 +733,8 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
     
     // ========== STATE ==========
-    let userEntries = [];      // 3 entries dari user (FIFO)
-    let aiEntries = [];        // 6 entries dari AI (FIFO)
+    let userEntries = [];      // entries dari user
+    let aiEntries = [];        // entries dari AI
     let allEntries = [];
     let aiGeneratorTimer = null;
     
@@ -711,111 +745,109 @@
         return el;
     }
     
-   // ========== FETCH 3 USER ENTRIES TERAKHIR ==========
-async function fetchUserEntries() {
-    try {
-        const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/entries?` + 
-            `select=*&` +
-            `is_ai=eq.false&` +
-            `order=created_at.desc&` +    // Terbaru di atas
-            `limit=3`,                     // Ambil 3 aja
-            {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                    'Content-Type': 'application/json'
+    // ========== FETCH USER ENTRIES ==========
+    async function fetchUserEntries() {
+        try {
+            console.log('[Supabase] Fetching entries...');
+            
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/entries?` + 
+                `select=*&` +
+                `order=created_at.desc&` +
+                `limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
                 }
+            );
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
             }
-        );
-        
-        if (!response.ok) {
-            console.error('[Supabase] Response error:', response.status);
-            throw new Error('Failed to fetch');
+            
+            const data = await response.json();
+            console.log('[Supabase] Data received:', data);
+            
+            if (data && data.length > 0) {
+                // Format data sesuai struktur yang kita butuh
+                userEntries = data.map(entry => ({
+                    author: entry.user_id ? entry.user_id.substring(0, 8) : 'anonymous',
+                    mood: entry.mood || 'chaotic',
+                    content: entry.content || '...',
+                    reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+                    created_at: entry.created_at,
+                    is_ai: false
+                }));
+            } else {
+                // Pakai data dummy kalau kosong
+                userEntries = getDummyEntries();
+            }
+            
+        } catch (error) {
+            console.error('[Supabase] Error:', error);
+            userEntries = getDummyEntries();
         }
         
-        const data = await response.json();
-        console.log('[Supabase] Raw data:', data);
-        
-        // Format data sesuai struktur yang kita butuh
-        userEntries = data.map(entry => ({
-            author: entry.user_id ? entry.user_id.substring(0, 8) : 'anonymous',
-            mood: entry.mood || 'chaotic',
-            content: entry.content || '...',
-            reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
-            created_at: entry.created_at,
-            is_ai: false
-        }));
-        
-        console.log('[Supabase] User entries loaded:', userEntries.length);
-        
-        // Gabung dengan AI entries & render
         combineAndRender();
-        
-    } catch (error) {
-    console.error('[Supabase] Error:', error);
+    }
     
-    // Fallback data
-    const fallbackEntries = [
-        {
-            author: 'beby.manis',
-            mood: 'chaotic',
-            content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
-            reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
-            created_at: new Date().toISOString(),
-            is_ai: false
-        },
-        {
-            author: 'chili.padi',
-            mood: 'thriving',
-            content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
-            reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
-            created_at: new Date().toISOString(),
-            is_ai: false
-        },
-        {
-            author: 'pretty.sad',
-            mood: 'doom',
-            content: 'ga semangat ngapa-ngapain 😭😭😭',
-            reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
-            created_at: new Date().toISOString(),
-            is_ai: false
-        }
-    ];
+    // ========== DATA DUMMY ==========
+    function getDummyEntries() {
+        return [
+            {
+                author: 'beby.manis',
+                mood: 'chaotic',
+                content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
+                reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
+                created_at: new Date().toISOString(),
+                is_ai: false
+            },
+            {
+                author: 'chili.padi',
+                mood: 'thriving',
+                content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
+                reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
+                created_at: new Date(Date.now() - 3600000).toISOString(),
+                is_ai: false
+            },
+            {
+                author: 'pretty.sad',
+                mood: 'doom',
+                content: 'ga semangat ngapa-ngapain 😭😭😭',
+                reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
+                created_at: new Date(Date.now() - 7200000).toISOString(),
+                is_ai: false
+            }
+        ];
+    }
     
-    userEntries = fallbackEntries;
-    combineAndRender();
-}
-    
-    // ========== GENERATE AI ENTRIES (RANDOM) ==========
+    // ========== GENERATE AI ENTRIES ==========
     function generateAIEntries(count = 6) {
-        const authors = ['beby.manis', 'sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam'];
+        const authors = ['ai.bot', 'sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam'];
         const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
         
         const contents = {
             surviving: [
                 'deadline skripsi makin deket, anxiety naik turun 😮‍💨',
-                'capek banget hari ini, pengen rebahan aja 🥲',
-                'bangun tidur langsung overthinking masa depan'
+                'capek banget hari ini, pengen rebahan aja 🥲'
             ],
             thriving: [
                 'alhamdulillah hari ini cuan! 💰',
-                'akhirnya sidang kelar, nilai A alhamdulillah',
-                'hari ini closing 3 client dalam sehari'
+                'akhirnya sidang kelar, nilai A alhamdulillah'
             ],
             chaotic: [
                 'client minta revisi jam 11 malem, this is fine 🔥',
-                'hidup lagi kacau balau 🔥',
-                'hari ini chaotic banget: pagi dimarahin boss'
+                'hidup lagi kacau balau 🔥'
             ],
             doom: [
                 'motor mogok, dompet tipis, pacar ngambek. triple combo 🫠',
-                'rasanya pengen rebahan aja selamanya 🛌',
                 'udah 6 bulan nganggur, lamaran kerja ga ada yang dipanggil'
             ]
         };
         
-        const newEntries = Array(count).fill().map(() => {
+        return Array(count).fill().map(() => {
             const author = authors[Math.floor(Math.random() * authors.length)];
             const mood = moods[Math.floor(Math.random() * moods.length)];
             const contentList = contents[mood];
@@ -832,55 +864,39 @@ async function fetchUserEntries() {
                     upside: Math.floor(Math.random() * 15) + 2
                 },
                 is_ai: true,
-                created_at: new Date().toISOString()
+                created_at: new Date(Date.now() - Math.random() * 86400000).toISOString()
             };
         });
-        
-        return newEntries;
     }
     
-    // ========== INIT AI ENTRIES & START GENERATOR ==========
+    // ========== INIT AI ENTRIES ==========
     function initAIEntries() {
-        // Generate 6 entries pertama
         aiEntries = generateAIEntries(6);
+        combineAndRender();
         
-        // Start timer setiap 7 menit (420000 ms)
+        // Generator setiap 2 menit (buat testing)
         if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
         aiGeneratorTimer = setInterval(() => {
             console.log('[AI] Generating new entry...');
-            
-            // Generate 1 entry baru
             const newEntry = generateAIEntries(1)[0];
-            
-            // FIFO: tambah di depan, pop yang paling lama
-            aiEntries = [newEntry, ...aiEntries.slice(0, 5)]; // tetap 6 entries
-            
+            aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
             combineAndRender();
-            
-        }, 7 * 60 * 1000); // 7 menit
-        
-        combineAndRender();
+        }, 120000); // 2 menit
     }
     
-    // ========== GABUNGIN USER + AI ==========
+    // ========== GABUNG & URUTKAN ==========
     function combineAndRender() {
-        // Urutkan semua entries berdasarkan created_at (descending)
-        // User entries dari Supabase, AI entries dengan timestamp sekarang
         allEntries = [...userEntries, ...aiEntries];
         
-        // Urutkan berdasarkan created_at (descending = terbaru di atas)
+        // Urutkan berdasarkan created_at (terbaru di atas)
         allEntries.sort((a, b) => {
-            const dateA = new Date(a.created_at || 0);
-            const dateB = new Date(b.created_at || 0);
-            return dateB - dateA;
+            return new Date(b.created_at) - new Date(a.created_at);
         });
         
-        // Pastikan 3 user entries tetap di posisi 1-3
-        // Ini approach simpler: tampilkan semua, urutan berdasarkan waktu
         renderSpills();
     }
     
-    // ========== RENDER FUNCTION ==========
+    // ========== RENDER SPILLS ==========
     function renderSpills() {
         const container = $('spillsList');
         if (!container) return;
@@ -890,9 +906,10 @@ async function fetchUserEntries() {
             return;
         }
         
-        container.innerHTML = allEntries.map((spill, index) => {
-            return `
-                <div class="spill-card">
+        let html = '';
+        allEntries.forEach((spill, index) => {
+            html += `
+                <div class="spill-card" style="position: relative;">
                     <div class="spill-header">
                         <span class="spill-author">@${spill.author}</span>
                         <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
@@ -901,7 +918,6 @@ async function fetchUserEntries() {
                         ${spill.content}
                     </div>
                     
-                    <!-- REACTIONS HORISONTAL -->
                     <div class="spill-reactions">
                         <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
                             💀 <span class="react-count">${spill.reactions.skull || 0}</span>
@@ -917,11 +933,12 @@ async function fetchUserEntries() {
                         </button>
                     </div>
                     
-                    <!-- AI BADGE (optional) -->
                     ${spill.is_ai ? '<div class="ai-badge">🤖</div>' : ''}
                 </div>
             `;
-        }).join('');
+        });
+        
+        container.innerHTML = html;
         
         const meta = $('feedMeta');
         if (meta) meta.textContent = allEntries.length + ' spill';
@@ -934,11 +951,9 @@ async function fetchUserEntries() {
         
         spill.reactions[type] = (spill.reactions[type] || 0) + 1;
         renderSpills();
-        
-        // TODO: nanti bisa POST ke Supabase buat update reactions
     };
     
-    // ========== RADAR ASLI (COPY DARI SEBELUMNYA) ==========
+    // ========== RADAR ==========
     let rdots = [];
     let needleA = 0, needleO = 0, phA = Math.random() * Math.PI * 2;
     const BASE_OM = (60/4 * Math.PI * 2) / (60 * 60);
@@ -990,7 +1005,7 @@ async function fetchUserEntries() {
         c.innerHTML = '';
         rdots = [];
         const types = ['ai', 'purple', 'red', 'lime'];
-        for (let i = 0; i < 5 + Math.floor(Math.random() * 5) + 2; i++) {
+        for (let i = 0; i < 8; i++) {
             const a = Math.random() * Math.PI * 2;
             const d = 12 + Math.random() * 70;
             const x = 50 + Math.cos(a) * d / 2;
@@ -1126,6 +1141,10 @@ async function fetchUserEntries() {
                 if (seconds <= 0) {
                     clearInterval(timer);
                     overlay.style.display = 'none';
+                    
+                    // Buka chat room setelah waiting selesai
+                    const room = $('chatRoom');
+                    if (room) room.classList.add('on');
                 }
             }, 1000);
             
@@ -1157,10 +1176,8 @@ async function fetchUserEntries() {
         // Init radar
         setTimeout(initRadar, 100);
         
-        // Fetch user entries dari Supabase
+        // Fetch data
         await fetchUserEntries();
-        
-        // Init AI entries & generator
         initAIEntries();
         
         // ===== TOMBOL HEART & SPADE =====
@@ -1168,6 +1185,8 @@ async function fetchUserEntries() {
         const spadeBtn = $('vibeMaleBtn');
         const whisperBtn = $('whisperBtn');
         const closeChatBtn = $('closeChatBtn');
+        const sendBtn = $('sendButton');
+        const chatInput = $('chatInput');
         const slider = $('vibeSlider');
         const pct = $('vibePct');
         
@@ -1176,9 +1195,6 @@ async function fetchUserEntries() {
                 e.preventDefault();
                 startVibeCheck('heart');
             };
-            console.log('✅ Heart button ready');
-        } else {
-            console.error('❌ Heart button not found');
         }
         
         if (spadeBtn) {
@@ -1186,9 +1202,6 @@ async function fetchUserEntries() {
                 e.preventDefault();
                 startVibeCheck('spade');
             };
-            console.log('✅ Spade button ready');
-        } else {
-            console.error('❌ Spade button not found');
         }
         
         if (whisperBtn) {
@@ -1204,6 +1217,24 @@ async function fetchUserEntries() {
             };
         }
         
+        if (sendBtn && chatInput) {
+            sendBtn.onclick = () => {
+                const msg = chatInput.value.trim();
+                if (msg) {
+                    const msgs = $('chatMessages');
+                    if (msgs) {
+                        msgs.innerHTML += `<div style="text-align: right; margin: 10px 0;"><span style="background: var(--as); padding: 8px 12px; display: inline-block;">${msg}</span></div>`;
+                        chatInput.value = '';
+                        msgs.scrollTop = msgs.scrollHeight;
+                    }
+                }
+            };
+            
+            chatInput.onkeypress = (e) => {
+                if (e.key === 'Enter') sendBtn.click();
+            };
+        }
+        
         if (slider && pct) {
             slider.oninput = function() {
                 pct.textContent = this.value + '%';
@@ -1211,8 +1242,8 @@ async function fetchUserEntries() {
         }
         
         console.log('[App] Ready!');
-    }); //
-})(); //
+    });
+})();
 </script>
 </body>
 </html>
