@@ -708,7 +708,6 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
 <script>
 (function() {
     'use strict';
@@ -760,7 +759,7 @@
         return el;
     }
     
-    // ========== RENDER FUNCTION (DEFINED FIRST) ==========
+    // ========== RENDER FUNCTION ==========
     function renderSpills() {
         const container = $('spillsList');
         if (!container) return;
@@ -839,7 +838,18 @@
             }
             
             const data = await response.json();
-            console.log('[Supabase] Data received:', data);
+            console.log('[Supabase] Data received:', data.length, 'entries');
+            
+            // ===== DEBUG: TAMPILKAN REAL ENTRIES DATES =====
+            if (data && data.length > 0) {
+                console.log('=== REAL ENTRIES DATES ===');
+                data.forEach((entry, i) => {
+                    console.log(`${i+1}. ${entry.created_at} - ${entry.content?.substring(0,30)} - user: ${entry.user_id?.substring(0,8)}`);
+                });
+            } else {
+                console.log('[Supabase] No real entries found');
+            }
+            // ==============================================
             
             if (data && data.length > 0) {
                 // Format data dengan username yang proper
@@ -856,6 +866,7 @@
                     };
                 });
             } else {
+                console.log('[Supabase] Using dummy entries');
                 userEntries = getDummyEntries();
             }
             
@@ -905,7 +916,7 @@
         ];
     }
     
-    // ========== GENERATE AI ENTRIES (STEALTH MODE - TANPA BADGE) ==========
+    // ========== GENERATE AI ENTRIES (STEALTH MODE) ==========
     function generateAIEntries(count = 6) {
         const authors = ['sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam', 'beby.manis'];
         const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
@@ -933,11 +944,16 @@
             ]
         };
         
-        return Array(count).fill().map(() => {
+        // BUAT TIMESTAMP LEBIH LAMA (7-30 HARI YANG LALU)
+        const entries = Array(count).fill().map(() => {
             const author = authors[Math.floor(Math.random() * authors.length)];
             const mood = moods[Math.floor(Math.random() * moods.length)];
             const contentList = contents[mood];
             const content = contentList[Math.floor(Math.random() * contentList.length)];
+            
+            // Random antara 7-30 hari yang lalu
+            const daysAgo = 7 + Math.floor(Math.random() * 23); // 7-30 hari
+            const timestamp = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
             
             return {
                 author,
@@ -949,10 +965,20 @@
                     fire: Math.floor(Math.random() * 20) + 1,
                     upside: Math.floor(Math.random() * 15) + 2
                 },
-                created_at: new Date(Date.now() - Math.random() * 86400000).toISOString(),
-                is_ai: true // Flag internal, tidak dirender
+                created_at: timestamp.toISOString(), // PASTI LEBIH LAMA
+                is_ai: true
             };
         });
+        
+        // ===== DEBUG: TAMPILKAN AI ENTRIES DATES =====
+        console.log('=== AI ENTRIES DATES ===');
+        entries.forEach((entry, i) => {
+            console.log(`${i+1}. ${entry.created_at} - ${entry.content?.substring(0,30)}`);
+        });
+        console.log('========================');
+        // ===========================================
+        
+        return entries;
     }
     
     // ========== INIT AI ENTRIES ==========
@@ -961,7 +987,7 @@
         allEntries = [...userEntries, ...aiEntries];
         combineAndRender();
         
-        // Generator setiap 3 menit (stealth, tanpa badge)
+        // Generator setiap 3 menit
         if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
         aiGeneratorTimer = setInterval(() => {
             console.log('[AI] Generating new entry...');
@@ -982,7 +1008,7 @@
         renderSpills();
     };
     
-    // ========== RADAR (SAMA) ==========
+    // ========== RADAR ==========
     let rdots = [];
     let needleA = 0, needleO = 0, phA = Math.random() * Math.PI * 2;
     const BASE_OM = (60/4 * Math.PI * 2) / (60 * 60);
