@@ -1333,69 +1333,164 @@
         });
     }
     
-    // ========== WHISPER MODE ==========
-    function initWhisper() {
-        const whisperBtn = $('whisperBtn');
-        const whisperOverlay = $('whisperOverlay');
-        const whisperCancel = $('whisperCancel');
-        const whisperSend = $('whisperSend');
-        const whisperInput = $('whisperInput');
+    // ========== WHISPER MODE REAL ==========
+function initWhisper() {
+    const whisperBtn = $('whisperBtn');
+    const whisperOverlay = $('whisperOverlay');
+    const whisperCancel = $('whisperCancel');
+    const whisperSend = $('whisperSend');
+    const whisperTarget = $('whisperTarget');
+    const whisperMessage = $('whisperMessage');
+    
+    if (!whisperBtn || !whisperOverlay) return;
+    
+    // BUKA OVERLAY - reset input每次都 kosong
+    whisperBtn.onclick = () => {
+        whisperOverlay.classList.add('show');
+        whisperTarget.value = '';  // SELALU KOSONG - harus hafal
+        whisperMessage.value = '';  // SELALU KOSONG
+        whisperTarget.focus();
+    };
+    
+    // TUTUP OVERLAY
+    whisperCancel.onclick = () => {
+        whisperOverlay.classList.remove('show');
+    };
+    
+    // KIRIM WHISPER
+    whisperSend.onclick = async () => {
+        const target = whisperTarget.value.trim().replace('@', '');
+        const message = whisperMessage.value.trim();
         
-        if (!whisperBtn || !whisperOverlay) return;
+        if (!target) {
+            showToast('Masukkan username tujuan');
+            return;
+        }
         
-        whisperBtn.onclick = () => {
-            whisperOverlay.classList.add('show');
-            whisperInput.value = '';
-            whisperInput.focus();
-        };
+        if (!message) {
+            showToast('Pesan tidak boleh kosong');
+            return;
+        }
         
-        whisperCancel.onclick = () => {
-            whisperOverlay.classList.remove('show');
-        };
+        whisperOverlay.classList.remove('show');
         
-        whisperSend.onclick = () => {
-            const message = whisperInput.value.trim();
-            if (!message) {
-                showToast('Pesan tidak boleh kosong');
-                return;
-            }
-            
-            whisperOverlay.classList.remove('show');
-            
-            const chatMessages = $('chatMessages');
-            if (!chatMessages) return;
-            
-            const whisperDiv = document.createElement('div');
-            whisperDiv.className = 'whisper-message';
-            whisperDiv.innerHTML = `
-                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--as); margin-bottom: 5px;">✧ WHISPER</div>
-                <div style="font-size: 14px;">${message}</div>
-                <div class="whisper-timer-bar"></div>
-            `;
-            
-            chatMessages.appendChild(whisperDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            setTimeout(() => {
-                whisperDiv.style.opacity = '0';
-                whisperDiv.style.transition = 'opacity 0.5s';
-                setTimeout(() => {
-                    if (whisperDiv.parentNode) {
-                        whisperDiv.remove();
-                    }
-                }, 500);
-            }, 5000);
-            
-            showToast('✧ Whisper terkirim');
-        };
+        // Tampilkan di chat sendiri sebagai bukti
+        showLocalWhisper(`@${target}: ${message}`);
         
-        whisperInput.onkeypress = (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                whisperSend.click();
-            }
-        };
+        // Kirim via API
+        await sendWhisper(target, message);
+    };
+    
+    // Enter untuk kirim
+    whisperMessage.onkeypress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            whisperSend.click();
+        }
+    };
+}
+
+// ========== SEND WHISPER VIA API ==========
+async function sendWhisper(targetUsername, message) {
+    try {
+        const response = await fetch('/api/whisper', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                from: USERNAME,
+                to: targetUsername,
+                message: message
+            })
+        });
+        
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.error || 'Gagal kirim');
+        }
+        
+        showToast(`✧ Whisper terkirim ke @${targetUsername}`);
+        
+    } catch (error) {
+        console.error('[Whisper] Error:', error);
+        showToast('Gagal mengirim whisper');
     }
+}
+
+// ========== TAMPILKAN WHISPER LOKAL ==========
+function showLocalWhisper(text) {
+    const chatMessages = $('chatMessages');
+    if (!chatMessages) return;
+    
+    const whisperDiv = document.createElement('div');
+    whisperDiv.className = 'whisper-message';
+    whisperDiv.innerHTML = `
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--as); margin-bottom: 5px;">
+            ✧ WHISPER TERKIRIM
+        </div>
+        <div style="font-size: 14px;">${text}</div>
+        <div class="whisper-timer-bar"></div>
+    `;
+    
+    chatMessages.appendChild(whisperDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Hapus setelah 5 detik
+    setTimeout(() => {
+        whisperDiv.style.opacity = '0';
+        whisperDiv.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            if (whisperDiv.parentNode) {
+                whisperDiv.remove();
+            }
+        }, 500);
+    }, 5000);
+}
+
+// ========== TAMPILKAN WHISPER MASUK ==========
+function showIncomingWhisper(sender, message) {
+    const chatMessages = $('chatMessages');
+    if (!chatMessages) return;
+    
+    const whisperDiv = document.createElement('div');
+    whisperDiv.className = 'whisper-message';
+    whisperDiv.innerHTML = `
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--as); margin-bottom: 5px;">
+            ✧ WHISPER DARI @${sender}
+        </div>
+        <div style="font-size: 14px;">${message}</div>
+        <div class="whisper-timer-bar"></div>
+    `;
+    
+    chatMessages.appendChild(whisperDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Hapus setelah 5 detik
+    setTimeout(() => {
+        whisperDiv.style.opacity = '0';
+        whisperDiv.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            if (whisperDiv.parentNode) {
+                whisperDiv.remove();
+            }
+        }, 500);
+    }, 5000);
+}
+
+// ========== POLLING CEK WHISPER MASUK ==========
+function startWhisperPolling() {
+    setInterval(async () => {
+        try {
+            const response = await fetch(`/api/whisper?user=${USERNAME}`);
+            const whispers = await response.json();
+            
+            whispers.forEach(w => {
+                showIncomingWhisper(w.sender, w.message);
+            });
+        } catch (err) {
+            console.error('[Whisper] Polling error:', err);
+        }
+    }, 3000); // Cek setiap 3 detik
+}
     
     // ========== BOTTOM NAV ==========
     function initBottomNav() {
