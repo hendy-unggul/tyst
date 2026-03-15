@@ -784,6 +784,11 @@ async function fetchUserEntries() {
         ];
         
         combineAndRender();
+    } catch (error) {
+        console.error('[Supabase] Error:', error);
+        // fallback...
+        userEntries = FALLBACK_DATA;
+        combineAndRender();
     }
 }
     
