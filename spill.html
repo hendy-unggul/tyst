@@ -56,7 +56,6 @@
             position: relative;
         }
         
-        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
@@ -112,12 +111,11 @@
             transition: 0.1s;
         }
         
-        .settings-btn:hover {
+        .settings-btn:active {
             border-color: var(--as);
             color: var(--as);
         }
         
-        /* SETTINGS DROPDOWN */
         .settings-dropdown {
             position: absolute;
             top: 60px;
@@ -150,7 +148,7 @@
             border-bottom: none;
         }
         
-        .dropdown-item:hover {
+        .dropdown-item:active {
             background: var(--bd);
         }
         
@@ -168,6 +166,7 @@
             padding: 2px 8px;
             border: 1px solid var(--bd2);
             color: var(--txs);
+            cursor: pointer;
         }
         
         .lang-option.active {
@@ -240,13 +239,14 @@
         }
         
         @keyframes switchIcon {
-            0%, 45% { content: '❤️'; opacity: 1; }
-            50%, 95% { content: '♠️'; opacity: 1; }
-            100% { content: '❤️'; opacity: 1; }
+            0%, 45% { content: '❤️'; opacity: 1; color: var(--ap); }
+            50%, 95% { content: '♠️'; opacity: 1; color: var(--as); }
+            100% { content: '❤️'; opacity: 1; color: var(--ap); }
         }
         
         .online-icon::before {
             content: '❤️';
+            color: var(--ap);
             animation: switchIcon 2s infinite;
         }
         
@@ -400,6 +400,127 @@
             display: flex; 
             justify-content: space-between; 
             color: var(--txs);
+            transition: 0.1s;
+        }
+        
+        .btn-whisper:active {
+            border-color: var(--as);
+            color: var(--as);
+        }
+        
+        /* WHISPER MODE */
+        .whisper-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1500;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        
+        .whisper-overlay.show {
+            display: flex;
+        }
+        
+        .whisper-box {
+            background: var(--sf);
+            border: 3px solid var(--as);
+            padding: 25px;
+            text-align: center;
+            box-shadow: 12px 12px 0 #000;
+            max-width: 350px;
+            width: 90%;
+        }
+        
+        .whisper-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            color: var(--as);
+            margin-bottom: 15px;
+        }
+        
+        .whisper-input {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg);
+            border: 2px solid var(--bd2);
+            color: var(--tx);
+            font-family: var(--font-body);
+            margin: 15px 0;
+            resize: none;
+            min-height: 100px;
+        }
+        
+        .whisper-input:focus {
+            border-color: var(--as);
+            outline: none;
+        }
+        
+        .whisper-timer {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--txs);
+            margin-bottom: 15px;
+        }
+        
+        .whisper-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .whisper-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #000;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            box-shadow: 3px 3px 0 #000;
+            transition: 0.1s;
+        }
+        
+        .whisper-btn.send {
+            background: var(--as);
+            color: black;
+        }
+        
+        .whisper-btn.cancel {
+            background: transparent;
+            color: var(--txs);
+        }
+        
+        .whisper-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 #000;
+        }
+        
+        .whisper-message {
+            background: var(--sf);
+            border: 2px solid var(--as);
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+            animation: whisperGlow 2s infinite;
+        }
+        
+        @keyframes whisperGlow {
+            0%, 100% { box-shadow: 0 0 5px var(--as); }
+            50% { box-shadow: 0 0 15px var(--as); }
+        }
+        
+        .whisper-timer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--as);
+            animation: timerShrink 5s linear forwards;
+        }
+        
+        @keyframes timerShrink {
+            from { width: 100%; }
+            to { width: 0%; }
         }
         
         /* FILTER */
@@ -411,6 +532,7 @@
         .filter-top {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 14px;
         }
         
@@ -425,13 +547,15 @@
             font-family: var(--font-display);
             font-size: 26px;
             color: var(--ap);
+            transition: color 0.3s;
         }
         
         .vibe-slider {
             width: 100%;
-            height: 3px;
+            height: 4px;
             background: var(--bd2);
             -webkit-appearance: none;
+            border-radius: 2px;
         }
         
         .vibe-slider::-webkit-slider-thumb {
@@ -442,6 +566,12 @@
             box-shadow: 0 0 0 2px var(--ap), 3px 3px 0 #000;
             cursor: pointer;
             -webkit-appearance: none;
+            border-radius: 50%;
+            transition: 0.1s;
+        }
+        
+        .vibe-slider::-webkit-slider-thumb:active {
+            transform: scale(0.95);
         }
         
         /* SPILLS */
@@ -559,6 +689,10 @@
             font-weight: bold;
         }
         
+        .ai-badge {
+            display: none;
+        }
+        
         .empty-state {
             text-align: center;
             padding: 40px;
@@ -568,11 +702,11 @@
             border: 2px dashed var(--bd2);
         }
         
-        /* BOTTOM NAV - DIPERBAIKI */
+        /* BOTTOM NAV */
         .bottom-nav {
             background: var(--sf);
             border-top: 2px solid var(--bd);
-            padding: 8px 18px;
+            padding: 8px 12px;
             width: 100%;
             max-width: 500px;
             z-index: 50;
@@ -589,17 +723,14 @@
             font-size: 12px;
             color: var(--txs);
             cursor: pointer;
-            padding: 10px 12px;
+            padding: 10px 8px;
             transition: 0.1s;
             text-align: center;
             flex: 1;
             border: 1px solid transparent;
             user-select: none;
-        }
-        
-        .nav-item:hover {
-            color: var(--as);
-            border-color: var(--bd2);
+            text-decoration: none;
+            display: block;
         }
         
         .nav-item:active {
@@ -679,6 +810,21 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--bd2) var(--bg);
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--bd2);
+            border-radius: 4px;
         }
         
         .message {
@@ -688,6 +834,7 @@
             font-size: 14px;
             line-height: 1.4;
             word-wrap: break-word;
+            position: relative;
         }
         
         .message.user {
@@ -894,7 +1041,7 @@
             }
             
             .nav-item {
-                padding: 8px 6px;
+                padding: 8px 4px;
                 font-size: 11px;
             }
         }
@@ -991,13 +1138,13 @@
         </div>
     </div>
     
-    <!-- BOTTOM NAV - DIPERBAIKI -->
+    <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
         <div class="nav-container">
-            <div class="nav-item active" data-page="spill">✕ SPILL</div>
-            <div class="nav-item" data-page="jejak">✦ JEJAK</div>
-            <div class="nav-item" data-page="glitch">⚡ GLITCH</div>
-            <div class="nav-item" data-page="cocomeo">〜 COCOMEO</div>
+            <a href="spill.html" class="nav-item active" data-page="spill">✕ SPILL</a>
+            <a href="jejak.html" class="nav-item" data-page="jejak">✦ JEJAK</a>
+            <a href="glitch.html" class="nav-item" data-page="glitch">⚡ GLITCH</a>
+            <a href="cocomeo.html" class="nav-item" data-page="cocomeo">〜 COCOMEO</a>
         </div>
     </nav>
 </div>
@@ -1008,6 +1155,19 @@
         <div class="waiting-icon" id="waitingIcon">❤️</div>
         <div class="waiting-timer" id="waitingTimer">15</div>
         <button id="cancelWaiting">BATAL</button>
+    </div>
+</div>
+
+<!-- WHISPER OVERLAY -->
+<div class="whisper-overlay" id="whisperOverlay">
+    <div class="whisper-box">
+        <div class="whisper-title">✦ WHISPERER</div>
+        <div class="whisper-timer">Pesan akan hilang setelah 5 detik dibaca</div>
+        <textarea class="whisper-input" id="whisperInput" placeholder="Tulis pesan rahasia..." maxlength="200"></textarea>
+        <div class="whisper-actions">
+            <button class="whisper-btn cancel" id="whisperCancel">BATAL</button>
+            <button class="whisper-btn send" id="whisperSend">KIRIM</button>
+        </div>
     </div>
 </div>
 
@@ -1032,6 +1192,27 @@
 (function() {
     'use strict';
     
+    // ========== STORAGE KEYS SAMA DENGAN INDEX.HTML ==========
+    const STORAGE_KEYS = {
+        username: 'jejak_username',
+        uid: 'jejak_uid',
+        loggedIn: 'jejak_logged_in'
+    };
+    
+    // ========== CEK SESSION LOGIN ==========
+    const isLoggedIn = localStorage.getItem(STORAGE_KEYS.loggedIn) === 'true';
+    const currentUsername = localStorage.getItem(STORAGE_KEYS.username);
+    const currentUid = localStorage.getItem(STORAGE_KEYS.uid);
+    
+    // JIKA BELUM LOGIN, KEMBALI KE INDEX.HTML
+    if (!isLoggedIn || !currentUsername || !currentUid) {
+        console.log('[App] No active session, redirecting to login...');
+        window.location.href = 'index.html';
+        return;
+    }
+    
+    console.log(`[App] Welcome back, ${currentUsername}!`);
+    
     // ========== CONFIG ==========
     const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
@@ -1045,9 +1226,10 @@
     let chatHistory = [];
     let isTyping = false;
     let currentLanguage = 'id';
+    let currentVibeValue = 87;
     
-    // ========== USERNAME ==========
-    let currentUsername = localStorage.getItem('spill_username') || 'beby.manis';
+    const USERNAME = currentUsername;
+    const UID = currentUid;
     
     // ========== USERNAME MAPPING ==========
     const AVAILABLE_USERNAMES = [
@@ -1105,7 +1287,6 @@
                 dropdown.classList.toggle('show');
             };
             
-            // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
                 if (!settingsBtn.contains(e.target) && !dropdown.contains(e.target)) {
                     dropdown.classList.remove('show');
@@ -1113,13 +1294,24 @@
             });
         }
         
+        // LOGOUT - HANYA HAPUS FLAG LOGGED IN
         if (logoutBtn) {
             logoutBtn.onclick = () => {
-                localStorage.removeItem('spill_username');
-                localStorage.removeItem('spill_session');
-                showToast('👋 Logged out');
+                console.log('[App] Logging out...');
+                
+                // HAPUS HANYA FLAG LOGGED IN
+                localStorage.removeItem(STORAGE_KEYS.loggedIn);
+                
+                // USERNAME DAN UID TETAP DISIMPAN!
+                
+                // Hapus data sementara
+                localStorage.removeItem('vibe_value');
+                localStorage.removeItem('chat_history');
+                
+                showToast('👋 Sampai jumpa!');
+                
                 setTimeout(() => {
-                    window.location.reload();
+                    window.location.href = 'index.html';
                 }, 1000);
             };
         }
@@ -1130,46 +1322,122 @@
                 opt.classList.add('active');
                 currentLanguage = opt.dataset.lang;
                 showToast(`🌐 Language: ${currentLanguage === 'id' ? 'Indonesia' : 'English'}`);
-                // Here you would implement actual language switching
             };
         });
     }
     
-    // ========== BOTTOM NAVIGATION ==========
+    // ========== WHISPER MODE ==========
+    function initWhisper() {
+        const whisperBtn = $('whisperBtn');
+        const whisperOverlay = $('whisperOverlay');
+        const whisperCancel = $('whisperCancel');
+        const whisperSend = $('whisperSend');
+        const whisperInput = $('whisperInput');
+        
+        if (!whisperBtn || !whisperOverlay) return;
+        
+        whisperBtn.onclick = () => {
+            whisperOverlay.classList.add('show');
+            whisperInput.value = '';
+            whisperInput.focus();
+        };
+        
+        whisperCancel.onclick = () => {
+            whisperOverlay.classList.remove('show');
+        };
+        
+        whisperSend.onclick = () => {
+            const message = whisperInput.value.trim();
+            if (!message) {
+                showToast('Pesan tidak boleh kosong');
+                return;
+            }
+            
+            whisperOverlay.classList.remove('show');
+            
+            const chatMessages = $('chatMessages');
+            if (!chatMessages) return;
+            
+            const whisperDiv = document.createElement('div');
+            whisperDiv.className = 'whisper-message';
+            whisperDiv.innerHTML = `
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--as); margin-bottom: 5px;">✧ WHISPER</div>
+                <div style="font-size: 14px;">${message}</div>
+                <div class="whisper-timer-bar"></div>
+            `;
+            
+            chatMessages.appendChild(whisperDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            setTimeout(() => {
+                whisperDiv.style.opacity = '0';
+                whisperDiv.style.transition = 'opacity 0.5s';
+                setTimeout(() => {
+                    if (whisperDiv.parentNode) {
+                        whisperDiv.remove();
+                    }
+                }, 500);
+            }, 5000);
+            
+            showToast('✧ Whisper terkirim');
+        };
+        
+        whisperInput.onkeypress = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                whisperSend.click();
+            }
+        };
+    }
+    
+    // ========== BOTTOM NAV ==========
     function initBottomNav() {
         const navItems = document.querySelectorAll('.nav-item');
+        const currentPage = window.location.pathname.split('/').pop() || 'spill.html';
         
         navItems.forEach(item => {
-            item.onclick = (e) => {
-                e.preventDefault();
-                
-                // Remove active class from all
-                navItems.forEach(nav => nav.classList.remove('active'));
-                
-                // Add active class to clicked
+            const href = item.getAttribute('href');
+            if (href === currentPage) {
                 item.classList.add('active');
-                
-                const page = item.dataset.page;
-                showToast(`📱 ${page} page`);
-                
-                // Here you would implement actual page switching
-                switch(page) {
-                    case 'spill':
-                        // Show spill section
-                        document.querySelector('.spills-sect').scrollIntoView({ behavior: 'smooth' });
-                        break;
-                    case 'jejak':
-                        showToast('✦ JEJAK - Coming soon');
-                        break;
-                    case 'glitch':
-                        showToast('⚡ GLITCH - Coming soon');
-                        break;
-                    case 'cocomeo':
-                        showToast('〜 COCOMEO - Coming soon');
-                        break;
-                }
-            };
+            } else {
+                item.classList.remove('active');
+            }
         });
+    }
+    
+    // ========== VIBE SLIDER ==========
+    function initVibeSlider() {
+        const slider = $('vibeSlider');
+        const pct = $('vibePct');
+        
+        if (!slider || !pct) return;
+        
+        const savedValue = localStorage.getItem('vibe_value');
+        if (savedValue) {
+            slider.value = savedValue;
+            pct.textContent = savedValue + '%';
+            currentVibeValue = parseInt(savedValue);
+        }
+        
+        slider.oninput = function() {
+            const value = this.value;
+            pct.textContent = value + '%';
+            
+            if (value < 30) {
+                pct.style.color = 'var(--ap)';
+            } else if (value < 70) {
+                pct.style.color = 'var(--aq)';
+            } else {
+                pct.style.color = 'var(--as)';
+            }
+            
+            currentVibeValue = parseInt(value);
+        };
+        
+        slider.onchange = function() {
+            localStorage.setItem('vibe_value', this.value);
+            showToast(`✨ Keselarasan ${this.value}%`);
+        };
     }
     
     // ========== RENDER SPILLS ==========
@@ -1225,6 +1493,36 @@
         renderSpills();
     }
     
+    // ========== DUMMY USER ENTRIES ==========
+    function getDummyUserEntries() {
+        return [
+            {
+                author: 'beby.manis',
+                mood: 'chaotic',
+                content: 'hari ini nangis karena liat mantan bahagia',
+                reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
+                created_at: new Date().toISOString(),
+                is_ai: false
+            },
+            {
+                author: 'chili.padi',
+                mood: 'thriving',
+                content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
+                reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
+                created_at: new Date(Date.now() - 3600000).toISOString(),
+                is_ai: false
+            },
+            {
+                author: 'pretty.sad',
+                mood: 'doom',
+                content: 'ga semangat ngapa-ngapain 😭😭😭',
+                reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
+                created_at: new Date(Date.now() - 7200000).toISOString(),
+                is_ai: false
+            }
+        ];
+    }
+    
     // ========== FETCH REAL USER ENTRIES ==========
     async function fetchUserEntries() {
         try {
@@ -1254,10 +1552,14 @@
                     created_at: entry.created_at,
                     is_ai: false
                 }));
+            } else {
+                console.log('[Supabase] No entries, using dummy user entries');
+                userEntries = getDummyUserEntries();
             }
             
         } catch (error) {
             console.error('[Supabase] Error:', error);
+            userEntries = getDummyUserEntries();
         }
         
         combineAndRender();
@@ -1722,46 +2024,33 @@
     // ========== INIT ==========
     window.addEventListener('load', async function() {
         console.log('[App] Starting...');
+        console.log(`[App] Welcome, ${USERNAME}!`);
         
-        // Set real username
         const userEl = $('userNameDisplay');
         if (userEl) {
-            // Coba ambil dari localStorage, kalau ga ada pake random dari AVAILABLE_USERNAMES
-            const savedUsername = localStorage.getItem('spill_username');
-            if (savedUsername && AVAILABLE_USERNAMES.includes(savedUsername)) {
-                currentUsername = savedUsername;
-            } else {
-                // Generate random username
-                currentUsername = AVAILABLE_USERNAMES[Math.floor(Math.random() * AVAILABLE_USERNAMES.length)];
-                localStorage.setItem('spill_username', currentUsername);
-            }
-            userEl.textContent = '@' + currentUsername;
+            userEl.textContent = '@' + USERNAME;
         }
         
-        // Set online count (random between 10-30)
         const onlineEl = $('onlineCount');
         if (onlineEl) {
-            const onlineCount = Math.floor(Math.random() * 20) + 10; // 10-30
+            const onlineCount = Math.floor(Math.random() * 20) + 10;
             onlineEl.textContent = onlineCount + ' ONLINE';
         }
         
-        // Initialize components
         setTimeout(initRadar, 100);
         initSettings();
+        initWhisper();
         initBottomNav();
+        initVibeSlider();
         
         await fetchUserEntries();
         initAIEntries();
         
-        // Event listeners
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
-        const whisperBtn = $('whisperBtn');
         const closeChatBtn = $('closeChatBtn');
         const sendBtn = $('sendButton');
         const chatInput = $('chatInput');
-        const slider = $('vibeSlider');
-        const pct = $('vibePct');
         
         if (heartBtn) {
             heartBtn.onclick = (e) => {
@@ -1775,10 +2064,6 @@
                 e.preventDefault();
                 startVibeCheck('spade');
             };
-        }
-        
-        if (whisperBtn) {
-            whisperBtn.onclick = () => showToast('✨ Whisperer mode (premium)');
         }
         
         if (closeChatBtn) {
@@ -1808,12 +2093,6 @@
                 if (e.key === 'Enter' && !isTyping) {
                     sendBtn.click();
                 }
-            };
-        }
-        
-        if (slider && pct) {
-            slider.oninput = function() {
-                pct.textContent = this.value + '%';
             };
         }
         
