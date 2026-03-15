@@ -56,6 +56,7 @@
             position: relative;
         }
         
+        /* HEADER */
         .header {
             display: flex;
             justify-content: space-between;
@@ -63,6 +64,7 @@
             padding: 14px 18px;
             border-bottom: 2px solid var(--bd);
             background: var(--sf);
+            position: relative;
         }
         
         .logo {
@@ -80,6 +82,12 @@
             95% { transform: rotate(180deg); }
         }
         
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
         .user-badge {
             font-family: var(--font-mono);
             background: #000;
@@ -87,6 +95,85 @@
             padding: 4px 8px;
             color: var(--as);
             font-size: 12px;
+        }
+        
+        .settings-btn {
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: 2px solid var(--bd2);
+            color: var(--txs);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: 0.1s;
+        }
+        
+        .settings-btn:hover {
+            border-color: var(--as);
+            color: var(--as);
+        }
+        
+        /* SETTINGS DROPDOWN */
+        .settings-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 18px;
+            background: var(--sf);
+            border: 2px solid var(--bd);
+            box-shadow: 6px 6px 0 #000;
+            z-index: 100;
+            min-width: 180px;
+            display: none;
+        }
+        
+        .settings-dropdown.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 12px 16px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--tx);
+            cursor: pointer;
+            border-bottom: 1px solid var(--bd);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--bd);
+        }
+        
+        .dropdown-item.language {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .language-select {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .lang-option {
+            padding: 2px 8px;
+            border: 1px solid var(--bd2);
+            color: var(--txs);
+        }
+        
+        .lang-option.active {
+            background: var(--as);
+            color: black;
+            border-color: var(--as);
         }
         
         .scroll {
@@ -119,6 +206,7 @@
         .radar-header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 14px 18px;
         }
         
@@ -131,20 +219,8 @@
             gap: 8px;
         }
         
-        .label-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--as);
-            transform: rotate(45deg);
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            50% { opacity: 0.2; }
-        }
-        
         .online-badge {
-            background: rgba(0,229,255,0.1);
+            background: rgba(0,0,0,0.3);
             padding: 6px 12px;
             border: 1px solid var(--bd);
             font-family: var(--font-mono);
@@ -154,17 +230,24 @@
             gap: 6px;
         }
         
-        .online-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--aq);
-            transform: rotate(45deg);
-            animation: pulse 1.5s infinite;
+        .online-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: switchIcon 2s infinite;
         }
         
-        @keyframes pulse {
-            0%,100% { transform: rotate(45deg) scale(1); }
-            50% { transform: rotate(45deg) scale(1.2); }
+        @keyframes switchIcon {
+            0%, 45% { content: '❤️'; opacity: 1; }
+            50%, 95% { content: '♠️'; opacity: 1; }
+            100% { content: '❤️'; opacity: 1; }
+        }
+        
+        .online-icon::before {
+            content: '❤️';
+            animation: switchIcon 2s infinite;
         }
         
         .radar-wrapper {
@@ -361,7 +444,7 @@
             -webkit-appearance: none;
         }
         
-        /* SPILLS - CARD & REACTIONS */
+        /* SPILLS */
         .spills-sect {
             padding: 18px;
         }
@@ -476,67 +559,58 @@
             font-weight: bold;
         }
         
-        .ai-badge {
-            display: none;
-        }
-        
-        /* WAITING OVERLAY */
-        .waiting-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-        
-        .waiting-box {
-            background: var(--sf);
-            border: 3px solid var(--as);
-            padding: 30px;
+        .empty-state {
             text-align: center;
-            box-shadow: 12px 12px 0 #000;
-            max-width: 300px;
-            width: 80%;
-        }
-        
-        .waiting-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .waiting-timer {
-            width: 100px;
-            height: 100px;
-            border: 4px solid var(--aq);
-            border-radius: 50%;
-            margin: 20px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-display);
-            font-size: 36px;
-            color: var(--aq);
-        }
-        
-        #cancelWaiting {
-            background: transparent;
-            border: 2px solid var(--bd2);
+            padding: 40px;
             color: var(--txs);
-            padding: 14px 24px;
-            margin-top: 16px;
-            cursor: pointer;
-            width: 100%;
             font-family: var(--font-mono);
-            transition: 0.1s;
+            font-size: 14px;
+            border: 2px dashed var(--bd2);
         }
         
-        #cancelWaiting:active {
-            background: var(--bd2);
-            color: var(--tx);
+        /* BOTTOM NAV - DIPERBAIKI */
+        .bottom-nav {
+            background: var(--sf);
+            border-top: 2px solid var(--bd);
+            padding: 8px 18px;
+            width: 100%;
+            max-width: 500px;
+            z-index: 50;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+        
+        .nav-item {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--txs);
+            cursor: pointer;
+            padding: 10px 12px;
+            transition: 0.1s;
+            text-align: center;
+            flex: 1;
+            border: 1px solid transparent;
+            user-select: none;
+        }
+        
+        .nav-item:hover {
+            color: var(--as);
+            border-color: var(--bd2);
+        }
+        
+        .nav-item:active {
+            background: var(--bd);
+            transform: scale(0.95);
+        }
+        
+        .nav-item.active {
+            color: var(--as);
+            border-bottom: 2px solid var(--as);
+            background: rgba(0,229,255,0.05);
         }
         
         /* CHAT ROOM */
@@ -605,21 +679,6 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--bd2) var(--bg);
-        }
-        
-        .chat-messages::-webkit-scrollbar {
-            width: 4px;
-        }
-        
-        .chat-messages::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-        
-        .chat-messages::-webkit-scrollbar-thumb {
-            background: var(--bd2);
-            border-radius: 4px;
         }
         
         .message {
@@ -629,7 +688,6 @@
             font-size: 14px;
             line-height: 1.4;
             word-wrap: break-word;
-            position: relative;
         }
         
         .message.user {
@@ -727,6 +785,11 @@
             box-shadow: 1px 1px 0 #000;
         }
         
+        .chat-send.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
         .toast {
             position: fixed;
             bottom: 90px;
@@ -755,50 +818,65 @@
             color: #fff;
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: var(--txs);
-            font-family: var(--font-mono);
-            font-size: 14px;
-            border: 2px dashed var(--bd2);
-        }
-        
-        /* BOTTOM NAV */
-        .bottom-nav {
-            background: var(--sf);
-            border-top: 2px solid var(--bd);
-            padding: 8px 18px;
+        /* WAITING OVERLAY */
+        .waiting-overlay {
+            display: none;
             position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 500px;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
         }
         
-        .nav-container {
+        .waiting-box {
+            background: var(--sf);
+            border: 3px solid var(--as);
+            padding: 30px;
+            text-align: center;
+            box-shadow: 12px 12px 0 #000;
+            max-width: 300px;
+            width: 80%;
+        }
+        
+        .waiting-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .waiting-timer {
+            width: 100px;
+            height: 100px;
+            border: 4px solid var(--aq);
+            border-radius: 50%;
+            margin: 20px auto;
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 36px;
+            color: var(--aq);
         }
         
-        .nav-item {
-            font-family: var(--font-mono);
-            font-size: 12px;
+        #cancelWaiting {
+            background: transparent;
+            border: 2px solid var(--bd2);
             color: var(--txs);
+            padding: 14px 24px;
+            margin-top: 16px;
             cursor: pointer;
-            padding: 8px 12px;
+            width: 100%;
+            font-family: var(--font-mono);
             transition: 0.1s;
         }
         
-        .nav-item:active {
-            color: var(--as);
+        #cancelWaiting:active {
+            background: var(--bd2);
+            color: var(--tx);
         }
         
-        .nav-item.active {
-            color: var(--as);
-            border-bottom: 2px solid var(--as);
-        }
-        
-        /* RESPONSIVE */
         @media (max-width: 500px) {
             .app {
                 border-left: none;
@@ -814,6 +892,11 @@
                 font-size: 12px;
                 padding: 10px 18px;
             }
+            
+            .nav-item {
+                padding: 8px 6px;
+                font-size: 11px;
+            }
         }
     </style>
 </head>
@@ -822,7 +905,25 @@
     <!-- HEADER -->
     <div class="header">
         <div class="logo">SP<span class="x">✕</span>LL</div>
-        <span class="user-badge" id="userNameDisplay">@beby.manis</span>
+        
+        <div class="user-section">
+            <span class="user-badge" id="userNameDisplay">@loading...</span>
+            <button class="settings-btn" id="settingsBtn">⋮</button>
+        </div>
+        
+        <!-- SETTINGS DROPDOWN -->
+        <div class="settings-dropdown" id="settingsDropdown">
+            <div class="dropdown-item" id="logoutBtn">
+                <span>🚪</span> Logout
+            </div>
+            <div class="dropdown-item language">
+                <span>🌐</span> Language
+                <div class="language-select">
+                    <span class="lang-option active" data-lang="id">ID</span>
+                    <span class="lang-option" data-lang="en">EN</span>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- MAIN SCROLL -->
@@ -830,10 +931,10 @@
         <!-- RADAR SECTION -->
         <div class="radar-sect">
             <div class="radar-header">
-                <span class="radar-label"><span class="label-dot"></span>VIBE RADAR</span>
+                <span class="radar-label">VIBE RADAR</span>
                 <div class="online-badge">
-                    <span class="online-dot"></span>
-                    <span id="onlineCount">21 ONLINE</span>
+                    <span class="online-icon"></span>
+                    <span id="onlineCount">17 ONLINE</span>
                 </div>
             </div>
             
@@ -869,7 +970,7 @@
             </div>
         </div>
         
-        <!-- FILTER SECTION (SLIDER ONLY) -->
+        <!-- FILTER SECTION -->
         <div class="filter-sect">
             <div class="filter-top">
                 <span class="filter-title">KESELARASAN</span>
@@ -890,7 +991,7 @@
         </div>
     </div>
     
-    <!-- BOTTOM NAV -->
+    <!-- BOTTOM NAV - DIPERBAIKI -->
     <nav class="bottom-nav">
         <div class="nav-container">
             <div class="nav-item active" data-page="spill">✕ SPILL</div>
@@ -943,6 +1044,10 @@
     let currentAIPartner = null;
     let chatHistory = [];
     let isTyping = false;
+    let currentLanguage = 'id';
+    
+    // ========== USERNAME ==========
+    let currentUsername = localStorage.getItem('spill_username') || 'beby.manis';
     
     // ========== USERNAME MAPPING ==========
     const AVAILABLE_USERNAMES = [
@@ -985,6 +1090,86 @@
         toast.classList.add('show');
         
         setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    // ========== SETTINGS DROPDOWN ==========
+    function initSettings() {
+        const settingsBtn = $('settingsBtn');
+        const dropdown = $('settingsDropdown');
+        const logoutBtn = $('logoutBtn');
+        const langOptions = document.querySelectorAll('.lang-option');
+        
+        if (settingsBtn && dropdown) {
+            settingsBtn.onclick = (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            };
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!settingsBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+        
+        if (logoutBtn) {
+            logoutBtn.onclick = () => {
+                localStorage.removeItem('spill_username');
+                localStorage.removeItem('spill_session');
+                showToast('👋 Logged out');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            };
+        }
+        
+        langOptions.forEach(opt => {
+            opt.onclick = () => {
+                langOptions.forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                currentLanguage = opt.dataset.lang;
+                showToast(`🌐 Language: ${currentLanguage === 'id' ? 'Indonesia' : 'English'}`);
+                // Here you would implement actual language switching
+            };
+        });
+    }
+    
+    // ========== BOTTOM NAVIGATION ==========
+    function initBottomNav() {
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            item.onclick = (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all
+                navItems.forEach(nav => nav.classList.remove('active'));
+                
+                // Add active class to clicked
+                item.classList.add('active');
+                
+                const page = item.dataset.page;
+                showToast(`📱 ${page} page`);
+                
+                // Here you would implement actual page switching
+                switch(page) {
+                    case 'spill':
+                        // Show spill section
+                        document.querySelector('.spills-sect').scrollIntoView({ behavior: 'smooth' });
+                        break;
+                    case 'jejak':
+                        showToast('✦ JEJAK - Coming soon');
+                        break;
+                    case 'glitch':
+                        showToast('⚡ GLITCH - Coming soon');
+                        break;
+                    case 'cocomeo':
+                        showToast('〜 COCOMEO - Coming soon');
+                        break;
+                }
+            };
+        });
     }
     
     // ========== RENDER SPILLS ==========
@@ -1372,7 +1557,6 @@
         currentAIPartner = characterName;
         chatHistory = [];
         
-        // Send initial greeting
         setTimeout(() => {
             sendMessage('', true);
         }, 500);
@@ -1411,7 +1595,6 @@
             hideTypingIndicator();
             isTyping = false;
             
-            // Add message with typing effect
             await typeMessage('stranger', data.reply, data.typing);
             
         } catch (error) {
@@ -1540,16 +1723,32 @@
     window.addEventListener('load', async function() {
         console.log('[App] Starting...');
         
+        // Set real username
         const userEl = $('userNameDisplay');
         if (userEl) {
-            const saved = localStorage.getItem('spill_username') || 'beby.manis';
-            userEl.textContent = '@' + saved;
+            // Coba ambil dari localStorage, kalau ga ada pake random dari AVAILABLE_USERNAMES
+            const savedUsername = localStorage.getItem('spill_username');
+            if (savedUsername && AVAILABLE_USERNAMES.includes(savedUsername)) {
+                currentUsername = savedUsername;
+            } else {
+                // Generate random username
+                currentUsername = AVAILABLE_USERNAMES[Math.floor(Math.random() * AVAILABLE_USERNAMES.length)];
+                localStorage.setItem('spill_username', currentUsername);
+            }
+            userEl.textContent = '@' + currentUsername;
         }
         
+        // Set online count (random between 10-30)
         const onlineEl = $('onlineCount');
-        if (onlineEl) onlineEl.textContent = Math.floor(Math.random() * 30 + 10) + ' ONLINE';
+        if (onlineEl) {
+            const onlineCount = Math.floor(Math.random() * 20) + 10; // 10-30
+            onlineEl.textContent = onlineCount + ' ONLINE';
+        }
         
+        // Initialize components
         setTimeout(initRadar, 100);
+        initSettings();
+        initBottomNav();
         
         await fetchUserEntries();
         initAIEntries();
@@ -1618,7 +1817,7 @@
             };
         }
         
-        // Prevent double-tap zoom
+        // Prevent double-tap zoom on buttons
         document.querySelectorAll('button').forEach(btn => {
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
