@@ -501,7 +501,122 @@
             }
         }
     }
+    // ========== GLOBAL SCOPE PATCHING ==========
+// Tempatkan ini setelah semua fungsi definisi, sebelum window.addEventListener
+
+// Simpan data di global scope
+window.allEntries = [];
+window.userEntries = [];
+window.aiEntries = [];
+
+// Definisikan fungsi di global scope
+window.renderSpills = function() {
+    console.log('[Render] Memanggil renderSpills, entries:', window.allEntries?.length);
     
+    const container = document.getElementById('spillsList');
+    if (!container) {
+        console.error('[Render] Container spillsList tidak ditemukan!');
+        // Buat container sementara kalau belum ada
+        const spillsSect = document.querySelector('.spills-sect');
+        if (spillsSect) {
+            const newContainer = document.createElement('div');
+            newContainer.id = 'spillsList';
+            spillsSect.appendChild(newContainer);
+            console.log('[Render] Membuat spillsList baru');
+            return window.renderSpills(); // Panggil ulang
+        }
+        return;
+    }
+    
+    if (!window.allEntries || window.allEntries.length === 0) {
+        container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
+        return;
+    }
+    
+    let html = '';
+    window.allEntries.forEach((spill, index) => {
+        html += `
+            <div class="spill-card">
+                <div class="spill-header">
+                    <span class="spill-author">@${spill.author}</span>
+                    <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
+                </div>
+                <div class="spill-content">
+                    ${spill.content}
+                </div>
+                
+                <div class="spill-reactions">
+                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
+                        💀 <span class="react-count">${spill.reactions.skull || 0}</span>
+                    </button>
+                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
+                        😭 <span class="react-count">${spill.reactions.cry || 0}</span>
+                    </button>
+                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
+                        🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
+                    </button>
+                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
+                        🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+    
+    const meta = document.getElementById('feedMeta');
+    if (meta) meta.textContent = window.allEntries.length + ' spill';
+    
+    console.log('[Render] Selesai, menampilkan', window.allEntries.length, 'spill');
+};
+
+// Definisikan fungsi combine di global scope
+window.combineAndRender = function() {
+    console.log('[Combine] Menggabungkan entries...');
+    window.allEntries = [...(window.userEntries || []), ...(window.aiEntries || [])];
+    
+    window.allEntries.sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at);
+    });
+    
+    console.log('[Combine] Total entries:', window.allEntries.length);
+    window.renderSpills();
+};
+
+// Definisikan reaction handler di global scope
+window.reactToSpill = function(index, type) {
+    const spill = window.allEntries[index];
+    if (!spill) return;
+    
+    spill.reactions[type] = (spill.reactions[type] || 0) + 1;
+    window.renderSpills();
+    
+    console.log(`[Reaction] ${type} on @${spill.author}'s spill`);
+};
+
+// Patch fungsi asli untuk menggunakan global scope
+const originalFetchUserEntries = fetchUserEntries;
+fetchUserEntries = async function() {
+    await originalFetchUserEntries();
+    window.userEntries = userEntries;
+    window.combineAndRender();
+};
+
+const originalInitAIEntries = initAIEntries;
+initAIEntries = function() {
+    originalInitAIEntries();
+    window.aiEntries = aiEntries;
+    window.combineAndRender();
+};
+
+// Patch fungsi combineAndRender asli
+const originalCombineAndRender = combineAndRender;
+combineAndRender = function() {
+    window.userEntries = userEntries;
+    window.aiEntries = aiEntries;
+    window.combineAndRender();
+};
     // ========== INIT ==========
     window.addEventListener('load', async function() {
         console.log('[App] Starting...');
