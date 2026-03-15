@@ -2155,7 +2155,7 @@ async function fetchUserEntries() {
         // ✅ URUTAN YANG BENAR:
         await fetchUserEntries();  // Ambil user entries dulu
         initAIEntries();           // Lalu generate AI entries
-        
+        startWhisperPolling();  // Mulai cek whisper masuk
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
         const closeChatBtn = $('closeChatBtn');
