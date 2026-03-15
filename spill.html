@@ -2110,6 +2110,18 @@ async function fetchUserEntries() {
             }, { passive: false });
         });
     });
+    // ========== EXPOSE FOR DEBUGGING ==========
+window.debug = {
+    userEntries: () => userEntries,
+    aiEntries: () => aiEntries,
+    allEntries: () => allEntries,
+    refresh: () => {
+        console.log('userEntries:', userEntries.length);
+        console.log('aiEntries:', aiEntries.length);
+        console.log('allEntries:', allEntries.length);
+        return { user: userEntries.length, ai: aiEntries.length, total: allEntries.length };
+    }
+};
 })();
 </script>
 </body>
