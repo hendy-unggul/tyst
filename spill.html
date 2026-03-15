@@ -323,6 +323,7 @@
             margin-bottom: 20px;
             padding: 16px;
             box-shadow: 4px 4px 0 #000;
+            position: relative;
         }
         
         .spill-header {
@@ -408,20 +409,9 @@
             font-weight: bold;
         }
         
+        /* AI BADGE - TETAP ADA TAPI DISEMBUNYIKAN */
         .ai-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--bg);
-            border: 2px solid var(--as);
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            border-radius: 50%;
-            box-shadow: 2px 2px 0 #000;
+            display: none;
         }
         
         /* WAITING OVERLAY */
@@ -733,8 +723,8 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
     
     // ========== STATE ==========
-    let userEntries = [];      // entries dari user
-    let aiEntries = [];        // entries dari AI
+    let userEntries = [];      // REAL USER entries dari Supabase
+    let aiEntries = [];        // AI entries (generate lokal)
     let allEntries = [];
     let aiGeneratorTimer = null;
     
@@ -745,10 +735,10 @@
         return el;
     }
     
-    // ========== FETCH USER ENTRIES ==========
+    // ========== FETCH REAL USER ENTRIES ==========
     async function fetchUserEntries() {
         try {
-            console.log('[Supabase] Fetching entries...');
+            console.log('[Supabase] Fetching real user entries...');
             
             const response = await fetch(
                 `${SUPABASE_URL}/rest/v1/entries?` + 
@@ -768,20 +758,23 @@
             }
             
             const data = await response.json();
-            console.log('[Supabase] Data received:', data);
+            console.log('[Supabase] Real user entries:', data.length);
             
             if (data && data.length > 0) {
-                // Format data sesuai struktur yang kita butuh
+                // REAL USER ENTRIES - pakai username dari tabel Supabase
                 userEntries = data.map(entry => ({
-                    author: entry.user_id ? entry.user_id.substring(0, 8) : 'anonymous',
+                    author: entry.username || 'anonymous',  // ← LANGSUNG DARI KOLOM USERNAME!
                     mood: entry.mood || 'chaotic',
                     content: entry.content || '...',
                     reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
                     created_at: entry.created_at,
-                    is_ai: false
+                    is_ai: false  // ini REAL user
                 }));
+                
+                console.log('Real usernames:', userEntries.map(e => e.author));
             } else {
                 // Pakai data dummy kalau kosong
+                console.log('[Supabase] No entries, using dummy');
                 userEntries = getDummyEntries();
             }
             
@@ -793,7 +786,7 @@
         combineAndRender();
     }
     
-    // ========== DATA DUMMY ==========
+    // ========== DATA DUMMY (untuk real user fallback) ==========
     function getDummyEntries() {
         return [
             {
@@ -823,38 +816,48 @@
         ];
     }
     
-    // ========== GENERATE AI ENTRIES ==========
+    // ========== GENERATE AI ENTRIES (untuk konten) ==========
     function generateAIEntries(count = 6) {
-        const authors = ['ai.bot', 'sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam'];
+        // AI username - TERPISAH dari real username
+        const aiAuthors = ['sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam', 'move.on'];
         const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
         
         const contents = {
             surviving: [
                 'deadline skripsi makin deket, anxiety naik turun 😮‍💨',
-                'capek banget hari ini, pengen rebahan aja 🥲'
+                'capek banget hari ini, pengen rebahan aja 🥲',
+                'bangun tidur langsung overthinking masa depan'
             ],
             thriving: [
                 'alhamdulillah hari ini cuan! 💰',
-                'akhirnya sidang kelar, nilai A alhamdulillah'
+                'akhirnya sidang kelar, nilai A alhamdulillah',
+                'hari ini closing 3 client dalam sehari'
             ],
             chaotic: [
                 'client minta revisi jam 11 malem, this is fine 🔥',
-                'hidup lagi kacau balau 🔥'
+                'hidup lagi kacau balau 🔥',
+                'hari ini chaotic banget: pagi dimarahin boss'
             ],
             doom: [
                 'motor mogok, dompet tipis, pacar ngambek. triple combo 🫠',
+                'rasanya pengen rebahan aja selamanya 🛌',
                 'udah 6 bulan nganggur, lamaran kerja ga ada yang dipanggil'
             ]
         };
         
+        // Buat AI entries dengan timestamp lebih lama (7-30 hari yang lalu)
         return Array(count).fill().map(() => {
-            const author = authors[Math.floor(Math.random() * authors.length)];
+            const author = aiAuthors[Math.floor(Math.random() * aiAuthors.length)];
             const mood = moods[Math.floor(Math.random() * moods.length)];
             const contentList = contents[mood];
             const content = contentList[Math.floor(Math.random() * contentList.length)];
             
+            // Random antara 7-30 hari yang lalu
+            const daysAgo = 7 + Math.floor(Math.random() * 23);
+            const timestamp = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+            
             return {
-                author,
+                author,  // ← AI username dari array terpisah
                 mood,
                 content,
                 reactions: {
@@ -863,8 +866,8 @@
                     fire: Math.floor(Math.random() * 20) + 1,
                     upside: Math.floor(Math.random() * 15) + 2
                 },
-                is_ai: true,
-                created_at: new Date(Date.now() - Math.random() * 86400000).toISOString()
+                created_at: timestamp.toISOString(),
+                is_ai: true  // ini AI entry
             };
         });
     }
@@ -874,18 +877,19 @@
         aiEntries = generateAIEntries(6);
         combineAndRender();
         
-        // Generator setiap 2 menit (buat testing)
+        // Generator setiap 3 menit
         if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
         aiGeneratorTimer = setInterval(() => {
             console.log('[AI] Generating new entry...');
             const newEntry = generateAIEntries(1)[0];
             aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
             combineAndRender();
-        }, 120000); // 2 menit
+        }, 180000); // 3 menit
     }
     
     // ========== GABUNG & URUTKAN ==========
     function combineAndRender() {
+        // Gabungkan REAL user entries + AI entries
         allEntries = [...userEntries, ...aiEntries];
         
         // Urutkan berdasarkan created_at (terbaru di atas)
@@ -909,7 +913,7 @@
         let html = '';
         allEntries.forEach((spill, index) => {
             html += `
-                <div class="spill-card" style="position: relative;">
+                <div class="spill-card">
                     <div class="spill-header">
                         <span class="spill-author">@${spill.author}</span>
                         <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
@@ -1176,8 +1180,10 @@
         // Init radar
         setTimeout(initRadar, 100);
         
-        // Fetch data
+        // Fetch REAL user entries dari Supabase
         await fetchUserEntries();
+        
+        // Init AI entries
         initAIEntries();
         
         // ===== TOMBOL HEART & SPADE =====
