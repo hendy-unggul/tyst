@@ -1441,50 +1441,51 @@
     }
     
     // ========== RENDER SPILLS ==========
-    function renderSpills() {
-        const container = $('spillsList');
-        if (!container) return;
-        
-        if (allEntries.length === 0) {
-            container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
-            return;
-        }
-        
-        let html = '';
-        allEntries.slice(0, 10).forEach((spill, index) => {
-            html += `
-                <div class="spill-card">
-                    <div class="spill-header">
-                        <span class="spill-author">@${spill.author}</span>
-                        <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
-                    </div>
-                    <div class="spill-content">
-                        ${spill.content}
-                    </div>
-                    
-                    <div class="spill-reactions">
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
-                            💀 <span class="react-count">${spill.reactions.skull || 0}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
-                            😭 <span class="react-count">${spill.reactions.cry || 0}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
-                            🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
-                            🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-        
-        container.innerHTML = html;
-        
-        const meta = $('feedMeta');
-        if (meta) meta.textContent = allEntries.length + ' spill';
+function renderSpills() {
+    const container = $('spillsList');
+    if (!container) return;
+    
+    if (allEntries.length === 0) {
+        container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
+        return;
     }
+    
+    let html = '';
+    // HAPUS .slice(0, 10) - biar semua entries tampil
+    allEntries.forEach((spill, index) => {
+        html += `
+            <div class="spill-card">
+                <div class="spill-header">
+                    <span class="spill-author">@${spill.author}</span>
+                    <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
+                </div>
+                <div class="spill-content">
+                    ${spill.content}
+                </div>
+                
+                <div class="spill-reactions">
+                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
+                        💀 <span class="react-count">${spill.reactions.skull || 0}</span>
+                    </button>
+                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
+                        😭 <span class="react-count">${spill.reactions.cry || 0}</span>
+                    </button>
+                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
+                        🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
+                    </button>
+                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
+                        🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+    
+    const meta = $('feedMeta');
+    if (meta) meta.textContent = allEntries.length + ' spill';
+}
     
     // ========== COMBINE AND RENDER ==========
     function combineAndRender() {
