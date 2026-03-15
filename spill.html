@@ -1602,17 +1602,22 @@
     }
     
     // ========== INIT AI ENTRIES ==========
-    function initAIEntries() {
+function initAIEntries() {
+    // Generate AI entries KALAU MASIH KOSONG
+    if (aiEntries.length === 0) {
+        console.log('[AI] Generating initial 6 entries...');
         aiEntries = generateAIEntries(6);
-        combineAndRender();
-        
-        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
-        aiGeneratorTimer = setInterval(() => {
-            const newEntry = generateAIEntries(1)[0];
-            aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
-            combineAndRender();
-        }, 180000);
     }
+    combineAndRender();  // ← Panggil sekali di sini
+    
+    if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
+    aiGeneratorTimer = setInterval(() => {
+        console.log('[AI] Generating new entry...');
+        const newEntry = generateAIEntries(1)[0];
+        aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
+        combineAndRender();
+    }, 180000);
+}
     
     // ========== REACTION HANDLER ==========
     window.reactToSpill = function(index, type) {
