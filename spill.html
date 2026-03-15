@@ -1307,6 +1307,30 @@ window.testAPI = {
         }
     }
 };
+  // ========== EXPOSE VIBE CHECK FOR TESTING ==========
+window.startVibeCheck = startVibeCheck;
+window.testVibe = {
+    heart: () => startVibeCheck('heart'),
+    spade: () => startVibeCheck('spade'),
+    cancel: () => document.getElementById('cancelWaiting')?.click(),
+    closeChat: () => document.getElementById('closeChatBtn')?.click(),
+    sendMessage: (msg) => {
+        const input = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendButton');
+        if (input && sendBtn) {
+            input.value = msg;
+            sendBtn.click();
+            return 'Message sent: ' + msg;
+        }
+        return 'Failed to send message';
+    },
+    openChat: () => document.getElementById('chatRoom')?.classList.add('on'),
+    getStatus: () => ({
+        overlay: document.getElementById('waitingOverlay')?.style.display,
+        chatOpen: document.getElementById('chatRoom')?.classList.contains('on'),
+        timer: document.getElementById('waitingTimer')?.textContent
+    })
+};  
 })();
 </script>
 </body>
