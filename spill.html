@@ -1249,6 +1249,64 @@
         
         console.log('[App] Ready!');
     });
+    // ========== EXPOSE FOR TESTING ==========
+// Tambahkan ini sebelum baris terakhir: })();
+window.testAPI = {
+    getAllEntries: () => allEntries,
+    getUserEntries: () => userEntries,
+    getAIEntries: () => aiEntries,
+    generateOneAI: () => {
+        const newAI = generateAIEntries(1)[0];
+        aiEntries = [newAI, ...aiEntries.slice(0, 5)];
+        combineAndRender();
+        console.log('[Test] AI generated:', newAI.author, newAI.content);
+        return newAI;
+    },
+    addTestEntry: (author = 'test.user') => {
+        const newEntry = {
+            author: author,
+            mood: 'chaotic',
+            content: 'Test entry at ' + new Date().toLocaleTimeString(),
+            reactions: { skull: 0, cry: 0, fire: 0, upside: 0 },
+            created_at: new Date().toISOString(),
+            is_ai: false
+        };
+        userEntries = [newEntry, ...userEntries.slice(0, 9)];
+        combineAndRender();
+        console.log('[Test] Entry added. Total user entries:', userEntries.length);
+        return newEntry;
+    },
+    getStats: () => ({
+        total: allEntries?.length || 0,
+        user: userEntries?.length || 0,
+        ai: aiEntries?.length || 0,
+        latest: allEntries?.[0] ? {
+            author: allEntries[0].author,
+            content: allEntries[0].content.substring(0, 30),
+            time: new Date(allEntries[0].created_at).toLocaleString()
+        } : null
+    }),
+    startMonitor: (interval = 30000) => {
+        if (window._monitor) clearInterval(window._monitor);
+        window._monitor = setInterval(() => {
+            const stats = window.testAPI.getStats();
+            console.log('=== MONITORING ===', new Date().toLocaleTimeString());
+            console.log('Total:', stats.total, '| User:', stats.user, '| AI:', stats.ai);
+            if (stats.latest) {
+                console.log('Latest:', `@${stats.latest.author}`, stats.latest.content);
+            }
+            console.log('===================');
+        }, interval);
+        console.log('[Test] Monitor started every', interval/1000, 'seconds');
+    },
+    stopMonitor: () => {
+        if (window._monitor) {
+            clearInterval(window._monitor);
+            window._monitor = null;
+            console.log('[Test] Monitor stopped');
+        }
+    }
+};
 })();
 </script>
 </body>
