@@ -3,35 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPILL — TEST</title>
+    <title>SPILL — vibe radar</title>
+    
+    <!-- HAPUS SHARED CSS, PAKAI INTERNAL -->
     <style>
+        /* ========== VARIABLES ========== */
+        :root {
+            --bg: #0a0a0a;
+            --sf: #111111;
+            --bd: #222222;
+            --bd2: #333333;
+            --tx: #ffffff;
+            --txs: #888888;
+            --ap: #ff3b6f;
+            --as: #00e5ff;
+            --aq: #ccff00;
+            --purple: #9900ff;
+            --font-display: 'Arial Black', sans-serif;
+            --font-mono: 'Courier New', monospace;
+            --font-body: 'Arial', sans-serif;
+            --st: 0px;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: #0a0a0a; color: #fff; font-family: monospace; padding: 20px; }
-        .app { max-width: 500px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; padding: 20px; background: #111; border: 2px solid #333; }
-        .logo { font-size: 32px; }
-        .spills-sect { margin-top: 20px; padding: 20px; background: #111; border: 2px solid #333; }
-        .spill-card { background: #1a1a1a; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
-        .spill-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .spill-author { color: #00e5ff; }
-        .spill-mood { padding: 4px 8px; background: #333; }
-        .spill-mood.chaotic { background: #ff00ff; }
-        .spill-reactions { display: flex; gap: 10px; margin-top: 10px; }
-        .react-btn { background: #222; border: 1px solid #444; color: #fff; padding: 5px 10px; cursor: pointer; }
-        .empty-state { text-align: center; padding: 40px; color: #666; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--tx); 
+            font-family: var(--font-body); 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            border-left: 2px solid var(--bd);
+            border-right: 2px solid var(--bd);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 18px;
+            border-bottom: 2px solid var(--bd);
+            background: var(--sf);
+        }
+        
+        .logo {
+            font-family: var(--font-display);
+            font-size: 34px;
+        }
+        
+        .logo .x {
+            color: var(--ap);
+            display: inline-block;
+            animation: spin 4s infinite;
+        }
+        
+        @keyframes spin {
+            95% { transform: rotate(180deg); }
+        }
+        
+        .user-badge {
+            font-family: var(--font-mono);
+            background: #000;
+            border: 2px solid var(--bd);
+            padding: 4px 8px;
+            color: var(--as);
+        }
+        
+        .scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 62px;
+        }
+        
+        /* SPILLS SECTION */
+        .spills-sect {
+            padding: 18px;
+        }
+        
+        .sect-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+        
+        .sect-title {
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        .spill-card {
+            background: var(--sf);
+            border: 2px solid var(--bd2);
+            margin-bottom: 20px;
+            padding: 16px;
+            box-shadow: 4px 4px 0 #000;
+        }
+        
+        .spill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+        }
+        
+        .spill-author {
+            color: var(--as);
+        }
+        
+        .spill-mood {
+            padding: 4px 8px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .spill-mood.surviving { 
+            background: var(--ap); 
+            color: white; 
+        }
+        
+        .spill-mood.thriving { 
+            background: var(--aq); 
+            color: black; 
+        }
+        
+        .spill-mood.chaotic { 
+            background: var(--as); 
+            color: black; 
+        }
+        
+        .spill-mood.doom { 
+            background: var(--purple); 
+            color: white; 
+        }
+        
+        .spill-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--tx);
+            font-family: var(--font-body);
+            margin-bottom: 12px;
+        }
+        
+        .spill-reactions {
+            display: flex;
+            gap: 8px;
+            border-top: 2px solid var(--bd);
+            padding-top: 12px;
+        }
+        
+        .react-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 8px;
+            background: var(--bg);
+            border: 2px solid var(--bd2);
+            color: var(--txs);
+            cursor: pointer;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            transition: all 0.1s;
+        }
+        
+        .react-btn:active {
+            background: var(--bd2);
+            transform: translate(2px, 2px);
+        }
+        
+        .react-count {
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--txs);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            border: 2px dashed var(--bd2);
+        }
+        
+        .bottom-nav {
+            background: var(--sf);
+            border-top: 2px solid var(--bd);
+            padding: 8px 18px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .nav-item {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--txs);
+            cursor: pointer;
+        }
+        
+        .nav-item.active {
+            color: var(--as);
+        }
     </style>
 </head>
 <body>
-    <div class="app">
-        <!-- HEADER -->
-        <div class="header">
-            <div class="logo">SP<span>✕</span>LL</div>
-            <span class="user-badge" id="userNameDisplay">@beby.manis</span>
-        </div>
-        
+<div class="app">
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">SP<span class="x">✕</span>LL</div>
+        <span class="user-badge" id="userNameDisplay">@beby.manis</span>
+    </div>
+    
+    <!-- MAIN SCROLL -->
+    <div class="scroll">
         <!-- SPILLS SECTION -->
         <div class="spills-sect">
-            <div class="sect-header" style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+            <div class="sect-header">
                 <div class="sect-title">SPILL TERKINI</div>
                 <span id="feedMeta">0 spill</span>
             </div>
@@ -40,32 +251,258 @@
             </div>
         </div>
     </div>
-
-    <script>
-    // Simple test
-    console.log('✅ HTML Loaded');
-    document.body.style.border = '5px solid red';
     
-    // Test data
-    setTimeout(() => {
-        const container = document.getElementById('spillsList');
-        if (container) {
-            container.innerHTML = `
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <div class="nav-container">
+            <div class="nav-item active" data-page="spill">✕ SPILL</div>
+            <div class="nav-item" data-page="jejak">✦ JEJAK</div>
+            <div class="nav-item" data-page="glitch">⚡ GLITCH</div>
+            <div class="nav-item" data-page="cocomeo">〜 COCOMEO</div>
+        </div>
+    </nav>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    
+    // ========== SUPABASE CONFIG ==========
+    const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+    
+    // ========== STATE ==========
+    let userEntries = [];
+    let aiEntries = [];
+    let allEntries = [];
+    let aiGeneratorTimer = null;
+    
+    // ========== USERNAME MAPPING ==========
+    const AVAILABLE_USERNAMES = [
+        'beby.manis', 'chili.padi', 'pretty.sad', 'sejuta.badai', 
+        'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam',
+        'malam.minggu', 'hujan.gerimis', 'kopi.pahit', 'luka.luka',
+        'senja.redup', 'kota.tua', 'patah.hati', 'move.on'
+    ];
+    
+    const usernameCache = new Map();
+    
+    function getUsernameFromUserId(userId) {
+        if (!userId) return 'anonymous';
+        if (usernameCache.has(userId)) return usernameCache.get(userId);
+        
+        let hash = 0;
+        for (let i = 0; i < userId.length; i++) {
+            hash = ((hash << 5) - hash) + userId.charCodeAt(i);
+            hash |= 0;
+        }
+        
+        const index = Math.abs(hash) % AVAILABLE_USERNAMES.length;
+        const username = AVAILABLE_USERNAMES[index];
+        usernameCache.set(userId, username);
+        
+        console.log(`[Username] Mapped ${userId.substring(0,8)}... → @${username}`);
+        return username;
+    }
+    
+    // ========== SAFE GET ELEMENT ==========
+    function $(id) {
+        return document.getElementById(id);
+    }
+    
+    // ========== RENDER FUNCTION ==========
+    function renderSpills() {
+        console.log('[Render] Memanggil renderSpills, entries:', allEntries.length);
+        
+        const container = $('#spillsList');
+        if (!container) {
+            console.error('[Render] Container spillsList tidak ditemukan!');
+            return;
+        }
+        
+        if (allEntries.length === 0) {
+            container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
+            return;
+        }
+        
+        let html = '';
+        allEntries.forEach((spill, index) => {
+            html += `
                 <div class="spill-card">
                     <div class="spill-header">
-                        <span class="spill-author">@test.user</span>
-                        <span class="spill-mood chaotic">CHAOTIC</span>
+                        <span class="spill-author">@${spill.author}</span>
+                        <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
                     </div>
-                    <div class="spill-content">Test spill content</div>
+                    <div class="spill-content">
+                        ${spill.content}
+                    </div>
+                    
                     <div class="spill-reactions">
-                        <button class="react-btn">💀 10</button>
-                        <button class="react-btn">😭 20</button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
+                            💀 <span class="react-count">${spill.reactions.skull || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
+                            😭 <span class="react-count">${spill.reactions.cry || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
+                            🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
+                            🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
+                        </button>
                     </div>
                 </div>
             `;
-            document.getElementById('feedMeta').textContent = '1 spill';
+        });
+        
+        container.innerHTML = html;
+        
+        const meta = $('#feedMeta');
+        if (meta) meta.textContent = allEntries.length + ' spill';
+    }
+    
+    // ========== COMBINE FUNCTION ==========
+    function combineAndRender() {
+        allEntries = [...userEntries, ...aiEntries];
+        allEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        renderSpills();
+    }
+    
+    // ========== FETCH USER ENTRIES ==========
+    async function fetchUserEntries() {
+        try {
+            console.log('[Supabase] Fetching entries...');
+            
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/entries?` + 
+                `select=*&` +
+                `order=created_at.desc&` +
+                `limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+            
+            const data = await response.json();
+            console.log('[Supabase] Data received:', data.length, 'entries');
+            
+            if (data && data.length > 0) {
+                console.log('=== USERNAME MAPPING ===');
+                userEntries = data.map(entry => {
+                    const username = getUsernameFromUserId(entry.user_id);
+                    console.log(`${entry.user_id.substring(0,8)}... → @${username} : "${entry.content?.substring(0,30)}..."`);
+                    
+                    return {
+                        author: username,
+                        mood: entry.mood || 'chaotic',
+                        content: entry.content || '...',
+                        reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+                        created_at: entry.created_at
+                    };
+                });
+                console.log('========================');
+            } else {
+                userEntries = getDummyEntries();
+            }
+            
+        } catch (error) {
+            console.error('[Supabase] Error:', error);
+            userEntries = getDummyEntries();
         }
-    }, 1000);
-    </script>
+        
+        combineAndRender();
+    }
+    
+    // ========== DATA DUMMY ==========
+    function getDummyEntries() {
+        return [
+            {
+                author: 'beby.manis',
+                mood: 'chaotic',
+                content: 'hari ini nangis karena liat mantan bahagia',
+                reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
+                created_at: new Date().toISOString()
+            },
+            {
+                author: 'chili.padi',
+                mood: 'thriving',
+                content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
+                reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
+                created_at: new Date(Date.now() - 3600000).toISOString()
+            }
+        ];
+    }
+    
+    // ========== GENERATE AI ENTRIES ==========
+    function generateAIEntries(count = 6) {
+        const authors = ['sejuta.badai', 'agak.koplak', 'cinnamon.girl', 'move.on'];
+        const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
+        const contents = {
+            surviving: ['deadline skripsi makin deket 😮‍💨', 'capek banget hari ini 🥲'],
+            thriving: ['alhamdulillah hari ini cuan! 💰', 'sidang kelar nilai A'],
+            chaotic: ['client minta revisi jam 11 malem 🔥', 'hidup lagi kacau balau'],
+            doom: ['motor mogok, dompet tipis 🫠', '6 bulan nganggur']
+        };
+        
+        return Array(count).fill().map(() => {
+            const author = authors[Math.floor(Math.random() * authors.length)];
+            const mood = moods[Math.floor(Math.random() * moods.length)];
+            const contentList = contents[mood];
+            const content = contentList[Math.floor(Math.random() * contentList.length)];
+            const daysAgo = 7 + Math.floor(Math.random() * 23);
+            const timestamp = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+            
+            return {
+                author,
+                mood,
+                content,
+                reactions: {
+                    skull: Math.floor(Math.random() * 30) + 5,
+                    cry: Math.floor(Math.random() * 40) + 10,
+                    fire: Math.floor(Math.random() * 20) + 1,
+                    upside: Math.floor(Math.random() * 15) + 2
+                },
+                created_at: timestamp.toISOString()
+            };
+        });
+    }
+    
+    // ========== INIT AI ENTRIES ==========
+    function initAIEntries() {
+        aiEntries = generateAIEntries(6);
+        combineAndRender();
+    }
+    
+    // ========== REACTION HANDLER ==========
+    window.reactToSpill = function(index, type) {
+        const spill = allEntries[index];
+        if (!spill) return;
+        spill.reactions[type] = (spill.reactions[type] || 0) + 1;
+        renderSpills();
+    };
+    
+    // ========== INIT ==========
+    window.addEventListener('load', async function() {
+        console.log('[App] Starting...');
+        
+        // Set username
+        const userEl = $('#userNameDisplay');
+        if (userEl) {
+            userEl.textContent = '@' + (localStorage.getItem('spill_username') || 'beby.manis');
+        }
+        
+        // Fetch data
+        await fetchUserEntries();
+        initAIEntries();
+        
+        console.log('[App] Ready! Total entries:', allEntries.length);
+    });
+})();
+</script>
 </body>
 </html>
