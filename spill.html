@@ -694,6 +694,16 @@
 (function() {
     'use strict';
     
+    // ========== SUPABASE CONFIG ==========
+    const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+    
+    // ========== STATE ==========
+    let userEntries = [];      // 3 entries dari user (FIFO)
+    let aiEntries = [];        // 6 entries dari AI (FIFO)
+    let allEntries = [];
+    let aiGeneratorTimer = null;
+    
     // ========== SAFE GET ELEMENT ==========
     function $(id) {
         const el = document.getElementById(id);
@@ -701,7 +711,215 @@
         return el;
     }
     
-    // ========== RADAR ASLI ==========
+    // ========== FETCH 3 USER ENTRIES (FIFO) ==========
+    async function fetchUserEntries() {
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/entries?select=*&is_ai=eq.false&order=created_at.desc&limit=3`, {
+                headers: {
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`
+                }
+            });
+            
+            if (!response.ok) throw new Error('Failed to fetch');
+            
+            const data = await response.json();
+            
+            // Format data
+            userEntries = data.map(entry => ({
+                author: entry.user_id ? entry.user_id.substring(0, 8) : 'anonymous', // fallback kalo ga ada username
+                mood: entry.mood || 'chaotic',
+                content: entry.content || '...',
+                reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+                created_at: entry.created_at,
+                is_ai: false
+            }));
+            
+            console.log('[Supabase] User entries loaded:', userEntries.length);
+            combineAndRender();
+            
+        } catch (error) {
+            console.error('[Supabase] Error fetching user entries:', error);
+            // Fallback data
+            userEntries = [
+                {
+                    author: 'beby.manis',
+                    mood: 'chaotic',
+                    content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
+                    reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
+                    is_ai: false
+                },
+                {
+                    author: 'chili.padi',
+                    mood: 'thriving',
+                    content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
+                    reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
+                    is_ai: false
+                },
+                {
+                    author: 'pretty.sad',
+                    mood: 'doom',
+                    content: 'ga semangat ngapa-ngapain 😭😭😭',
+                    reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
+                    is_ai: false
+                }
+            ];
+            combineAndRender();
+        }
+    }
+    
+    // ========== GENERATE AI ENTRIES (RANDOM) ==========
+    function generateAIEntries(count = 6) {
+        const authors = ['beby.manis', 'sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam'];
+        const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
+        
+        const contents = {
+            surviving: [
+                'deadline skripsi makin deket, anxiety naik turun 😮‍💨',
+                'capek banget hari ini, pengen rebahan aja 🥲',
+                'bangun tidur langsung overthinking masa depan'
+            ],
+            thriving: [
+                'alhamdulillah hari ini cuan! 💰',
+                'akhirnya sidang kelar, nilai A alhamdulillah',
+                'hari ini closing 3 client dalam sehari'
+            ],
+            chaotic: [
+                'client minta revisi jam 11 malem, this is fine 🔥',
+                'hidup lagi kacau balau 🔥',
+                'hari ini chaotic banget: pagi dimarahin boss'
+            ],
+            doom: [
+                'motor mogok, dompet tipis, pacar ngambek. triple combo 🫠',
+                'rasanya pengen rebahan aja selamanya 🛌',
+                'udah 6 bulan nganggur, lamaran kerja ga ada yang dipanggil'
+            ]
+        };
+        
+        const newEntries = Array(count).fill().map(() => {
+            const author = authors[Math.floor(Math.random() * authors.length)];
+            const mood = moods[Math.floor(Math.random() * moods.length)];
+            const contentList = contents[mood];
+            const content = contentList[Math.floor(Math.random() * contentList.length)];
+            
+            return {
+                author,
+                mood,
+                content,
+                reactions: {
+                    skull: Math.floor(Math.random() * 30) + 5,
+                    cry: Math.floor(Math.random() * 40) + 10,
+                    fire: Math.floor(Math.random() * 20) + 1,
+                    upside: Math.floor(Math.random() * 15) + 2
+                },
+                is_ai: true,
+                created_at: new Date().toISOString()
+            };
+        });
+        
+        return newEntries;
+    }
+    
+    // ========== INIT AI ENTRIES & START GENERATOR ==========
+    function initAIEntries() {
+        // Generate 6 entries pertama
+        aiEntries = generateAIEntries(6);
+        
+        // Start timer setiap 7 menit (420000 ms)
+        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
+        aiGeneratorTimer = setInterval(() => {
+            console.log('[AI] Generating new entry...');
+            
+            // Generate 1 entry baru
+            const newEntry = generateAIEntries(1)[0];
+            
+            // FIFO: tambah di depan, pop yang paling lama
+            aiEntries = [newEntry, ...aiEntries.slice(0, 5)]; // tetap 6 entries
+            
+            combineAndRender();
+            
+        }, 7 * 60 * 1000); // 7 menit
+        
+        combineAndRender();
+    }
+    
+    // ========== GABUNGIN USER + AI ==========
+    function combineAndRender() {
+        // Urutkan semua entries berdasarkan created_at (descending)
+        // User entries dari Supabase, AI entries dengan timestamp sekarang
+        allEntries = [...userEntries, ...aiEntries];
+        
+        // Urutkan berdasarkan created_at (descending = terbaru di atas)
+        allEntries.sort((a, b) => {
+            const dateA = new Date(a.created_at || 0);
+            const dateB = new Date(b.created_at || 0);
+            return dateB - dateA;
+        });
+        
+        // Pastikan 3 user entries tetap di posisi 1-3
+        // Ini approach simpler: tampilkan semua, urutan berdasarkan waktu
+        renderSpills();
+    }
+    
+    // ========== RENDER FUNCTION ==========
+    function renderSpills() {
+        const container = $('spillsList');
+        if (!container) return;
+        
+        if (allEntries.length === 0) {
+            container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
+            return;
+        }
+        
+        container.innerHTML = allEntries.map((spill, index) => {
+            return `
+                <div class="spill-card">
+                    <div class="spill-header">
+                        <span class="spill-author">@${spill.author}</span>
+                        <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
+                    </div>
+                    <div class="spill-content">
+                        ${spill.content}
+                    </div>
+                    
+                    <!-- REACTIONS HORISONTAL -->
+                    <div class="spill-reactions">
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
+                            💀 <span class="react-count">${spill.reactions.skull || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
+                            😭 <span class="react-count">${spill.reactions.cry || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
+                            🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
+                            🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
+                        </button>
+                    </div>
+                    
+                    <!-- AI BADGE (optional) -->
+                    ${spill.is_ai ? '<div class="ai-badge">🤖</div>' : ''}
+                </div>
+            `;
+        }).join('');
+        
+        const meta = $('feedMeta');
+        if (meta) meta.textContent = allEntries.length + ' spill';
+    }
+    
+    // ========== REACTION HANDLER ==========
+    window.reactToSpill = function(index, type) {
+        const spill = allEntries[index];
+        if (!spill) return;
+        
+        spill.reactions[type] = (spill.reactions[type] || 0) + 1;
+        renderSpills();
+        
+        // TODO: nanti bisa POST ke Supabase buat update reactions
+    };
+    
+    // ========== RADAR ASLI (COPY DARI SEBELUMNYA) ==========
     let rdots = [];
     let needleA = 0, needleO = 0, phA = Math.random() * Math.PI * 2;
     const BASE_OM = (60/4 * Math.PI * 2) / (60 * 60);
@@ -868,128 +1086,6 @@
         draw();
     }
     
-    // ========== DATA USER ENTRIES (1-3) ==========
-    const userEntries = [
-        {
-            author: 'beby.manis',
-            mood: 'chaotic',
-            content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
-            reactions: { skull: 15, cry: 30, fire: 2, upside: 5 }
-        },
-        {
-            author: 'chili.padi',
-            mood: 'thriving',
-            content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
-            reactions: { skull: 3, cry: 2, fire: 45, upside: 8 }
-        },
-        {
-            author: 'pretty.sad',
-            mood: 'doom',
-            content: 'ga semangat ngapa-ngapain 😭😭😭',
-            reactions: { skull: 22, cry: 35, fire: 1, upside: 4 }
-        }
-    ];
-    
-    // ========== AI GENERATOR (ENTRIES 4-9) ==========
-    function generateAIEntries(count = 6) {
-        const authors = ['beby.manis', 'sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam'];
-        const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
-        
-        const contents = {
-            surviving: [
-                'deadline skripsi makin deket, anxiety naik turun 😮‍💨',
-                'capek banget hari ini, pengen rebahan aja 🥲',
-                'bangun tidur langsung overthinking masa depan'
-            ],
-            thriving: [
-                'alhamdulillah hari ini cuan! 💰',
-                'akhirnya sidang kelar, nilai A alhamdulillah',
-                'hari ini closing 3 client dalam sehari'
-            ],
-            chaotic: [
-                'client minta revisi jam 11 malem, this is fine 🔥',
-                'hidup lagi kacau balau 🔥',
-                'hari ini chaotic banget: pagi dimarahin boss'
-            ],
-            doom: [
-                'motor mogok, dompet tipis, pacar ngambek. triple combo 🫠',
-                'rasanya pengen rebahan aja selamanya 🛌',
-                'udah 6 bulan nganggur, lamaran kerja ga ada yang dipanggil'
-            ]
-        };
-        
-        return Array(count).fill().map(() => {
-            const author = authors[Math.floor(Math.random() * authors.length)];
-            const mood = moods[Math.floor(Math.random() * moods.length)];
-            const contentList = contents[mood];
-            const content = contentList[Math.floor(Math.random() * contentList.length)];
-            
-            return {
-                author,
-                mood,
-                content,
-                reactions: {
-                    skull: Math.floor(Math.random() * 30) + 5,
-                    cry: Math.floor(Math.random() * 40) + 10,
-                    fire: Math.floor(Math.random() * 20) + 1,
-                    upside: Math.floor(Math.random() * 15) + 2
-                }
-            };
-        });
-    }
-    
-    // ========== GABUNGIN USER + AI ==========
-    const aiEntries = generateAIEntries(6);
-    const allEntries = [...userEntries, ...aiEntries];
-    
-    // ========== RENDER FUNCTION ==========
-    window.renderSpills = function() {
-        const container = $('spillsList');
-        if (!container) return;
-        
-        container.innerHTML = allEntries.map((spill, index) => {
-            return `
-                <div class="spill-card">
-                    <div class="spill-header">
-                        <span class="spill-author">@${spill.author}</span>
-                        <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
-                    </div>
-                    <div class="spill-content">
-                        ${spill.content}
-                    </div>
-                    
-                    <!-- REACTIONS HORISONTAL -->
-                    <div class="spill-reactions">
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
-                            💀 <span class="react-count">${spill.reactions.skull}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
-                            😭 <span class="react-count">${spill.reactions.cry}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
-                            🔥 <span class="react-count">${spill.reactions.fire}</span>
-                        </button>
-                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
-                            🙃 <span class="react-count">${spill.reactions.upside}</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        
-        const meta = $('feedMeta');
-        if (meta) meta.textContent = allEntries.length + ' spill';
-    };
-    
-    // ========== REACTION HANDLER ==========
-    window.reactToSpill = function(index, type) {
-        const spill = allEntries[index];
-        if (!spill) return;
-        
-        spill.reactions[type] += 1;
-        window.renderSpills();
-    };
-    
     // ========== VIBE CHECK ==========
     function startVibeCheck(type) {
         console.log(`[Vibe] ${type} clicked`);
@@ -1025,7 +1121,7 @@
     }
     
     // ========== INIT ==========
-    window.addEventListener('load', function() {
+    window.addEventListener('load', async function() {
         console.log('[App] Starting...');
         
         // Set username
@@ -1042,10 +1138,13 @@
         // Init radar
         setTimeout(initRadar, 100);
         
-        // Render spills
-        window.renderSpills();
+        // Fetch user entries dari Supabase
+        await fetchUserEntries();
         
-        // ===== TOMBOL HEART & SPADE - PASTIKAN ADA =====
+        // Init AI entries & generator
+        initAIEntries();
+        
+        // ===== TOMBOL HEART & SPADE =====
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
         const whisperBtn = $('whisperBtn');
