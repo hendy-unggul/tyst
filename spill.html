@@ -409,7 +409,6 @@
             font-weight: bold;
         }
         
-        /* AI BADGE - TETAP ADA TAPI DISEMBUNYIKAN */
         .ai-badge {
             display: none;
         }
@@ -522,6 +521,33 @@
             flex: 1;
             overflow-y: auto;
             padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .chat-message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        
+        .chat-message.user {
+            align-self: flex-end;
+            background: var(--as);
+            color: black;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .chat-message.stranger {
+            align-self: flex-start;
+            background: var(--sf);
+            color: var(--tx);
+            border: 1px solid var(--bd2);
+            border-bottom-left-radius: 4px;
         }
         
         .chat-input-wrap {
@@ -540,6 +566,7 @@
             color: var(--tx);
             font-family: var(--font-body);
             outline: none;
+            border-radius: 8px;
         }
         
         .chat-input:focus {
@@ -555,16 +582,12 @@
             font-size: 20px;
             cursor: pointer;
             box-shadow: 3px 3px 0 #000;
+            border-radius: 8px;
         }
         
         .chat-send:active {
             transform: translate(2px, 2px);
             box-shadow: 1px 1px 0 #000;
-        }
-        
-        .chat-send.disabled {
-            opacity: 0.3;
-            pointer-events: none;
         }
         
         .toast {
@@ -580,16 +603,12 @@
             transition: 0.25s;
             border: 2px solid #000;
             box-shadow: 4px 4px 0 #000;
+            border-radius: 30px;
         }
         
         .toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
-        }
-        
-        .toast.error {
-            background: var(--ap);
-            color: #fff;
         }
         
         .empty-state {
@@ -599,6 +618,14 @@
             font-family: var(--font-mono);
             font-size: 14px;
             border: 2px dashed var(--bd2);
+        }
+        
+        .typing-indicator {
+            align-self: flex-start;
+            color: var(--txs);
+            font-style: italic;
+            font-size: 12px;
+            padding: 5px 10px;
         }
     </style>
 </head>
@@ -702,9 +729,7 @@
         <span class="chat-timer" id="chatTimer">15:00</span>
         <button class="chat-close" id="closeChatBtn">✕</button>
     </div>
-    <div class="chat-messages" id="chatMessages">
-        <div style="text-align:center; color:#777; padding:20px;">👥 Perfect stranger</div>
-    </div>
+    <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-wrap">
         <input type="text" class="chat-input" id="chatInput" placeholder="ketik...">
         <button class="chat-send" id="sendButton">➤</button>
@@ -723,181 +748,43 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
     
     // ========== STATE ==========
-    let userEntries = [];      // REAL USER entries dari Supabase
-    let aiEntries = [];        // AI entries (generate lokal)
+    let userEntries = [];
+    let aiEntries = [];
     let allEntries = [];
     let aiGeneratorTimer = null;
+    let currentAIPartner = null;
+    let chatHistory = [];
+    
+    // ========== USERNAME MAPPING ==========
+    const AVAILABLE_USERNAMES = [
+        'beby.manis', 'chili.padi', 'pretty.sad', 'sejuta.badai', 
+        'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam',
+        'malam.minggu', 'hujan.gerimis', 'kopi.pahit', 'luka.luka',
+        'senja.redup', 'kota.tua', 'patah.hati', 'move.on'
+    ];
+    
+    const usernameCache = new Map();
+    
+    function getUsernameFromUserId(userId) {
+        if (!userId) return 'anonymous';
+        if (usernameCache.has(userId)) return usernameCache.get(userId);
+        
+        let hash = 0;
+        for (let i = 0; i < userId.length; i++) {
+            hash = ((hash << 5) - hash) + userId.charCodeAt(i);
+            hash |= 0;
+        }
+        
+        const index = Math.abs(hash) % AVAILABLE_USERNAMES.length;
+        const username = AVAILABLE_USERNAMES[index];
+        usernameCache.set(userId, username);
+        
+        return username;
+    }
     
     // ========== SAFE GET ELEMENT ==========
     function $(id) {
-        const el = document.getElementById(id);
-        if (!el) console.warn('Element not found:', id);
-        return el;
-    }
-    
-    // ========== FETCH REAL USER ENTRIES ==========
-    async function fetchUserEntries() {
-        try {
-            console.log('[Supabase] Fetching real user entries...');
-            
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/entries?` + 
-                `select=*&` +
-                `order=created_at.desc&` +
-                `limit=10`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error ${response.status}`);
-            }
-            
-            const data = await response.json();
-            console.log('[Supabase] Real user entries:', data.length);
-            
-            if (data && data.length > 0) {
-                // REAL USER ENTRIES - pakai username dari tabel Supabase
-                userEntries = data.map(entry => ({
-                    author: entry.username || 'anonymous',  // ← LANGSUNG DARI KOLOM USERNAME!
-                    mood: entry.mood || 'chaotic',
-                    content: entry.content || '...',
-                    reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
-                    created_at: entry.created_at,
-                    is_ai: false  // ini REAL user
-                }));
-                
-                console.log('Real usernames:', userEntries.map(e => e.author));
-            } else {
-                // Pakai data dummy kalau kosong
-                console.log('[Supabase] No entries, using dummy');
-                userEntries = getDummyEntries();
-            }
-            
-        } catch (error) {
-            console.error('[Supabase] Error:', error);
-            userEntries = getDummyEntries();
-        }
-        
-        combineAndRender();
-    }
-    
-    // ========== DATA DUMMY (untuk real user fallback) ==========
-    function getDummyEntries() {
-        return [
-            {
-                author: 'beby.manis',
-                mood: 'chaotic',
-                content: 'hari ini nangis karena liat mantan bahagia, padahal udah move on 3 bulan',
-                reactions: { skull: 15, cry: 30, fire: 2, upside: 5 },
-                created_at: new Date().toISOString(),
-                is_ai: false
-            },
-            {
-                author: 'chili.padi',
-                mood: 'thriving',
-                content: 'akhirnya sidang ACC, lulus 🥳🥳🥳',
-                reactions: { skull: 3, cry: 2, fire: 45, upside: 8 },
-                created_at: new Date(Date.now() - 3600000).toISOString(),
-                is_ai: false
-            },
-            {
-                author: 'pretty.sad',
-                mood: 'doom',
-                content: 'ga semangat ngapa-ngapain 😭😭😭',
-                reactions: { skull: 22, cry: 35, fire: 1, upside: 4 },
-                created_at: new Date(Date.now() - 7200000).toISOString(),
-                is_ai: false
-            }
-        ];
-    }
-    
-    // ========== GENERATE AI ENTRIES (untuk konten) ==========
-    function generateAIEntries(count = 6) {
-        // AI username - TERPISAH dari real username
-        const aiAuthors = ['sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam', 'move.on'];
-        const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
-        
-        const contents = {
-            surviving: [
-                'deadline skripsi makin deket, anxiety naik turun 😮‍💨',
-                'capek banget hari ini, pengen rebahan aja 🥲',
-                'bangun tidur langsung overthinking masa depan'
-            ],
-            thriving: [
-                'alhamdulillah hari ini cuan! 💰',
-                'akhirnya sidang kelar, nilai A alhamdulillah',
-                'hari ini closing 3 client dalam sehari'
-            ],
-            chaotic: [
-                'client minta revisi jam 11 malem, this is fine 🔥',
-                'hidup lagi kacau balau 🔥',
-                'hari ini chaotic banget: pagi dimarahin boss'
-            ],
-            doom: [
-                'motor mogok, dompet tipis, pacar ngambek. triple combo 🫠',
-                'rasanya pengen rebahan aja selamanya 🛌',
-                'udah 6 bulan nganggur, lamaran kerja ga ada yang dipanggil'
-            ]
-        };
-        
-        // Buat AI entries dengan timestamp lebih lama (7-30 hari yang lalu)
-        return Array(count).fill().map(() => {
-            const author = aiAuthors[Math.floor(Math.random() * aiAuthors.length)];
-            const mood = moods[Math.floor(Math.random() * moods.length)];
-            const contentList = contents[mood];
-            const content = contentList[Math.floor(Math.random() * contentList.length)];
-            
-            // Random antara 7-30 hari yang lalu
-            const daysAgo = 7 + Math.floor(Math.random() * 23);
-            const timestamp = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
-            
-            return {
-                author,  // ← AI username dari array terpisah
-                mood,
-                content,
-                reactions: {
-                    skull: Math.floor(Math.random() * 30) + 5,
-                    cry: Math.floor(Math.random() * 40) + 10,
-                    fire: Math.floor(Math.random() * 20) + 1,
-                    upside: Math.floor(Math.random() * 15) + 2
-                },
-                created_at: timestamp.toISOString(),
-                is_ai: true  // ini AI entry
-            };
-        });
-    }
-    
-    // ========== INIT AI ENTRIES ==========
-    function initAIEntries() {
-        aiEntries = generateAIEntries(6);
-        combineAndRender();
-        
-        // Generator setiap 3 menit
-        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
-        aiGeneratorTimer = setInterval(() => {
-            console.log('[AI] Generating new entry...');
-            const newEntry = generateAIEntries(1)[0];
-            aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
-            combineAndRender();
-        }, 180000); // 3 menit
-    }
-    
-    // ========== GABUNG & URUTKAN ==========
-    function combineAndRender() {
-        // Gabungkan REAL user entries + AI entries
-        allEntries = [...userEntries, ...aiEntries];
-        
-        // Urutkan berdasarkan created_at (terbaru di atas)
-        allEntries.sort((a, b) => {
-            return new Date(b.created_at) - new Date(a.created_at);
-        });
-        
-        renderSpills();
+        return document.getElementById(id);
     }
     
     // ========== RENDER SPILLS ==========
@@ -936,8 +823,6 @@
                             🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
                         </button>
                     </div>
-                    
-                    ${spill.is_ai ? '<div class="ai-badge">🤖</div>' : ''}
                 </div>
             `;
         });
@@ -948,11 +833,110 @@
         if (meta) meta.textContent = allEntries.length + ' spill';
     }
     
+    // ========== COMBINE AND RENDER ==========
+    function combineAndRender() {
+        allEntries = [...userEntries, ...aiEntries];
+        allEntries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        renderSpills();
+    }
+    
+    // ========== FETCH REAL USER ENTRIES ==========
+    async function fetchUserEntries() {
+        try {
+            console.log('[Supabase] Fetching real user entries...');
+            
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/entries?` + 
+                `select=*&` +
+                `order=created_at.desc&` +
+                `limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('[Supabase] Real user entries:', data.length);
+            
+            if (data && data.length > 0) {
+                userEntries = data.map(entry => ({
+                    author: entry.username || getUsernameFromUserId(entry.user_id),
+                    mood: entry.mood || 'chaotic',
+                    content: entry.content || '...',
+                    reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+                    created_at: entry.created_at,
+                    is_ai: false
+                }));
+            }
+            
+        } catch (error) {
+            console.error('[Supabase] Error:', error);
+        }
+        
+        combineAndRender();
+    }
+    
+    // ========== GENERATE AI ENTRIES ==========
+    function generateAIEntries(count = 6) {
+        const aiAuthors = ['sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam', 'move.on'];
+        const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
+        
+        const contents = {
+            surviving: ['deadline skripsi makin deket 😮‍💨', 'capek banget hari ini 🥲'],
+            thriving: ['alhamdulillah hari ini cuan! 💰', 'sidang kelar nilai A'],
+            chaotic: ['client minta revisi jam 11 malem 🔥', 'hidup lagi kacau balau'],
+            doom: ['motor mogok, dompet tipis 🫠', '6 bulan nganggur']
+        };
+        
+        return Array(count).fill().map(() => {
+            const author = aiAuthors[Math.floor(Math.random() * aiAuthors.length)];
+            const mood = moods[Math.floor(Math.random() * moods.length)];
+            const contentList = contents[mood];
+            const content = contentList[Math.floor(Math.random() * contentList.length)];
+            const daysAgo = 7 + Math.floor(Math.random() * 23);
+            const timestamp = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+            
+            return {
+                author,
+                mood,
+                content,
+                reactions: {
+                    skull: Math.floor(Math.random() * 30) + 5,
+                    cry: Math.floor(Math.random() * 40) + 10,
+                    fire: Math.floor(Math.random() * 20) + 1,
+                    upside: Math.floor(Math.random() * 15) + 2
+                },
+                created_at: timestamp.toISOString(),
+                is_ai: true
+            };
+        });
+    }
+    
+    // ========== INIT AI ENTRIES ==========
+    function initAIEntries() {
+        aiEntries = generateAIEntries(6);
+        combineAndRender();
+        
+        if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
+        aiGeneratorTimer = setInterval(() => {
+            console.log('[AI] Generating new entry...');
+            const newEntry = generateAIEntries(1)[0];
+            aiEntries = [newEntry, ...aiEntries.slice(0, 5)];
+            combineAndRender();
+        }, 180000);
+    }
+    
     // ========== REACTION HANDLER ==========
     window.reactToSpill = function(index, type) {
         const spill = allEntries[index];
         if (!spill) return;
-        
         spill.reactions[type] = (spill.reactions[type] || 0) + 1;
         renderSpills();
     };
@@ -1008,19 +992,17 @@
         if (!c) return;
         c.innerHTML = '';
         rdots = [];
-        const types = ['ai', 'purple', 'red', 'lime'];
         for (let i = 0; i < 8; i++) {
             const a = Math.random() * Math.PI * 2;
             const d = 12 + Math.random() * 70;
             const x = 50 + Math.cos(a) * d / 2;
             const y = 50 + Math.sin(a) * d / 2;
             const dot = document.createElement('div');
-            const type = types[Math.floor(Math.random() * types.length)];
-            dot.className = 'radar-dot ' + type;
+            dot.className = 'radar-dot';
             dot.style.left = x + '%';
             dot.style.top = y + '%';
             c.appendChild(dot);
-            rdots.push({ el: dot, x, y, vx: 0, vy: 0, type, id: i });
+            rdots.push({ el: dot, x, y, vx: 0, vy: 0, id: i });
         }
     }
     
@@ -1106,12 +1088,9 @@
                     const t = age / 55;
                     const ga = (1 - t) * (1 - t) * 0.9;
                     if (ga < 0.01) return;
-                    const col = d.type === 'purple' ? '191,90,242' :
-                               d.type === 'red' ? '255,45,85' :
-                               d.type === 'lime' ? '191,255,0' : '0,229,255';
                     const gr = ctx.createRadialGradient(px, py, 0, px, py, 16 * (1 - t) + 3);
-                    gr.addColorStop(0, `rgba(${col},${ga})`);
-                    gr.addColorStop(1, `rgba(${col},0)`);
+                    gr.addColorStop(0, `rgba(0,229,255,${ga})`);
+                    gr.addColorStop(1, `rgba(0,229,255,0)`);
                     ctx.beginPath();
                     ctx.arc(px, py, 16 * (1 - t) + 3, 0, Math.PI * 2);
                     ctx.fillStyle = gr;
@@ -1124,42 +1103,306 @@
         draw();
     }
     
-    // ========== VIBE CHECK ==========
-    function startVibeCheck(type) {
-        console.log(`[Vibe] ${type} clicked`);
+    // ========== VIBE CHECK - CARI TEMAN ==========
+    async function startVibeCheck(gender) {
+        console.log(`[Vibe] Mencari teman ${gender === 'heart' ? 'cewek' : 'cowok'}...`);
         
         const overlay = $('waitingOverlay');
         const icon = $('waitingIcon');
-        if (overlay && icon) {
-            icon.textContent = type === 'heart' ? '❤️' : '♠️';
-            overlay.style.display = 'flex';
+        const timerEl = $('waitingTimer');
+        
+        if (!overlay || !icon || !timerEl) return;
+        
+        icon.textContent = gender === 'heart' ? '❤️' : '♠️';
+        overlay.style.display = 'flex';
+        
+        let seconds = 15;
+        timerEl.textContent = seconds;
+        
+        let foundUser = false;
+        
+        // COUNTDOWN TIMER
+        const timer = setInterval(() => {
+            seconds--;
+            timerEl.textContent = seconds;
             
-            let seconds = 15;
-            const timerEl = $('waitingTimer');
-            if (timerEl) timerEl.textContent = seconds;
-            
-            const timer = setInterval(() => {
-                seconds--;
-                if (timerEl) timerEl.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(timer);
+                clearInterval(checkInterval);
                 
-                if (seconds <= 0) {
-                    clearInterval(timer);
+                if (!foundUser) {
+                    // 15 DETIK TIDAK DAPAT USER REAL → FALLBACK KE AI
+                    console.log('[Vibe] No real users, fallback to AI');
                     overlay.style.display = 'none';
                     
-                    // Buka chat room setelah waiting selesai
-                    const room = $('chatRoom');
-                    if (room) room.classList.add('on');
+                    // Pilih AI character berdasarkan gender
+                    const aiChar = selectAICharacter(gender);
+                    
+                    // Buka chat dengan AI (via DeepSeek)
+                    openAIChat(aiChar);
                 }
-            }, 1000);
-            
-            const cancelBtn = $('cancelWaiting');
-            if (cancelBtn) {
-                cancelBtn.onclick = () => {
-                    clearInterval(timer);
-                    overlay.style.display = 'none';
-                };
             }
+        }, 1000);
+        
+        // CEK USER ONLINE SETIAP 2 DETIK (SIMULASI)
+        const checkInterval = setInterval(async () => {
+            // SIMULASI: 10% kemungkinan dapat user real
+            const hasUser = Math.random() < 0.1;
+            
+            if (hasUser && !foundUser) {
+                foundUser = true;
+                
+                console.log(`[Vibe] Found real user!`);
+                
+                clearInterval(timer);
+                clearInterval(checkInterval);
+                overlay.style.display = 'none';
+                
+                // Buka chat dengan user real (simulasi)
+                openRealUserChat();
+            }
+        }, 2000);
+        
+        // CANCEL BUTTON
+        const cancelBtn = $('cancelWaiting');
+        cancelBtn.onclick = () => {
+            clearInterval(timer);
+            clearInterval(checkInterval);
+            overlay.style.display = 'none';
+        };
+    }
+    
+    // ========== PILIH AI CHARACTER ==========
+    function selectAICharacter(gender) {
+        const aiChars = {
+            'heart': ['beby.manis', 'pretty.sad', 'strawberry.shortcake', 'cinnamon.girl', 'move.on'],
+            'spade': ['agak.koplak', 'bang.juned', 'chili.padi', 'sejuta.badai', 'satria.bajahitam']
+        };
+        
+        const list = aiChars[gender] || aiChars.heart;
+        return list[Math.floor(Math.random() * list.length)];
+    }
+    
+    // ========== BUKA CHAT DENGAN REAL USER (SIMULASI) ==========
+    function openRealUserChat() {
+        console.log('[Chat] Connecting to real user');
+        
+        const chatRoom = $('chatRoom');
+        const partnerLabel = $('partnerLabel');
+        const chatMessages = $('chatMessages');
+        const chatTimer = $('chatTimer');
+        
+        if (!chatRoom || !partnerLabel || !chatMessages) return;
+        
+        // SET LABEL - TETAP STRANGER
+        partnerLabel.textContent = 'STRANGER';
+        
+        // RESET TIMER
+        if (chatTimer) chatTimer.textContent = '15:00';
+        
+        // CLEAR CHAT
+        chatMessages.innerHTML = '';
+        chatRoom.classList.add('on');
+        
+        // SIMULASI PESAN DARI REAL USER
+        setTimeout(() => {
+            addMessage('stranger', 'hai');
+        }, 1000);
+        
+        // SIMULASI CHAT (UNTUK TESTING)
+        setupSimulatedChat();
+    }
+    
+    // ========== SETUP SIMULATED CHAT (UNTUK TESTING REAL USER) ==========
+    function setupSimulatedChat() {
+        const sendBtn = $('sendButton');
+        const chatInput = $('chatInput');
+        
+        if (!sendBtn || !chatInput) return;
+        
+        // Remove old listeners
+        const newSendBtn = sendBtn.cloneNode(true);
+        sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+        
+        const newChatInput = chatInput.cloneNode(true);
+        chatInput.parentNode.replaceChild(newChatInput, chatInput);
+        
+        newSendBtn.onclick = () => {
+            const msg = newChatInput.value.trim();
+            if (!msg) return;
+            
+            addMessage('user', msg);
+            newChatInput.value = '';
+            
+            // SIMULASI BALASAN REAL USER
+            setTimeout(() => {
+                const replies = ['oh', 'iya', 'hehe', '😅', 'terus?', 'sama'];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                addMessage('stranger', randomReply);
+            }, 1500);
+        };
+        
+        newChatInput.onkeypress = (e) => {
+            if (e.key === 'Enter') newSendBtn.click();
+        };
+    }
+    
+    // ========== BUKA CHAT DENGAN AI (FALLBACK) ==========
+    function openAIChat(characterName) {
+        console.log(`[Chat] Fallback to AI: ${characterName}`);
+        
+        const chatRoom = $('chatRoom');
+        const partnerLabel = $('partnerLabel');
+        const chatMessages = $('chatMessages');
+        const chatTimer = $('chatTimer');
+        
+        if (!chatRoom || !partnerLabel || !chatMessages) return;
+        
+        // SET LABEL - TETAP STRANGER
+        partnerLabel.textContent = 'STRANGER';
+        
+        // RESET TIMER
+        if (chatTimer) chatTimer.textContent = '15:00';
+        
+        // RESET CHAT HISTORY
+        chatHistory = [];
+        
+        // CLEAR CHAT
+        chatMessages.innerHTML = '';
+        chatRoom.classList.add('on');
+        
+        // SIMPAN CHARACTER UNTUK CHAT
+        currentAIPartner = characterName;
+        
+        // KIRIM SAPAAN AWAL (VIA DEEPSEEK)
+        setTimeout(() => {
+            sendAIMessage('', true);
+        }, 500);
+        
+        // SETUP SEND BUTTON UNTUK AI
+        setupAIChat();
+    }
+    
+    // ========== ADD MESSAGE ==========
+    function addMessage(sender, text) {
+        const chatMessages = $('chatMessages');
+        if (!chatMessages) return;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${sender}`;
+        messageDiv.textContent = text;
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // ========== SETUP AI CHAT ==========
+    function setupAIChat() {
+        const sendBtn = $('sendButton');
+        const chatInput = $('chatInput');
+        
+        if (!sendBtn || !chatInput) return;
+        
+        // Remove old listeners
+        const newSendBtn = sendBtn.cloneNode(true);
+        sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
+        
+        const newChatInput = chatInput.cloneNode(true);
+        chatInput.parentNode.replaceChild(newChatInput, chatInput);
+        
+        newSendBtn.onclick = async () => {
+            const msg = newChatInput.value.trim();
+            if (!msg) return;
+            
+            // Tampilkan pesan user
+            addMessage('user', msg);
+            newChatInput.value = '';
+            
+            // Simpan ke history
+            chatHistory.push({ role: 'user', content: msg });
+            
+            // Tampilkan typing indicator
+            showTypingIndicator();
+            
+            // Kirim ke AI
+            await sendAIMessage(msg);
+        };
+        
+        newChatInput.onkeypress = (e) => {
+            if (e.key === 'Enter') newSendBtn.click();
+        };
+    }
+    
+    // ========== TYPING INDICATOR ==========
+    function showTypingIndicator() {
+        const chatMessages = $('chatMessages');
+        if (!chatMessages) return;
+        
+        const indicator = document.createElement('div');
+        indicator.className = 'typing-indicator';
+        indicator.id = 'typingIndicator';
+        indicator.textContent = 'Stranger sedang mengetik...';
+        
+        chatMessages.appendChild(indicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function hideTypingIndicator() {
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) indicator.remove();
+    }
+    
+    // ========== KIRIM PESAN KE AI ==========
+    async function sendAIMessage(message, isFirst = false) {
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message || 'hai',
+                    characterName: currentAIPartner,
+                    lastMessages: chatHistory
+                })
+            });
+            
+            const data = await response.json();
+            
+            // Simpan ke history
+            if (message) {
+                chatHistory.push({ role: 'assistant', content: data.reply });
+            }
+            
+            // Hapus typing indicator
+            hideTypingIndicator();
+            
+            // Tampilkan balasan sebagai STRANGER
+            setTimeout(() => {
+                addMessage('stranger', data.reply);
+            }, isFirst ? 500 : 1000);
+            
+        } catch (error) {
+            console.error('[AI] Error:', error);
+            hideTypingIndicator();
+            
+            // Fallback
+            setTimeout(() => {
+                addMessage('stranger', '😅');
+            }, 1000);
         }
+    }
+    
+    // ========== SHOW TOAST ==========
+    function showToast(message, isError = false) {
+        const toast = $('toast');
+        if (!toast) return;
+        
+        toast.textContent = message;
+        toast.className = 'toast' + (isError ? ' error' : '');
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
     }
     
     // ========== INIT ==========
@@ -1180,10 +1423,8 @@
         // Init radar
         setTimeout(initRadar, 100);
         
-        // Fetch REAL user entries dari Supabase
+        // Fetch data
         await fetchUserEntries();
-        
-        // Init AI entries
         initAIEntries();
         
         // ===== TOMBOL HEART & SPADE =====
@@ -1191,8 +1432,6 @@
         const spadeBtn = $('vibeMaleBtn');
         const whisperBtn = $('whisperBtn');
         const closeChatBtn = $('closeChatBtn');
-        const sendBtn = $('sendButton');
-        const chatInput = $('chatInput');
         const slider = $('vibeSlider');
         const pct = $('vibePct');
         
@@ -1212,32 +1451,15 @@
         
         if (whisperBtn) {
             whisperBtn.onclick = () => {
-                alert('✨ Whisperer mode (premium)');
+                showToast('✨ Whisperer mode (premium)');
             };
         }
         
         if (closeChatBtn) {
             closeChatBtn.onclick = () => {
-                const room = $('chatRoom');
-                if (room) room.classList.remove('on');
-            };
-        }
-        
-        if (sendBtn && chatInput) {
-            sendBtn.onclick = () => {
-                const msg = chatInput.value.trim();
-                if (msg) {
-                    const msgs = $('chatMessages');
-                    if (msgs) {
-                        msgs.innerHTML += `<div style="text-align: right; margin: 10px 0;"><span style="background: var(--as); padding: 8px 12px; display: inline-block;">${msg}</span></div>`;
-                        chatInput.value = '';
-                        msgs.scrollTop = msgs.scrollHeight;
-                    }
-                }
-            };
-            
-            chatInput.onkeypress = (e) => {
-                if (e.key === 'Enter') sendBtn.click();
+                $('chatRoom').classList.remove('on');
+                chatHistory = [];
+                currentAIPartner = null;
             };
         }
         
@@ -1247,98 +1469,18 @@
             };
         }
         
+        // Expose for testing
+        window.testVibe = {
+            heart: () => startVibeCheck('heart'),
+            spade: () => startVibeCheck('spade'),
+            forceAI: () => {
+                const aiChar = selectAICharacter('heart');
+                openAIChat(aiChar);
+            }
+        };
+        
         console.log('[App] Ready!');
     });
-    // ========== EXPOSE FOR TESTING ==========
-// Tambahkan ini sebelum baris terakhir: })();
-window.testAPI = {
-    getAllEntries: () => allEntries,
-    getUserEntries: () => userEntries,
-    getAIEntries: () => aiEntries,
-    generateOneAI: () => {
-        const newAI = generateAIEntries(1)[0];
-        aiEntries = [newAI, ...aiEntries.slice(0, 5)];
-        combineAndRender();
-        console.log('[Test] AI generated:', newAI.author, newAI.content);
-        return newAI;
-    },
-    addTestEntry: (author = 'test.user') => {
-        const newEntry = {
-            author: author,
-            mood: 'chaotic',
-            content: 'Test entry at ' + new Date().toLocaleTimeString(),
-            reactions: { skull: 0, cry: 0, fire: 0, upside: 0 },
-            created_at: new Date().toISOString(),
-            is_ai: false
-        };
-        userEntries = [newEntry, ...userEntries.slice(0, 9)];
-        combineAndRender();
-        console.log('[Test] Entry added. Total user entries:', userEntries.length);
-        return newEntry;
-    },
-    getStats: () => ({
-        total: allEntries?.length || 0,
-        user: userEntries?.length || 0,
-        ai: aiEntries?.length || 0,
-        latest: allEntries?.[0] ? {
-            author: allEntries[0].author,
-            content: allEntries[0].content.substring(0, 30),
-            time: new Date(allEntries[0].created_at).toLocaleString()
-        } : null
-    }),
-    startMonitor: (interval = 30000) => {
-        if (window._monitor) clearInterval(window._monitor);
-        window._monitor = setInterval(() => {
-            const stats = window.testAPI.getStats();
-            console.log('=== MONITORING ===', new Date().toLocaleTimeString());
-            console.log('Total:', stats.total, '| User:', stats.user, '| AI:', stats.ai);
-            if (stats.latest) {
-                console.log('Latest:', `@${stats.latest.author}`, stats.latest.content);
-            }
-            console.log('===================');
-        }, interval);
-        console.log('[Test] Monitor started every', interval/1000, 'seconds');
-    },
-    stopMonitor: () => {
-        if (window._monitor) {
-            clearInterval(window._monitor);
-            window._monitor = null;
-            console.log('[Test] Monitor stopped');
-        }
-    }
-};
-  // ========== EXPOSE VIBE CHECK FOR TESTING ==========
-window.startVibeCheck = startVibeCheck;
-window.testVibe = {
-    heart: () => startVibeCheck('heart'),
-    spade: () => startVibeCheck('spade'),
-    cancel: () => document.getElementById('cancelWaiting')?.click(),
-    closeChat: () => document.getElementById('closeChatBtn')?.click(),
-    sendMessage: (msg) => {
-        const input = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendButton');
-        if (input && sendBtn) {
-            input.value = msg;
-            sendBtn.click();
-            return 'Message sent: ' + msg;
-        }
-        return 'Failed to send message';
-    },
-    openChat: () => document.getElementById('chatRoom')?.classList.add('on'),
-    getStatus: () => ({
-        overlay: document.getElementById('waitingOverlay')?.style.display,
-        chatOpen: document.getElementById('chatRoom')?.classList.contains('on'),
-        timer: document.getElementById('waitingTimer')?.textContent
-    })
-};
-    // Expose untuk testing
-window.startVibeCheck = startVibeCheck;
-window.testVibe = {
-    heart: () => document.getElementById('vibeFemaleBtn').click(),
-    spade: () => document.getElementById('vibeMaleBtn').click(),
-    cancel: () => document.getElementById('cancelWaiting')?.click(),
-    closeChat: () => document.getElementById('closeChatBtn')?.click()
-};
 })();
 </script>
 </body>
