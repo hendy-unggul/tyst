@@ -120,58 +120,41 @@ module.exports = async (req, res) => {
     // ============================================
     // FUNGSI BUAT EFEK MANUSIA
     // ============================================
-    function addHumanEffect(text, isShy) {
-      // Untuk karakter shy: lebih banyak emot, lebih pendek
-      if (isShy) {
-        // Kadang tambah emot
-        if (Math.random() < 0.6) {
-          const shyEmotes = [' 😅', ' 😊', ' 🥲', ' 🙂', ' ...', ' 😶', ' 🤭', ' 😌', ' 😔'];
-          text += shyEmotes[Math.floor(Math.random() * shyEmotes.length)];
-        }
-        
-        // Kadang buat super pendek
-        if (Math.random() < 0.4 && text.length > 10) {
-          const pendek = ['iya', 'oh', 'hehe', '😅', '...', '😊', 'iya sih', '😌', '😔'];
-          text = pendek[Math.floor(Math.random() * pendek.length)];
-        }
-        
-        // Kadang tambah jeda di awal
-        if (Math.random() < 0.3) {
-          const pauses = ['...', '😅', 'eh', 'hmm', '😶', '🙂'];
-          text = pauses[Math.floor(Math.random() * pauses.length)] + ' ' + text;
-        }
-      } else {
-        // Karakter direct: lebih panjang, lebih langsung
-        // Kadang tambah jeda dikit
-        if (Math.random() < 0.2) {
-          const pauses = ['eh', 'yah', 'bro', 'sip', 'wkwk', 'btw'];
-          text = pauses[Math.floor(Math.random() * pauses.length)] + ', ' + text;
-        }
-        
-        // Kadang tambah emot dikit
-        if (Math.random() < 0.3) {
-          const directEmotes = [' 😎', ' 👍', ' 🔥', ' 💯', ' 🤙', ' 👊'];
-          text += directEmotes[Math.floor(Math.random() * directEmotes.length)];
-        }
-      }
-
-      // Kadang typo dikit (untuk semua karakter)
-      const hasTypo = Math.random() < 0.1;
-      if (hasTypo && text.length > 5) {
-        const typoType = Math.random();
-        if (typoType < 0.5) {
-          // Hapus 1 huruf random
-          const pos = Math.floor(Math.random() * (text.length - 2)) + 1;
-          text = text.slice(0, pos) + text.slice(pos + 1);
-        } else {
-          // Dobel huruf
-          const pos = Math.floor(Math.random() * (text.length - 1)) + 1;
-          text = text.slice(0, pos) + text[pos] + text.slice(pos);
-        }
-      }
-
-      return text;
+    // ========== DI DALAM FUNCTION addHumanEffect ==========
+function addHumanEffect(text, isShy, isFirstMessage = false) {
+  // KARAKTER SHY: Hanya pendek di SAPAAN AWAL
+  if (isShy && isFirstMessage) {
+    // Untuk sapaan awal: pendek, pake emot
+    if (Math.random() < 0.7) {
+      const shyGreetings = ['hai...', '😅', '...', 'halo', '🙂', '😊', 'eh'];
+      return shyGreetings[Math.floor(Math.random() * shyGreetings.length)];
     }
+  }
+  
+  // UNTUK PERCAKAPAN SELANJUTNYA: normal, tidak ada restriksi
+  // (kode efek manusia normal untuk semua karakter)
+  
+  // Kadang tambah jeda di awal (untuk semua karakter)
+  if (Math.random() < 0.2) {
+    const pauses = ['eh', 'hmm', 'yah', 'umm'];
+    text = pauses[Math.floor(Math.random() * pauses.length)] + ', ' + text;
+  }
+
+  // Kadang typo dikit (untuk semua karakter)
+  const hasTypo = Math.random() < 0.1;
+  if (hasTypo && text.length > 5) {
+    const pos = Math.floor(Math.random() * (text.length - 2)) + 1;
+    text = text.slice(0, pos) + text.slice(pos + 1);
+  }
+
+  // Tambah emot random (untuk semua karakter)
+  if (Math.random() < 0.3) {
+    const emojis = ['😅', '😊', '😐', '😏', '😮‍💨', '😭', '👍', '😂'];
+    text += ' ' + emojis[Math.floor(Math.random() * emojis.length)];
+  }
+
+  return text;
+}
 
     // ============================================
     // DETEKSI JIKA INI AWAL PERCAKAPAN
