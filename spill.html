@@ -523,11 +523,11 @@
             padding: 18px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
         }
         
-        .chat-message {
+        .message {
             max-width: 80%;
+            margin-bottom: 12px;
             padding: 10px 14px;
             border-radius: 18px;
             font-size: 14px;
@@ -535,19 +535,28 @@
             word-wrap: break-word;
         }
         
-        .chat-message.user {
+        .message.user {
             align-self: flex-end;
             background: var(--as);
             color: black;
             border-bottom-right-radius: 4px;
         }
         
-        .chat-message.stranger {
+        .message.stranger {
             align-self: flex-start;
             background: var(--sf);
             color: var(--tx);
             border: 1px solid var(--bd2);
             border-bottom-left-radius: 4px;
+        }
+        
+        .typing-indicator {
+            align-self: flex-start;
+            color: var(--txs);
+            font-style: italic;
+            font-size: 12px;
+            padding: 5px 10px;
+            margin-bottom: 10px;
         }
         
         .chat-input-wrap {
@@ -618,14 +627,6 @@
             font-family: var(--font-mono);
             font-size: 14px;
             border: 2px dashed var(--bd2);
-        }
-        
-        .typing-indicator {
-            align-self: flex-start;
-            color: var(--txs);
-            font-style: italic;
-            font-size: 12px;
-            padding: 5px 10px;
         }
     </style>
 </head>
@@ -752,6 +753,8 @@
     let aiEntries = [];
     let allEntries = [];
     let aiGeneratorTimer = null;
+    
+    // Chat state
     let currentAIPartner = null;
     let chatHistory = [];
     
@@ -778,7 +781,6 @@
         const index = Math.abs(hash) % AVAILABLE_USERNAMES.length;
         const username = AVAILABLE_USERNAMES[index];
         usernameCache.set(userId, username);
-        
         return username;
     }
     
@@ -858,9 +860,7 @@
                 }
             );
             
-            if (!response.ok) {
-                throw new Error(`HTTP error ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
             
             const data = await response.json();
             console.log('[Supabase] Real user entries:', data.length);
@@ -1103,76 +1103,69 @@
         draw();
     }
     
-   // ========== VIBE CHECK - CARI TEMAN ==========
-async function startVibeCheck(gender) {
-    console.log(`[Vibe] Mencari teman ${gender === 'heart' ? 'cewek' : 'cowok'}...`);
-    
-    const overlay = document.getElementById('waitingOverlay');
-    const icon = document.getElementById('waitingIcon');
-    const timerEl = document.getElementById('waitingTimer');
-    
-    if (!overlay || !icon || !timerEl) return;
-    
-    icon.textContent = gender === 'heart' ? '❤️' : '♠️';
-    overlay.style.display = 'flex';
-    
-    let seconds = 15;
-    timerEl.textContent = seconds;
-    
-    let foundRealUser = false;
-    
-    // COUNTDOWN TIMER 15 DETIK
-    const timer = setInterval(() => {
-        seconds--;
+    // ========== VIBE CHECK ==========
+    async function startVibeCheck(gender) {
+        console.log(`[Vibe] Mencari teman ${gender === 'heart' ? 'cewek' : 'cowok'}...`);
+        
+        const overlay = $('waitingOverlay');
+        const icon = $('waitingIcon');
+        const timerEl = $('waitingTimer');
+        
+        if (!overlay || !icon || !timerEl) return;
+        
+        icon.textContent = gender === 'heart' ? '❤️' : '♠️';
+        overlay.style.display = 'flex';
+        
+        let seconds = 15;
         timerEl.textContent = seconds;
         
-        if (seconds <= 0) {
-            clearInterval(timer);
-            clearInterval(checkInterval);
+        let foundRealUser = false;
+        
+        // COUNTDOWN TIMER
+        const timer = setInterval(() => {
+            seconds--;
+            timerEl.textContent = seconds;
             
-            if (!foundRealUser) {
-                // ✅ 15 DETIK HABIS, TIDAK ADA REAL USER → FALLBACK KE DEEPSEEK
-                console.log('[Vibe] No real users found, falling back to DeepSeek API');
+            if (seconds <= 0) {
+                clearInterval(timer);
+                clearInterval(checkInterval);
+                
+                if (!foundRealUser) {
+                    console.log('[Vibe] No real users, fallback to DeepSeek');
+                    overlay.style.display = 'none';
+                    
+                    const aiChar = selectAICharacter(gender);
+                    openDeepSeekChat(aiChar);
+                }
+            }
+        }, 1000);
+        
+        // CHECK REAL USERS (placeholder - selalu kosong)
+        const checkInterval = setInterval(() => {
+            // TODO: Implement real user check
+            const realUsers = [];
+            
+            if (realUsers.length > 0 && !foundRealUser) {
+                foundRealUser = true;
+                clearInterval(timer);
+                clearInterval(checkInterval);
                 overlay.style.display = 'none';
                 
-                // Pilih AI character berdasarkan gender
-                const aiChar = selectAICharacter(gender);
-                
-                // Buka chat dengan DeepSeek
-                openDeepSeekChat(aiChar);
+                // TODO: Connect to real user
+                console.log('[Vibe] Real user found!');
             }
-        }
-    }, 1000);
-    
-    // CEK REAL USER SETIAP 2 DETIK (UNTUK IMPLEMENTASI NANTI)
-    const checkInterval = setInterval(async () => {
-        // TODO: GANTI DENGAN CEK REAL USER DARI SUPABASE
-        // Untuk sekarang, langsung return array kosong agar fallback ke AI
-        const realUsers = [];
+        }, 2000);
         
-        if (realUsers.length > 0 && !foundRealUser) {
-            foundRealUser = true;
-            console.log('[Vibe] Real user found!', realUsers[0]);
-            
+        // CANCEL BUTTON
+        const cancelBtn = $('cancelWaiting');
+        cancelBtn.onclick = () => {
             clearInterval(timer);
             clearInterval(checkInterval);
             overlay.style.display = 'none';
-            
-            // TODO: CONNECT KE REAL USER (WEBSOCKET)
-            // connectToRealUser(realUsers[0]);
-        }
-    }, 2000);
+        };
+    }
     
-    // CANCEL BUTTON
-    const cancelBtn = document.getElementById('cancelWaiting');
-    cancelBtn.onclick = () => {
-        clearInterval(timer);
-        clearInterval(checkInterval);
-        overlay.style.display = 'none';
-    };
-}
-    
-    // ========== PILIH AI CHARACTER ==========
+    // ========== SELECT AI CHARACTER ==========
     function selectAICharacter(gender) {
         const aiChars = {
             'heart': ['beby.manis', 'pretty.sad', 'strawberry.shortcake', 'cinnamon.girl', 'move.on'],
@@ -1183,9 +1176,9 @@ async function startVibeCheck(gender) {
         return list[Math.floor(Math.random() * list.length)];
     }
     
-    // ========== BUKA CHAT DENGAN REAL USER (SIMULASI) ==========
-    function openRealUserChat() {
-        console.log('[Chat] Connecting to real user');
+    // ========== OPEN DEEPSEEK CHAT ==========
+    function openDeepSeekChat(characterName) {
+        console.log(`[DeepSeek] Opening chat with ${characterName}`);
         
         const chatRoom = $('chatRoom');
         const partnerLabel = $('partnerLabel');
@@ -1194,116 +1187,69 @@ async function startVibeCheck(gender) {
         
         if (!chatRoom || !partnerLabel || !chatMessages) return;
         
-        // SET LABEL - TETAP STRANGER
+        // Reset chat
         partnerLabel.textContent = 'STRANGER';
-        
-        // RESET TIMER
         if (chatTimer) chatTimer.textContent = '15:00';
-        
-        // CLEAR CHAT
         chatMessages.innerHTML = '';
         chatRoom.classList.add('on');
         
-        // SIMULASI PESAN DARI REAL USER
-        setTimeout(() => {
-            addMessage('stranger', 'hai');
-        }, 1000);
-        
-        // SIMULASI CHAT (UNTUK TESTING)
-        setupSimulatedChat();
-    }
-    
-    // ========== SETUP SIMULATED CHAT (UNTUK TESTING REAL USER) ==========
-    function setupSimulatedChat() {
-        const sendBtn = $('sendButton');
-        const chatInput = $('chatInput');
-        
-        if (!sendBtn || !chatInput) return;
-        
-        // Remove old listeners
-        const newSendBtn = sendBtn.cloneNode(true);
-        sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
-        
-        const newChatInput = chatInput.cloneNode(true);
-        chatInput.parentNode.replaceChild(newChatInput, chatInput);
-        
-        newSendBtn.onclick = () => {
-            const msg = newChatInput.value.trim();
-            if (!msg) return;
-            
-            addMessage('user', msg);
-            newChatInput.value = '';
-            
-            // SIMULASI BALASAN REAL USER
-            setTimeout(() => {
-                const replies = ['oh', 'iya', 'hehe', '😅', 'terus?', 'sama'];
-                const randomReply = replies[Math.floor(Math.random() * replies.length)];
-                addMessage('stranger', randomReply);
-            }, 1500);
-        };
-        
-        newChatInput.onkeypress = (e) => {
-            if (e.key === 'Enter') newSendBtn.click();
-        };
-    }
-    
-    // ========== BUKA CHAT DENGAN AI (FALLBACK) ==========
-    function openAIChat(characterName) {
-        console.log(`[Chat] Fallback to AI: ${characterName}`);
-        
-        const chatRoom = $('chatRoom');
-        const partnerLabel = $('partnerLabel');
-        const chatMessages = $('chatMessages');
-        const chatTimer = $('chatTimer');
-        
-        if (!chatRoom || !partnerLabel || !chatMessages) return;
-        
-        // SET LABEL - TETAP STRANGER
-        partnerLabel.textContent = 'STRANGER';
-        
-        // RESET TIMER
-        if (chatTimer) chatTimer.textContent = '15:00';
-        
-        // RESET CHAT HISTORY
+        // Set state
+        currentAIPartner = characterName;
         chatHistory = [];
         
-        // CLEAR CHAT
-        chatMessages.innerHTML = '';
-        chatRoom.classList.add('on');
-        
-        // SIMPAN CHARACTER UNTUK CHAT
-        currentAIPartner = characterName;
-        
-        // KIRIM SAPAAN AWAL (VIA DEEPSEEK)
+        // Send initial greeting
         setTimeout(() => {
-            sendAIMessage('', true);
+            callDeepSeekAPI('', true);
         }, 500);
         
-        // SETUP SEND BUTTON UNTUK AI
-        setupAIChat();
+        // Setup chat
+        setupDeepSeekChat();
     }
     
-    // ========== ADD MESSAGE ==========
-    function addMessage(sender, text) {
-        const chatMessages = $('chatMessages');
-        if (!chatMessages) return;
+    // ========== CALL DEEPSEEK API ==========
+    async function callDeepSeekAPI(message, isFirst = false) {
+        if (!currentAIPartner) return;
         
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${sender}`;
-        messageDiv.textContent = text;
-        
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message || 'hai',
+                    characterName: currentAIPartner,
+                    lastMessages: chatHistory
+                })
+            });
+            
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+            
+            const data = await response.json();
+            
+            if (message) {
+                chatHistory.push({ role: 'assistant', content: data.reply });
+            }
+            
+            hideTypingIndicator();
+            
+            setTimeout(() => {
+                addMessage('stranger', data.reply);
+            }, isFirst ? 500 : 1000);
+            
+        } catch (error) {
+            console.error('[DeepSeek] Error:', error);
+            hideTypingIndicator();
+            setTimeout(() => addMessage('stranger', '😅'), 1000);
+        }
     }
     
-    // ========== SETUP AI CHAT ==========
-    function setupAIChat() {
+    // ========== SETUP DEEPSEEK CHAT ==========
+    function setupDeepSeekChat() {
         const sendBtn = $('sendButton');
         const chatInput = $('chatInput');
         
         if (!sendBtn || !chatInput) return;
         
-        // Remove old listeners
+        // Clone to remove old listeners
         const newSendBtn = sendBtn.cloneNode(true);
         sendBtn.parentNode.replaceChild(newSendBtn, sendBtn);
         
@@ -1314,18 +1260,13 @@ async function startVibeCheck(gender) {
             const msg = newChatInput.value.trim();
             if (!msg) return;
             
-            // Tampilkan pesan user
             addMessage('user', msg);
             newChatInput.value = '';
             
-            // Simpan ke history
             chatHistory.push({ role: 'user', content: msg });
-            
-            // Tampilkan typing indicator
             showTypingIndicator();
             
-            // Kirim ke AI
-            await sendAIMessage(msg);
+            await callDeepSeekAPI(msg);
         };
         
         newChatInput.onkeypress = (e) => {
@@ -1352,43 +1293,17 @@ async function startVibeCheck(gender) {
         if (indicator) indicator.remove();
     }
     
-    // ========== KIRIM PESAN KE AI ==========
-    async function sendAIMessage(message, isFirst = false) {
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: message || 'hai',
-                    characterName: currentAIPartner,
-                    lastMessages: chatHistory
-                })
-            });
-            
-            const data = await response.json();
-            
-            // Simpan ke history
-            if (message) {
-                chatHistory.push({ role: 'assistant', content: data.reply });
-            }
-            
-            // Hapus typing indicator
-            hideTypingIndicator();
-            
-            // Tampilkan balasan sebagai STRANGER
-            setTimeout(() => {
-                addMessage('stranger', data.reply);
-            }, isFirst ? 500 : 1000);
-            
-        } catch (error) {
-            console.error('[AI] Error:', error);
-            hideTypingIndicator();
-            
-            // Fallback
-            setTimeout(() => {
-                addMessage('stranger', '😅');
-            }, 1000);
-        }
+    // ========== ADD MESSAGE ==========
+    function addMessage(sender, text) {
+        const chatMessages = $('chatMessages');
+        if (!chatMessages) return;
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}`;
+        messageDiv.textContent = text;
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
     
     // ========== SHOW TOAST ==========
@@ -1400,34 +1315,28 @@ async function startVibeCheck(gender) {
         toast.className = 'toast' + (isError ? ' error' : '');
         toast.classList.add('show');
         
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
+        setTimeout(() => toast.classList.remove('show'), 3000);
     }
     
     // ========== INIT ==========
     window.addEventListener('load', async function() {
         console.log('[App] Starting...');
         
-        // Set username
         const userEl = $('userNameDisplay');
         if (userEl) {
             const saved = localStorage.getItem('spill_username') || 'beby.manis';
             userEl.textContent = '@' + saved;
         }
         
-        // Set online count
         const onlineEl = $('onlineCount');
         if (onlineEl) onlineEl.textContent = '21 ONLINE';
         
-        // Init radar
         setTimeout(initRadar, 100);
         
-        // Fetch data
         await fetchUserEntries();
         initAIEntries();
         
-        // ===== TOMBOL HEART & SPADE =====
+        // Event listeners
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
         const whisperBtn = $('whisperBtn');
@@ -1450,9 +1359,7 @@ async function startVibeCheck(gender) {
         }
         
         if (whisperBtn) {
-            whisperBtn.onclick = () => {
-                showToast('✨ Whisperer mode (premium)');
-            };
+            whisperBtn.onclick = () => showToast('✨ Whisperer mode (premium)');
         }
         
         if (closeChatBtn) {
@@ -1468,16 +1375,6 @@ async function startVibeCheck(gender) {
                 pct.textContent = this.value + '%';
             };
         }
-        
-        // Expose for testing
-        window.testVibe = {
-            heart: () => startVibeCheck('heart'),
-            spade: () => startVibeCheck('spade'),
-            forceAI: () => {
-                const aiChar = selectAICharacter('heart');
-                openAIChat(aiChar);
-            }
-        };
         
         console.log('[App] Ready!');
     });
