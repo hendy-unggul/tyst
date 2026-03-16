@@ -143,19 +143,66 @@
         @keyframes whisperGlow{0%,100%{box-shadow:0 0 5px var(--as)}50%{box-shadow:0 0 15px var(--as)}}
         .whisper-timer-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--as);animation:timerShrink 5s linear forwards}
         @keyframes timerShrink{from{width:100%}to{width:0%}}
-        .waiting-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-        .waiting-box{background:var(--sf);border:3px solid var(--as);padding:30px;text-align:center;box-shadow:12px 12px 0 #000;max-width:300px;width:80%}
-        .waiting-icon{font-size:48px;margin-bottom:16px;animation:pulse 1.5s infinite}
-        .waiting-timer{width:100px;height:100px;border:4px solid var(--aq);border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:36px;color:var(--aq)}
-        #cancelWaiting{background:0 0;border:2px solid var(--bd2);color:var(--txs);padding:14px 24px;margin-top:16px;cursor:pointer;width:100%;font-family:var(--font-mono);transition:.1s}
-        #cancelWaiting:active{background:var(--bd2);color:var(--tx)}
-        .scanning-overlay{display:none;position:fixed;inset:0;background:#000;z-index:2000;align-items:center;justify-content:center;font-family:var(--font-mono)}
-        .scanning-overlay.show{display:flex}
-        .scanning-box{text-align:center;width:100%;max-width:400px;padding:20px}
-        .scanning-text{font-size:24px;font-weight:700;letter-spacing:4px;min-height:120px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.8;color:var(--as);text-shadow:0 0 10px var(--as)}
-        .scanning-progress{width:100%;height:2px;background:var(--bd2);margin-top:30px;position:relative;overflow:hidden}
-        .scanning-bar{position:absolute;left:0;top:0;height:100%;width:0%;background:var(--as);box-shadow:0 0 20px var(--as);transition:width .1s linear}
-        .scanning-timer{margin-top:20px;font-size:14px;color:var(--txs);letter-spacing:2px}
+        
+        /* SCANNING OVERLAY - MENGGANTIKAN WAITING OVERLAY SEPENUHNYA */
+        .scanning-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+        }
+        .scanning-overlay.show { display: flex; }
+        .scanning-box {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        .scanning-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.8;
+            color: var(--as);
+            text-shadow: 0 0 10px var(--as);
+        }
+        .scanning-progress {
+            width: 100%;
+            height: 2px;
+            background: var(--bd2);
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .scanning-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--as);
+            box-shadow: 0 0 20px var(--as);
+            transition: width 0.1s linear;
+        }
+        .scanning-timer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--txs);
+            letter-spacing: 2px;
+        }
+        
+        /* WAITING OVERLAY TIDAK DIGUNAKAN LAGI - TAPI CSS-nya tetap ada biar ga error */
+        .waiting-overlay { display: none; }
+        
         @media (max-width:500px){
             .app{border-left:none;border-right:none}
             .bottom-nav{border-left:none;border-right:none}
@@ -245,6 +292,7 @@
     </nav>
 </div>
 
+<!-- SCANNING OVERLAY - INI YANG DIGUNAKAN, MENGGANTIKAN WAITING OVERLAY -->
 <div class="scanning-overlay" id="scanningOverlay">
     <div class="scanning-box">
         <div class="scanning-text" id="scanningText"></div>
@@ -253,13 +301,8 @@
     </div>
 </div>
 
-<div class="waiting-overlay" id="waitingOverlay">
-    <div class="waiting-box">
-        <div class="waiting-icon" id="waitingIcon">❤️</div>
-        <div class="waiting-timer" id="waitingTimer">15</div>
-        <button id="cancelWaiting">BATAL</button>
-    </div>
-</div>
+<!-- WAITING OVERLAY TETAP ADA TAPI TIDAK DIGUNAKAN (BIAR GA ERROR) -->
+<div class="waiting-overlay" id="waitingOverlay" style="display:none;"></div>
 
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-box">
@@ -394,42 +437,67 @@
     if(age<55){const t=age/55,ga=(1-t)*(1-t)*.9;if(ga<.01)return;const gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}});
     raf=requestAnimationFrame(draw);};draw();};
     
-    // DRAMATIC SCANNING - PERSIS CONTOH
-    const showDramaticScanning=(gender,cb)=>{
+    // SCANNING 15 DETIK - MENGGANTIKAN WAITING OVERLAY SEPENUHNYA
+    const startScanning=(gender,callback)=>{
         const ov=$('scanningOverlay'),txt=$('scanningText'),bar=$('scanningBar'),timer=$('scanningTimer');
-        if(!ov||!txt||!bar||!timer){cb();return;}
+        if(!ov||!txt||!bar||!timer){callback();return;}
+        
+        // Sequence persis contoh
         const seq=[
-            {time:0,text:"finding strangers..."},
-            {time:4,text:"most strangers here are just people"},
-            {time:8,text:"some are ghosts"},
-            {time:12,text:"and a few..."},
-            {time:14,text:"are trouble"}
+            {time:0, text:"finding strangers..."},
+            {time:4, text:"most strangers here are just people"},
+            {time:8, text:"some are ghosts"},
+            {time:12, text:"and a few..."},
+            {time:14, text:"are trouble"}
         ];
+        
         ov.classList.add('show');
         let start=Date.now(),cur=0;
-        const i=setInterval(()=>{
-            const e=(Date.now()-start)/1000,p=Math.min(100,(e/15)*100);
-            bar.style.width=p+'%';timer.textContent=Math.floor(e)+'s';
-            while(cur<seq.length-1&&e>=seq[cur+1].time)cur++;
-            if(cur<seq.length)txt.textContent=seq[cur].text;
-            if(Math.random()<.1){txt.style.opacity='.5';setTimeout(()=>txt.style.opacity='1',50);}
-            if(e>=15){clearInterval(i);ov.classList.remove('show');cb();}
+        
+        const interval=setInterval(()=>{
+            const elapsed=(Date.now()-start)/1000;
+            const progress=Math.min(100,(elapsed/15)*100);
+            bar.style.width=progress+'%';
+            timer.textContent=Math.floor(elapsed)+'s';
+            
+            // Update teks berdasarkan waktu
+            while(cur<seq.length-1 && elapsed>=seq[cur+1].time) cur++;
+            if(cur<seq.length) txt.textContent=seq[cur].text;
+            
+            // Efek glitch random
+            if(Math.random()<0.1){
+                txt.style.opacity='0.5';
+                setTimeout(()=>txt.style.opacity='1',50);
+            }
+            
+            // Selesai 15 detik
+            if(elapsed>=15){
+                clearInterval(interval);
+                ov.classList.remove('show');
+                callback();
+            }
         },100);
-        ov.onclick=()=>{clearInterval(i);ov.classList.remove('show');cb();};
+        
+        // Bisa cancel dengan klik overlay
+        ov.onclick=()=>{
+            clearInterval(interval);
+            ov.classList.remove('show');
+        };
     };
     
-    // Vibe check
+    // Vibe check - LANGSUNG PAKAI SCANNING, TANPA WAITING OVERLAY
     const startVibeCheck=gender=>{
         if(isTyping){toast('Tunggu sampai pesan terkirim');return;}
-        showDramaticScanning(gender,()=>{
-            const ov=$('waitingOverlay'),icon=$('waitingIcon'),timer=$('waitingTimer');
-            if(!ov||!icon||!timer)return;
-            icon.textContent=gender==='heart'?'❤️':'♠️';ov.style.display='flex';
-            let sec=15;timer.textContent=sec;
-            const t=setInterval(()=>{sec--;timer.textContent=sec;if(sec<=0){clearInterval(t);clearInterval(chk);ov.style.display='none';if(!found){const list=(gender==='heart'?['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']:['agak.koplak','bang.juned','chili.padi','sejuta.badai','satria.bajahitam']);openChat(list[Math.floor(Math.random()*list.length)]);}}},1000);
-            const chk=setInterval(()=>{},2000);
-            let found=false;
-            $('cancelWaiting').onclick=()=>{clearInterval(t);clearInterval(chk);ov.style.display='none';};
+        
+        startScanning(gender,()=>{
+            // Setelah 15 detik scanning, langsung buka chat dengan AI
+            const aiChars={
+                'heart':['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on'],
+                'spade':['agak.koplak','bang.juned','chili.padi','sejuta.badai','satria.bajahitam']
+            };
+            const list=aiChars[gender]||aiChars.heart;
+            const aiChar=list[Math.floor(Math.random()*list.length)];
+            openChat(aiChar);
         });
     };
     
