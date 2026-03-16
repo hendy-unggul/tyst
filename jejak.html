@@ -327,26 +327,60 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
 <div class="upload-progress-wrap" id="upload-progress-wrap"><div class="upload-progress-label"><span>MENGUPLOAD</span><span id="upload-progress-label-text">0/0 foto</span></div><div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill"></div></div></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="finput" accept="image/*" multiple style="display:none">
+  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/shared-constants.js"></script>
 <script src="/shared-utils.js"></script>
 <script>
-// ========== SUPABASE CLIENT ==========
+// ========== SUPABASE CLIENT DENGAN API KEY EXPLICIT ==========
 if (!window._supabaseClient) {
   try {
+    // PASTIKAN API KEY ADA
+    if (!JEJAK.SUPABASE_URL || !JEJAK.SUPABASE_KEY) {
+      console.error('[SUPABASE] Missing credentials');
+      window.location.replace('/index.html');
+    }
+    
+    console.log('[SUPABASE] Initializing with:', {
+      url: JEJAK.SUPABASE_URL,
+      key: JEJAK.SUPABASE_KEY?.substring(0,10) + '...'
+    });
+    
     window._supabaseClient = window.supabase.createClient(
       JEJAK.SUPABASE_URL, 
       JEJAK.SUPABASE_KEY,
-      { auth: { persistSession: true, autoRefreshToken: true } }
+      { 
+        auth: { 
+          persistSession: true, 
+          autoRefreshToken: true,
+          detectSessionInUrl: false
+        },
+        global: {
+          headers: {
+            'apikey': JEJAK.SUPABASE_KEY,  // EXPLICIT API KEY
+            'Authorization': 'Bearer ' + JEJAK.SUPABASE_KEY
+          }
+        }
+      }
     );
     console.log('[SUPABASE] Client initialized');
-  } catch(e) { console.error(e); }
+  } catch(e) { 
+    console.error('[SUPABASE] Init error:', e);
+    window.location.replace('/index.html');
+  }
 }
 window.supabaseClient = window._supabaseClient;
 
 // ========== AUTH CHECK ==========
 var session = JEJAK.getSession();
+console.log('[AUTH] Session:', { 
+  loggedIn: session?.loggedIn,
+  username: session?.username,
+  uid: session?.uid?.substring(0,8)
+});
+
 if (!session || !session.loggedIn || !session.uid || !session.username) {
+  console.warn('[AUTH] No valid session');
   window.location.replace('/index.html');
 }
 
@@ -379,9 +413,35 @@ if (od) od.classList.remove('off');
   });
 })();
 
+// ========== TEST KONEKSI ==========
+async function testConnection() {
+  try {
+    console.log('[TEST] Testing Supabase connection...');
+    
+    // Test simple query
+    const { data, error } = await window.supabaseClient
+      .from('entries')
+      .select('count', { count: 'exact', head: true });
+    
+    if (error) {
+      console.error('[TEST] Connection failed:', error);
+      toast('Koneksi database error: ' + error.message);
+    } else {
+      console.log('[TEST] Connection OK');
+    }
+  } catch(e) {
+    console.error('[TEST] Exception:', e);
+  }
+}
+
+// Panggil test
+testConnection();
+
 // ========== LOAD ENTRIES ==========
 async function loadEntries() {
   if (!S.userId || !window.supabaseClient) return;
+  
+  console.log('[ENTRIES] Loading for user:', S.userId);
   
   try {
     var { data, error } = await window.supabaseClient
@@ -391,7 +451,22 @@ async function loadEntries() {
       .order('created_at', { ascending: false })
       .limit(6);
     
-    if (error) throw error;
+    if (error) {
+      console.error('[ENTRIES] Error:', error);
+      
+      if (error.message?.includes('API key') || error.code === '401') {
+        toast('API Key error, refresh page');
+        setTimeout(() => location.reload(), 2000);
+      } else if (error.message?.includes('row-level security')) {
+        toast('RLS Policy error: user_id tidak cocok');
+        console.log('[RLS] User ID:', S.userId);
+      } else {
+        toast('Gagal load entries: ' + error.message);
+      }
+      return;
+    }
+    
+    console.log('[ENTRIES] Loaded:', data?.length || 0);
     
     S.entries = (data || []).map(function(e) {
       return {
@@ -412,7 +487,7 @@ async function loadEntries() {
     
     renderEntries();
   } catch(err) {
-    console.error('[ENTRIES]', err);
+    console.error('[ENTRIES] Exception:', err);
     toast('Gagal load entries');
   }
 }
@@ -482,6 +557,12 @@ async function saveEntry() {
   showProc('Menyimpan spill...');
   
   try {
+    console.log('[SAVE] Inserting:', { 
+      user_id: S.userId, 
+      username: S.username,
+      mood: moodEl.dataset.mood 
+    });
+    
     var { data, error } = await window.supabaseClient
       .from('entries')
       .insert({
@@ -493,20 +574,30 @@ async function saveEntry() {
       .select();
     
     if (error) {
-      if (error.code === '401' || error.message?.includes('JWT')) {
-        toast('Session expired, login ulang');
-        setTimeout(() => logoutUser(), 1500);
+      console.error('[SAVE] Error:', error);
+      
+      if (error.message?.includes('API key')) {
+        toast('API Key error, refresh page');
+        setTimeout(() => location.reload(), 2000);
+      } else if (error.message?.includes('row-level security')) {
+        toast('RLS Policy error: cek user_id');
+        console.log('[RLS DEBUG]', {
+          user_id: S.userId,
+          user_id_type: typeof S.userId,
+          username: S.username
+        });
       } else {
         toast('Gagal: ' + error.message);
       }
     } else {
+      console.log('[SAVE] Success:', data);
       document.getElementById('ri').value = '';
       document.getElementById('ccount').textContent = '0/500';
       await loadEntries();
       toast('✓ Spill terkirim!');
     }
   } catch(err) {
-    console.error('[SAVE]', err);
+    console.error('[SAVE] Exception:', err);
     toast('Gagal menyimpan');
   } finally {
     hideProc();
@@ -646,7 +737,7 @@ async function reactEntry(id, key) {
   }
 }
 
-// ========== RENDER ENTRIES ==========
+// ========== RENDER FUNCTIONS (SINGKAT) ==========
 function renderEntries() {
   var con = document.getElementById('econ');
   if (!con) return;
@@ -690,7 +781,6 @@ function renderEntries() {
   bindReactionButtons();
 }
 
-// ========== RENDER TRAY ==========
 function renderTray() {
   var con = document.getElementById('tgrid');
   if (!con) return;
@@ -936,6 +1026,10 @@ function sendVoidMessage() { toast('Fitur ini memerlukan Premium'); }
 // ========== DEBUG ==========
 window.debugSession = () => console.table(JEJAK.getSession());
 window.fixSession = () => { JEJAK.clearSession('manual fix'); setTimeout(() => location.href='/index.html', 500); };
+window.debugApiKey = () => {
+  console.log('JEJAK.SUPABASE_KEY:', JEJAK.SUPABASE_KEY?.substring(0,20));
+  console.log('Client headers:', window.supabaseClient?.rest?.headers);
+};
 
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', function() {
