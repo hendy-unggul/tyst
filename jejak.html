@@ -686,7 +686,78 @@ async function saveEntry() {
         if (mdd) mdd.classList.remove('on');
       }
     });
+    // ========== LOAD ARTEFACTS ==========
+async function loadArtefacts() {
+  console.log('[ARTEFACTS] Loading...');
+  if (!S.userId || !window.supabaseClient) {
+    console.warn('[ARTEFACTS] No userId or supabaseClient');
+    return;
+  }
+  
+  try {
+    const { data, error } = await supabaseClient
+      .from('artefacts')
+      .select('*')
+      .eq('user_id', S.userId)
+      .order('created_at', { ascending: false })
+      .limit(6);
     
+    if (error) {
+      console.error('[ARTEFACTS] Error:', error);
+      return;
+    }
+    
+    console.log('[ARTEFACTS] Loaded:', data?.length || 0);
+    S.artefacts = data || [];
+    renderTray();
+  } catch(err) {
+    console.error('[ARTEFACTS] Exception:', err);
+  }
+}
+
+// ========== RENDER TRAY ==========
+function renderTray() {
+  const con = document.getElementById('tgrid');
+  if (!con) return;
+  
+  if (!S.artefacts || S.artefacts.length === 0) {
+    con.innerHTML = Array(6).fill('<div class="ti" style="border:2px dashed #333"></div>').join('');
+    return;
+  }
+  
+  const html = S.artefacts.map(a => `
+    <div class="ti" onclick="setHero('${a.id}')">
+      <img src="${a.url}" class="${a.theme || 'fm'}" alt="${escapeHtml(a.note || 'memory')}">
+    </div>
+  `).join('');
+  
+  con.innerHTML = html;
+}
+
+// ========== SET HERO ==========
+window.setHero = function(id) {
+  const a = S.artefacts.find(x => x.id === id);
+  if (!a) return;
+  
+  const himg = document.getElementById('himg');
+  const hnote = document.getElementById('hnote');
+  
+  if (himg) {
+    himg.src = a.url;
+    himg.className = a.theme || 'fm';
+  }
+  if (hnote) hnote.textContent = '"' + (a.note || 'memory') + '"';
+};
+
+// ========== ESCAPE HTML ==========
+function escapeHtml(text) {
+  if (!text) return '';
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
     // Render dummy data first
     renderEntries();
     renderTray();
