@@ -46,14 +46,20 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:100%;color:var(--txm);text-decoration:none;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;transition:.2s;position:relative;cursor:pointer}
 .ni::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:2px;transition:width .2s}
 .ni:hover{color:var(--txs);background:var(--sfe)}
+
+/* ===== BOTTOM NAV WARNA PER HALAMAN ===== */
 .ni.act[href*="spill"]{color:var(--spill)}
 .ni.act[href*="spill"]::before{background:var(--spill);width:100%}
-.ni.act[href*="jejak"]{color:var(--jejak)}
-.ni.act[href*="jejak"]::before{background:var(--jejak);width:100%}
+
+.ni.act[href*="jejak"]{color:var(--jejak) !important}
+.ni.act[href*="jejak"]::before{background:var(--jejak) !important;width:100%}
+
 .ni.act[href*="glitch"]{color:var(--glitch)}
 .ni.act[href*="glitch"]::before{background:var(--glitch);width:100%}
+
 .ni.act[href*="cocomeo"]{color:var(--cocomeo)}
 .ni.act[href*="cocomeo"]::before{background:var(--cocomeo);width:100%}
+
 .nico{font-size:20px;line-height:1}
 .hero-s{position:relative;margin:0 -16px 24px}
 .hero{position:relative;width:100%;aspect-ratio:1;overflow:hidden;border-top:2px solid var(--bd);border-bottom:2px solid var(--bd);background:var(--sf)}
@@ -562,27 +568,77 @@ async function loadArtefacts() {
   }
 }
 
-// ========== RENDER TRAY ==========
+// ========== RENDER TRAY DENGAN DUMMY FIFO ==========
 function renderTray() {
   const con = $('tgrid');
   if (!con) return;
   
-  if (!S.artefacts || S.artefacts.length === 0) {
-    con.innerHTML = Array(6).fill('<div class="ti" style="border:2px dashed #333"></div>').join('');
-    return;
+  // Gabungkan real artefacts dengan dummy
+  let displayItems = [];
+  
+  // Tambah real artefacts
+  if (S.artefacts && S.artefacts.length > 0) {
+    displayItems = [...S.artefacts];
   }
   
-  const html = S.artefacts.map(a => `
-    <div class="ti" onclick="setHero('${a.id}')">
-      <img src="${a.url}" class="${a.theme || 'fm'}" alt="${escapeHtml(a.note || 'memory')}">
-    </div>
-  `).join('');
+  // Tambah dummy sampai 6 item (FIFO)
+  const dummyImages = [
+    'https://images.unsplash.com/photo-1517842645767-c639042777db?w=400&q=80',
+    'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=400&q=80',
+    'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=80',
+    'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80',
+    'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80'
+  ];
+  
+  while (displayItems.length < 6) {
+    const idx = displayItems.length % dummyImages.length;
+    displayItems.push({
+      id: `dummy-${displayItems.length}`,
+      url: dummyImages[idx],
+      note: 'contoh memori',
+      hasFace: idx === 4 ? true : false, // dummy ke-5 punya face
+      theme: ['fm', 'fg', 'fl', 'fv', 'fn', 'fc'][displayItems.length % 6],
+      isDummy: true
+    });
+  }
+  
+  // Render
+  const html = displayItems.map(a => {
+    if (a.hasFace) {
+      return `<div class="ti" data-id="${a.id}" style="position:relative">
+        <img src="${a.url}" class="${a.theme || 'fm'}" alt="${escapeHtml(a.note || 'memory')}">
+        <div class="sensored-overlay"><span class="sensored-text">SENSORED</span></div>
+      </div>`;
+    } else {
+      return `<div class="ti" data-id="${a.id}">
+        <img src="${a.url}" class="${a.theme || 'fm'}" alt="${escapeHtml(a.note || 'memory')}">
+      </div>`;
+    }
+  }).join('');
   
   con.innerHTML = html;
+  
+  // Tambah event listener untuk dummy
+  con.querySelectorAll('.ti[data-id]').forEach(t => {
+    t.addEventListener('click', () => {
+      const id = t.dataset.id;
+      if (id.startsWith('dummy-')) {
+        toast('✨ Ini contoh artefak, upload fotomu sendiri!');
+      } else {
+        setHero(id);
+      }
+    });
+  });
 }
 
 // ========== SET HERO ==========
 window.setHero = function(id) {
+  if (id.startsWith('dummy-')) {
+    toast('✨ Ini contoh, klik + untuk upload');
+    return;
+  }
+  
   const a = S.artefacts.find(x => x.id === id);
   if (!a) return;
   
@@ -818,7 +874,7 @@ async function confirmUpload() {
         .getPublicUrl(path);
       const url = urlData.publicUrl;
       
-      // ===== HAPUS username DARI SINI! =====
+      // ===== DATA UNTUK INSERT (TANPA USERNAME) =====
       const dataToInsert = {
         user_id: S.userId,
         url: url,
