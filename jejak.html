@@ -6,7 +6,6 @@
 <title>JEJAK — Jejak & Memori</title>
 
 <!-- FIX #3 #9: shared.css sudah include @import Google Fonts (Bebas Neue + DM Mono + Syne) -->
-<!-- TIDAK perlu <link rel="preconnect"> atau font link terpisah lagi -->
 <link rel="stylesheet" href="/shared.css">
 
 <!-- FIX #3: Instrument Serif untuk elemen dekoratif (tagline, caption, void timer) -->
@@ -25,8 +24,15 @@
   --tx:   #FFF;
   --txs:  #888;
   --txm:  #555;
-  --ap:   #ff2d55;
-  --as:   #00e5ff;
+  
+  /* WARNI-WARNI - SENADA NAPAS */
+  --spill:   #ff3b6f;  /* pink */
+  --cocomeo: #00e5ff;  /* cyan */
+  --jejak:   #9900ff;  /* purple */
+  --glitch:  #FFD700;  /* gold */
+  
+  --ap:   var(--spill);
+  --as:   var(--cocomeo);
   --at:   #FF006E;
   --aq:   #bfff00;
   --aw:   #FFD700;
@@ -44,12 +50,80 @@ body{background:var(--bg);color:var(--tx);font-family:var(--font-body);font-weig
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.4}
 .w{max-width:480px;margin:0 auto;padding:0 16px}
 header{padding:24px 0 16px;display:flex;justify-content:space-between;align-items:flex-start}
-.logo{font-size:42px;font-weight:800;letter-spacing:-.04em;cursor:pointer;line-height:.9;position:relative}
-.logo::before,.logo::after{content:'JEJAK';position:absolute;top:0;left:0;opacity:0;transition:opacity .1s}
-.logo::before{color:var(--as);transform:translate(-2px,0)}
-.logo::after{color:var(--at);transform:translate(2px,0)}
-.logo:hover::before{opacity:.8;animation:g .3s infinite}
-@keyframes g{0%,100%{transform:translate(-2px,0)}25%{transform:translate(2px,2px)}50%{transform:translate(-2px,-2px)}75%{transform:translate(2px,0)}}
+
+/* ===== LOGO JEJAK dengan DIAMOND ===== */
+.logo {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  cursor: pointer;
+  line-height: 0.9;
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-display);
+}
+
+.logo .j, .logo .e1, .logo .a, .logo .k {
+  display: inline-block;
+}
+
+.logo .diamond {
+  color: var(--jejak);
+  display: inline-block;
+  animation: spinDiamond 4s infinite;
+  margin: 0 2px;
+  font-size: 42px;
+  line-height: 0.9;
+  transform: rotate(45deg);
+  display: inline-block;
+}
+
+@keyframes spinDiamond {
+  95% { transform: rotate(225deg); } /* 45 + 180 = 225 */
+}
+
+/* Efek glitch untuk logo */
+.logo::before,
+.logo::after {
+  content: 'JEJAK';
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+.logo::before {
+  color: var(--as);
+  transform: translate(-2px, 0);
+  z-index: -1;
+}
+
+.logo::after {
+  color: var(--at);
+  transform: translate(2px, 0);
+  z-index: -2;
+}
+
+.logo:hover::before {
+  opacity: 0.8;
+  animation: glitchMove 0.3s infinite;
+}
+
+.logo:hover::after {
+  opacity: 0.6;
+  animation: glitchMove 0.3s infinite reverse;
+}
+
+@keyframes glitchMove {
+  0%, 100% { transform: translate(-2px, 0); }
+  25% { transform: translate(2px, 2px); }
+  50% { transform: translate(-2px, -2px); }
+  75% { transform: translate(2px, 0); }
+}
+
 .tagline{font-family:'Instrument Serif',serif;font-size:13px;color:var(--txs);font-style:italic;margin-top:4px}
 .top-right{display:flex;align-items:center;gap:8px}
 .huser{font-size:11px;font-weight:700;color:var(--tx);text-transform:lowercase;letter-spacing:.05em;padding:4px 8px;background:var(--sf);border:1px solid var(--bd);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -59,19 +133,32 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 .smenu{position:relative}
 .mtrig{width:32px;height:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent;border:none;cursor:pointer;padding:0}
 .mtrig span{width:4px;height:4px;background:var(--tx);border-radius:50%;transition:all .2s}
-.mtrig:hover span{background:var(--ap)}
+.mtrig:hover span{background:var(--spill)}
 .mdd{position:absolute;top:100%;right:0;margin-top:8px;background:var(--sf);border:2px solid var(--bd);min-width:120px;display:none;z-index:100}
 .mdd.on{display:block}
-/* FIX #2: font-family pakai var(--font-body), bukan Plus Jakarta Sans */
 .mi{width:100%;padding:8px 16px;background:transparent;border:none;color:var(--tx);font-family:var(--font-body);font-size:12px;font-weight:600;text-align:left;cursor:pointer;transition:all .2s}
-.mi:hover{background:var(--sfe);color:var(--ap)}
+.mi:hover{background:var(--sfe);color:var(--spill)}
+
+/* ===== BOTTOM NAV dengan WARNA PER HALAMAN ===== */
 .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:2px solid var(--bd);z-index:1000;padding-bottom:env(safe-area-inset-bottom)}
 .bnav-c{max-width:480px;margin:0 auto;display:flex;justify-content:space-around;align-items:center;height:64px}
 .ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:100%;color:var(--txm);text-decoration:none;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;transition:all .2s;position:relative;cursor:pointer}
-.ni::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:2px;background:var(--ap);transition:width .2s}
+.ni::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:2px;transition:width .2s}
 .ni:hover{color:var(--txs);background:var(--sfe)}
-.ni.act{color:var(--ap)}
-.ni.act::before{width:100%}
+
+/* Warna untuk masing-masing halaman saat active */
+.ni.act[href*="spill"] { color: var(--spill); }
+.ni.act[href*="spill"]::before { background: var(--spill); width: 100%; }
+
+.ni.act[href*="jejak"] { color: var(--jejak); }
+.ni.act[href*="jejak"]::before { background: var(--jejak); width: 100%; }
+
+.ni.act[href*="glitch"] { color: var(--glitch); }
+.ni.act[href*="glitch"]::before { background: var(--glitch); width: 100%; }
+
+.ni.act[href*="cocomeo"] { color: var(--cocomeo); }
+.ni.act[href*="cocomeo"]::before { background: var(--cocomeo); width: 100%; }
+
 .nico{font-size:20px;line-height:1}
 .hero-s{position:relative;margin:0 -16px 24px}
 .hero{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;border-top:2px solid var(--bd);border-bottom:2px solid var(--bd);background:var(--sf)}
@@ -80,8 +167,8 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 .hero::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none}
 .hnote{position:absolute;bottom:0;left:0;right:0;padding:16px;background:linear-gradient(to top,rgba(0,0,0,.9),transparent);font-family:'Instrument Serif',serif;font-size:24px;font-style:italic;color:var(--tx);line-height:1.2;z-index:20}
 .upctrls{position:absolute;top:16px;right:16px;display:flex;flex-direction:column;gap:8px;align-items:flex-end;z-index:20}
-.upbtn{width:48px;height:48px;background:var(--ap);border:none;color:var(--bg);font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:4px 4px 0 var(--bg),4px 4px 0 2px var(--ap);position:relative}
-.upbtn:hover:not(:disabled){transform:translate(2px,2px);box-shadow:2px 2px 0 var(--bg),2px 2px 0 2px var(--ap)}
+.upbtn{width:48px;height:48px;background:var(--spill);border:none;color:var(--bg);font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;box-shadow:4px 4px 0 var(--bg),4px 4px 0 2px var(--spill);position:relative}
+.upbtn:hover:not(:disabled){transform:translate(2px,2px);box-shadow:2px 2px 0 var(--bg),2px 2px 0 2px var(--spill)}
 .upbtn:disabled{background:var(--txm);box-shadow:none;cursor:not-allowed;opacity:.6}
 .upcnt{position:absolute;top:-8px;right:-8px;background:var(--at);color:var(--tx);font-size:10px;font-weight:700;padding:2px 6px;min-width:20px;text-align:center}
 .qtimer{position:absolute;top:calc(100% + 8px);right:0;background:var(--sf);border:2px solid var(--bd);padding:8px 16px;font-size:11px;color:var(--txs);white-space:nowrap;opacity:0;visibility:hidden;transition:all .2s;z-index:30}
@@ -91,9 +178,8 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 .ihdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .ilbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txs)}
 .ccount{font-size:12px;color:var(--txm);font-variant-numeric:tabular-nums}
-/* FIX #2: font-family pakai var(--font-body) */
 .ri{width:100%;background:var(--sf);border:2px solid var(--bd);padding:16px;color:var(--tx);font-family:var(--font-body);font-size:16px;line-height:1.5;resize:none;min-height:120px;transition:all .2s}
-.ri:focus{outline:none;border-color:var(--ap);background:var(--sfe)}
+.ri:focus{outline:none;border-color:var(--spill);background:var(--sfe)}
 .ri::placeholder{color:var(--txm)}
 .msec{margin:16px 0}
 .mlbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txs);margin-bottom:8px}
@@ -110,15 +196,15 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 .mc[data-mood="chaotic"]{color:var(--mc)}
 .mc[data-mood="doom"]{color:var(--md)}
 .iact{display:flex;justify-content:flex-end;margin-top:16px}
-.sbtn{padding:14px 32px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:var(--ap);border:none;color:var(--bg);cursor:pointer;transition:all .2s;box-shadow:4px 4px 0 var(--sfe),4px 4px 0 2px var(--ap)}
-.sbtn:hover:not(:disabled){transform:translate(2px,2px);box-shadow:2px 2px 0 var(--sfe),2px 2px 0 2px var(--ap)}
+.sbtn{padding:14px 32px;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:var(--spill);border:none;color:var(--bg);cursor:pointer;transition:all .2s;box-shadow:4px 4px 0 var(--sfe),4px 4px 0 2px var(--spill)}
+.sbtn:hover:not(:disabled){transform:translate(2px,2px);box-shadow:2px 2px 0 var(--sfe),2px 2px 0 2px var(--spill)}
 .sbtn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
 .shdr{display:flex;align-items:center;gap:8px;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--bd)}
 .stit{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.15em;color:var(--tx)}
 .sline{flex:1;height:2px;background:var(--bd)}
 .entry{background:var(--sf);border:2px solid var(--bd);margin-bottom:16px;position:relative;animation:si .4s ease}
 @keyframes si{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-.entry:hover{border-color:var(--ap)}
+.entry:hover{border-color:var(--spill)}
 .ehdr{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid var(--bd);background:var(--sfe)}
 .emeta{display:flex;align-items:center;gap:8px}
 .etime{font-size:11px;color:var(--txm);font-weight:600;letter-spacing:.05em}
@@ -133,14 +219,14 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 .ti.empty{display:flex;align-items:center;justify-content:center;color:var(--txm);font-size:20px;border:2px dashed var(--bd)}
 .ti img{width:100%;height:100%;object-fit:cover;transition:all .3s}
 .ti:hover img{transform:scale(1.1)}
-.ti::after{content:'';position:absolute;inset:0;background:var(--ap);opacity:0;transition:opacity .2s;mix-blend-mode:multiply}
+.ti::after{content:'';position:absolute;inset:0;background:var(--spill);opacity:0;transition:opacity .2s;mix-blend-mode:multiply}
 .ti:hover::after{opacity:.3}
 .entry-dummy{opacity:.6;border-style:dashed!important}
 .entry-dummy:hover{border-color:var(--bd)!important;opacity:.75}
 .reaction-bar{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--bd);background:var(--sfe);align-items:center;flex-wrap:wrap}
 .reaction-btn{position:relative;display:flex;align-items:center;gap:4px;padding:5px 10px;background:var(--sf);border:2px solid var(--bd);cursor:pointer;transition:all .15s;border-radius:4px;font-family:inherit}
 .reaction-btn:hover:not([disabled]){border-color:var(--txs);transform:translateY(-2px);background:var(--sfe)}
-.reaction-btn.act{border-color:var(--ap);background:var(--ap)}
+.reaction-btn.act{border-color:var(--spill);background:var(--spill)}
 .reaction-btn[disabled]{cursor:not-allowed;opacity:.38;pointer-events:none}
 .remoji{font-size:17px;line-height:1}
 .rcount{font-size:11px;font-weight:700;color:var(--txs);min-width:14px;text-align:center;font-variant-numeric:tabular-nums}
@@ -157,15 +243,14 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .proc{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:10002;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .proc.on{display:flex}
-.pspin{width:48px;height:48px;border:3px solid var(--bd);border-top-color:var(--ap);border-radius:50%;animation:sp 1s linear infinite}
+.pspin{width:48px;height:48px;border:3px solid var(--bd);border-top-color:var(--spill);border-radius:50%;animation:sp 1s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .ptxt{font-size:14px;color:var(--txs);text-align:center}
-/* FIX #8: Upload progress bar */
 .upload-progress-wrap{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:16px;right:16px;max-width:448px;margin:0 auto;background:var(--sf);border:2px solid var(--bd2);padding:12px 16px;z-index:500;box-shadow:4px 4px 0 #000;display:none}
 .upload-progress-wrap.show{display:block}
 .upload-progress-label{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:1px;margin-bottom:8px;display:flex;justify-content:space-between}
 .upload-progress-bar{height:4px;background:var(--bd2);position:relative;overflow:hidden}
-.upload-progress-fill{height:100%;background:var(--ap);transition:width .3s ease;width:0%}
+.upload-progress-fill{height:100%;background:var(--spill);transition:width .3s ease;width:0%}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:10001;padding:16px;overflow-y:auto}
 .modal.on{display:block}
 .mc2{max-width:480px;margin:0 auto;background:var(--sf);border:2px solid var(--bd);padding:24px}
@@ -176,28 +261,27 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
 .gi{aspect-ratio:1;background:var(--sfe);border:2px solid var(--bd);cursor:pointer;overflow:hidden;position:relative}
 .gi img{width:100%;height:100%;object-fit:cover;transition:all .2s}
 .gi:hover img{transform:scale(1.05)}
-.gi.sel{border-color:var(--ap);box-shadow:0 0 0 2px var(--ap)}
-.gi.sel::after{content:'✓';position:absolute;top:4px;right:4px;background:var(--ap);color:var(--bg);width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.gi.sel{border-color:var(--spill);box-shadow:0 0 0 2px var(--spill)}
+.gi.sel::after{content:'✓';position:absolute;top:4px;right:4px;background:var(--spill);color:var(--bg);width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
 .tmsec{margin:16px 0;padding:16px;background:var(--sfe);border:2px solid var(--bd)}
 .tmhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .tmlbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txs)}
-.tmnm{font-size:11px;font-weight:700;color:var(--ap)}
+.tmnm{font-size:11px;font-weight:700;color:var(--spill)}
 .tmsl{width:100%;height:4px;background:var(--bd);outline:none;-webkit-appearance:none;margin:8px 0}
-.tmsl::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--ap);cursor:pointer;border:2px solid var(--tx);box-shadow:2px 2px 0 var(--bg)}
+.tmsl::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--spill);cursor:pointer;border:2px solid var(--tx);box-shadow:2px 2px 0 var(--bg)}
 .tmlabs{display:flex;justify-content:space-between;font-size:9px;color:var(--txm);font-weight:600;text-transform:uppercase}
 .notsec{margin:16px 0;padding:16px;background:var(--sfe);border:2px solid var(--bd)}
 .notlbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txs);margin-bottom:8px;display:flex;justify-content:space-between}
 .notcnt{font-size:10px;color:var(--txm)}
-/* FIX #2: font-family pakai var(--font-body) */
 .noti{width:100%;background:var(--sf);border:2px solid var(--bd);padding:8px;color:var(--tx);font-family:var(--font-body);font-size:14px;transition:all .2s}
-.noti:focus{outline:none;border-color:var(--ap);background:var(--sfe)}
+.noti:focus{outline:none;border-color:var(--spill);background:var(--sfe)}
 .noti::placeholder{color:var(--txm);font-size:12px}
 .gwarn{background:var(--at);color:var(--tx);padding:16px;margin-bottom:16px;font-size:13px;font-weight:700;text-align:center;text-transform:uppercase;letter-spacing:.05em;border:2px solid var(--at);animation:pw 2s infinite}
 @keyframes pw{0%,100%{opacity:1}50%{opacity:.8}}
 .gwarn::before{content:'🚫 '}
 .macts{margin-top:16px;display:flex;justify-content:flex-end;gap:8px}
 .mbtn{padding:12px 24px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border:2px solid var(--bd);background:var(--sf);color:var(--tx);cursor:pointer;transition:all .2s}
-.mbtn.pri{background:var(--ap);border-color:var(--ap);color:var(--bg)}
+.mbtn.pri{background:var(--spill);border-color:var(--spill);color:var(--bg)}
 .mbtn:hover{transform:translateY(-2px)}
 .fm{filter:grayscale(100%) contrast(1.1)!important}
 .fsp{filter:sepia(100%) contrast(1.1) saturate(.8)!important}
@@ -214,7 +298,7 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
 .sensored-overlay{position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center;color:#FF0000;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:2px;border:2px solid #FF0000;animation:pulse-sensor 2s infinite;z-index:25}
 @keyframes pulse-sensor{0%,100%{opacity:.9}50%{opacity:1;box-shadow:inset 0 0 30px #FF0000}}
 .sensored-text{transform:rotate(-5deg);border:2px solid #FF0000;padding:4px 8px;background:rgba(0,0,0,.8)}
-.premium-badge{display:inline-block;background:linear-gradient(135deg,var(--ap),var(--at));color:var(--tx);font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:8px;text-transform:uppercase}
+.premium-badge{display:inline-block;background:linear-gradient(135deg,var(--spill),var(--at));color:var(--tx);font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:8px;text-transform:uppercase}
 .void-node{position:fixed;bottom:100px;right:20px;width:24px;height:24px;background:var(--void);border:1px solid #1a1a1a;cursor:pointer;z-index:9998;transition:all .3s;opacity:.6}
 .void-node:hover{opacity:1;border-color:#333}
 .void-node.active{animation:void-pulse 2s infinite;border-color:#ff006e;box-shadow:0 0 10px rgba(255,0,110,.3)}
@@ -310,7 +394,10 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
 <div class="w">
 <header>
   <div>
-    <div class="logo" onclick="location.reload()">JEJAK</div>
+    <!-- LOGO JEJAK dengan DIAMOND -->
+    <div class="logo" onclick="location.reload()">
+      <span class="j">J</span><span class="e1">E</span><span class="diamond">◈</span><span class="a">A</span><span class="k">K</span>
+    </div>
     <div class="tagline">no filter, just truth</div>
   </div>
   <div class="top-right">
@@ -420,12 +507,12 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
   <div class="void-locked-sub">Upgrade to Premium to access<br>end-to-end encrypted ephemeral messaging</div>
 </div>
 
-<!-- FIX #6: absolute path di semua nav links -->
+<!-- BOTTOM NAV dengan ICON BARU: ◈ JEJAK, ‼ GLITCH -->
 <nav class="bnav">
   <div class="bnav-c">
     <a href="/spill.html" class="ni"><span class="nico">✕</span><span>Spill</span></a>
-    <a href="/jejak.html" class="ni act"><span class="nico">✦</span><span>Jejak</span></a>
-    <a href="/glitch.html" class="ni"><span class="nico">⚡</span><span>Glitch</span></a>
+    <a href="/jejak.html" class="ni"><span class="nico">◈</span><span>Jejak</span></a>
+    <a href="/glitch.html" class="ni"><span class="nico">‼</span><span>Glitch</span></a>
     <a href="/cocomeo.html" class="ni"><span class="nico">〜</span><span>Cocomeo</span></a>
   </div>
 </nav>
@@ -457,7 +544,7 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
   </div>
 </div>
 
-<!-- FIX #8: Upload progress bar -->
+<!-- Upload progress bar -->
 <div class="upload-progress-wrap" id="upload-progress-wrap">
   <div class="upload-progress-label">
     <span>MENGUPLOAD</span>
@@ -479,6 +566,21 @@ if (!JEJAK.isLoggedIn()) {
   console.warn('[JEJAK] Auth guard — redirect ke index');
   window.location.replace('/index.html');
 }
+
+// Set active nav berdasarkan halaman saat ini
+(function setActiveNav() {
+  var currentPage = window.location.pathname.split('/').pop() || 'spill.html';
+  var navLinks = document.querySelectorAll('.bnav .ni');
+  
+  navLinks.forEach(function(link) {
+    var href = link.getAttribute('href');
+    if (href === currentPage) {
+      link.classList.add('act');
+    } else {
+      link.classList.remove('act');
+    }
+  });
+})();
 </script>
 <script>
 var DUMMY_ENTRIES = [
@@ -505,7 +607,6 @@ function toast(msg,dur){
   setTimeout(function(){ t.classList.remove('show'); },dur);
 }
 
-// FIX #7: esc() proxy ke JEJAKSanitize.escape()
 function esc(t){
   if(window.JEJAKSanitize) return JEJAKSanitize.escape(t);
   var d=document.createElement('div'); d.textContent=t; return d.innerHTML;
@@ -649,7 +750,6 @@ async function loadEntries(){
         return {id:e.id,content:e.content,mood:e.mood,timestamp:e.created_at?new Date(e.created_at).getTime():Date.now(),reactions:e.reactions||{skull:0,cry:0,fire:0,upside:0},isDummy:false};
       });
     }
-    // FIX #1: restore per-user reaction state
     if(window.JEJAKReactions) S.entries=JEJAKReactions.restoreAll(S.entries);
     renderEntries();
   }catch(err){
@@ -682,7 +782,6 @@ async function loadArtefacts(){
 }
 
 async function saveEntry(){
-  // FIX #4: rate limit
   if(window.JEJAKRate){ var rl=JEJAKRate.checkPreset('spill'); if(!rl.allowed){ toast(rl.message); return; } }
   var content=$('ri').value.trim();
   if(!content){ toast('Tulis dulu spill-nya'); return; }
@@ -700,13 +799,11 @@ async function saveEntry(){
 }
 
 async function reactEntry(entryId,key){
-  // FIX #4: rate limit
   if(window.JEJAKRate){ var rl=JEJAKRate.checkPreset('react'); if(!rl.allowed){ toast(rl.message); return; } }
   if(!S.userId||!window.supabaseClient) return;
   var entry=S.entries.find(function(e){ return e.id===entryId; });
   if(!entry) return;
 
-  // FIX #1: pakai JEJAKReactions
   var reaction=window.JEJAKReactions?JEJAKReactions.set(entryId,key):null;
   var wasActive=reaction?(reaction.key===null):(entry.userReacted===key);
 
@@ -810,7 +907,6 @@ function closeGallery(){ $('gmodal').classList.remove('on'); pendingFiles=[]; se
 
 async function confirmUpload(){
   if(selFiles.size===0){ toast('Pilih minimal 1'); return; }
-  // FIX #4: rate limit
   if(window.JEJAKRate){ var rl=JEJAKRate.checkPreset('upload'); if(!rl.allowed){ toast(rl.message); return; } }
   var kbtn=$('konfirmbtn'); if(kbtn) kbtn.disabled=true;
   var theme=THEMES[currentTheme],note=currentNote||'memory';
@@ -824,7 +920,6 @@ async function confirmUpload(){
   var uploadedCount=0,newArts=[];
 
   if(window.supabaseClient&&window.JEJAKUpload){
-    // FIX #8: parallel upload
     await JEJAKUpload.uploadParallel(items,window.supabaseClient,S.userId,{
       bucket:'artefacts',batchSize:3,
       onProgress:function(pct,cur,total){
@@ -841,7 +936,6 @@ async function confirmUpload(){
       onFileError:function(err){ console.error('[UPLOAD]',window.JEJAKError?JEJAKError.handleSupabaseError(err,'UPLOAD'):err.message); }
     });
   } else {
-    // Fallback sequential
     for(var idx=0;idx<items.length;idx++){
       var item=items[idx],file=item.file;
       var ext=(['jpg','jpeg','png','webp','gif'].includes((file.name.split('.').pop()||'').toLowerCase()))?(file.name.split('.').pop().toLowerCase()):'jpg';
