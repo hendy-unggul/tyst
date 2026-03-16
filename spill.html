@@ -408,121 +408,6 @@
             color: var(--as);
         }
         
-        /* WHISPER MODE */
-        .whisper-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 1500;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-        
-        .whisper-overlay.show {
-            display: flex;
-        }
-        
-        .whisper-box {
-            background: var(--sf);
-            border: 3px solid var(--as);
-            padding: 25px;
-            text-align: center;
-            box-shadow: 12px 12px 0 #000;
-            max-width: 350px;
-            width: 90%;
-        }
-        
-        .whisper-title {
-            font-family: var(--font-display);
-            font-size: 24px;
-            color: var(--as);
-            margin-bottom: 15px;
-        }
-        
-        .whisper-input {
-            width: 100%;
-            padding: 15px;
-            background: var(--bg);
-            border: 2px solid var(--bd2);
-            color: var(--tx);
-            font-family: var(--font-body);
-            margin: 15px 0;
-            resize: none;
-            min-height: 100px;
-        }
-        
-        .whisper-input:focus {
-            border-color: var(--as);
-            outline: none;
-        }
-        
-        .whisper-timer {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--txs);
-            margin-bottom: 15px;
-        }
-        
-        .whisper-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .whisper-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #000;
-            font-family: var(--font-mono);
-            cursor: pointer;
-            box-shadow: 3px 3px 0 #000;
-            transition: 0.1s;
-        }
-        
-        .whisper-btn.send {
-            background: var(--as);
-            color: black;
-        }
-        
-        .whisper-btn.cancel {
-            background: transparent;
-            color: var(--txs);
-        }
-        
-        .whisper-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0 #000;
-        }
-        
-        .whisper-message {
-            background: var(--sf);
-            border: 2px solid var(--as);
-            padding: 15px;
-            margin: 10px 0;
-            position: relative;
-            animation: whisperGlow 2s infinite;
-        }
-        
-        @keyframes whisperGlow {
-            0%, 100% { box-shadow: 0 0 5px var(--as); }
-            50% { box-shadow: 0 0 15px var(--as); }
-        }
-        
-        .whisper-timer-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            background: var(--as);
-            animation: timerShrink 5s linear forwards;
-        }
-        
-        @keyframes timerShrink {
-            from { width: 100%; }
-            to { width: 0%; }
-        }
-        
         /* FILTER */
         .filter-sect {
             padding: 18px;
@@ -965,7 +850,7 @@
             color: #fff;
         }
         
-        /* WAITING OVERLAY */
+        /* WAITING OVERLAY - DRAMA SEQUENCE */
         .waiting-overlay {
             display: none;
             position: fixed;
@@ -991,6 +876,28 @@
             font-size: 48px;
             margin-bottom: 16px;
             animation: pulse 1.5s infinite;
+        }
+        
+        .waiting-message {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--txs);
+            margin: 20px 0;
+            line-height: 1.8;
+            min-height: 80px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        
+        .msg-line {
+            display: inline-block;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .waiting-timer {
@@ -1103,14 +1010,14 @@
                 <div class="gender-row">
                     <button class="btn-gender btn-heart" id="vibeFemaleBtn">
                         <span class="gender-icon">❤️</span>
-                        <span>SOFT TALK</span>
-                        <span class="gender-tag"></span>
+                        <span>YUK NGROBOL</span>
+                        <span class="gender-tag">CARI CEWEK</span>
                     </button>
                     
                     <button class="btn-gender btn-spade" id="vibeMaleBtn">
                         <span class="gender-icon">♠️</span>
-                        <span>HOT TAKE</span>
-                        <span class="gender-tag"></span>
+                        <span>YUK BIKIN RUSUH</span>
+                        <span class="gender-tag">CARI COWOK</span>
                     </button>
                 </div>
                 <button class="btn-whisper" id="whisperBtn">✦ WHISPERER <span>NEW</span></button>
@@ -1149,35 +1056,24 @@
     </nav>
 </div>
 
-<!-- WAITING OVERLAY -->
+<!-- WAITING OVERLAY - DRAMA SEQUENCE -->
 <div class="waiting-overlay" id="waitingOverlay">
     <div class="waiting-box">
         <div class="waiting-icon" id="waitingIcon">❤️</div>
+        
+        <!-- AREA PESAN DRAMATIS -->
+        <div class="waiting-message" id="waitingMessage">
+            <span class="msg-line" id="msgLine1"></span><br>
+            <span class="msg-line" id="msgLine2"></span><br>
+            <span class="msg-line" id="msgLine3"></span><br>
+            <span class="msg-line" id="msgLine4" style="color: var(--ap); font-weight: bold;"></span>
+        </div>
+        
         <div class="waiting-timer" id="waitingTimer">15</div>
         <button id="cancelWaiting">BATAL</button>
     </div>
 </div>
 
-<!-- WHISPER OVERLAY - VERSI BARU -->
-<div class="whisper-overlay" id="whisperOverlay">
-    <div class="whisper-box">
-        <div class="whisper-title">✦ WHISPERER</div>
-        <div class="whisper-timer">Kirim ke siapapun (ketik manual)</div>
-        
-        <!-- INPUT USERNAME TUJUAN -->
-        <input type="text" class="whisper-input" id="whisperTarget" 
-               placeholder="@username" maxlength="30" style="margin-bottom: 10px;">
-        
-        <!-- INPUT PESAN -->
-        <textarea class="whisper-input" id="whisperMessage" 
-                  placeholder="Tulis pesan rahasia..." maxlength="200" rows="3"></textarea>
-        
-        <div class="whisper-actions">
-            <button class="whisper-btn cancel" id="whisperCancel">BATAL</button>
-            <button class="whisper-btn send" id="whisperSend">KIRIM</button>
-        </div>
-    </div>
-</div>
 <!-- CHAT ROOM -->
 <div class="chat-room" id="chatRoom">
     <div class="chat-head">
@@ -1333,165 +1229,6 @@
         });
     }
     
-    // ========== WHISPER MODE REAL ==========
-function initWhisper() {
-    const whisperBtn = $('whisperBtn');
-    const whisperOverlay = $('whisperOverlay');
-    const whisperCancel = $('whisperCancel');
-    const whisperSend = $('whisperSend');
-    const whisperTarget = $('whisperTarget');
-    const whisperMessage = $('whisperMessage');
-    
-    if (!whisperBtn || !whisperOverlay) return;
-    
-    // BUKA OVERLAY - reset input每次都 kosong
-    whisperBtn.onclick = () => {
-        whisperOverlay.classList.add('show');
-        whisperTarget.value = '';  // SELALU KOSONG - harus hafal
-        whisperMessage.value = '';  // SELALU KOSONG
-        whisperTarget.focus();
-    };
-    
-    // TUTUP OVERLAY
-    whisperCancel.onclick = () => {
-        whisperOverlay.classList.remove('show');
-    };
-    
-    // KIRIM WHISPER
-    whisperSend.onclick = async () => {
-        const target = whisperTarget.value.trim().replace('@', '');
-        const message = whisperMessage.value.trim();
-        
-        if (!target) {
-            showToast('Masukkan username tujuan');
-            return;
-        }
-        
-        if (!message) {
-            showToast('Pesan tidak boleh kosong');
-            return;
-        }
-        
-        whisperOverlay.classList.remove('show');
-        
-        // Tampilkan di chat sendiri sebagai bukti
-        showLocalWhisper(`@${target}: ${message}`);
-        
-        // Kirim via API
-        await sendWhisper(target, message);
-    };
-    
-    // Enter untuk kirim
-    whisperMessage.onkeypress = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            whisperSend.click();
-        }
-    };
-}
-
-// ========== SEND WHISPER VIA API ==========
-async function sendWhisper(targetUsername, message) {
-    try {
-        const response = await fetch('/api/whisper', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                from: USERNAME,
-                to: targetUsername,
-                message: message
-            })
-        });
-        
-        if (!response.ok) {
-            const err = await response.json();
-            throw new Error(err.error || 'Gagal kirim');
-        }
-        
-        showToast(`✧ Whisper terkirim ke @${targetUsername}`);
-        
-    } catch (error) {
-        console.error('[Whisper] Error:', error);
-        showToast('Gagal mengirim whisper');
-    }
-}
-
-// ========== TAMPILKAN WHISPER LOKAL ==========
-function showLocalWhisper(text) {
-    const chatMessages = $('chatMessages');
-    if (!chatMessages) return;
-    
-    const whisperDiv = document.createElement('div');
-    whisperDiv.className = 'whisper-message';
-    whisperDiv.innerHTML = `
-        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--as); margin-bottom: 5px;">
-            ✧ WHISPER TERKIRIM
-        </div>
-        <div style="font-size: 14px;">${text}</div>
-        <div class="whisper-timer-bar"></div>
-    `;
-    
-    chatMessages.appendChild(whisperDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    // Hapus setelah 5 detik
-    setTimeout(() => {
-        whisperDiv.style.opacity = '0';
-        whisperDiv.style.transition = 'opacity 0.5s';
-        setTimeout(() => {
-            if (whisperDiv.parentNode) {
-                whisperDiv.remove();
-            }
-        }, 500);
-    }, 5000);
-}
-
-// ========== TAMPILKAN WHISPER MASUK ==========
-function showIncomingWhisper(sender, message) {
-    const chatMessages = $('chatMessages');
-    if (!chatMessages) return;
-    
-    const whisperDiv = document.createElement('div');
-    whisperDiv.className = 'whisper-message';
-    whisperDiv.innerHTML = `
-        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--as); margin-bottom: 5px;">
-            ✧ WHISPER DARI @${sender}
-        </div>
-        <div style="font-size: 14px;">${message}</div>
-        <div class="whisper-timer-bar"></div>
-    `;
-    
-    chatMessages.appendChild(whisperDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    // Hapus setelah 5 detik
-    setTimeout(() => {
-        whisperDiv.style.opacity = '0';
-        whisperDiv.style.transition = 'opacity 0.5s';
-        setTimeout(() => {
-            if (whisperDiv.parentNode) {
-                whisperDiv.remove();
-            }
-        }, 500);
-    }, 5000);
-}
-
-// ========== POLLING CEK WHISPER MASUK ==========
-function startWhisperPolling() {
-    setInterval(async () => {
-        try {
-            const response = await fetch(`/api/whisper?user=${USERNAME}`);
-            const whispers = await response.json();
-            
-            whispers.forEach(w => {
-                showIncomingWhisper(w.sender, w.message);
-            });
-        } catch (err) {
-            console.error('[Whisper] Polling error:', err);
-        }
-    }, 3000); // Cek setiap 3 detik
-}
-    
     // ========== BOTTOM NAV ==========
     function initBottomNav() {
         const navItems = document.querySelectorAll('.nav-item');
@@ -1543,51 +1280,50 @@ function startWhisperPolling() {
     }
     
     // ========== RENDER SPILLS ==========
-function renderSpills() {
-    const container = $('spillsList');
-    if (!container) return;
-    
-    if (allEntries.length === 0) {
-        container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
-        return;
+    function renderSpills() {
+        const container = $('spillsList');
+        if (!container) return;
+        
+        if (allEntries.length === 0) {
+            container.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
+            return;
+        }
+        
+        let html = '';
+        allEntries.slice(0, 10).forEach((spill, index) => {
+            html += `
+                <div class="spill-card">
+                    <div class="spill-header">
+                        <span class="spill-author">@${spill.author}</span>
+                        <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
+                    </div>
+                    <div class="spill-content">
+                        ${spill.content}
+                    </div>
+                    
+                    <div class="spill-reactions">
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
+                            💀 <span class="react-count">${spill.reactions.skull || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
+                            😭 <span class="react-count">${spill.reactions.cry || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
+                            🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
+                        </button>
+                        <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
+                            🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+        
+        const meta = $('feedMeta');
+        if (meta) meta.textContent = allEntries.length + ' spill';
     }
-    
-    let html = '';
-    // HAPUS .slice(0, 10) - biar semua entries tampil
-    allEntries.forEach((spill, index) => {
-        html += `
-            <div class="spill-card">
-                <div class="spill-header">
-                    <span class="spill-author">@${spill.author}</span>
-                    <span class="spill-mood ${spill.mood}">${spill.mood.toUpperCase()}</span>
-                </div>
-                <div class="spill-content">
-                    ${spill.content}
-                </div>
-                
-                <div class="spill-reactions">
-                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'skull')">
-                        💀 <span class="react-count">${spill.reactions.skull || 0}</span>
-                    </button>
-                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'cry')">
-                        😭 <span class="react-count">${spill.reactions.cry || 0}</span>
-                    </button>
-                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'fire')">
-                        🔥 <span class="react-count">${spill.reactions.fire || 0}</span>
-                    </button>
-                    <button class="react-btn" onclick="window.reactToSpill(${index}, 'upside')">
-                        🙃 <span class="react-count">${spill.reactions.upside || 0}</span>
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-    
-    container.innerHTML = html;
-    
-    const meta = $('feedMeta');
-    if (meta) meta.textContent = allEntries.length + ' spill';
-}
     
     // ========== COMBINE AND RENDER ==========
     function combineAndRender() {
@@ -1627,47 +1363,48 @@ function renderSpills() {
     }
     
     // ========== FETCH REAL USER ENTRIES ==========
-async function fetchUserEntries() {
-    try {
-        const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/entries?` + 
-            `select=*&` +
-            `order=created_at.desc&` +
-            `limit=10`, {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                    'Content-Type': 'application/json'
+    async function fetchUserEntries() {
+        try {
+            const response = await fetch(
+                `${SUPABASE_URL}/rest/v1/entries?` + 
+                `select=*&` +
+                `order=created_at.desc&` +
+                `limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
                 }
-            }
-        );
-        
-        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-        
-        const data = await response.json();
-        
-        if (data && data.length > 0) {
-            userEntries = data.map(entry => ({
-                author: entry.username || getUsernameFromUserId(entry.user_id),
-                mood: entry.mood || 'chaotic',
-                content: entry.content || '...',
-                reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
-                created_at: entry.created_at,
-                is_ai: false
-            }));
+            );
             
-            console.log(`[Fetch] ${userEntries.length} user entries loaded`);
-        } else {
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+            
+            const data = await response.json();
+            
+            if (data && data.length > 0) {
+                userEntries = data.map(entry => ({
+                    author: entry.username || getUsernameFromUserId(entry.user_id),
+                    mood: entry.mood || 'chaotic',
+                    content: entry.content || '...',
+                    reactions: entry.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
+                    created_at: entry.created_at,
+                    is_ai: false
+                }));
+                
+                console.log(`[Fetch] ${userEntries.length} user entries loaded`);
+            } else {
+                console.log('[Supabase] No entries, using dummy');
+                userEntries = getDummyUserEntries();
+            }
+            
+        } catch (error) {
+            console.error('[Supabase] Error:', error);
             userEntries = getDummyUserEntries();
         }
         
-    } catch (error) {
-        console.error('[Supabase] Error:', error);
-        userEntries = getDummyUserEntries();
+        combineAndRender();
     }
-    
-    combineAndRender();
-}
     
     // ========== GENERATE AI ENTRIES ==========
     function generateAIEntries(count = 6) {
@@ -1707,12 +1444,11 @@ async function fetchUserEntries() {
     
     // ========== INIT AI ENTRIES ==========
     function initAIEntries() {
-        // Generate AI entries KALAU MASIH KOSONG
         if (aiEntries.length === 0) {
             console.log('[AI] Generating initial 6 entries...');
             aiEntries = generateAIEntries(6);
         }
-        combineAndRender();  // ← Panggil sekali di sini
+        combineAndRender();
         
         if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
         aiGeneratorTimer = setInterval(() => {
@@ -1894,7 +1630,7 @@ async function fetchUserEntries() {
         draw();
     }
     
-    // ========== VIBE CHECK ==========
+    // ========== VIBE CHECK DENGAN DRAMA ==========
     async function startVibeCheck(gender) {
         if (isTyping) {
             showToast('Tunggu sampai pesan terkirim');
@@ -1904,8 +1640,17 @@ async function fetchUserEntries() {
         const overlay = $('waitingOverlay');
         const icon = $('waitingIcon');
         const timerEl = $('waitingTimer');
+        const msgLine1 = $('msgLine1');
+        const msgLine2 = $('msgLine2');
+        const msgLine3 = $('msgLine3');
+        const msgLine4 = $('msgLine4');
         
         if (!overlay || !icon || !timerEl) return;
+        
+        // Reset semua pesan
+        [msgLine1, msgLine2, msgLine3, msgLine4].forEach(line => {
+            if (line) line.textContent = '';
+        });
         
         icon.textContent = gender === 'heart' ? '❤️' : '♠️';
         overlay.style.display = 'flex';
@@ -1913,6 +1658,44 @@ async function fetchUserEntries() {
         let seconds = 15;
         timerEl.textContent = seconds;
         
+        // ========== SEQUENCE DRAMA ==========
+        
+        // Baris 1: 0-4 detik
+        setTimeout(() => {
+            if (msgLine1) msgLine1.textContent = 'finding strangers...';
+        }, 100);
+        
+        // Baris 2: 5-8 detik
+        setTimeout(() => {
+            if (msgLine2) msgLine2.textContent = 'most strangers here are just people';
+        }, 5000);
+        
+        // Baris 3: 9-12 detik
+        setTimeout(() => {
+            if (msgLine3) msgLine3.textContent = 'some are ghosts';
+        }, 9000);
+        
+        // Baris 4: 13-15 detik - dengan efek tegang
+        setTimeout(() => {
+            if (msgLine4) {
+                msgLine4.textContent = 'and a few...';
+                
+                // Tambah efek kedip
+                let blinkCount = 0;
+                const blinkInterval = setInterval(() => {
+                    msgLine4.style.opacity = msgLine4.style.opacity === '1' ? '0.3' : '1';
+                    blinkCount++;
+                    
+                    if (blinkCount >= 6) { // 3 kali kedip (300ms * 6 = 1.8 detik)
+                        clearInterval(blinkInterval);
+                        msgLine4.style.opacity = '1';
+                        msgLine4.textContent = 'and a few... are trouble ⚡';
+                    }
+                }, 300);
+            }
+        }, 13000);
+        
+        // ========== TIMER ==========
         let foundRealUser = false;
         
         const timer = setInterval(() => {
@@ -2148,14 +1931,12 @@ async function fetchUserEntries() {
         
         setTimeout(initRadar, 100);
         initSettings();
-        initWhisper();
         initBottomNav();
         initVibeSlider();
         
-        // ✅ URUTAN YANG BENAR:
-        await fetchUserEntries();  // Ambil user entries dulu
-        initAIEntries();           // Lalu generate AI entries
-        startWhisperPolling();  // Mulai cek whisper masuk
+        await fetchUserEntries();
+        initAIEntries();
+        
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
         const closeChatBtn = $('closeChatBtn');
@@ -2213,18 +1994,6 @@ async function fetchUserEntries() {
             }, { passive: false });
         });
     });
-    // ========== EXPOSE FOR DEBUGGING ==========
-window.debug = {
-    userEntries: () => userEntries,
-    aiEntries: () => aiEntries,
-    allEntries: () => allEntries,
-    refresh: () => {
-        console.log('userEntries:', userEntries.length);
-        console.log('aiEntries:', aiEntries.length);
-        console.log('allEntries:', allEntries.length);
-        return { user: userEntries.length, ai: aiEntries.length, total: allEntries.length };
-    }
-};
 })();
 </script>
 </body>
