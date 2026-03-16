@@ -57,16 +57,8 @@
         .btn-heart{background:linear-gradient(145deg,var(--ap),#ff6b8b);color:#fff}
         .btn-spade{background:linear-gradient(145deg,var(--as),#4d7aff);color:#000}
         .gender-icon{font-size:38px}
-        .gender-tag{font-family:var(--font-mono);font-size:9px;background:#000;color:var(--aq);padding:4px 8px}
         .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;color:var(--txs);transition:.1s}
         .btn-whisper:active{border-color:var(--as);color:var(--as)}
-        .filter-sect{padding:18px;border-bottom:2px solid var(--bd)}
-        .filter-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-        .filter-title{font-family:var(--font-mono);font-size:9px;color:var(--txs);letter-spacing:3px}
-        .match-pct{font-family:var(--font-display);font-size:26px;color:var(--ap)}
-        .vibe-slider{width:100%;height:4px;background:var(--bd2);-webkit-appearance:none;border-radius:2px}
-        .vibe-slider::-webkit-slider-thumb{width:20px;height:20px;background:var(--ap);border:3px solid var(--bg);box-shadow:0 0 0 2px var(--ap),3px 3px 0 #000;cursor:pointer;-webkit-appearance:none;border-radius:50%}
-        .vibe-slider::-webkit-slider-thumb:active{transform:scale(.95)}
         .spills-sect{padding:18px}
         .sect-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
         .spill-card{background:var(--sf);border:2px solid var(--bd2);margin-bottom:20px;padding:16px;box-shadow:4px 4px 0 #000;transition:.2s}
@@ -185,15 +177,11 @@
             </div>
             <div class="radar-ctas">
                 <div class="gender-row">
-                    <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span class="gender-icon">♠️</span><span>HOT TAKE</span><span class="gender-tag"></span></button>
-                    <button class="btn-gender btn-spade" id="vibeMaleBtn"><span class="gender-icon">❤️</span><span>SOFT TALK</span><span class="gender-tag"></span></button>
+                    <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span class="gender-icon">❤️</span><span>SOFT TALK</span></button>
+                    <button class="btn-gender btn-spade" id="vibeMaleBtn"><span class="gender-icon">♠️</span><span>HOT TAKE</span></button>
                 </div>
                 <button class="btn-whisper" id="whisperBtn">✦ WHISPERER <span>NEW</span></button>
             </div>
-        </div>
-        <div class="filter-sect">
-            <div class="filter-top"><span class="filter-title">KESELARASAN</span><span class="match-pct" id="vibePct">87%</span></div>
-            <input type="range" class="vibe-slider" id="vibeSlider" min="0" max="100" value="87">
         </div>
         <div class="spills-sect">
             <div class="sect-header"><div class="sect-title">SPILL TERKINI</div><span id="feedMeta">0 spill</span></div>
@@ -236,7 +224,7 @@
     const av=['beby.manis','chili.padi','pretty.sad','sejuta.badai','agak.koplak','strawberry.shortcake','cinnamon.girl','satria.bajahitam','malam.minggu','hujan.gerimis','kopi.pahit','luka.luka','senja.redup','kota.tua','patah.hati','move.on'],nc=new Map();
     const gn=(uid)=>{if(!uid)return'anonymous';if(nc.has(uid))return nc.get(uid);let h=0;for(let i=0;i<uid.length;i++)h=((h<<5)-h)+uid.charCodeAt(i),h|=0;let n=av[Math.abs(h)%av.length];nc.set(uid,n);return n;};
     
-    let ue=[],ae=[],alle=[],aiTimer,cp=null,ch=[],isTyping=false,cl='id',vibe=87,se=false,ac=null,si=null;
+    let ue=[],ae=[],alle=[],aiTimer,cp=null,ch=[],isTyping=false,cl='id',se=false,ac=null,si=null;
     const initS=()=>{let b=$('settingsBtn'),d=$('settingsDropdown');if(b&&d){b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});}
     $('logoutBtn')?.addEventListener('click',()=>{localStorage.removeItem(K.l);t('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);});
     document.querySelectorAll('.lang-option').forEach(o=>o.addEventListener('click',function(){document.querySelectorAll('.lang-option').forEach(o=>o.classList.remove('active'));this.classList.add('active');cl=this.dataset.lang;t(`🌐 Language: ${cl==='id'?'Indonesia':'English'}`);}));};
@@ -250,9 +238,6 @@
     const startWP=()=>setInterval(async()=>{try{let r=await fetch(`/api/whisper?user=${U}`);if(r.ok)(await r.json()).forEach(w=>showIW(w.sender,w.message));}catch(e){}},3000);
     
     const initNav=()=>{let p=window.location.pathname.split('/').pop()||'spill.html';document.querySelectorAll('.nav-item').forEach(i=>i.classList.toggle('active',i.getAttribute('href')===p));};
-    const initSlider=()=>{let s=$('vibeSlider'),p=$('vibePct');if(!s||!p)return;let v=localStorage.getItem('vibe_value');if(v){s.value=v;p.textContent=v+'%';vibe=parseInt(v);}
-    s.oninput=function(){let val=this.value;p.textContent=val+'%';p.style.color=val<30?'var(--ap)':val<70?'var(--aq)':'var(--as)';vibe=parseInt(val);};
-    s.onchange=function(){localStorage.setItem('vibe_value',this.value);t(`✨ Keselarasan ${this.value}%`);};};
     
     const renderS=()=>{let c=$('spillsList');if(!c)return;if(!alle.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';return;}
     c.innerHTML=alle.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${s.author}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${s.content}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="window.reactToSpill(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');
@@ -299,7 +284,7 @@
     const sendM=async(m,f)=>{if(!cp)return;if(!f)addM('user',m);showT();isTyping=true;try{let r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m||'hai',characterName:cp,lastMessages:ch})});if(!r.ok)throw new Error();let d=await r.json();if(m)ch.push({role:'assistant',content:d.reply});hideT();isTyping=false;await typeM('stranger',d.reply,d.typing);}catch(e){hideT();isTyping=false;addM('stranger','😅');}};
     const typeM=async(s,full,info)=>{let m=$('chatMessages');if(!m)return;let d=document.createElement('div');d.className=`message ${s}`;m.appendChild(d);let w=full.split(' '),txt='',wi=0,ci=0;return new Promise(r=>{let n=()=>{if(wi>=w.length){r();return;}if(ci<w[wi].length){txt+=w[wi][ci];d.textContent=txt+(wi<w.length-1?' ':'');ci++;setTimeout(n,info?.speed||80);}else{wi++;ci=0;if(wi<w.length){txt+=' ';setTimeout(n,info?.wordPause||150);}else{d.textContent=full;setTimeout(r,300);}}};setTimeout(n,info?.initialDelay||500);});};
     
-    window.addEventListener('load',async()=>{$('userNameDisplay')&&($('userNameDisplay').textContent='@'+U);let o=$('onlineCount');if(o){o.textContent=(Math.floor(Math.random()*20)+10)+' ONLINE';}setTimeout(initR,100);initS();initW();initNav();initSlider();await fetchE();initAI();startWP();
+    window.addEventListener('load',async()=>{$('userNameDisplay')&&($('userNameDisplay').textContent='@'+U);let o=$('onlineCount');if(o){o.textContent=(Math.floor(Math.random()*20)+10)+' ONLINE';}setTimeout(initR,100);initS();initW();initNav();await fetchE();initAI();startWP();
     $('vibeFemaleBtn')?.addEventListener('click',e=>{e.preventDefault();startVibe('heart');});$('vibeMaleBtn')?.addEventListener('click',e=>{e.preventDefault();startVibe('spade');});$('closeChatBtn')?.addEventListener('click',()=>{$('chatRoom').classList.remove('on');ch=[];cp=null;isTyping=false;});let send=$('sendButton'),inp=$('chatInput');if(send&&inp){send.onclick=async()=>{if(isTyping){t('Tunggu sampai pesan terkirim');return;}let m=inp.value.trim();if(!m||!cp)return;inp.value='';await sendM(m);};inp.onkeypress=e=>{if(e.key==='Enter'&&!isTyping)send.click();};}});
 })();
 </script>
