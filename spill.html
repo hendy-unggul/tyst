@@ -11,6 +11,7 @@
   --bg:#0A0A0A;--sf:#141414;--sfe:#1E1E1E;--bd:#2A2A2A;--bd2:#333;--tx:#FFF;--txs:#888;--txm:#555;
   --spill:#ff3b6f;--cocomeo:#00e5ff;--jejak:#9900ff;--glitch:#FFD700;
   --ap:var(--spill);--as:var(--cocomeo);--at:#FF006E;--aq:#bfff00;--aw:#FFD700;
+  --ms:#FF9500;--mt:#bfff00;--mc:#00e5ff;--md:#8B5CF6;--rd:#FF3333;--void:#050505;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--tx);font-family:var(--font-body);font-weight:500;font-size:15px;line-height:1.4;min-height:100vh;padding-bottom:100px;overflow-x:hidden}
@@ -111,7 +112,7 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 .nico{font-size:20px}
 
 /* ===== UTILITY ===== */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;z-index:10000;opacity:0;transition:.3s}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;z-index:10000;opacity:0;transition:.3s;border-radius:30px;white-space:nowrap}
 .toast.show{opacity:1}
 .proc{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:10002;display:none;flex-direction:column;align-items:center;justify-content:center}
 .proc.on{display:flex}
@@ -123,9 +124,10 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 .waiting-timer{width:100px;height:100px;border:4px solid var(--aq);border-radius:50%;margin:20px auto;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:36px;color:var(--aq)}
 .scanning-overlay{display:none;position:fixed;inset:0;background:#000;z-index:2000;align-items:center;justify-content:center;font-family:var(--font-mono)}
 .scanning-overlay.show{display:flex}
+.scanning-box{text-align:center;width:100%;max-width:400px;padding:20px}
 .scanning-text{font-size:24px;color:var(--spill);text-align:center;min-height:120px;display:flex;align-items:center;justify-content:center}
 .scanning-progress{width:100%;height:2px;background:var(--bd2);margin-top:30px}
-.scanning-bar{height:100%;width:0;background:var(--spill);transition:width .1s linear}
+.scanning-bar{height:100%;width:0%;background:var(--spill);transition:width .1s linear}
 </style>
 </head>
 <body>
@@ -150,13 +152,20 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 
 <div class="filter-sect"><div class="filter-top"><span class="filter-title">KESELARASAN</span><span class="match-pct" id="vibePct">87%</span></div><input type="range" class="vibe-slider" id="vibeSlider" min="0" max="100" value="87"></div>
 
-<section class="spills-sect"><div class="sect-header"><span>SPILL TERKINI</span><span id="feedMeta">0 spill</span></div><div id="spillsList"><div class="spill-card"><div class="spill-content">Memuat...</div></div></div></section>
+<section class="spills-sect">
+  <div class="sect-header"><span>SPILL TERKINI</span><span id="feedMeta">0 spill</span></div>
+  <div id="spillsList"></div>
+</section>
 </div>
 
 <!-- OVERLAYS -->
-<div class="waiting-overlay" id="waitingOverlay"><div class="waiting-box"><div class="waiting-timer" id="waitingTimer">15</div><button class="btn" id="cancelWaiting" style="margin-top:16px">BATAL</button></div></div>
+<div class="waiting-overlay" id="waitingOverlay"><div class="waiting-box"><div class="waiting-timer" id="waitingTimer">15</div><button class="btn" id="cancelWaiting" style="margin-top:16px;padding:12px 24px;background:transparent;border:2px solid var(--bd2);color:var(--txs);cursor:pointer">BATAL</button></div></div>
 <div class="scanning-overlay" id="scanningOverlay"><div class="scanning-box"><div class="scanning-text" id="scanningText"></div><div class="scanning-progress"><div class="scanning-bar" id="scanningBar"></div></div></div></div>
-<div class="chat-room" id="chatRoom"><div class="chat-head"><span id="partnerLabel">STRANGER</span><span class="chat-timer" id="chatTimer">15:00</span><button class="chat-close" id="closeChatBtn">✕</button></div><div class="chat-messages" id="chatMessages"></div><div class="chat-input-wrap"><input class="chat-input" id="chatInput" placeholder="ketik pesan..."><button class="chat-send" id="sendButton">➤</button></div></div>
+<div class="chat-room" id="chatRoom">
+  <div class="chat-head"><span id="partnerLabel">STRANGER</span><span class="chat-timer" id="chatTimer">15:00</span><button class="chat-close" id="closeChatBtn">✕</button></div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input-wrap"><input class="chat-input" id="chatInput" placeholder="ketik pesan..."><button class="chat-send" id="sendButton">➤</button></div>
+</div>
 
 <!-- BOTTOM NAV -->
 <nav class="bnav"><div class="bnav-c">
@@ -175,84 +184,94 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between;align-item
 <script>
 // ========== SUPABASE INIT ==========
 if (!window.supabase?.createClient) throw new Error('Supabase not loaded');
-const supabaseClient = window.supabase.createClient(JEJAK.SUPABASE_URL, JEJAK.SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(JEJAK.SUPABASE_URL, JEJAK.SUPABASE_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
 const session = JEJAK.getSession();
-if (!session?.loggedIn) window.location.replace('/index.html');
+if (!session?.loggedIn || !session?.uid || !session?.username) window.location.replace('/index.html');
 
 const S = { username: session.username, userId: session.uid, entries: [], currentPartner: null, chatHistory: [], isTyping: false };
 document.getElementById('huser').textContent = '@' + S.username;
-document.getElementById('odot')?.classList.remove('off');
+if (document.getElementById('odot')) document.getElementById('odot').classList.remove('off');
 
 // ========== BOTTOM NAV ACTIVE ==========
 (function forceActive() {
-  const page = location.pathname.split('/').pop() || 'spill.html';
-  document.querySelectorAll('.bnav .ni').forEach(l => l.classList.toggle('act', l.getAttribute('href') === page));
+  const page = window.location.pathname.split('/').pop() || 'spill.html';
+  document.querySelectorAll('.bnav .ni').forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === page) link.classList.add('act');
+    else link.classList.remove('act');
+  });
 })();
 
 // ========== HELPER ==========
 const $ = id => document.getElementById(id);
-const toast = (msg, d=3000) => { const t=$('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), d); };
-const escape = t => t?.replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]) || '';
+const toast = (msg, d=3000) => { const t=$('toast'); if(!t) return; t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), d); };
+const escape = t => t ? String(t).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]) : '';
+
+// ========== MENU ==========
+window.toggleMenu = () => $('mdd')?.classList.toggle('on');
+window.logoutUser = () => { if(confirm('Yakin logout?')){ JEJAK.clearSession(); sessionStorage.clear(); window.location.href='index.html'; } };
+document.addEventListener('click', e => { if(!e.target.closest('.smenu')) $('mdd')?.classList.remove('on'); });
 
 // ========== SPILLS ==========
 async function loadSpills() {
   if (!S.userId) return;
   const { data, error } = await supabaseClient.from('entries').select('*').order('created_at', { ascending: false }).limit(20);
-  if (error) return toast('Gagal load: ' + error.message);
+  if (error) { toast('Gagal load: ' + error.message); return; }
   S.entries = data || [];
   renderSpills();
 }
 function renderSpills() {
-  const html = S.entries.map(e => `<div class="spill-card"><div class="spill-header"><span class="spill-author">@${e.username}</span><span class="spill-mood ${e.mood}">${e.mood}</span></div><div class="spill-content">${escape(e.content)}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r => `<button class="react-btn" onclick="react('${e.id}','${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="rcount">${e.reactions?.[r]||0}</span></button>`).join('')}</div></div>`).join('');
-  $('#spillsList').innerHTML = html || '<div class="spill-card"><div class="spill-content">Belum ada spill</div></div>';
+  const container = $('#spillsList');
+  if (!container) return;
+  if (!S.entries.length) { container.innerHTML = '<div class="spill-card"><div class="spill-content">Belum ada spill</div></div>'; return; }
+  const html = S.entries.map(e => `<div class="spill-card"><div class="spill-header"><span class="spill-author">@${escape(e.username)}</span><span class="spill-mood ${e.mood}">${e.mood}</span></div><div class="spill-content">${escape(e.content)}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r => `<button class="react-btn" data-id="${e.id}" data-key="${r}">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="rcount">${e.reactions?.[r]||0}</span></button>`).join('')}</div></div>`).join('');
+  container.innerHTML = html;
   $('#feedMeta').textContent = S.entries.length + ' spill';
+  
+  // Attach reaction events
+  document.querySelectorAll('.react-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = btn.dataset.id;
+      const key = btn.dataset.key;
+      const entry = S.entries.find(e => e.id === id);
+      if (!entry) return;
+      entry.reactions = entry.reactions || { skull:0, cry:0, fire:0, upside:0 };
+      entry.reactions[key] = (entry.reactions[key] || 0) + 1;
+      await supabaseClient.from('entries').update({ reactions: entry.reactions }).eq('id', id);
+      renderSpills();
+    });
+  });
 }
-window.react = async (id, key) => {
-  const entry = S.entries.find(e => e.id === id);
-  if (!entry) return;
-  entry.reactions = entry.reactions || { skull:0, cry:0, fire:0, upside:0 };
-  entry.reactions[key] = (entry.reactions[key] || 0) + 1;
-  await supabaseClient.from('entries').update({ reactions: entry.reactions }).eq('id', id);
-  renderSpills();
-};
 
 // ========== VIBE CHECK ==========
 const startVibe = async type => {
-  const ov = $('waitingOverlay'), timer = $('waitingTimer');
+  const ov = $('#waitingOverlay');
+  const timer = $('#waitingTimer');
+  if (!ov || !timer) return;
   ov.classList.add('show');
   let sec = 15;
   timer.textContent = sec;
   const int = setInterval(() => { sec--; timer.textContent = sec; if (sec <= 0) { clearInterval(int); ov.classList.remove('show'); openChat(type === 'soft' ? 'beby.manis' : 'agak.koplak'); } }, 1000);
-  $('cancelWaiting').onclick = () => { clearInterval(int); ov.classList.remove('show'); };
+  $('#cancelWaiting').onclick = () => { clearInterval(int); ov.classList.remove('show'); };
 };
-const openChat = name => { $('chatRoom').classList.add('on'); S.currentPartner = name; };
-$('vibeSoftBtn')?.addEventListener('click', () => startVibe('soft'));
-$('vibeHotBtn')?.addEventListener('click', () => startVibe('hot'));
-$('closeChatBtn')?.addEventListener('click', () => $('chatRoom').classList.remove('on'));
-
-// ========== SCANNING EFFECT ==========
-const startScan = (type, cb) => {
-  const ov = $('scanningOverlay'), txt = $('scanningText'), bar = $('scanningBar');
-  ov.classList.add('show');
-  const seq = ['finding strangers...', 'most strangers here are just people', 'some are ghosts', 'and a few...', 'are trouble'];
-  let i = 0, start = Date.now();
-  const int = setInterval(() => {
-    const e = (Date.now() - start) / 1000;
-    bar.style.width = Math.min(100, (e / 15) * 100) + '%';
-    txt.textContent = seq[i];
-    if (e > (i+1)*3) i++;
-    if (e >= 15) { clearInterval(int); ov.classList.remove('show'); cb(); }
-  }, 100);
+const openChat = name => { 
+  const cr = $('#chatRoom');
+  if (cr) { cr.classList.add('on'); S.currentPartner = name; }
 };
+$('#vibeSoftBtn')?.addEventListener('click', () => startVibe('soft'));
+$('#vibeHotBtn')?.addEventListener('click', () => startVibe('hot'));
+$('#closeChatBtn')?.addEventListener('click', () => $('#chatRoom')?.classList.remove('on'));
 
 // ========== RADAR ==========
-let radar;
 function initRadar() {
-  const cv = $('radarCanvas'), ct = $('radarCont');
+  const cv = $('#radarCanvas');
+  const ct = $('#radarCont');
   if (!cv || !ct) return;
-  const w = ct.clientWidth, h = ct.clientHeight;
+  const w = ct.clientWidth || 300, h = ct.clientHeight || 300;
   cv.width = w; cv.height = h;
-  const ctx = cv.getContext('2d'), cx = w/2, cy = h/2, maxR = Math.min(cx, cy) * 0.8;
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+  const cx = w/2, cy = h/2, maxR = Math.min(cx, cy) * 0.8;
   let angle = 0;
   setInterval(() => {
     ctx.clearRect(0,0,w,h);
@@ -275,11 +294,12 @@ function initRadar() {
     ctx.fill();
   }, 50);
 }
-setTimeout(initRadar, 100);
 
 // ========== INIT ==========
+setTimeout(initRadar, 100);
 loadSpills();
-setInterval(() => $('#onlineCount').textContent = Math.floor(Math.random()*20+10) + ' ONLINE', 30000);
+const onlineEl = $('#onlineCount');
+if (onlineEl) setInterval(() => onlineEl.textContent = Math.floor(Math.random()*20+10) + ' ONLINE', 30000);
 </script>
 </body>
 </html>
