@@ -327,95 +327,412 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
 <div class="upload-progress-wrap" id="upload-progress-wrap"><div class="upload-progress-label"><span>MENGUPLOAD</span><span id="upload-progress-label-text">0/0 foto</span></div><div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill"></div></div></div>
 <div class="toast" id="toast"></div>
 <input type="file" id="finput" accept="image/*" multiple style="display:none">
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/shared-constants.js"></script>
 <script src="/shared-utils.js"></script>
 <script>
-// ========== GLOBAL SUPABASE CLIENT (SINGLETON) ==========
+// ========== SUPABASE CLIENT ==========
 if (!window._supabaseClient) {
   try {
-    window._supabaseClient = window.supabase.createClient(JEJAK.SUPABASE_URL, JEJAK.SUPABASE_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true }
-    });
+    window._supabaseClient = window.supabase.createClient(
+      JEJAK.SUPABASE_URL, 
+      JEJAK.SUPABASE_KEY,
+      { auth: { persistSession: true, autoRefreshToken: true } }
+    );
     console.log('[SUPABASE] Client initialized');
-  } catch(e) {
-    console.error('[SUPABASE] Init error:', e);
-  }
+  } catch(e) { console.error(e); }
 }
 window.supabaseClient = window._supabaseClient;
 
 // ========== AUTH CHECK ==========
 var session = JEJAK.getSession();
-if (!session || !session.loggedIn || !session.uid) {
-  console.warn('[JEJAK] No session, redirecting');
+if (!session || !session.loggedIn || !session.uid || !session.username) {
   window.location.replace('/index.html');
 }
 
 // ========== GLOBAL STATE ==========
 var S = {
-  user: session?.username || null,
-  userId: session?.uid || null,
+  username: session.username,
+  userId: session.uid,
   isPremium: JEJAK.checkSub ? JEJAK.checkSub() : false,
   entries: [],
   artefacts: []
 };
 
+console.log('[STATE]', { 
+  username: S.username, 
+  userId: S.userId?.substring(0,8),
+  isPremium: S.isPremium 
+});
+
 // Update UI
 var hu = document.getElementById('huser');
 var od = document.getElementById('odot');
-if (hu) hu.textContent = '@' + (S.user || 'anon');
+if (hu) hu.textContent = '@' + S.username;
 if (od) od.classList.remove('off');
-
-console.log('[JEJAK] Auth OK', { user: S.user, uid: S.userId?.substring(0,8) });
 
 // ========== BOTTOM NAV ACTIVE ==========
 (function setActiveNav() {
   var current = window.location.pathname.split('/').pop() || 'spill.html';
   document.querySelectorAll('.bnav .ni').forEach(function(link) {
-    var href = link.getAttribute('href');
-    if (href === current) {
-      link.classList.add('act');
-      console.log('[NAV] Active:', href);
-    } else {
-      link.classList.remove('act');
-    }
+    link.classList.toggle('act', link.getAttribute('href') === current);
   });
 })();
 
-// ========== DUMMY DATA ==========
-var DUMMY_ENTRIES = [
-  {id:'d1',content:'Hari ini gue nangis di angkot gegara liat kucing dipukul orang.', mood:'surviving', timestamp:Date.now()-3600000, reactions:{skull:42,cry:89,fire:12,upside:7}, isDummy:true},
-  {id:'d2',content:'akhirnya bisa tidur nyenyak setelah 3 minggu insomnia.', mood:'thriving', timestamp:Date.now()-7200000, reactions:{skull:23,cry:15,fire:67,upside:31}, isDummy:true},
-  {id:'d3',content:'chaos abis! dari bangun tidur udah salah ambil kaki.', mood:'chaotic', timestamp:Date.now()-10800000, reactions:{skull:89,cry:23,fire:45,upside:78}, isDummy:true}
-];
+// ========== LOAD ENTRIES ==========
+async function loadEntries() {
+  if (!S.userId || !window.supabaseClient) return;
+  
+  try {
+    var { data, error } = await window.supabaseClient
+      .from('entries')
+      .select('*')
+      .eq('user_id', S.userId)
+      .order('created_at', { ascending: false })
+      .limit(6);
+    
+    if (error) throw error;
+    
+    S.entries = (data || []).map(function(e) {
+      return {
+        id: e.id,
+        content: e.content,
+        mood: e.mood,
+        timestamp: e.created_at ? new Date(e.created_at).getTime() : Date.now(),
+        reactions: e.reactions || { skull:0, cry:0, fire:0, upside:0 },
+        username: e.username,
+        user_id: e.user_id,
+        isDummy: false
+      };
+    });
+    
+    if (window.JEJAKReactions) {
+      S.entries = JEJAKReactions.restoreAll(S.entries);
+    }
+    
+    renderEntries();
+  } catch(err) {
+    console.error('[ENTRIES]', err);
+    toast('Gagal load entries');
+  }
+}
 
-var DUMMY_ARTEFACTS = [
-  {id:'a1',url:'https://images.unsplash.com/photo-1517842645767-c639042777db?w=400&q=80', note:'jeda', hasFace:false, isDummy:true, theme:'fm'},
-  {id:'a2',url:'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=400&q=80', note:'hijau', hasFace:false, isDummy:true, theme:'fg'},
-  {id:'a3',url:'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=80', note:'gabut', hasFace:false, isDummy:true, theme:'fl'},
-  {id:'a4',url:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80', note:'sendiri', hasFace:false, isDummy:true, theme:'fv'},
-  {id:'a5',url:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80', note:'capek', hasFace:true, isDummy:true, theme:'fn'},
-  {id:'a6',url:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80', note:'love', hasFace:false, isDummy:true, theme:'fc'}
-];
+// ========== LOAD ARTEFACTS ==========
+async function loadArtefacts() {
+  if (!S.userId || !window.supabaseClient) return;
+  
+  try {
+    var { data, error } = await window.supabaseClient
+      .from('artefacts')
+      .select('*')
+      .eq('user_id', S.userId)
+      .order('created_at', { ascending: false })
+      .limit(6);
+    
+    if (error) throw error;
+    
+    S.artefacts = (data || []).map(function(a) {
+      return {
+        id: a.id,
+        url: a.url,
+        note: a.note || 'memory',
+        hasFace: a.has_face || false,
+        theme: a.theme || 'fm',
+        timestamp: a.created_at ? new Date(a.created_at).getTime() : Date.now(),
+        username: a.username,
+        user_id: a.user_id,
+        isDummy: false
+      };
+    });
+    
+    renderTray();
+    
+    if (S.artefacts.length > 0) {
+      var saved = null;
+      try {
+        var sv = localStorage.getItem('jejak_hero_' + S.userId);
+        if (sv) saved = JSON.parse(sv);
+      } catch(e) {}
+      setHero(saved ? saved.id : S.artefacts[0].id);
+    }
+  } catch(err) {
+    console.error('[ARTEFACTS]', err);
+  }
+}
+
+// ========== SAVE ENTRY ==========
+async function saveEntry() {
+  if (!S.userId || !S.username) { 
+    toast('Login dulu'); 
+    return; 
+  }
+  
+  var content = document.getElementById('ri')?.value.trim();
+  if (!content) { 
+    toast('Tulis dulu spill-nya'); 
+    return; 
+  }
+  
+  var moodEl = document.querySelector('.mc.act');
+  if (!moodEl) { 
+    toast('Pilih mood dulu'); 
+    return; 
+  }
+  
+  showProc('Menyimpan spill...');
+  
+  try {
+    var { data, error } = await window.supabaseClient
+      .from('entries')
+      .insert({
+        user_id: S.userId,
+        username: S.username,
+        content: content,
+        mood: moodEl.dataset.mood
+      })
+      .select();
+    
+    if (error) {
+      if (error.code === '401' || error.message?.includes('JWT')) {
+        toast('Session expired, login ulang');
+        setTimeout(() => logoutUser(), 1500);
+      } else {
+        toast('Gagal: ' + error.message);
+      }
+    } else {
+      document.getElementById('ri').value = '';
+      document.getElementById('ccount').textContent = '0/500';
+      await loadEntries();
+      toast('✓ Spill terkirim!');
+    }
+  } catch(err) {
+    console.error('[SAVE]', err);
+    toast('Gagal menyimpan');
+  } finally {
+    hideProc();
+  }
+}
+
+// ========== UPLOAD ARTEFAK ==========
+async function confirmUpload() {
+  if (selectedFiles.size === 0) { toast('Pilih minimal 1'); return; }
+  
+  var kbtn = document.getElementById('konfirmbtn');
+  if (kbtn) kbtn.disabled = true;
+  
+  var theme = THEMES[currentTheme];
+  var note = currentNote || 'memory';
+  
+  var items = Array.from(selectedFiles).map(i => pendingFiles[i])
+    .filter(x => x && x.file)
+    .map(x => ({ file: x.file, note, hasFace: x.hasFace || false, theme: theme.filter }));
+  
+  closeGallery();
+  
+  var pw = document.getElementById('upload-progress-wrap');
+  var pf = document.getElementById('upload-progress-fill');
+  var pl = document.getElementById('upload-progress-label-text');
+  if (pw) pw.classList.add('show');
+  
+  var uploaded = 0, newArts = [];
+  
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var file = item.file;
+    var ext = (['jpg','jpeg','png','webp','gif'].includes((file.name.split('.').pop() || '').toLowerCase()))
+      ? file.name.split('.').pop().toLowerCase() : 'jpg';
+    var path = Date.now() + '_' + i + '_' + S.userId.substring(0,8) + '.' + ext;
+    
+    try {
+      var { error: uploadError } = await window.supabaseClient.storage
+        .from('artefacts')
+        .upload(path, file, { contentType: file.type || ('image/' + ext), upsert: true });
+      
+      if (uploadError) {
+        toast('Upload gagal: ' + uploadError.message);
+        continue;
+      }
+      
+      var { data: urlData } = window.supabaseClient.storage
+        .from('artefacts')
+        .getPublicUrl(path);
+      var url = urlData.publicUrl;
+      
+      var { data: insertData, error: insertError } = await window.supabaseClient
+        .from('artefacts')
+        .insert({
+          user_id: S.userId,
+          username: S.username,
+          url: url,
+          note: item.note,
+          has_face: item.hasFace,
+          theme: item.theme
+        })
+        .select();
+      
+      if (!insertError && insertData?.[0]) {
+        newArts.push({
+          id: insertData[0].id,
+          url: url,
+          note: item.note,
+          hasFace: item.hasFace,
+          theme: item.theme,
+          timestamp: Date.now(),
+          username: S.username,
+          user_id: S.userId,
+          isDummy: false
+        });
+        uploaded++;
+      }
+      
+      if (pf) pf.style.width = Math.round(((i + 1) / items.length) * 100) + '%';
+      if (pl) pl.textContent = (i + 1) + '/' + items.length + ' foto';
+      
+    } catch(err) {
+      toast('Error: ' + err.message);
+    }
+  }
+  
+  if (pw) pw.classList.remove('show');
+  if (pf) pf.style.width = '0%';
+  
+  S.artefacts = [...newArts, ...S.artefacts].slice(0, 6);
+  await loadArtefacts();
+  
+  if (S.artefacts.length > 0) setHero(S.artefacts[0].id);
+  if (kbtn) kbtn.disabled = false;
+  
+  toast(uploaded > 0 ? '✓ ' + uploaded + ' foto diupload' : '⚠ Upload gagal');
+}
+
+// ========== REACTION ==========
+async function reactEntry(id, key) {
+  if (!S.userId) return;
+  
+  var entry = S.entries.find(e => e.id === id);
+  if (!entry) return;
+  
+  var wasActive = entry.userReacted === key;
+  
+  if (wasActive) {
+    entry.reactions[key] = Math.max(0, (entry.reactions[key] || 0) - 1);
+    entry.userReacted = null;
+  } else {
+    entry.reactions[key] = (entry.reactions[key] || 0) + 1;
+    entry.userReacted = key;
+  }
+  
+  var btn = document.querySelector(`.reaction-btn[data-entry-id="${id}"][data-key="${key}"]`);
+  var cnt = btn?.querySelector('.rcount');
+  if (btn) btn.classList.toggle('act', !wasActive);
+  if (cnt) cnt.textContent = entry.reactions[key];
+  
+  try {
+    await window.supabaseClient
+      .from('entries')
+      .update({ reactions: entry.reactions })
+      .eq('id', id);
+  } catch(err) {
+    if (wasActive) {
+      entry.reactions[key] = (entry.reactions[key] || 0) + 1;
+      entry.userReacted = key;
+    } else {
+      entry.reactions[key] = Math.max(0, (entry.reactions[key] || 0) - 1);
+      entry.userReacted = null;
+    }
+    if (btn) btn.classList.toggle('act', wasActive);
+    if (cnt) cnt.textContent = entry.reactions[key];
+    toast('Gagal simpan reaksi');
+  }
+}
+
+// ========== RENDER ENTRIES ==========
+function renderEntries() {
+  var con = document.getElementById('econ');
+  if (!con) return;
+  
+  var list = S.entries.slice();
+  for (var d = 0; d < Math.max(0, 3 - list.length); d++) list.push(DUMMY_ENTRIES[d]);
+  
+  var rdefs = { skull:'💀', cry:'😭', fire:'🔥', upside:'🙃' };
+  var emojis = { surviving:'😮‍💨', thriving:'✨', chaotic:'🌀', doom:'🛌' };
+  var html = '';
+  
+  for (var i = 0; i < list.length; i++) {
+    var e = list[i];
+    var ta = e.isDummy ? 'contoh' : timeAgo(e.timestamp);
+    var rbtns = '';
+    
+    for (var k in rdefs) {
+      var cnt = e.reactions?.[k] || 0;
+      if (e.isDummy) {
+        rbtns += `<button class="reaction-btn" disabled><span class="remoji">${rdefs[k]}</span><span class="rcount">${cnt}</span></button>`;
+      } else {
+        var act = e.userReacted === k ? ' act' : '';
+        rbtns += `<button class="reaction-btn${act}" data-entry-id="${e.id}" data-key="${k}">` +
+          `<span class="remoji">${rdefs[k]}</span>` +
+          `<span class="rcount">${cnt}</span>` +
+          `</button>`;
+      }
+    }
+    
+    html += `<article class="entry${e.isDummy ? ' entry-dummy' : ''}" data-id="${e.id}">` +
+      `<div class="ehdr"><div class="emeta">` +
+      `<span class="etime">${ta}</span>` +
+      `<span class="emood ${e.mood}">${emojis[e.mood] || ''} ${e.mood}</span>` +
+      `</div>${e.isDummy ? '<span class="fifo-i">Contoh</span>' : ''}</div>` +
+      `<div class="econt">${esc(e.content)}</div>` +
+      `<div class="reaction-bar">${rbtns}</div>` +
+      `</article>`;
+  }
+  
+  con.innerHTML = html;
+  bindReactionButtons();
+}
+
+// ========== RENDER TRAY ==========
+function renderTray() {
+  var con = document.getElementById('tgrid');
+  if (!con) return;
+  
+  var list = S.artefacts.slice(0, 6);
+  for (var d = 0; d < Math.max(0, 6 - list.length); d++) list.push(DUMMY_ARTEFACTS[d]);
+  
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var a = list[i];
+    if (a.hasFace) {
+      html += `<div class="ti" data-id="${a.id}" style="position:relative">` +
+        `<img src="${a.url}" class="${a.theme}" alt="${esc(a.note)}">` +
+        `<div class="sensored-overlay"><span class="sensored-text">SENSORED</span></div>` +
+        `</div>`;
+    } else {
+      html += `<div class="ti" data-id="${a.id}">` +
+        `<img src="${a.url}" class="${a.theme}" alt="${esc(a.note)}">` +
+        `</div>`;
+    }
+  }
+  
+  con.innerHTML = html;
+  con.querySelectorAll('.ti[data-id]').forEach(t => {
+    t.addEventListener('click', () => setHero(t.dataset.id));
+  });
+}
 
 // ========== HELPER FUNCTIONS ==========
 function $(id) { return document.getElementById(id); }
 
-function toast(msg, dur) {
-  dur = dur || 3000;
+function toast(msg, dur = 3000) {
   var t = $('toast');
   if (!t) return;
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, dur);
+  setTimeout(() => t.classList.remove('show'), dur);
 }
 
 function esc(t) {
   if (window.JEJAKSanitize) return JEJAKSanitize.escape(t);
-  return String(t).replace(/[&<>"]/g, function(m) {
-    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[m];
-  });
+  return String(t).replace(/[&<>"]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[m]));
 }
 
 function toggleMenu() { $('mdd')?.classList.toggle('on'); }
@@ -428,9 +745,7 @@ function logoutUser() {
 }
 
 function selMood(mood) {
-  document.querySelectorAll('.mc').forEach(function(c) {
-    c.classList.toggle('act', c.dataset.mood === mood);
-  });
+  document.querySelectorAll('.mc').forEach(c => c.classList.toggle('act', c.dataset.mood === mood));
 }
 
 function showProc(msg) {
@@ -457,81 +772,8 @@ function updateCharCount() {
   if (ri && cc) cc.textContent = ri.value.length + '/500';
 }
 
-// ========== RENDER FUNCTIONS ==========
-function renderEntries() {
-  var con = $('econ');
-  if (!con) return;
-  
-  var list = S.entries.slice();
-  for (var d = 0; d < Math.max(0, 3 - list.length); d++) list.push(DUMMY_ENTRIES[d]);
-  
-  var rdefs = { skull:'💀', cry:'😭', fire:'🔥', upside:'🙃' };
-  var emojis = { surviving:'😮‍💨', thriving:'✨', chaotic:'🌀', doom:'🛌' };
-  var html = '';
-  
-  for (var i = 0; i < list.length; i++) {
-    var e = list[i];
-    var ta = e.isDummy ? 'contoh' : timeAgo(e.timestamp);
-    var rbtns = '';
-    
-    for (var k in rdefs) {
-      var cnt = e.reactions && e.reactions[k] ? e.reactions[k] : 0;
-      if (e.isDummy) {
-        rbtns += '<button class="reaction-btn" disabled><span class="remoji">' + rdefs[k] + '</span><span class="rcount">' + cnt + '</span></button>';
-      } else {
-        var act = e.userReacted === k ? ' act' : '';
-        rbtns += '<button class="reaction-btn' + act + '" data-entry-id="' + e.id + '" data-key="' + k + '">' +
-          '<span class="remoji">' + rdefs[k] + '</span>' +
-          '<span class="rcount">' + cnt + '</span>' +
-          '</button>';
-      }
-    }
-    
-    html += '<article class="entry' + (e.isDummy ? ' entry-dummy' : '') + '" data-id="' + e.id + '">' +
-      '<div class="ehdr"><div class="emeta">' +
-      '<span class="etime">' + ta + '</span>' +
-      '<span class="emood ' + e.mood + '">' + (emojis[e.mood] || '') + ' ' + e.mood + '</span>' +
-      '</div>' + (e.isDummy ? '<span class="fifo-i">Contoh</span>' : '') + '</div>' +
-      '<div class="econt">' + esc(e.content) + '</div>' +
-      '<div class="reaction-bar">' + rbtns + '</div>' +
-      '</article>';
-  }
-  
-  con.innerHTML = html;
-  bindReactionButtons();
-}
-
-function renderTray() {
-  var con = $('tgrid');
-  if (!con) return;
-  
-  var list = S.artefacts.slice(0, 6);
-  for (var d = 0; d < Math.max(0, 6 - list.length); d++) list.push(DUMMY_ARTEFACTS[d]);
-  
-  var html = '';
-  for (var i = 0; i < list.length; i++) {
-    var a = list[i];
-    if (a.hasFace) {
-      html += '<div class="ti" data-id="' + a.id + '" style="position:relative">' +
-        '<img src="' + a.url + '" class="' + a.theme + '" alt="' + esc(a.note) + '">' +
-        '<div class="sensored-overlay"><span class="sensored-text">SENSORED</span></div>' +
-        '</div>';
-    } else {
-      html += '<div class="ti" data-id="' + a.id + '">' +
-        '<img src="' + a.url + '" class="' + a.theme + '" alt="' + esc(a.note) + '">' +
-        '</div>';
-    }
-  }
-  
-  con.innerHTML = html;
-  con.querySelectorAll('.ti[data-id]').forEach(function(t) {
-    t.addEventListener('click', function() { setHero(this.getAttribute('data-id')); });
-  });
-}
-
 function setHero(id) {
-  var a = S.artefacts.find(function(x) { return x.id === id; }) || 
-          DUMMY_ARTEFACTS.find(function(x) { return x.id === id; });
+  var a = S.artefacts.find(x => x.id === id) || DUMMY_ARTEFACTS.find(x => x.id === id);
   if (!a) return;
   
   var img = $('himg');
@@ -548,179 +790,11 @@ function setHero(id) {
   }
 }
 
-// ========== SUPABASE OPERATIONS ==========
-async function loadEntries() {
-  if (!S.userId || !window.supabaseClient) return;
-  try {
-    var { data, error } = await window.supabaseClient
-      .from('entries')
-      .select('*')
-      .eq('user_id', S.userId)
-      .order('created_at', { ascending: false })
-      .limit(6);
-    
-    if (error) throw error;
-    
-    S.entries = [];
-    if (data && data.length) {
-      S.entries = data.map(function(e) {
-        return {
-          id: e.id,
-          content: e.content,
-          mood: e.mood,
-          timestamp: e.created_at ? new Date(e.created_at).getTime() : Date.now(),
-          reactions: e.reactions || { skull:0, cry:0, fire:0, upside:0 },
-          isDummy: false
-        };
-      });
-    }
-    
-    if (window.JEJAKReactions) {
-      S.entries = JEJAKReactions.restoreAll(S.entries);
-    }
-    
-    renderEntries();
-  } catch(err) {
-    console.error('Load entries error:', err);
-    toast('Gagal load entries');
-  }
-}
-
-async function loadArtefacts() {
-  if (!S.userId || !window.supabaseClient) return;
-  try {
-    var { data, error } = await window.supabaseClient
-      .from('artefacts')
-      .select('*')
-      .eq('user_id', S.userId)
-      .order('created_at', { ascending: false })
-      .limit(6);
-    
-    if (error) throw error;
-    
-    S.artefacts = [];
-    if (data && data.length) {
-      S.artefacts = data.map(function(a) {
-        return {
-          id: a.id,
-          url: a.url,
-          note: a.note || 'memory',
-          hasFace: a.has_face || false,
-          theme: a.theme || 'fm',
-          timestamp: a.created_at ? new Date(a.created_at).getTime() : Date.now(),
-          isDummy: false
-        };
-      });
-    }
-    
-    renderTray();
-    
-    if (S.artefacts.length > 0) {
-      var saved = null;
-      try {
-        var sv = localStorage.getItem('jejak_hero_' + S.userId);
-        if (sv) saved = JSON.parse(sv);
-      } catch(e) {}
-      setHero(saved ? saved.id : S.artefacts[0].id);
-    }
-  } catch(err) {
-    console.error('Load artefacts error:', err);
-    toast('Gagal load artefak');
-  }
-}
-
-async function saveEntry() {
-  if (!S.userId) { toast('Login dulu'); return; }
-  
-  var content = $('ri')?.value.trim();
-  if (!content) { toast('Tulis dulu spill-nya'); return; }
-  
-  var moodEl = document.querySelector('.mc.act');
-  if (!moodEl) { toast('Pilih mood dulu'); return; }
-  
-  showProc('Menyimpan spill...');
-  
-  try {
-    var { data, error } = await window.supabaseClient
-      .from('entries')
-      .insert({
-        user_id: S.userId,
-        content: content,
-        mood: moodEl.dataset.mood
-      })
-      .select();
-    
-    if (error) {
-      if (error.message?.includes('row-level security') || error.code === '401') {
-        toast('Session expired, login ulang');
-        setTimeout(logoutUser, 1500);
-      } else {
-        throw error;
-      }
-    } else {
-      var ri = $('ri');
-      if (ri) ri.value = '';
-      $('ccount').textContent = '0/500';
-      await loadEntries();
-      toast('✓ Spill terkirim!');
-    }
-  } catch(err) {
-    console.error('Save error:', err);
-    toast('Gagal menyimpan: ' + (err.message || 'unknown error'));
-  } finally {
-    hideProc();
-  }
-}
-
-async function reactEntry(id, key) {
-  if (!S.userId) return;
-  
-  var entry = S.entries.find(function(e) { return e.id === id; });
-  if (!entry) return;
-  
-  // Optimistic update
-  var wasActive = entry.userReacted === key;
-  if (wasActive) {
-    entry.reactions[key] = Math.max(0, (entry.reactions[key] || 0) - 1);
-    entry.userReacted = null;
-  } else {
-    entry.reactions[key] = (entry.reactions[key] || 0) + 1;
-    entry.userReacted = key;
-  }
-  
-  // Update UI
-  var btn = document.querySelector('.reaction-btn[data-entry-id="' + id + '"][data-key="' + key + '"]');
-  var cnt = btn?.querySelector('.rcount');
-  if (btn) btn.classList.toggle('act', !wasActive);
-  if (cnt) cnt.textContent = entry.reactions[key];
-  
-  // Save to DB
-  try {
-    await window.supabaseClient
-      .from('entries')
-      .update({ reactions: entry.reactions })
-      .eq('id', id);
-  } catch(err) {
-    console.error('[REACT] DB error:', err);
-    // Rollback
-    if (wasActive) {
-      entry.reactions[key] = (entry.reactions[key] || 0) + 1;
-      entry.userReacted = key;
-    } else {
-      entry.reactions[key] = Math.max(0, (entry.reactions[key] || 0) - 1);
-      entry.userReacted = null;
-    }
-    if (btn) btn.classList.toggle('act', wasActive);
-    if (cnt) cnt.textContent = entry.reactions[key];
-    toast('Gagal simpan reaksi');
-  }
-}
-
 function bindReactionButtons() {
   var econ = $('econ');
   if (!econ) return;
   
-  econ.querySelectorAll('.reaction-btn[data-entry-id]').forEach(function(btn) {
+  econ.querySelectorAll('.reaction-btn[data-entry-id]').forEach(btn => {
     btn.removeEventListener('click', reactionHandler);
     btn.addEventListener('click', reactionHandler);
   });
@@ -728,12 +802,28 @@ function bindReactionButtons() {
 
 function reactionHandler(e) {
   var btn = e.currentTarget;
-  var id = btn.getAttribute('data-entry-id');
-  var key = btn.getAttribute('data-key');
+  var id = btn.dataset.entryId;
+  var key = btn.dataset.key;
   if (id && key) reactEntry(id, key);
 }
 
-// ========== UPLOAD FUNCTIONS ==========
+// ========== DUMMY DATA ==========
+var DUMMY_ENTRIES = [
+  {id:'d1',content:'Hari ini gue nangis di angkot gegara liat kucing dipukul orang.', mood:'surviving', timestamp:Date.now()-3600000, reactions:{skull:42,cry:89,fire:12,upside:7}, isDummy:true},
+  {id:'d2',content:'akhirnya bisa tidur nyenyak setelah 3 minggu insomnia.', mood:'thriving', timestamp:Date.now()-7200000, reactions:{skull:23,cry:15,fire:67,upside:31}, isDummy:true},
+  {id:'d3',content:'chaos abis! dari bangun tidur udah salah ambil kaki.', mood:'chaotic', timestamp:Date.now()-10800000, reactions:{skull:89,cry:23,fire:45,upside:78}, isDummy:true}
+];
+
+var DUMMY_ARTEFACTS = [
+  {id:'a1',url:'https://images.unsplash.com/photo-1517842645767-c639042777db?w=400&q=80', note:'jeda', hasFace:false, isDummy:true, theme:'fm'},
+  {id:'a2',url:'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=400&q=80', note:'hijau', hasFace:false, isDummy:true, theme:'fg'},
+  {id:'a3',url:'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&q=80', note:'gabut', hasFace:false, isDummy:true, theme:'fl'},
+  {id:'a4',url:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80', note:'sendiri', hasFace:false, isDummy:true, theme:'fv'},
+  {id:'a5',url:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80', note:'capek', hasFace:true, isDummy:true, theme:'fn'},
+  {id:'a6',url:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&q=80', note:'love', hasFace:false, isDummy:true, theme:'fc'}
+];
+
+// ========== UPLOAD VARIABLES ==========
 var pendingFiles = [], selectedFiles = new Set(), currentTheme = 0, currentNote = '';
 
 var THEMES = [
@@ -745,12 +835,13 @@ var THEMES = [
   { name:'CRISP', filter:'fcr' }, { name:'MOODY', filter:'fmo' }
 ];
 
+// ========== UPLOAD FUNCTIONS ==========
 function initUpload() {
   var btn = $('upbtn');
   var fi = $('finput');
   if (!btn || !fi) return;
   
-  btn.onclick = function() { fi.value = ''; fi.click(); };
+  btn.onclick = () => { fi.value = ''; fi.click(); };
   fi.onchange = handleFiles;
 }
 
@@ -759,15 +850,12 @@ async function handleFiles(e) {
   if (!files.length) return;
   if (!S.userId) { toast('Login dulu'); return; }
   
-  var previews = files.map(function(f) {
-    return { file: f, hasFace: false, preview: URL.createObjectURL(f) };
-  });
+  var previews = files.map(f => ({ file: f, hasFace: false, preview: URL.createObjectURL(f) }));
   openGallery(previews);
 }
 
 function openGallery(files) {
-  selectedFiles = new Set();
-  for (var i = 0; i < files.length; i++) selectedFiles.add(i);
+  selectedFiles = new Set(Array.from({length: files.length}, (_,i) => i));
   currentTheme = 0;
   currentNote = '';
   
@@ -775,22 +863,18 @@ function openGallery(files) {
   if (!grid) return;
   
   grid.innerHTML = '';
-  for (var j = 0; j < files.length; j++) {
+  files.forEach((f, idx) => {
     var div = document.createElement('div');
     div.className = 'gi sel';
-    div.innerHTML = '<img src="' + files[j].preview + '" class="fm" id="pv' + j + '">';
-    
-    div.addEventListener('click', (function(idx) {
-      return function() {
-        if (selectedFiles.has(idx)) selectedFiles.delete(idx);
-        else selectedFiles.add(idx);
-        div.classList.toggle('sel');
-        updSelCnt();
-      };
-    })(j));
-    
+    div.innerHTML = `<img src="${f.preview}" class="fm" id="pv${idx}">`;
+    div.addEventListener('click', () => {
+      if (selectedFiles.has(idx)) selectedFiles.delete(idx);
+      else selectedFiles.add(idx);
+      div.classList.toggle('sel');
+      updSelCnt();
+    });
     grid.appendChild(div);
-  }
+  });
   
   var tmsl = $('tmsl');
   if (tmsl) tmsl.value = 0;
@@ -824,13 +908,11 @@ function updTheme(v) {
 }
 
 function valNote(inp) {
-  var words = inp.value.trim().split(/\s+/).filter(function(x) { return x.length > 0; });
+  var words = inp.value.trim().split(/\s+/).filter(x => x.length);
   var notcnt = $('notcnt');
   if (notcnt) notcnt.textContent = Math.min(words.length, 4) + '/4';
   
-  if (words.length > 4) {
-    inp.value = words.slice(0, 4).join(' ');
-  }
+  if (words.length > 4) inp.value = words.slice(0, 4).join(' ');
   currentNote = inp.value.trim();
 }
 
@@ -838,97 +920,6 @@ function closeGallery() {
   $('gmodal')?.classList.remove('on');
   pendingFiles = [];
   selectedFiles.clear();
-}
-
-async function confirmUpload() {
-  if (selectedFiles.size === 0) { toast('Pilih minimal 1'); return; }
-  
-  var kbtn = $('konfirmbtn');
-  if (kbtn) kbtn.disabled = true;
-  
-  var theme = THEMES[currentTheme];
-  var note = currentNote || 'memory';
-  
-  var items = Array.from(selectedFiles).map(function(i) { return pendingFiles[i]; })
-    .filter(function(x) { return x && x.file; })
-    .map(function(x) {
-      return { file: x.file, note: note, hasFace: x.hasFace || false, theme: theme.filter };
-    });
-  
-  closeGallery();
-  
-  var pw = $('upload-progress-wrap');
-  var pf = $('upload-progress-fill');
-  var pl = $('upload-progress-label-text');
-  if (pw) pw.classList.add('show');
-  
-  var uploaded = 0;
-  var newArts = [];
-  
-  for (var i = 0; i < items.length; i++) {
-    var item = items[i];
-    var file = item.file;
-    var ext = (['jpg','jpeg','png','webp','gif'].includes((file.name.split('.').pop() || '').toLowerCase()))
-      ? file.name.split('.').pop().toLowerCase() : 'jpg';
-    var path = Date.now() + '_' + i + '_' + S.userId.substring(0,8) + '.' + ext;
-    
-    try {
-      var { error: uploadError } = await window.supabaseClient.storage
-        .from('artefacts')
-        .upload(path, file, { contentType: file.type || ('image/' + ext), upsert: true });
-      
-      if (uploadError) {
-        toast('Upload gagal: ' + uploadError.message);
-        continue;
-      }
-      
-      var { data: urlData } = window.supabaseClient.storage
-        .from('artefacts')
-        .getPublicUrl(path);
-      var url = urlData.publicUrl;
-      
-      var { data: insertData, error: insertError } = await window.supabaseClient
-        .from('artefacts')
-        .insert({
-          user_id: S.userId,
-          url: url,
-          note: item.note,
-          has_face: item.hasFace,
-          theme: item.theme
-        })
-        .select();
-      
-      if (!insertError && insertData && insertData[0]) {
-        newArts.push({
-          id: insertData[0].id,
-          url: url,
-          note: item.note,
-          hasFace: item.hasFace,
-          theme: item.theme,
-          timestamp: Date.now(),
-          isDummy: false
-        });
-        uploaded++;
-      }
-      
-      if (pf) pf.style.width = Math.round(((i + 1) / items.length) * 100) + '%';
-      if (pl) pl.textContent = (i + 1) + '/' + items.length + ' foto';
-      
-    } catch(err) {
-      toast('Error: ' + (err.message || 'unknown error'));
-    }
-  }
-  
-  if (pw) pw.classList.remove('show');
-  if (pf) pf.style.width = '0%';
-  
-  S.artefacts = [...newArts, ...S.artefacts].slice(0, 6);
-  await loadArtefacts();
-  
-  if (S.artefacts.length > 0) setHero(S.artefacts[0].id);
-  if (kbtn) kbtn.disabled = false;
-  
-  toast(uploaded > 0 ? '✓ ' + uploaded + ' foto diupload' : '⚠ Upload gagal, coba lagi');
 }
 
 // ========== VOID FUNCTIONS ==========
@@ -943,16 +934,16 @@ function sendContactRequest() { toast('Fitur ini memerlukan Premium'); }
 function sendVoidMessage() { toast('Fitur ini memerlukan Premium'); }
 
 // ========== DEBUG ==========
-window.debugSession = function() { console.table(JEJAK.getSession()); };
-window.fixSession = function() { JEJAK.clearSession('manual fix'); setTimeout(function() { location.href='/index.html'; }, 500); };
+window.debugSession = () => console.table(JEJAK.getSession());
+window.fixSession = () => { JEJAK.clearSession('manual fix'); setTimeout(() => location.href='/index.html', 500); };
 
 // ========== INIT ==========
 document.addEventListener('DOMContentLoaded', function() {
   var ri = $('ri');
   if (ri) ri.addEventListener('input', updateCharCount);
   
-  document.querySelectorAll('.mc').forEach(function(c) {
-    c.addEventListener('click', function() { selMood(c.dataset.mood); });
+  document.querySelectorAll('.mc').forEach(c => {
+    c.addEventListener('click', () => selMood(c.dataset.mood));
   });
   
   var sb = $('sbtn');
@@ -980,7 +971,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (vc) vc.addEventListener('click', closeVoid);
   
   var vl = $('void-locked');
-  if (vl) vl.addEventListener('click', function(e) { if (e.target === vl) closeVoidLocked(); });
+  if (vl) vl.addEventListener('click', e => { if (e.target === vl) closeVoidLocked(); });
   
   var vb = $('void-chat-back');
   if (vb) vb.addEventListener('click', closeVoidChat);
@@ -991,37 +982,30 @@ document.addEventListener('DOMContentLoaded', function() {
   var va = $('void-add-btn');
   if (va) va.addEventListener('click', sendContactRequest);
   
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.smenu')) {
-      var m = $('mdd');
-      if (m) m.classList.remove('on');
-    }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.smenu')) $('mdd')?.classList.remove('on');
   });
   
-  // Load data
   renderEntries();
   renderTray();
   initUpload();
   
-  // Load from Supabase
   if (S.userId) {
     loadEntries();
     loadArtefacts();
   }
   
-  // Polling for reactions
-  setInterval(function() {
+  setInterval(() => {
     if (!S.userId || !window.supabaseClient) return;
     window.supabaseClient
       .from('entries')
       .select('id,reactions')
       .eq('user_id', S.userId)
-      .then(function({ data, error }) {
+      .then(({ data, error }) => {
         if (error || !data) return;
-        data.forEach(function(row) {
-          var entry = S.entries.find(function(e) { return e.id === row.id; });
-          if (!entry) return;
-          entry.reactions = row.reactions || entry.reactions;
+        data.forEach(row => {
+          var entry = S.entries.find(e => e.id === row.id);
+          if (entry) entry.reactions = row.reactions || entry.reactions;
         });
       });
   }, 15000);
@@ -1029,10 +1013,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ========== SERVICE WORKER ==========
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').catch(function(e) {
-      console.warn('[SW] Registration failed:', e);
-    });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(e => console.warn('[SW]', e));
   });
 }
 </script>
