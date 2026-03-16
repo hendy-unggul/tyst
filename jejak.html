@@ -120,232 +120,632 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between}
 <div class="toast" id="toast"></div>
 <input type="file" id="finput" accept="image/*" multiple style="display:none">
 
+<!-- 1. Supabase - UMD version (paling stabil) -->
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<!-- 2. Constants & utils -->
+<script src="/shared-constants.js"></script>
+<script src="/shared-utils.js"></script>
+
+<!-- 3. Kode utama jejak -->
 <script>
-// ========== SUPABASE CLIENT MINIMAL ==========
-// GANTI NAMA supabase → supabaseClient biar ga konflik
-const supabaseClient = window.supabase.createClient(
-  JEJAK.SUPABASE_URL,
-  JEJAK.SUPABASE_KEY,
-  { auth: { persistSession: true, autoRefreshToken: true } }
-);
+// ========== CEK SUPABASE READY ==========
+console.log('[DEBUG] window.supabase:', window.supabase);
+console.log('[DEBUG] window.supabase?.createClient:', window.supabase?.createClient);
 
-// ========== AUTH ==========
-const session = JEJAK.getSession();
-if (!session?.loggedIn) window.location.replace('/index.html');
-
-const S = {
-  username: session.username,
-  userId: session.uid,
-  entries: [],
-  artefacts: []
-};
-
-document.getElementById('huser').textContent = '@' + S.username;
-
-// ========== LOAD ENTRIES ==========
-async function loadEntries() {
-  const { data, error } = await supabaseClient  // ← GANTI
-    .from('entries')
-    .select('*')
-    .eq('user_id', S.userId)
-    .order('created_at', { ascending: false })
-    .limit(6);
+if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+  console.error('[FATAL] Supabase gagal load!');
   
-  if (error) return toast('Gagal load: ' + error.message);
+  // Fallback - coba load dari CDN lain
+  document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"><\/script>');
   
-  S.entries = data || [];
-  renderEntries();
+  // Tunggu sebentar lalu coba lagi
+  setTimeout(() => {
+    if (!window.supabase?.createClient) {
+      alert('Gagal load Supabase. Coba refresh atau cek koneksi.');
+      return;
+    }
+    initJejak();
+  }, 1000);
+} else {
+  initJejak();
 }
 
-// ========== RENDER ENTRIES ==========
-function renderEntries() {
-  const html = S.entries.map(e => `
-    <div class="entry">
-      <div class="ehdr"><span class="etime">${new Date(e.created_at).toLocaleDateString()}</span></div>
-      <div class="econt">${e.content}</div>
-    </div>
-  `).join('');
-  document.getElementById('econ').innerHTML = html || '<div class="entry"><div class="econt">Belum ada jejak</div></div>';
-}
-
-// ========== SAVE ENTRY ==========
-async function saveEntry() {
-  const content = document.getElementById('ri').value.trim();
-  if (!content) return toast('Tulis dulu');
+// ========== FUNGSI UTAMA ==========
+function initJejak() {
+  console.log('[OK] Supabase ready, init client...');
   
-  const mood = document.querySelector('.mc.act')?.dataset.mood || 'surviving';
+  // ========== SUPABASE CLIENT ==========
+  const supabaseClient = window.supabase.createClient(
+    JEJAK.SUPABASE_URL,
+    JEJAK.SUPABASE_KEY,
+    { auth: { persistSession: true, autoRefreshToken: true } }
+  );
   
-  document.getElementById('proc').classList.add('on');
+  // ========== AUTH CHECK ==========
+  const session = JEJAK.getSession();
+  console.log('[AUTH] Session:', session);
   
-  const { error } = await supabaseClient  // ← GANTI
-    .from('entries')
-    .insert({ 
-      user_id: S.userId,
-      username: S.username,
-      content,
-      mood 
-    });
-  
-  document.getElementById('proc').classList.remove('on');
-  
-  if (error) {
-    console.error(error);
-    toast('Gagal: ' + error.message);
-  } else {
-    document.getElementById('ri').value = '';
-    loadEntries();
-    toast('✓ Terkirim');
+  if (!session?.loggedIn || !session?.uid || !session?.username) {
+    console.warn('[AUTH] No valid session');
+    window.location.replace('/index.html');
+    return;
   }
-}
-
-// ========== LOAD ARTEFACTS ==========
-async function loadArtefacts() {
-  const { data, error } = await supabaseClient  // ← GANTI
-    .from('artefacts')
-    .select('*')
-    .eq('user_id', S.userId)
-    .order('created_at', { ascending: false })
-    .limit(6);
   
-  if (error) return;
+  // ========== GLOBAL STATE ==========
+  const S = {
+    username: session.username,
+    userId: session.uid,
+    entries: [],
+    artefacts: []
+  };
   
-  S.artefacts = data || [];
-  renderTray();
-}
-
-function renderTray() {
-  const html = S.artefacts.map(a => `
-    <div class="ti"><img src="${a.url}" class="${a.theme || 'fm'}" onclick="setHero('${a.id}')"></div>
-  `).join('');
-  document.getElementById('tgrid').innerHTML = html || Array(6).fill('<div class="ti" style="border:2px dashed #333"></div>').join('');
-}
-
-function setHero(id) {
-  const a = S.artefacts.find(x => x.id === id);
-  if (!a) return;
-  document.getElementById('himg').src = a.url;
-  document.getElementById('himg').className = a.theme || 'fm';
-  document.getElementById('hnote').textContent = '"' + (a.note || 'memory') + '"';
-}
-
-// ========== UPLOAD ==========
-let pendingFiles = [], selectedFiles = new Set(), currentTheme = 0, currentNote = '';
-const THEMES = ['fm','fn','fsp','fw','fg','fl','fd','fco','fc','fv','fcr','fmo'];
-
-document.getElementById('upbtn').onclick = () => document.getElementById('finput').click();
-
-document.getElementById('finput').onchange = async (e) => {
-  const files = Array.from(e.target.files).slice(0,6);
-  if (!files.length) return;
-  
-  selectedFiles = new Set(Array.from({length: files.length}, (_,i) => i));
-  currentTheme = 0;
-  
-  const grid = document.getElementById('ggrid');
-  grid.innerHTML = '';
-  files.forEach((f, i) => {
-    const div = document.createElement('div');
-    div.className = 'gi sel';
-    div.innerHTML = `<img src="${URL.createObjectURL(f)}" class="fm" id="pv${i}">`;
-    div.onclick = () => {
-      if (selectedFiles.has(i)) selectedFiles.delete(i);
-      else selectedFiles.add(i);
-      div.classList.toggle('sel');
-      document.getElementById('selcnt').textContent = selectedFiles.size;
-    };
-    grid.appendChild(div);
+  console.log('[STATE]', { 
+    username: S.username, 
+    userId: S.userId?.substring(0,8)
   });
   
-  document.getElementById('tmsl').value = 0;
-  document.getElementById('noti').value = '';
-  document.getElementById('selcnt').textContent = selectedFiles.size;
-  document.getElementById('gmodal').classList.add('on');
-  pendingFiles = files;
-};
-
-document.getElementById('tmsl').oninput = (e) => {
-  currentTheme = parseInt(e.target.value);
-  pendingFiles.forEach((_, i) => {
-    const img = document.getElementById('pv' + i);
-    if (img) img.className = THEMES[currentTheme];
-  });
-};
-
-document.getElementById('noti').oninput = (e) => {
-  const words = e.target.value.trim().split(/\s+/).filter(x => x);
-  if (words.length > 4) e.target.value = words.slice(0,4).join(' ');
-  currentNote = e.target.value.trim();
-};
-
-document.getElementById('cancel-upload').onclick = () => {
-  document.getElementById('gmodal').classList.remove('on');
-  pendingFiles = [];
-};
-
-document.getElementById('konfirmbtn').onclick = async () => {
-  if (!selectedFiles.size) return toast('Pilih minimal 1');
+  // Update UI
+  const huser = document.getElementById('huser');
+  if (huser) huser.textContent = '@' + S.username;
   
-  const items = Array.from(selectedFiles).map(i => pendingFiles[i]).filter(x => x);
-  document.getElementById('gmodal').classList.remove('on');
+  // ========== BOTTOM NAV ACTIVE ==========
+  (function setActiveNav() {
+    const current = window.location.pathname.split('/').pop() || 'spill.html';
+    document.querySelectorAll('.bnav .ni').forEach(link => {
+      link.classList.toggle('act', link.getAttribute('href') === current);
+    });
+  })();
   
-  let uploaded = 0;
-  for (let i = 0; i < items.length; i++) {
-    const file = items[i];
-    const ext = file.name.split('.').pop() || 'jpg';
-    const path = `${Date.now()}_${i}_${S.userId.substring(0,8)}.${ext}`;
+  // ========== TEST KONEKSI ==========
+  async function testConnection() {
+    try {
+      console.log('[TEST] Testing Supabase connection...');
+      const { error } = await supabaseClient
+        .from('entries')
+        .select('count', { count: 'exact', head: true });
+      
+      if (error) {
+        console.error('[TEST] Connection failed:', error);
+        toast('Koneksi database error: ' + error.message);
+      } else {
+        console.log('[TEST] Connection OK');
+      }
+    } catch(e) {
+      console.error('[TEST] Exception:', e);
+    }
+  }
+  
+  // ========== LOAD ENTRIES ==========
+  async function loadEntries() {
+    if (!S.userId) return;
     
-    const { error: uploadError } = await supabaseClient  // ← GANTI
-      .storage
-      .from('artefacts')
-      .upload(path, file);
+    console.log('[ENTRIES] Loading for user:', S.userId);
     
-    if (uploadError) {
-      toast('Upload gagal: ' + uploadError.message);
-      continue;
+    try {
+      const { data, error } = await supabaseClient
+        .from('entries')
+        .select('*')
+        .eq('user_id', S.userId)
+        .order('created_at', { ascending: false })
+        .limit(6);
+      
+      if (error) {
+        console.error('[ENTRIES] Error:', error);
+        toast('Gagal load entries: ' + error.message);
+        return;
+      }
+      
+      console.log('[ENTRIES] Loaded:', data?.length || 0);
+      S.entries = data || [];
+      renderEntries();
+    } catch(err) {
+      console.error('[ENTRIES] Exception:', err);
+      toast('Gagal load entries');
+    }
+  }
+  
+  // ========== RENDER ENTRIES ==========
+  function renderEntries() {
+    const con = document.getElementById('econ');
+    if (!con) return;
+    
+    const html = S.entries.map(e => `
+      <div class="entry">
+        <div class="ehdr">
+          <span class="etime">${new Date(e.created_at).toLocaleDateString('id-ID')}</span>
+          <span class="emood ${e.mood}">${e.mood}</span>
+        </div>
+        <div class="econt">${escapeHtml(e.content)}</div>
+      </div>
+    `).join('');
+    
+    con.innerHTML = html || '<div class="entry"><div class="econt">Belum ada jejak</div></div>';
+  }
+  
+  // ========== SAVE ENTRY ==========
+  async function saveEntry() {
+    if (!S.userId || !S.username) { 
+      toast('Login dulu'); 
+      return; 
     }
     
-    const { data: urlData } = supabaseClient  // ← GANTI
-      .storage
-      .from('artefacts')
-      .getPublicUrl(path);
+    const ri = document.getElementById('ri');
+    const content = ri?.value.trim();
+    if (!content) { 
+      toast('Tulis dulu spill-nya'); 
+      return; 
+    }
     
-    const { error: insertError } = await supabaseClient  // ← GANTI
-      .from('artefacts')
-      .insert({
-        user_id: S.userId,
+    const moodEl = document.querySelector('.mc.act');
+    const mood = moodEl?.dataset.mood || 'surviving';
+    
+    showProc('Menyimpan spill...');
+    
+    try {
+      console.log('[SAVE] Inserting:', { 
+        user_id: S.userId, 
         username: S.username,
-        url: urlData.publicUrl,
-        note: currentNote || 'memory',
-        theme: THEMES[currentTheme]
+        mood 
       });
-    
-    if (!insertError) uploaded++;
+      
+      const { error } = await supabaseClient
+        .from('entries')
+        .insert({ 
+          user_id: S.userId,
+          username: S.username,
+          content,
+          mood 
+        });
+      
+      if (error) {
+        console.error('[SAVE] Error:', error);
+        
+        if (error.message?.includes('row-level security')) {
+          toast('RLS Policy error: cek user_id');
+          console.log('[RLS DEBUG]', {
+            user_id: S.userId,
+            user_id_type: typeof S.userId,
+            username: S.username
+          });
+        } else {
+          toast('Gagal: ' + error.message);
+        }
+      } else {
+        console.log('[SAVE] Success');
+        if (ri) ri.value = '';
+        document.getElementById('ccount').textContent = '0/500';
+        await loadEntries();
+        toast('✓ Spill terkirim!');
+      }
+    } catch(err) {
+      console.error('[SAVE] Exception:', err);
+      toast('Gagal menyimpan');
+    } finally {
+      hideProc();
+    }
   }
   
-  loadArtefacts();
-  toast(uploaded > 0 ? `✓ ${uploaded} foto` : '⚠ Gagal');
-};
-
-// ========== HELPER ==========
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
+  // ========== LOAD ARTEFACTS ==========
+  async function loadArtefacts() {
+    if (!S.userId) return;
+    
+    try {
+      const { data, error } = await supabaseClient
+        .from('artefacts')
+        .select('*')
+        .eq('user_id', S.userId)
+        .order('created_at', { ascending: false })
+        .limit(6);
+      
+      if (error) {
+        console.error('[ARTEFACTS] Error:', error);
+        return;
+      }
+      
+      S.artefacts = data || [];
+      renderTray();
+      
+      if (S.artefacts.length > 0) {
+        setHero(S.artefacts[0].id);
+      }
+    } catch(err) {
+      console.error('[ARTEFACTS] Exception:', err);
+    }
+  }
+  
+  // ========== RENDER TRAY ==========
+  function renderTray() {
+    const con = document.getElementById('tgrid');
+    if (!con) return;
+    
+    const html = S.artefacts.map(a => `
+      <div class="ti" onclick="setHero('${a.id}')">
+        <img src="${a.url}" class="${a.theme || 'fm'}" alt="${escapeHtml(a.note || 'memory')}">
+      </div>
+    `).join('');
+    
+    con.innerHTML = html || Array(6).fill('<div class="ti" style="border:2px dashed #333"></div>').join('');
+  }
+  
+  // ========== SET HERO ==========
+  window.setHero = function(id) {
+    const a = S.artefacts.find(x => x.id === id);
+    if (!a) return;
+    
+    const himg = document.getElementById('himg');
+    const hnote = document.getElementById('hnote');
+    
+    if (himg) {
+      himg.src = a.url;
+      himg.className = a.theme || 'fm';
+    }
+    if (hnote) hnote.textContent = '"' + (a.note || 'memory') + '"';
+  };
+  
+  // ========== UPLOAD FUNCTIONS ==========
+  let pendingFiles = [], selectedFiles = new Set(), currentTheme = 0, currentNote = '';
+  
+  const THEMES = [
+    { name:'MONOCHROME', filter:'fm' }, { name:'NOIR', filter:'fn' },
+    { name:'SEPIA', filter:'fsp' }, { name:'WARM', filter:'fw' },
+    { name:'GOLDEN', filter:'fg' }, { name:'LOMO', filter:'fl' },
+    { name:'DREAM', filter:'fd' }, { name:'COLD', filter:'fco' },
+    { name:'CYBER', filter:'fc' }, { name:'VIGNETTE', filter:'fv' },
+    { name:'CRISP', filter:'fcr' }, { name:'MOODY', filter:'fmo' }
+  ];
+  
+  function initUpload() {
+    const upbtn = document.getElementById('upbtn');
+    const finput = document.getElementById('finput');
+    
+    if (upbtn && finput) {
+      upbtn.onclick = () => {
+        finput.value = '';
+        finput.click();
+      };
+      finput.onchange = handleFiles;
+    }
+  }
+  
+  async function handleFiles(e) {
+    const files = Array.from(e.target.files).slice(0, 6);
+    if (!files.length) return;
+    if (!S.userId) { 
+      toast('Login dulu'); 
+      return; 
+    }
+    
+    const previews = files.map(f => ({ 
+      file: f, 
+      hasFace: false, 
+      preview: URL.createObjectURL(f) 
+    }));
+    
+    openGallery(previews);
+  }
+  
+  function openGallery(files) {
+    selectedFiles = new Set(Array.from({length: files.length}, (_,i) => i));
+    currentTheme = 0;
+    currentNote = '';
+    
+    const grid = document.getElementById('ggrid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    files.forEach((f, idx) => {
+      const div = document.createElement('div');
+      div.className = 'gi sel';
+      div.innerHTML = `<img src="${f.preview}" class="fm" id="pv${idx}">`;
+      
+      div.addEventListener('click', () => {
+        if (selectedFiles.has(idx)) selectedFiles.delete(idx);
+        else selectedFiles.add(idx);
+        div.classList.toggle('sel');
+        updateSelectedCount();
+      });
+      
+      grid.appendChild(div);
+    });
+    
+    const tmsl = document.getElementById('tmsl');
+    if (tmsl) tmsl.value = 0;
+    
+    const tmnm = document.getElementById('tmnm');
+    if (tmnm) tmnm.textContent = 'MONOCHROME';
+    
+    const noti = document.getElementById('noti');
+    if (noti) noti.value = '';
+    
+    const notcnt = document.getElementById('notcnt');
+    if (notcnt) notcnt.textContent = '0/4';
+    
+    updateSelectedCount();
+    document.getElementById('gmodal')?.classList.add('on');
+    pendingFiles = files;
+  }
+  
+  function updateSelectedCount() {
+    const sel = document.getElementById('selcnt');
+    if (sel) sel.textContent = selectedFiles.size;
+  }
+  
+  function updateTheme(v) {
+    currentTheme = parseInt(v);
+    const theme = THEMES[currentTheme];
+    
+    const tmnm = document.getElementById('tmnm');
+    if (tmnm) tmnm.textContent = theme.name;
+    
+    for (let i = 0; i < pendingFiles.length; i++) {
+      const img = document.getElementById('pv' + i);
+      if (img) img.className = theme.filter;
+    }
+  }
+  
+  function validateNote(inp) {
+    const words = inp.value.trim().split(/\s+/).filter(x => x.length);
+    const notcnt = document.getElementById('notcnt');
+    if (notcnt) notcnt.textContent = Math.min(words.length, 4) + '/4';
+    
+    if (words.length > 4) {
+      inp.value = words.slice(0, 4).join(' ');
+    }
+    currentNote = inp.value.trim();
+  }
+  
+  function closeGallery() {
+    document.getElementById('gmodal')?.classList.remove('on');
+    pendingFiles = [];
+    selectedFiles.clear();
+  }
+  
+  async function confirmUpload() {
+    if (selectedFiles.size === 0) { 
+      toast('Pilih minimal 1'); 
+      return; 
+    }
+    
+    const kbtn = document.getElementById('konfirmbtn');
+    if (kbtn) kbtn.disabled = true;
+    
+    const theme = THEMES[currentTheme];
+    const note = currentNote || 'memory';
+    
+    const items = Array.from(selectedFiles)
+      .map(i => pendingFiles[i])
+      .filter(x => x && x.file)
+      .map(x => ({ 
+        file: x.file, 
+        note, 
+        hasFace: x.hasFace || false, 
+        theme: theme.filter 
+      }));
+    
+    closeGallery();
+    
+    const pw = document.getElementById('upload-progress-wrap');
+    const pf = document.getElementById('upload-progress-fill');
+    const pl = document.getElementById('upload-progress-label-text');
+    
+    if (pw) pw.classList.add('show');
+    
+    let uploaded = 0;
+    const newArts = [];
+    
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const file = item.file;
+      const ext = (['jpg','jpeg','png','webp','gif'].includes((file.name.split('.').pop() || '').toLowerCase()))
+        ? file.name.split('.').pop().toLowerCase() : 'jpg';
+      const path = `${Date.now()}_${i}_${S.userId.substring(0,8)}.${ext}`;
+      
+      try {
+        const { error: uploadError } = await supabaseClient
+          .storage
+          .from('artefacts')
+          .upload(path, file, { 
+            contentType: file.type || ('image/' + ext), 
+            upsert: true 
+          });
+        
+        if (uploadError) {
+          toast('Upload gagal: ' + uploadError.message);
+          continue;
+        }
+        
+        const { data: urlData } = supabaseClient
+          .storage
+          .from('artefacts')
+          .getPublicUrl(path);
+        const url = urlData.publicUrl;
+        
+        const { data: insertData, error: insertError } = await supabaseClient
+          .from('artefacts')
+          .insert({
+            user_id: S.userId,
+            username: S.username,
+            url: url,
+            note: item.note,
+            has_face: item.hasFace,
+            theme: item.theme
+          })
+          .select();
+        
+        if (!insertError && insertData?.[0]) {
+          newArts.push({
+            id: insertData[0].id,
+            url: url,
+            note: item.note,
+            hasFace: item.hasFace,
+            theme: item.theme,
+            timestamp: Date.now(),
+            username: S.username,
+            user_id: S.userId,
+            isDummy: false
+          });
+          uploaded++;
+        }
+        
+        if (pf) pf.style.width = Math.round(((i + 1) / items.length) * 100) + '%';
+        if (pl) pl.textContent = (i + 1) + '/' + items.length + ' foto';
+        
+      } catch(err) {
+        toast('Error: ' + err.message);
+      }
+    }
+    
+    if (pw) pw.classList.remove('show');
+    if (pf) pf.style.width = '0%';
+    
+    S.artefacts = [...newArts, ...S.artefacts].slice(0, 6);
+    await loadArtefacts();
+    
+    if (S.artefacts.length > 0) setHero(S.artefacts[0].id);
+    if (kbtn) kbtn.disabled = false;
+    
+    toast(uploaded > 0 ? `✓ ${uploaded} foto diupload` : '⚠ Upload gagal');
+  }
+  
+  // ========== HELPER FUNCTIONS ==========
+  function escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+  
+  function toast(msg, dur = 3000) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), dur);
+  }
+  
+  function showProc(msg) {
+    const p = document.getElementById('proctxt');
+    if (p) p.innerHTML = msg || 'Mengupload...';
+    document.getElementById('proc')?.classList.add('on');
+  }
+  
+  function hideProc() {
+    document.getElementById('proc')?.classList.remove('on');
+  }
+  
+  function updateCharCount() {
+    const ri = document.getElementById('ri');
+    const cc = document.getElementById('ccount');
+    if (ri && cc) cc.textContent = ri.value.length + '/500';
+  }
+  
+  function toggleMenu() {
+    document.getElementById('mdd')?.classList.toggle('on');
+  }
+  
+  window.toggleMenu = toggleMenu;
+  
+  function logoutUser() {
+    if (!confirm('Yakin logout?')) return;
+    JEJAK.clearSession('manual logout');
+    sessionStorage.clear();
+    window.location.href = '/index.html';
+  }
+  
+  window.logoutUser = logoutUser;
+  
+  function selectMood(mood) {
+    document.querySelectorAll('.mc').forEach(c => {
+      c.classList.toggle('act', c.dataset.mood === mood);
+    });
+  }
+  
+  // ========== DEBUG ==========
+  window.debugSession = () => console.table(JEJAK.getSession());
+  window.debugS = () => console.log('S:', S);
+  
+  // ========== EVENT LISTENERS ==========
+  document.addEventListener('DOMContentLoaded', function() {
+    // Character count
+    const ri = document.getElementById('ri');
+    if (ri) ri.addEventListener('input', updateCharCount);
+    
+    // Mood selection
+    document.querySelectorAll('.mc').forEach(c => {
+      c.addEventListener('click', () => selectMood(c.dataset.mood));
+    });
+    
+    // Save button
+    const sb = document.getElementById('sbtn');
+    if (sb) sb.addEventListener('click', saveEntry);
+    
+    // Theme slider
+    const ts = document.getElementById('tmsl');
+    if (ts) ts.addEventListener('input', function() { updateTheme(this.value); });
+    
+    // Note input
+    const ni = document.getElementById('noti');
+    if (ni) ni.addEventListener('input', function() { validateNote(this); });
+    
+    // Gallery buttons
+    const gc = document.getElementById('gallery-close-btn');
+    if (gc) gc.addEventListener('click', closeGallery);
+    
+    const cu = document.getElementById('cancel-upload-btn');
+    if (cu) cu.addEventListener('click', closeGallery);
+    
+    const kb = document.getElementById('konfirmbtn');
+    if (kb) kb.addEventListener('click', confirmUpload);
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.smenu')) {
+        const mdd = document.getElementById('mdd');
+        if (mdd) mdd.classList.remove('on');
+      }
+    });
+    
+    // Render dummy data first
+    renderEntries();
+    renderTray();
+    
+    // Initialize upload
+    initUpload();
+    
+    // Load real data
+    testConnection();
+    loadEntries();
+    loadArtefacts();
+    
+    // Polling for reactions (optional)
+    setInterval(() => {
+      if (!S.userId) return;
+      supabaseClient
+        .from('entries')
+        .select('id,reactions')
+        .eq('user_id', S.userId)
+        .then(({ data, error }) => {
+          if (error || !data) return;
+          data.forEach(row => {
+            const entry = S.entries.find(e => e.id === row.id);
+            if (entry) entry.reactions = row.reactions || entry.reactions;
+          });
+        });
+    }, 15000);
+  });
 }
 
-// ========== INIT ==========
-document.querySelectorAll('.mc').forEach(c => {
-  c.addEventListener('click', () => {
-    document.querySelectorAll('.mc').forEach(x => x.classList.remove('act'));
-    c.classList.add('act');
+// ========== SERVICE WORKER ==========
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(e => {
+      console.warn('[SW] Registration failed:', e);
+    });
   });
-});
-
-document.getElementById('sbtn').onclick = saveEntry;
-
-loadEntries();
-loadArtefacts();
+}
 </script>
 </body>
 </html>
