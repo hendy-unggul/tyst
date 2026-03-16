@@ -818,16 +818,20 @@ async function confirmUpload() {
         .getPublicUrl(path);
       const url = urlData.publicUrl;
       
+      // ===== HAPUS username DARI SINI! =====
+      const dataToInsert = {
+        user_id: S.userId,
+        url: url,
+        note: item.note,
+        has_face: item.hasFace,
+        theme: item.theme
+      };
+      
+      console.log('[UPLOAD] Data to insert:', dataToInsert);
+      
       const { data: insertData, error: insertError } = await supabaseClient
         .from('artefacts')
-        .insert({
-          user_id: S.userId,
-          username: S.username,
-          url: url,
-          note: item.note,
-          has_face: item.hasFace,
-          theme: item.theme
-        })
+        .insert(dataToInsert)
         .select();
       
       if (!insertError && insertData?.[0]) {
@@ -838,17 +842,20 @@ async function confirmUpload() {
           hasFace: item.hasFace,
           theme: item.theme,
           timestamp: Date.now(),
-          username: S.username,
           user_id: S.userId,
           isDummy: false
         });
         uploaded++;
+      } else if (insertError) {
+        console.error('[UPLOAD] Insert error:', insertError);
+        toast('Gagal simpan: ' + insertError.message);
       }
       
       if (pf) pf.style.width = Math.round(((i + 1) / items.length) * 100) + '%';
       if (pl) pl.textContent = (i + 1) + '/' + items.length + ' foto';
       
     } catch(err) {
+      console.error('[UPLOAD] Exception:', err);
       toast('Error: ' + err.message);
     }
   }
