@@ -120,12 +120,10 @@ header{padding:24px 0 16px;display:flex;justify-content:space-between}
 <div class="toast" id="toast"></div>
 <input type="file" id="finput" accept="image/*" multiple style="display:none">
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/shared-constants.js"></script>
-<script src="/shared-utils.js"></script>
 <script>
 // ========== SUPABASE CLIENT MINIMAL ==========
-const supabase = window.supabase.createClient(
+// GANTI NAMA supabase → supabaseClient biar ga konflik
+const supabaseClient = window.supabase.createClient(
   JEJAK.SUPABASE_URL,
   JEJAK.SUPABASE_KEY,
   { auth: { persistSession: true, autoRefreshToken: true } }
@@ -146,7 +144,7 @@ document.getElementById('huser').textContent = '@' + S.username;
 
 // ========== LOAD ENTRIES ==========
 async function loadEntries() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient  // ← GANTI
     .from('entries')
     .select('*')
     .eq('user_id', S.userId)
@@ -179,7 +177,7 @@ async function saveEntry() {
   
   document.getElementById('proc').classList.add('on');
   
-  const { error } = await supabase
+  const { error } = await supabaseClient  // ← GANTI
     .from('entries')
     .insert({ 
       user_id: S.userId,
@@ -202,7 +200,7 @@ async function saveEntry() {
 
 // ========== LOAD ARTEFACTS ==========
 async function loadArtefacts() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient  // ← GANTI
     .from('artefacts')
     .select('*')
     .eq('user_id', S.userId)
@@ -296,7 +294,8 @@ document.getElementById('konfirmbtn').onclick = async () => {
     const ext = file.name.split('.').pop() || 'jpg';
     const path = `${Date.now()}_${i}_${S.userId.substring(0,8)}.${ext}`;
     
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabaseClient  // ← GANTI
+      .storage
       .from('artefacts')
       .upload(path, file);
     
@@ -305,9 +304,12 @@ document.getElementById('konfirmbtn').onclick = async () => {
       continue;
     }
     
-    const { data: urlData } = supabase.storage.from('artefacts').getPublicUrl(path);
+    const { data: urlData } = supabaseClient  // ← GANTI
+      .storage
+      .from('artefacts')
+      .getPublicUrl(path);
     
-    const { error: insertError } = await supabase
+    const { error: insertError } = await supabaseClient  // ← GANTI
       .from('artefacts')
       .insert({
         user_id: S.userId,
