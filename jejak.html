@@ -264,95 +264,74 @@ function initJejak() {
   }
   
   // ========== SAVE ENTRY ==========
-  async function saveEntry() {
-    if (!S.userId || !S.username) { 
-      toast('Login dulu'); 
-      return; 
-    }
-    
-    const ri = document.getElementById('ri');
-    const content = ri?.value.trim();
-    if (!content) { 
-      toast('Tulis dulu spill-nya'); 
-      return; 
-    }
-    
-    const moodEl = document.querySelector('.mc.act');
-    const mood = moodEl?.dataset.mood || 'surviving';
-    
-    showProc('Menyimpan spill...');
-    
-    try {
-      console.log('[SAVE] Inserting:', { 
-        user_id: S.userId, 
-        username: S.username,
-        mood 
-      });
-      
-      const { error } = await supabaseClient
-        .from('entries')
-        .insert({ 
-          user_id: S.userId,
-          username: S.username,
-          content,
-          mood 
-        });
-      
-      if (error) {
-        console.error('[SAVE] Error:', error);
-        
-        if (error.message?.includes('row-level security')) {
-          toast('RLS Policy error: cek user_id');
-          console.log('[RLS DEBUG]', {
-            user_id: S.userId,
-            user_id_type: typeof S.userId,
-            username: S.username
-          });
-        } else {
-          toast('Gagal: ' + error.message);
-        }
-      } else {
-        console.log('[SAVE] Success');
-        if (ri) ri.value = '';
-        document.getElementById('ccount').textContent = '0/500';
-        await loadEntries();
-        toast('✓ Spill terkirim!');
-      }
-    } catch(err) {
-      console.error('[SAVE] Exception:', err);
-      toast('Gagal menyimpan');
-    } finally {
-      hideProc();
-    }
+async function saveEntry() {
+  // Ambil element textarea
+  const ri = document.getElementById('ri');
+  
+  // Ambil value dan trim (hapus spasi di awal/akhir)
+  const content = ri?.value.trim();
+  
+  // ===== DEBUG: CEK VALUE =====
+  console.log('[DEBUG] ri element:', ri);
+  console.log('[DEBUG] content value:', content);
+  console.log('[DEBUG] content length:', content?.length);
+  
+  // Validasi: jangan lanjut kalo kosong
+  if (!content) {
+    toast('Tulis dulu spill-nya');
+    ri?.focus();  // Kembalikan kursor ke textarea
+    return;
   }
   
-  // ========== LOAD ARTEFACTS ==========
-  async function loadArtefacts() {
-    if (!S.userId) return;
+  // Ambil mood yang aktif
+  const moodEl = document.querySelector('.mc.act');
+  const mood = moodEl?.dataset.mood || 'surviving';
+  
+  // Tampilkan loading
+  showProc('Menyimpan spill...');
+  
+  // ===== DEBUG: DATA YANG AKAN DIKIRIM =====
+  const dataToSend = {
+    user_id: S.userId,
+    username: S.username,
+    content: content,
+    mood: mood
+  };
+  console.log('[SAVE] Data to insert:', dataToSend);
+  
+  try {
+    // Insert ke Supabase
+    const { error } = await supabaseClient
+      .from('entries')
+      .insert(dataToSend);
     
-    try {
-      const { data, error } = await supabaseClient
-        .from('artefacts')
-        .select('*')
-        .eq('user_id', S.userId)
-        .order('created_at', { ascending: false })
-        .limit(6);
+    if (error) {
+      console.error('[SAVE] Error:', error);
       
-      if (error) {
-        console.error('[ARTEFACTS] Error:', error);
-        return;
+      if (error.message?.includes('row-level security')) {
+        toast('RLS Policy error: cek user_id');
+        console.log('[RLS DEBUG]', {
+          user_id: S.userId,
+          user_id_type: typeof S.userId,
+          username: S.username
+        });
+      } else {
+        toast('Gagal: ' + error.message);
       }
-      
-      S.artefacts = data || [];
-      renderTray();
-      
-      if (S.artefacts.length > 0) {
-        setHero(S.artefacts[0].id);
-      }
-    } catch(err) {
-      console.error('[ARTEFACTS] Exception:', err);
+    } else {
+      console.log('[SAVE] Success');
+      ri.value = '';  // Kosongkan textarea
+      document.getElementById('ccount').textContent = '0/500';
+      await loadEntries();  // Reload daftar entries
+      toast('✓ Spill terkirim!');
     }
+  } catch(err) {
+    console.error('[SAVE] Exception:', err);
+    toast('Gagal menyimpan');
+  } finally {
+    hideProc();  // Sembunyikan loading
   }
+}
   
   // ========== RENDER TRAY ==========
   function renderTray() {
