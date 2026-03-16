@@ -144,7 +144,7 @@
         .whisper-timer-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--as);animation:timerShrink 5s linear forwards}
         @keyframes timerShrink{from{width:100%}to{width:0%}}
         
-        /* SCANNING OVERLAY - MENGGANTIKAN WAITING OVERLAY SEPENUHNYA */
+        /* SCANNING OVERLAY DENGAN EFEK LENGKAP */
         .scanning-overlay {
             display: none;
             position: fixed;
@@ -156,12 +156,17 @@
             font-family: var(--font-mono);
         }
         .scanning-overlay.show { display: flex; }
+        
         .scanning-box {
             text-align: center;
             width: 100%;
             max-width: 400px;
             padding: 20px;
+            position: relative;
+            z-index: 10;
         }
+        
+        /* TEXT FLICKER EFFECT */
         .scanning-text {
             font-size: 24px;
             font-weight: 700;
@@ -174,7 +179,86 @@
             line-height: 1.8;
             color: var(--as);
             text-shadow: 0 0 10px var(--as);
+            animation: textFlicker 3s infinite;
+            position: relative;
         }
+        
+        @keyframes textFlicker {
+            0%, 100% { opacity: 1; text-shadow: 0 0 10px var(--as); }
+            2% { opacity: 0.8; text-shadow: 0 0 2px var(--as), 0 0 15px var(--as); }
+            4% { opacity: 1; text-shadow: 0 0 10px var(--as), 0 0 20px var(--as); }
+            19% { opacity: 1; }
+            20% { opacity: 0.5; text-shadow: 0 0 5px var(--as); }
+            21% { opacity: 1; text-shadow: 0 0 10px var(--as), 0 0 30px var(--as); }
+            50% { opacity: 1; }
+            51% { opacity: 0.7; text-shadow: 0 0 8px var(--as); }
+            52% { opacity: 1; text-shadow: 0 0 15px var(--as); }
+            75% { opacity: 1; }
+            76% { opacity: 0.4; text-shadow: 0 0 3px var(--as); }
+            77% { opacity: 1; text-shadow: 0 0 20px var(--as); }
+        }
+        
+        /* SCAN LINE EFFECT */
+        .scanning-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(0, 229, 255, 0.03) 50%,
+                transparent 100%
+            );
+            animation: scanline 6s linear infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(200%); }
+        }
+        
+        /* STATIC NOISE EFFECT */
+        .scanning-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15) 0px,
+                rgba(0, 229, 255, 0.03) 1px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+            opacity: 0.3;
+            animation: staticNoise 0.2s infinite;
+            z-index: 1;
+        }
+        
+        @keyframes staticNoise {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 5px; }
+        }
+        
+        /* GLITCH EFFECT UNTUK TEKS TERTENTU */
+        .scanning-text.glitch {
+            animation: hardGlitch 0.3s infinite;
+        }
+        
+        @keyframes hardGlitch {
+            0% { transform: skew(0deg); opacity: 1; }
+            20% { transform: skew(5deg); opacity: 0.9; color: #ff00ff; }
+            40% { transform: skew(-5deg); opacity: 0.8; color: #00ffff; }
+            60% { transform: skew(3deg); opacity: 0.9; color: #ffff00; }
+            80% { transform: skew(-3deg); opacity: 1; color: var(--as); }
+            100% { transform: skew(0deg); opacity: 1; }
+        }
+        
         .scanning-progress {
             width: 100%;
             height: 2px;
@@ -183,6 +267,7 @@
             position: relative;
             overflow: hidden;
         }
+        
         .scanning-bar {
             position: absolute;
             left: 0;
@@ -193,14 +278,74 @@
             box-shadow: 0 0 20px var(--as);
             transition: width 0.1s linear;
         }
+        
         .scanning-timer {
             margin-top: 20px;
             font-size: 14px;
             color: var(--txs);
             letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
         }
         
-        /* WAITING OVERLAY TIDAK DIGUNAKAN LAGI - TAPI CSS-nya tetap ada biar ga error */
+        /* TYPING DOTS DI BAWAH SCANNING TEXT */
+        .scanning-dots {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            opacity: 0.7;
+        }
+        
+        .scanning-dots span {
+            width: 8px;
+            height: 8px;
+            background: var(--as);
+            border-radius: 50%;
+            animation: scanningDotPulse 1.4s infinite;
+            box-shadow: 0 0 10px var(--as);
+        }
+        
+        .scanning-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .scanning-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes scanningDotPulse {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        /* SOUND TOGGLE BUTTON */
+        .sound-toggle {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid var(--as);
+            border-radius: 50%;
+            color: var(--as);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2100;
+            box-shadow: 0 0 15px var(--as);
+            transition: 0.2s;
+        }
+        
+        .sound-toggle:active {
+            transform: scale(0.9);
+        }
+        
+        .sound-toggle.muted {
+            opacity: 0.5;
+            border-color: var(--txs);
+            color: var(--txs);
+            box-shadow: none;
+        }
+        
         .waiting-overlay { display: none; }
         
         @media (max-width:500px){
@@ -292,16 +437,27 @@
     </nav>
 </div>
 
-<!-- SCANNING OVERLAY - INI YANG DIGUNAKAN, MENGGANTIKAN WAITING OVERLAY -->
+<!-- SCANNING OVERLAY DENGAN EFEK LENGKAP -->
 <div class="scanning-overlay" id="scanningOverlay">
     <div class="scanning-box">
         <div class="scanning-text" id="scanningText"></div>
-        <div class="scanning-progress"><div class="scanning-bar" id="scanningBar"></div></div>
+        
+        <!-- TYPING DOTS -->
+        <div class="scanning-dots" id="scanningDots">
+            <span></span><span></span><span></span>
+        </div>
+        
+        <div class="scanning-progress">
+            <div class="scanning-bar" id="scanningBar"></div>
+        </div>
         <div class="scanning-timer" id="scanningTimer">0s</div>
     </div>
+    
+    <!-- SOUND TOGGLE BUTTON -->
+    <div class="sound-toggle" id="soundToggle">🔊</div>
 </div>
 
-<!-- WAITING OVERLAY TETAP ADA TAPI TIDAK DIGUNAKAN (BIAR GA ERROR) -->
+<!-- WAITING OVERLAY TIDAK DIGUNAKAN -->
 <div class="waiting-overlay" id="waitingOverlay" style="display:none;"></div>
 
 <div class="whisper-overlay" id="whisperOverlay">
@@ -348,6 +504,10 @@
     
     // State
     let userEntries=[],aiEntries=[],allEntries=[],aiTimer,currentPartner=null,chatHistory=[],isTyping=false,currentLang='id',vibe=87;
+    let soundEnabled=false; // Default mati karena browser block autoplay
+    let audioCtx=null;
+    let scanInterval=null;
+    
     const AVAILABLE_NAMES=['beby.manis','chili.padi','pretty.sad','sejuta.badai','agak.koplak','strawberry.shortcake','cinnamon.girl','satria.bajahitam','malam.minggu','hujan.gerimis','kopi.pahit','luka.luka','senja.redup','kota.tua','patah.hati','move.on'];
     const nameCache=new Map();
     const getUsername=(uid)=>{
@@ -437,10 +597,59 @@
     if(age<55){const t=age/55,ga=(1-t)*(1-t)*.9;if(ga<.01)return;const gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}});
     raf=requestAnimationFrame(draw);};draw();};
     
-    // SCANNING 15 DETIK - MENGGANTIKAN WAITING OVERLAY SEPENUHNYA
+    // AUDIO EFFECTS
+    const initAudio=()=>{
+        if(audioCtx) return;
+        try{
+            audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+        }catch(e){console.log('Web Audio API not supported');}
+    };
+    
+    const playScanSound=(type)=>{
+        if(!soundEnabled || !audioCtx || audioCtx.state==='suspended') return;
+        
+        try{
+            const osc=audioCtx.createOscillator();
+            const gain=audioCtx.createGain();
+            
+            osc.type='sine';
+            
+            if(type==='tick'){
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.1);
+            }else if(type==='glitch'){
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.15);
+            }else if(type==='complete'){
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.3);
+            }
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime+0.3);
+        }catch(e){}
+    };
+    
+    // VIBRATE
+    const vibrate=(pattern)=>{
+        if(window.navigator && window.navigator.vibrate){
+            window.navigator.vibrate(pattern);
+        }
+    };
+    
+    // SCANNING 15 DETIK DENGAN SEMUA EFEK
     const startScanning=(gender,callback)=>{
         const ov=$('scanningOverlay'),txt=$('scanningText'),bar=$('scanningBar'),timer=$('scanningTimer');
+        const dots=$('scanningDots');
         if(!ov||!txt||!bar||!timer){callback();return;}
+        
+        // Init audio jika belum
+        initAudio();
         
         // Sequence persis contoh
         const seq=[
@@ -453,8 +662,27 @@
         
         ov.classList.add('show');
         let start=Date.now(),cur=0;
+        let lastGlitch=0;
+        let lastVibrate=0;
         
-        const interval=setInterval(()=>{
+        // Reset sound toggle
+        const soundBtn=$('soundToggle');
+        if(soundBtn){
+            soundBtn.onclick=()=>{
+                soundEnabled=!soundEnabled;
+                soundBtn.textContent=soundEnabled?'🔊':'🔇';
+                soundBtn.classList.toggle('muted',!soundEnabled);
+                
+                if(soundEnabled && audioCtx && audioCtx.state==='suspended'){
+                    audioCtx.resume();
+                }
+            };
+        }
+        
+        // Hapus interval sebelumnya
+        if(scanInterval) clearInterval(scanInterval);
+        
+        scanInterval=setInterval(()=>{
             const elapsed=(Date.now()-start)/1000;
             const progress=Math.min(100,(elapsed/15)*100);
             bar.style.width=progress+'%';
@@ -462,32 +690,70 @@
             
             // Update teks berdasarkan waktu
             while(cur<seq.length-1 && elapsed>=seq[cur+1].time) cur++;
-            if(cur<seq.length) txt.textContent=seq[cur].text;
+            if(cur<seq.length){
+                // Efek flicker lebih intens di kata-kata tertentu
+                txt.textContent=seq[cur].text;
+                
+                // Glitch effect di "ghosts" dan "trouble"
+                if(seq[cur].text.includes('ghosts') || seq[cur].text.includes('trouble')){
+                    txt.classList.add('glitch');
+                }else{
+                    txt.classList.remove('glitch');
+                }
+            }
             
-            // Efek glitch random
-            if(Math.random()<0.1){
-                txt.style.opacity='0.5';
-                setTimeout(()=>txt.style.opacity='1',50);
+            // Random glitch sound dan vibrate
+            if(Math.random()<0.15 && elapsed-lastGlitch>0.5){
+                txt.style.opacity='0.3';
+                setTimeout(()=>txt.style.opacity='1',80);
+                
+                // Sound glitch
+                playScanSound('glitch');
+                
+                // Vibrate pendek
+                vibrate(50);
+                
+                lastGlitch=elapsed;
+            }
+            
+            // Tick sound setiap detik
+            if(Math.floor(elapsed)!==lastVibrate){
+                playScanSound('tick');
+                lastVibrate=Math.floor(elapsed);
             }
             
             // Selesai 15 detik
             if(elapsed>=15){
-                clearInterval(interval);
+                clearInterval(scanInterval);
+                scanInterval=null;
                 ov.classList.remove('show');
+                
+                // Sound complete
+                playScanSound('complete');
+                vibrate([100,50,100]);
+                
                 callback();
             }
         },100);
         
         // Bisa cancel dengan klik overlay
         ov.onclick=()=>{
-            clearInterval(interval);
+            if(scanInterval){
+                clearInterval(scanInterval);
+                scanInterval=null;
+            }
             ov.classList.remove('show');
         };
     };
     
-    // Vibe check - LANGSUNG PAKAI SCANNING, TANPA WAITING OVERLAY
+    // Vibe check - LANGSUNG PAKAI SCANNING
     const startVibeCheck=gender=>{
         if(isTyping){toast('Tunggu sampai pesan terkirim');return;}
+        
+        // Minta interaksi user dulu untuk sound (karena browser block autoplay)
+        if(!soundEnabled){
+            toast('Klik tombol suara untuk efek audio', false);
+        }
         
         startScanning(gender,()=>{
             // Setelah 15 detik scanning, langsung buka chat dengan AI
