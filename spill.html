@@ -408,6 +408,121 @@
             color: var(--as);
         }
         
+        /* WHISPER MODE */
+        .whisper-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1500;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        
+        .whisper-overlay.show {
+            display: flex;
+        }
+        
+        .whisper-box {
+            background: var(--sf);
+            border: 3px solid var(--as);
+            padding: 25px;
+            text-align: center;
+            box-shadow: 12px 12px 0 #000;
+            max-width: 350px;
+            width: 90%;
+        }
+        
+        .whisper-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            color: var(--as);
+            margin-bottom: 15px;
+        }
+        
+        .whisper-input {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg);
+            border: 2px solid var(--bd2);
+            color: var(--tx);
+            font-family: var(--font-body);
+            margin: 15px 0;
+            resize: none;
+            min-height: 100px;
+        }
+        
+        .whisper-input:focus {
+            border-color: var(--as);
+            outline: none;
+        }
+        
+        .whisper-timer {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--txs);
+            margin-bottom: 15px;
+        }
+        
+        .whisper-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .whisper-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #000;
+            font-family: var(--font-mono);
+            cursor: pointer;
+            box-shadow: 3px 3px 0 #000;
+            transition: 0.1s;
+        }
+        
+        .whisper-btn.send {
+            background: var(--as);
+            color: black;
+        }
+        
+        .whisper-btn.cancel {
+            background: transparent;
+            color: var(--txs);
+        }
+        
+        .whisper-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 #000;
+        }
+        
+        .whisper-message {
+            background: var(--sf);
+            border: 2px solid var(--as);
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+            animation: whisperGlow 2s infinite;
+        }
+        
+        @keyframes whisperGlow {
+            0%, 100% { box-shadow: 0 0 5px var(--as); }
+            50% { box-shadow: 0 0 15px var(--as); }
+        }
+        
+        .whisper-timer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--as);
+            animation: timerShrink 5s linear forwards;
+        }
+        
+        @keyframes timerShrink {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        
         /* FILTER */
         .filter-sect {
             padding: 18px;
@@ -850,7 +965,79 @@
             color: #fff;
         }
         
-        /* WAITING OVERLAY - DRAMA SEQUENCE */
+        /* SCANNING OVERLAY - DRAMATIC 15 DETIK */
+        .scanning-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+        }
+        
+        .scanning-overlay.show {
+            display: flex;
+        }
+        
+        .scanning-box {
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        
+        .scanning-text {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.8;
+            color: var(--as);
+            text-shadow: 0 0 10px var(--as);
+            animation: glitch 3s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: skew(0deg); opacity: 1; }
+            95% { transform: skew(2deg); opacity: 0.9; }
+            96% { transform: skew(-2deg); opacity: 0.8; }
+            97% { transform: skew(3deg); opacity: 1; }
+        }
+        
+        .scanning-progress {
+            width: 100%;
+            height: 2px;
+            background: var(--bd2);
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scanning-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--as);
+            box-shadow: 0 0 20px var(--as);
+            transition: width 0.1s linear;
+        }
+        
+        .scanning-timer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--txs);
+            letter-spacing: 2px;
+        }
+        
+        /* WAITING OVERLAY */
         .waiting-overlay {
             display: none;
             position: fixed;
@@ -876,28 +1063,6 @@
             font-size: 48px;
             margin-bottom: 16px;
             animation: pulse 1.5s infinite;
-        }
-        
-        .waiting-message {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--txs);
-            margin: 20px 0;
-            line-height: 1.8;
-            min-height: 80px;
-            text-align: center;
-            letter-spacing: 0.5px;
-        }
-        
-        .msg-line {
-            display: inline-block;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
         .waiting-timer {
@@ -950,6 +1115,10 @@
             .nav-item {
                 padding: 8px 4px;
                 font-size: 11px;
+            }
+            
+            .scanning-text {
+                font-size: 20px;
             }
         }
     </style>
@@ -1010,14 +1179,14 @@
                 <div class="gender-row">
                     <button class="btn-gender btn-heart" id="vibeFemaleBtn">
                         <span class="gender-icon">❤️</span>
-                        <span>YUK NGROBOL</span>
-                        <span class="gender-tag">CARI CEWEK</span>
+                        <span>SOFT TALK</span>
+                        <span class="gender-tag"></span>
                     </button>
                     
                     <button class="btn-gender btn-spade" id="vibeMaleBtn">
                         <span class="gender-icon">♠️</span>
-                        <span>YUK BIKIN RUSUH</span>
-                        <span class="gender-tag">CARI COWOK</span>
+                        <span>HOT TAKE</span>
+                        <span class="gender-tag"></span>
                     </button>
                 </div>
                 <button class="btn-whisper" id="whisperBtn">✦ WHISPERER <span>NEW</span></button>
@@ -1056,21 +1225,44 @@
     </nav>
 </div>
 
-<!-- WAITING OVERLAY - DRAMA SEQUENCE -->
+<!-- SCANNING OVERLAY - DRAMATIC 15 DETIK -->
+<div class="scanning-overlay" id="scanningOverlay">
+    <div class="scanning-box">
+        <div class="scanning-text" id="scanningText"></div>
+        <div class="scanning-progress">
+            <div class="scanning-bar" id="scanningBar"></div>
+        </div>
+        <div class="scanning-timer" id="scanningTimer">0s</div>
+    </div>
+</div>
+
+<!-- WAITING OVERLAY -->
 <div class="waiting-overlay" id="waitingOverlay">
     <div class="waiting-box">
         <div class="waiting-icon" id="waitingIcon">❤️</div>
-        
-        <!-- AREA PESAN DRAMATIS -->
-        <div class="waiting-message" id="waitingMessage">
-            <span class="msg-line" id="msgLine1"></span><br>
-            <span class="msg-line" id="msgLine2"></span><br>
-            <span class="msg-line" id="msgLine3"></span><br>
-            <span class="msg-line" id="msgLine4" style="color: var(--ap); font-weight: bold;"></span>
-        </div>
-        
         <div class="waiting-timer" id="waitingTimer">15</div>
         <button id="cancelWaiting">BATAL</button>
+    </div>
+</div>
+
+<!-- WHISPER OVERLAY - VERSI BARU -->
+<div class="whisper-overlay" id="whisperOverlay">
+    <div class="whisper-box">
+        <div class="whisper-title">✦ WHISPERER</div>
+        <div class="whisper-timer">Kirim ke siapapun (ketik manual)</div>
+        
+        <!-- INPUT USERNAME TUJUAN -->
+        <input type="text" class="whisper-input" id="whisperTarget" 
+               placeholder="@username" maxlength="30" style="margin-bottom: 10px;">
+        
+        <!-- INPUT PESAN -->
+        <textarea class="whisper-input" id="whisperMessage" 
+                  placeholder="Tulis pesan rahasia..." maxlength="200" rows="3"></textarea>
+        
+        <div class="whisper-actions">
+            <button class="whisper-btn cancel" id="whisperCancel">BATAL</button>
+            <button class="whisper-btn send" id="whisperSend">KIRIM</button>
+        </div>
     </div>
 </div>
 
@@ -1229,6 +1421,165 @@
         });
     }
     
+    // ========== WHISPER MODE REAL ==========
+    function initWhisper() {
+        const whisperBtn = $('whisperBtn');
+        const whisperOverlay = $('whisperOverlay');
+        const whisperCancel = $('whisperCancel');
+        const whisperSend = $('whisperSend');
+        const whisperTarget = $('whisperTarget');
+        const whisperMessage = $('whisperMessage');
+        
+        if (!whisperBtn || !whisperOverlay) return;
+        
+        // BUKA OVERLAY - reset input setiap kosong
+        whisperBtn.onclick = () => {
+            whisperOverlay.classList.add('show');
+            whisperTarget.value = '';  // SELALU KOSONG
+            whisperMessage.value = '';  // SELALU KOSONG
+            whisperTarget.focus();
+        };
+        
+        // TUTUP OVERLAY
+        whisperCancel.onclick = () => {
+            whisperOverlay.classList.remove('show');
+        };
+        
+        // KIRIM WHISPER
+        whisperSend.onclick = async () => {
+            const target = whisperTarget.value.trim().replace('@', '');
+            const message = whisperMessage.value.trim();
+            
+            if (!target) {
+                showToast('Masukkan username tujuan');
+                return;
+            }
+            
+            if (!message) {
+                showToast('Pesan tidak boleh kosong');
+                return;
+            }
+            
+            whisperOverlay.classList.remove('show');
+            
+            // Tampilkan di chat sendiri sebagai bukti
+            showLocalWhisper(`@${target}: ${message}`);
+            
+            // Kirim via API
+            await sendWhisper(target, message);
+        };
+        
+        // Enter untuk kirim
+        whisperMessage.onkeypress = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                whisperSend.click();
+            }
+        };
+    }
+    
+    // ========== SEND WHISPER VIA API ==========
+    async function sendWhisper(targetUsername, message) {
+        try {
+            const response = await fetch('/api/whisper', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    from: USERNAME,
+                    to: targetUsername,
+                    message: message
+                })
+            });
+            
+            if (!response.ok) {
+                const err = await response.json();
+                throw new Error(err.error || 'Gagal kirim');
+            }
+            
+            showToast(`✧ Whisper terkirim ke @${targetUsername}`);
+            
+        } catch (error) {
+            console.error('[Whisper] Error:', error);
+            showToast('Gagal mengirim whisper');
+        }
+    }
+    
+    // ========== TAMPILKAN WHISPER LOKAL ==========
+    function showLocalWhisper(text) {
+        const chatMessages = $('chatMessages');
+        if (!chatMessages) return;
+        
+        const whisperDiv = document.createElement('div');
+        whisperDiv.className = 'whisper-message';
+        whisperDiv.innerHTML = `
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--as); margin-bottom: 5px;">
+                ✧ WHISPER TERKIRIM
+            </div>
+            <div style="font-size: 14px;">${text}</div>
+            <div class="whisper-timer-bar"></div>
+        `;
+        
+        chatMessages.appendChild(whisperDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Hapus setelah 5 detik
+        setTimeout(() => {
+            whisperDiv.style.opacity = '0';
+            whisperDiv.style.transition = 'opacity 0.5s';
+            setTimeout(() => {
+                if (whisperDiv.parentNode) {
+                    whisperDiv.remove();
+                }
+            }, 500);
+        }, 5000);
+    }
+    
+    // ========== TAMPILKAN WHISPER MASUK ==========
+    function showIncomingWhisper(sender, message) {
+        const chatMessages = $('chatMessages');
+        if (!chatMessages) return;
+        
+        const whisperDiv = document.createElement('div');
+        whisperDiv.className = 'whisper-message';
+        whisperDiv.innerHTML = `
+            <div style="font-family: var(--font-mono); font-size: 10px; color: var(--as); margin-bottom: 5px;">
+                ✧ WHISPER DARI @${sender}
+            </div>
+            <div style="font-size: 14px;">${message}</div>
+            <div class="whisper-timer-bar"></div>
+        `;
+        
+        chatMessages.appendChild(whisperDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Hapus setelah 5 detik
+        setTimeout(() => {
+            whisperDiv.style.opacity = '0';
+            whisperDiv.style.transition = 'opacity 0.5s';
+            setTimeout(() => {
+                if (whisperDiv.parentNode) {
+                    whisperDiv.remove();
+                }
+            }, 500);
+        }, 5000);
+    }
+    
+    // ========== POLLING CEK WHISPER MASUK ==========
+    function startWhisperPolling() {
+        setInterval(async () => {
+            try {
+                const response = await fetch(`/api/whisper?user=${USERNAME}`);
+                const whispers = await response.json();
+                
+                whispers.forEach(w => {
+                    showIncomingWhisper(w.sender, w.message);
+                });
+            } catch (err) {
+                console.error('[Whisper] Polling error:', err);
+            }
+        }, 3000); // Cek setiap 3 detik
+    }
+    
     // ========== BOTTOM NAV ==========
     function initBottomNav() {
         const navItems = document.querySelectorAll('.nav-item');
@@ -1290,7 +1641,8 @@
         }
         
         let html = '';
-        allEntries.slice(0, 10).forEach((spill, index) => {
+        // HAPUS .slice(0, 10) - biar semua entries tampil
+        allEntries.forEach((spill, index) => {
             html += `
                 <div class="spill-card">
                     <div class="spill-header">
@@ -1394,7 +1746,6 @@
                 
                 console.log(`[Fetch] ${userEntries.length} user entries loaded`);
             } else {
-                console.log('[Supabase] No entries, using dummy');
                 userEntries = getDummyUserEntries();
             }
             
@@ -1444,11 +1795,12 @@
     
     // ========== INIT AI ENTRIES ==========
     function initAIEntries() {
+        // Generate AI entries KALAU MASIH KOSONG
         if (aiEntries.length === 0) {
             console.log('[AI] Generating initial 6 entries...');
             aiEntries = generateAIEntries(6);
         }
-        combineAndRender();
+        combineAndRender();  // ← Panggil sekali di sini
         
         if (aiGeneratorTimer) clearInterval(aiGeneratorTimer);
         aiGeneratorTimer = setInterval(() => {
@@ -1630,108 +1982,126 @@
         draw();
     }
     
-    // ========== VIBE CHECK DENGAN DRAMA ==========
+    // ========== DRAMATIC 15 DETIK SCANNING ==========
+    function showDramaticScanning(gender, callback) {
+        const overlay = $('scanningOverlay');
+        const textEl = $('scanningText');
+        const barEl = $('scanningBar');
+        const timerEl = $('scanningTimer');
+        
+        if (!overlay || !textEl || !barEl || !timerEl) {
+            callback();
+            return;
+        }
+        
+        // Sequence teks yang dramatis
+        const sequences = [
+            { time: 0, text: "memindai entitas..." },
+            { time: 4, text: "mendeteksi pengguna biasa..." },
+            { time: 8, text: "beberapa adalah bayangan..." },
+            { time: 12, text: "dan satu..." },
+            { time: 14, text: "sedang menunggumu." }
+        ];
+        
+        overlay.classList.add('show');
+        
+        let startTime = Date.now();
+        let currentSeq = 0;
+        let interval = setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const progress = Math.min(100, (elapsed / 15) * 100);
+            barEl.style.width = progress + '%';
+            timerEl.textContent = Math.floor(elapsed) + 's';
+            
+            // Update teks berdasarkan waktu
+            while (currentSeq < sequences.length - 1 && elapsed >= sequences[currentSeq + 1].time) {
+                currentSeq++;
+            }
+            
+            if (currentSeq < sequences.length) {
+                textEl.textContent = sequences[currentSeq].text;
+            }
+            
+            // Efek glitch random
+            if (Math.random() < 0.1) {
+                textEl.style.opacity = '0.5';
+                setTimeout(() => textEl.style.opacity = '1', 50);
+            }
+            
+            if (elapsed >= 15) {
+                clearInterval(interval);
+                overlay.classList.remove('show');
+                callback();
+            }
+        }, 100);
+        
+        // Cancel jika user klik overlay (opsional)
+        overlay.onclick = () => {
+            clearInterval(interval);
+            overlay.classList.remove('show');
+            callback();
+        };
+    }
+    
+    // ========== VIBE CHECK ==========
     async function startVibeCheck(gender) {
         if (isTyping) {
             showToast('Tunggu sampai pesan terkirim');
             return;
         }
         
-        const overlay = $('waitingOverlay');
-        const icon = $('waitingIcon');
-        const timerEl = $('waitingTimer');
-        const msgLine1 = $('msgLine1');
-        const msgLine2 = $('msgLine2');
-        const msgLine3 = $('msgLine3');
-        const msgLine4 = $('msgLine4');
-        
-        if (!overlay || !icon || !timerEl) return;
-        
-        // Reset semua pesan
-        [msgLine1, msgLine2, msgLine3, msgLine4].forEach(line => {
-            if (line) line.textContent = '';
-        });
-        
-        icon.textContent = gender === 'heart' ? '❤️' : '♠️';
-        overlay.style.display = 'flex';
-        
-        let seconds = 15;
-        timerEl.textContent = seconds;
-        
-        // ========== SEQUENCE DRAMA ==========
-        
-        // Baris 1: 0-4 detik
-        setTimeout(() => {
-            if (msgLine1) msgLine1.textContent = 'finding strangers...';
-        }, 100);
-        
-        // Baris 2: 5-8 detik
-        setTimeout(() => {
-            if (msgLine2) msgLine2.textContent = 'most strangers here are just people';
-        }, 5000);
-        
-        // Baris 3: 9-12 detik
-        setTimeout(() => {
-            if (msgLine3) msgLine3.textContent = 'some are ghosts';
-        }, 9000);
-        
-        // Baris 4: 13-15 detik - dengan efek tegang
-        setTimeout(() => {
-            if (msgLine4) {
-                msgLine4.textContent = 'and a few...';
-                
-                // Tambah efek kedip
-                let blinkCount = 0;
-                const blinkInterval = setInterval(() => {
-                    msgLine4.style.opacity = msgLine4.style.opacity === '1' ? '0.3' : '1';
-                    blinkCount++;
-                    
-                    if (blinkCount >= 6) { // 3 kali kedip (300ms * 6 = 1.8 detik)
-                        clearInterval(blinkInterval);
-                        msgLine4.style.opacity = '1';
-                        msgLine4.textContent = 'and a few... are trouble ⚡';
-                    }
-                }, 300);
-            }
-        }, 13000);
-        
-        // ========== TIMER ==========
-        let foundRealUser = false;
-        
-        const timer = setInterval(() => {
-            seconds--;
+        // Tampilkan dramatic scanning dulu
+        showDramaticScanning(gender, () => {
+            // Setelah scanning selesai, tampilkan waiting overlay
+            const overlay = $('waitingOverlay');
+            const icon = $('waitingIcon');
+            const timerEl = $('waitingTimer');
+            
+            if (!overlay || !icon || !timerEl) return;
+            
+            icon.textContent = gender === 'heart' ? '❤️' : '♠️';
+            overlay.style.display = 'flex';
+            
+            let seconds = 15;
             timerEl.textContent = seconds;
             
-            if (seconds <= 0) {
+            let foundRealUser = false;
+            
+            const timer = setInterval(() => {
+                seconds--;
+                timerEl.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(timer);
+                    clearInterval(checkInterval);
+                    
+                    if (!foundRealUser) {
+                        overlay.style.display = 'none';
+                        
+                        const aiChars = {
+                            'heart': ['beby.manis', 'pretty.sad', 'strawberry.shortcake', 'cinnamon.girl', 'move.on'],
+                            'spade': ['agak.koplak', 'bang.juned', 'chili.padi', 'sejuta.badai', 'satria.bajahitam']
+                        };
+                        
+                        const list = aiChars[gender] || aiChars.heart;
+                        const aiChar = list[Math.floor(Math.random() * list.length)];
+                        
+                        openChat(aiChar);
+                    }
+                }
+            }, 1000);
+            
+            const checkInterval = setInterval(() => {
+                // Placeholder untuk real user
+            }, 2000);
+            
+            const cancelBtn = $('cancelWaiting');
+            cancelBtn.onclick = () => {
                 clearInterval(timer);
                 clearInterval(checkInterval);
-                
-                if (!foundRealUser) {
-                    overlay.style.display = 'none';
-                    
-                    const aiChars = {
-                        'heart': ['beby.manis', 'pretty.sad', 'strawberry.shortcake', 'cinnamon.girl', 'move.on'],
-                        'spade': ['agak.koplak', 'bang.juned', 'chili.padi', 'sejuta.badai', 'satria.bajahitam']
-                    };
-                    
-                    const list = aiChars[gender] || aiChars.heart;
-                    const aiChar = list[Math.floor(Math.random() * list.length)];
-                    
-                    openChat(aiChar);
-                }
-            }
-        }, 1000);
-        
-        const checkInterval = setInterval(() => {
-            // Placeholder untuk real user
-        }, 2000);
-        
-        const cancelBtn = $('cancelWaiting');
-        cancelBtn.onclick = () => {
-            clearInterval(timer);
-            clearInterval(checkInterval);
-            overlay.style.display = 'none';
-        };
+                overlay.style.display = 'none';
+            };
+        });
     }
     
     // ========== OPEN CHAT ==========
@@ -1931,11 +2301,14 @@
         
         setTimeout(initRadar, 100);
         initSettings();
+        initWhisper();
         initBottomNav();
         initVibeSlider();
         
-        await fetchUserEntries();
-        initAIEntries();
+        // ✅ URUTAN YANG BENAR:
+        await fetchUserEntries();  // Ambil user entries dulu
+        initAIEntries();           // Lalu generate AI entries
+        startWhisperPolling();  // Mulai cek whisper masuk
         
         const heartBtn = $('vibeFemaleBtn');
         const spadeBtn = $('vibeMaleBtn');
@@ -1994,6 +2367,19 @@
             }, { passive: false });
         });
     });
+    
+    // ========== EXPOSE FOR DEBUGGING ==========
+    window.debug = {
+        userEntries: () => userEntries,
+        aiEntries: () => aiEntries,
+        allEntries: () => allEntries,
+        refresh: () => {
+            console.log('userEntries:', userEntries.length);
+            console.log('aiEntries:', aiEntries.length);
+            console.log('allEntries:', allEntries.length);
+            return { user: userEntries.length, ai: aiEntries.length, total: allEntries.length };
+        }
+    };
 })();
 </script>
 </body>
