@@ -379,6 +379,7 @@ if (!session?.loggedIn || !session?.uid || !session?.username) {
 const S = {
   username: session.username,
   userId: session.uid,
+  isPremium: JEJAK.checkSub ? JEJAK.checkSub() : false,
   entries: [],
   artefacts: []
 };
