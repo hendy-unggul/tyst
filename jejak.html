@@ -319,10 +319,10 @@ footer{padding:32px 0;text-align:center;border-top:2px solid var(--bd);margin-bo
 <div class="void-locked" id="void-locked"><div class="void-locked-icon">◼</div><div class="void-locked-text">THE VOID IS SEALED</div><div class="void-locked-sub">Upgrade to Premium to access<br>end-to-end encrypted ephemeral messaging</div></div>
 
 <nav class="bnav"><div class="bnav-c">
-  <a href="/spill.html" class="ni"><span class="nico">✕</span><span>Spill</span></a>
-  <a href="/jejak.html" class="ni act"><span class="nico">◈</span><span>Jejak</span></a>
-  <a href="/glitch.html" class="ni"><span class="nico">‼</span><span>Glitch</span></a>
-  <a href="/cocomeo.html" class="ni"><span class="nico">〜</span><span>Cocomeo</span></a>
+  <a href="spill.html" class="ni"><span class="nico">✕</span><span>Spill</span></a>
+  <a href="jejak.html" class="ni act"><span class="nico">◈</span><span>Jejak</span></a>
+  <a href="glitch.html" class="ni"><span class="nico">‼</span><span>Glitch</span></a>
+  <a href="cocomeo.html" class="ni"><span class="nico">〜</span><span>Cocomeo</span></a>
 </div></nav>
 
 <div class="proc" id="proc"><div class="pspin"></div><div class="ptxt" id="proctxt">Loading...</div></div>
@@ -399,12 +399,32 @@ console.log('[STATE]', {
 document.getElementById('huser').textContent = '@' + S.username;
 document.getElementById('odot')?.classList.remove('off');
 
-// ========== BOTTOM NAV ACTIVE ==========
-(function setActiveNav() {
-  const current = window.location.pathname.split('/').pop() || 'spill.html';
-  document.querySelectorAll('.bnav .ni').forEach(link => {
-    link.classList.toggle('act', link.getAttribute('href') === current);
+// ========== FORCE JEJAK UNGU ==========
+(function forceJejak() {
+  // Deteksi halaman sekarang
+  const currentPage = window.location.pathname.split('/').pop() || 'spill.html';
+  const navLinks = document.querySelectorAll('.bnav .ni');
+  
+  navLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === currentPage) {
+      link.classList.add('act');
+      console.log('[NAV] Active:', href);
+    } else {
+      link.classList.remove('act');
+    }
   });
+  
+  // Backup force color untuk jejak
+  if (currentPage.includes('jejak')) {
+    const jejakLink = document.querySelector('a[href="jejak.html"], a[href="/jejak.html"]');
+    if (jejakLink) {
+      jejakLink.classList.add('act');
+      jejakLink.style.color = '#9900ff';
+      const pseudoBefore = window.getComputedStyle(jejakLink, '::before');
+      console.log('[NAV] Jejak forced purple');
+    }
+  }
 })();
 
 // ========== HELPER FUNCTIONS ==========
@@ -597,7 +617,7 @@ function renderTray() {
       id: `dummy-${displayItems.length}`,
       url: dummyImages[idx],
       note: 'contoh memori',
-      hasFace: idx === 4 ? true : false, // dummy ke-5 punya face
+      hasFace: idx === 4 ? true : false,
       theme: ['fm', 'fg', 'fl', 'fv', 'fn', 'fc'][displayItems.length % 6],
       isDummy: true
     });
