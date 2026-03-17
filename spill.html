@@ -60,21 +60,23 @@
         .radar-dot{position:absolute;width:6px;height:6px;transform:translate(-50%,-50%) rotate(45deg);background:var(--as);opacity:.3;transition:opacity .1s}
         .radar-dot.active{opacity:1;transform:translate(-50%,-50%) rotate(45deg) scale(2.5)}
         
-        /* Radar Chat Container */
+        /* ========== RADAR CHAT CONTAINER - FINAL VERSION ========== */
         .radar-chat-container {
             position: absolute;
             inset: 0;
             background: rgba(0,0,0,0.95);
             z-index: 100;
             display: none;
-            flex-direction: column-reverse;
-            padding: 60px 12px 12px 12px;
-            overflow: hidden;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px 12px 70px 12px; /* Top padding untuk header, bottom untuk input */
+            overflow: hidden; /* NO SCROLL - auto clear via CSS */
             color: var(--tx);
             font-family: var(--font-body);
             gap: 4px;
         }
         
+        /* Pesan user & stranger */
         .radar-chat-container .message {
             max-width: 85%;
             padding: 8px 12px;
@@ -88,7 +90,7 @@
         }
         
         @keyframes slideIn {
-            from { transform: translateY(20px); opacity: 0; }
+            from { transform: translateY(10px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
         
@@ -107,11 +109,12 @@
             border-bottom-left-radius: 4px;
         }
         
-        /* FIFO: Maksimal 8 pesan */
-        .radar-chat-container .message:nth-last-child(n+9) {
-            display: none;
+        /* AUTO CLEAR: Hanya tampilkan 5 pesan terakhir */
+        .radar-chat-container .message:nth-last-child(n+6) {
+            display: none; /* Pesan ke-6 dan seterusnya hilang */
         }
         
+        /* Typing indicator */
         .radar-chat-container .typing-indicator {
             align-self: flex-start;
             color: var(--txs);
@@ -121,14 +124,18 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            order: -1;
             flex-shrink: 0;
         }
         
-        /* INPUT DI ATAS */
+        /* Typing indicator juga auto clear */
+        .radar-chat-container .typing-indicator:nth-last-child(n+6) {
+            display: none;
+        }
+        
+        /* INPUT DI BAWAH - FIXED */
         .radar-chat-input-wrapper {
             position: absolute;
-            top: 8px;
+            bottom: 8px;
             left: 8px;
             right: 8px;
             display: flex;
@@ -185,9 +192,10 @@
             box-shadow: 0px 0px 0 #000;
         }
         
+        /* Header chat di atas */
         .radar-chat-header {
             position: absolute;
-            top: -30px;
+            top: 8px;
             left: 0;
             right: 0;
             text-align: center;
@@ -195,11 +203,16 @@
             font-size: 10px;
             color: var(--txs);
             letter-spacing: 2px;
-            z-index: 101;
-            pointer-events: none;
+            z-index: 103;
+            background: rgba(0,0,0,0.5);
+            padding: 4px;
+            border-radius: 20px;
+            width: fit-content;
+            margin: 0 auto;
+            padding: 4px 16px;
         }
         
-        /* Radar Scanning Overlay - STEALTH MODE (tanpa teks bocor) */
+        /* Radar Scanning Overlay */
         .radar-scanning-overlay {
             position: absolute;
             inset: 0;
@@ -534,7 +547,7 @@
                         <canvas class="radar-canvas" id="radarCanvas"></canvas>
                         <div class="radar-dots" id="radarDots"></div>
                         
-                        <!-- Radar Scanning Overlay - STEALTH MODE -->
+                        <!-- Radar Scanning Overlay -->
                         <div class="radar-scanning-overlay" id="radarScanningOverlay">
                             <div class="radar-scanning-text" id="radarScanningText">MENCARI LAWAN BICARA</div>
                             <div class="radar-scanning-dots"><span></span><span></span><span></span></div>
@@ -542,12 +555,12 @@
                             <div class="radar-scanning-timer" id="radarScanningTimer">0s</div>
                         </div>
                         
-                        <!-- Radar Chat Container -->
+                        <!-- Radar Chat Container - FINAL VERSION -->
                         <div class="radar-chat-container" id="radarChatContainer">
                             <div class="radar-chat-header">✦ CHAT ✦</div>
                         </div>
                         
-                        <!-- Radar Chat Input -->
+                        <!-- Radar Chat Input (DI BAWAH) -->
                         <div class="radar-chat-input-wrapper" id="radarChatInputWrapper" style="display:none">
                             <input type="text" class="radar-chat-input" id="radarChatInput" placeholder="Ketik pesan...">
                             <button class="radar-chat-send" id="radarChatSend">➤</button>
@@ -634,16 +647,6 @@
     
     // ============ REAL USER MATCHING SYSTEM ============
     const onlineUsers = new Map();
-    let currentSearch = {
-        active: false,
-        fromUid: null,
-        fromName: null,
-        candidates: [],
-        acceptedBy: null,
-        startTime: null,
-        callback: null,
-        gender: null
-    };
     
     // Inisialisasi user sendiri ke online
     onlineUsers.set(UID, {
@@ -653,7 +656,7 @@
         status: 'online'
     });
     
-    // Simulasi user online (untuk demo)
+    // Simulasi user online
     const initMockOnlineUsers = () => {
         const mockUsers = [
             { uid: 'user1', username: 'beby.manis' },
@@ -692,24 +695,18 @@
     setInterval(updateOnlineCount, 5000);
     updateOnlineCount();
     
-    // ============ BLAST NOTIFICATION SYSTEM (STEALTH) ============
+    // ============ BLAST NOTIFICATION SYSTEM ============
     const blastNotifications = async (candidates, fromName) => {
         return new Promise((resolve) => {
             let winner = null;
             let responses = 0;
             
-            // Jika tidak ada kandidat, langsung resolve null
             if (candidates.length === 0) {
                 resolve(null);
                 return;
             }
             
-            console.log('[STEALTH] Mencari', candidates.length, 'user');
-            
-            // Kirim notifikasi ke semua kandidat
             candidates.forEach(candidate => {
-                // Simulasi notifikasi (di real implementation pake WebSocket)
-                // 30% chance accept dalam 1-4 detik
                 const responseTime = 1000 + Math.random() * 3000;
                 
                 setTimeout(() => {
@@ -717,29 +714,25 @@
                     
                     if (accepted && !winner) {
                         winner = candidate;
-                        console.log('[STEALTH] Dapat partner');
                         resolve(winner);
                     } else {
                         responses++;
                         if (responses >= candidates.length && !winner) {
-                            console.log('[STEALTH] Fallback ke AI');
                             resolve(null);
                         }
                     }
                 }, responseTime);
             });
             
-            // Timeout total 15 detik
             setTimeout(() => {
                 if (!winner) {
-                    console.log('[STEALTH] Timeout, fallback AI');
                     resolve(null);
                 }
             }, 15000);
         });
     };
     
-    // ============ SCANNING WITH BLAST NOTIFICATIONS (STEALTH) ============
+    // ============ SCANNING WITH BLAST NOTIFICATIONS ============
     const startScanningWithBlast = (gender, callback) => {
         const radarCont = $('radarCont');
         const overlay = $('radarScanningOverlay');
@@ -748,32 +741,23 @@
         const timer = $('radarScanningTimer');
         
         if (!overlay || !txt || !bar || !timer) {
-            // Fallback langsung tanpa jeda
             const aiName = getRandomAI(gender);
             callback(aiName);
             return;
         }
         
-        // Ambil 5 real user terbaru
         const candidates = findRealUsers(5);
         
-        // Mulai blast notifications
         blastNotifications(candidates, U).then(winner => {
             if (winner) {
-                // Ada yang accept - panggil callback dengan username real
                 callback(winner.username);
             } else {
-                // Tidak ada yang accept - fallback ke AI
                 const aiName = getRandomAI(gender);
                 callback(aiName);
             }
         });
         
-        // Jalankan animasi scanning (15 detik) - TANPA TEKS YANG BOCOR
-        startScanningAnimation(overlay, txt, bar, timer, () => {
-            // Animasi selesai, tapi callback sudah ditangani di atas
-            // Jangan panggil apa-apa di sini
-        });
+        startScanningAnimation(overlay, txt, bar, timer, () => {});
     };
     
     const findRealUsers = (count = 5) => {
@@ -794,6 +778,7 @@
         return candidates.slice(0, count);
     };
     
+    let si = null;
     const startScanningAnimation = (overlay, txt, bar, timer, onComplete) => {
         if (!overlay || !txt || !bar || !timer) {
             onComplete();
@@ -803,7 +788,6 @@
         overlay.classList.add('show');
         let start = Date.now();
         
-        // Teks statis selama scanning
         txt.textContent = 'MENCARI LAWAN BICARA';
         
         if (si) clearInterval(si);
@@ -844,7 +828,7 @@
     };
     
     // ============ CHAT FUNCTIONS ============
-    let ue=[],ae=[],alle=[],aiTimer,cp=null,ch=[],isTyping=false,cl='id',se=false,ac=null,si=null;
+    let ue=[],ae=[],alle=[],aiTimer,cp=null,ch=[],isTyping=false,cl='id',se=false,ac=null;
     let radarChatActive = false;
     
     // ============ SETTINGS ============
@@ -899,7 +883,7 @@
     const playS=(t)=>{if(!se||!ac||ac.state==='suspended')return;try{let o=ac.createOscillator(),g=ac.createGain();o.type='sine';if(t==='tick'){o.frequency.setValueAtTime(440,ac.currentTime);g.gain.setValueAtTime(0.05,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.1);}else if(t==='glitch'){o.frequency.setValueAtTime(220,ac.currentTime);g.gain.setValueAtTime(0.1,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.15);}else if(t==='complete'){o.frequency.setValueAtTime(880,ac.currentTime);g.gain.setValueAtTime(0.15,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.3);}o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+0.3);}catch(e){}};
     const vibrate=(p)=>{if(window.navigator&&window.navigator.vibrate)window.navigator.vibrate(p);};
     
-    // ============ CHAT FUNCTIONS WITH FIFO ============
+    // ============ CHAT FUNCTIONS WITH AUTO CLEAR ============
     const openC = (name) => {
         const pl = $('partnerLabel');
         const ct = $('chatTimer');
@@ -909,7 +893,6 @@
         const radarChat = $('radarChatContainer');
         const radarInputWrapper = $('radarChatInputWrapper');
         
-        // HAPUS semua label yang membedakan real/AI
         if (pl) pl.textContent = 'STRANGER';
         if (ct) ct.textContent = '15:00';
         cp = name;
@@ -930,10 +913,10 @@
             if (radarInputWrapper) radarInputWrapper.style.display = 'none';
         }
         
-        // Kirim pesan pertama
         setTimeout(() => sendM('', true), 500);
     };
     
+    // FUNGSI CHAT - TANPA LOGIC HAJUS, AUTO CLEAR VIA CSS
     const addM = (sender, text) => {
         let targetContainer;
         if (USE_RADAR_CHAT && radarChatActive) {
@@ -949,12 +932,8 @@
         
         targetContainer.appendChild(msgDiv);
         
-        const messages = targetContainer.querySelectorAll('.message');
-        if (messages.length > 8) {
-            messages[0].remove();
-        }
-        
-        targetContainer.scrollTop = 0;
+        // TIDAK ADA LOGIC HAJUS - CSS YANG URUS
+        // TIDAK ADA SCROLL - CSS YANG URUS
     };
     
     const showT = () => {
@@ -975,13 +954,7 @@
         indicator.innerHTML = 'Stranger mengetik <span class="typing-dots"><span></span><span></span><span></span></span>';
         
         targetContainer.appendChild(indicator);
-        
-        const messages = targetContainer.querySelectorAll('.message, .typing-indicator');
-        if (messages.length > 8) {
-            messages[0].remove();
-        }
-        
-        targetContainer.scrollTop = 0;
+        // CSS YANG URUS AUTO CLEAR
     };
     
     const hideT = () => {
@@ -994,13 +967,10 @@
         if (!cp) return;
         if (!first) addM('user', msg);
         
-        // AI MODE - PAKAI API
         showT();
         isTyping = true;
         
         try {
-            console.log('[API] Calling chat API');
-            
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: {
@@ -1032,7 +1002,6 @@
             await typeM('stranger', data.reply, data.typing || {});
             
         } catch (error) {
-            console.error('[API] Error:', error);
             hideT();
             isTyping = false;
             addM('stranger', '😅');
@@ -1114,7 +1083,6 @@
         if (USE_RADAR_CHAT && USE_REAL_USER_MATCHING) {
             radarChatActive = true;
             startScanningWithBlast(gender, (partnerName) => {
-                // STEALTH MODE: panggil openC tanpa memberi tahu real/AI
                 openC(partnerName);
             });
         } else {
