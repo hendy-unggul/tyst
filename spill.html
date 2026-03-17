@@ -731,7 +731,24 @@
             }, 15000);
         });
     };
+    // ============ FUNGSI FIND REAL USERS (PINDAH KE ATAS) ============
+const findRealUsers = (count = 5) => {
+    const now = Date.now();
+    const candidates = [];
     
+    onlineUsers.forEach((user, uid) => {
+        if (uid !== UID && !user.inChat && now - user.lastSeen < 30000) {
+            candidates.push({
+                uid,
+                username: user.username,
+                lastSeen: user.lastSeen
+            });
+        }
+    });
+    
+    candidates.sort((a, b) => b.lastSeen - a.lastSeen);
+    return candidates.slice(0, count);
+};
     // ============ SCANNING WITH BLAST NOTIFICATIONS ============
 const startScanningWithBlast = (gender, callback) => {
     const radarCont = $('radarCont');
