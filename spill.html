@@ -635,7 +635,82 @@
     // ============ SUPABASE CONFIG ============
     const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+
+    // ============ WEBSOCKET CONNECTION ============
+let ws = null;
+let wsConnected = false;
+
+function connectWebSocket() {
+    ws = new WebSocket('ws://localhost:3001'); // Sesuaiin dengan backend lo
     
+    ws.onopen = () => {
+        console.log('WebSocket connected');
+        wsConnected = true;
+        
+        // Identify user setelah login
+        ws.send(JSON.stringify({
+            type: 'IDENTIFY',
+            userId: UID,
+            username: U
+        }));
+    };
+    
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        handleWebSocketMessage(data);
+    };
+    
+    ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        wsConnected = false;
+        // Coba reconnect setelah 3 detik
+        setTimeout(connectWebSocket, 3000);
+    };
+    
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+}
+
+function handleWebSocketMessage(data) {
+    switch(data.type) {
+        case 'CHAT_REQUEST':
+            // Munculin notifikasi "Ada yang ingin ngobrol"
+            showChatRequest(data);
+            break;
+            
+        case 'MATCH_SUCCESS':
+            // Langsung buka chat dengan partner
+            openC(data.partner.username);
+            break;
+            
+        case 'SEARCHING_PARTNER':
+            console.log(`Searching among ${data.count} users`);
+            break;
+            
+        case 'CHAT_MESSAGE':
+            // Terima pesan dari real user
+            addM('stranger', data.text);
+            break;
+    }
+}
+
+function showChatRequest(data) {
+    // Munculin notifikasi (bisa pake custom modal)
+    const accept = confirm(`@${data.from} ingin ngobrol denganmu. Terima?`);
+    
+    if (wsConnected) {
+        ws.send(JSON.stringify({
+            type: 'CHAT_REQUEST_RESPONSE',
+            requestId: data.requestId,
+            accepted: accept
+        }));
+        
+        if (accept) {
+            t(`✨ Terima kasih! Chat dengan @${data.from} akan dibuka`);
+        }
+    }
+}
     // ============ CORE LOGIC ============
     const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
     if(localStorage.getItem(K.l)!=='true'||!localStorage.getItem(K.u)||!localStorage.getItem(K.i)){window.location.href='index.html';return;}
