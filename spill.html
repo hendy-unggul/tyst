@@ -465,43 +465,121 @@
     window.reactToSpill=(i,t)=>{/* reactions work but not saved */toast(`➕ ${t}`);};
     
     // ============ RADAR ANIMATION ============
-    let dots=[],angle=0,spin=0,phase=Math.random()*Math.PI*2,raf;
-    function initRadar(){
-        let cv=$('radarCanvas'),ct=$('radarCont');
-        if(!cv||!ct)return;
-        let resize=()=>{let r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};
-        resize();window.addEventListener('resize',resize);
-        spawnDots();
-        setInterval(()=>{
-            dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;
-            d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));
-            if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});
-        },100);
-        radarLoop(cv);
+let dots=[],needleAngle=0,needleSpin=0,phaseAngle=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,glowMap=new Map(),raf,rint;
+
+function initRadar(){
+    let cv=$('radarCanvas'),ct=$('radarCont');
+    if(!cv||!ct)return;
+    let resize=()=>{let r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};
+    resize();window.addEventListener('resize',resize);
+    spawnDots();
+    if(rint)clearInterval(rint);
+    rint=setInterval(()=>{
+        dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;
+        d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));
+        if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});
+    },100);
+    needleAngle=Math.random()*Math.PI*2;
+    trail.fill(needleAngle);
+    radarLoop(cv);
+}
+
+function spawnDots(){
+    let c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];
+    for(let i=0;i<8;i++){
+        let a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2,
+        dot=document.createElement('div');dot.className='radar-dot';dot.style.left=x+'%';dot.style.top=y+'%';
+        c.appendChild(dot);dots.push({el:dot,x,y,vx:0,vy:0,id:i});
     }
-    function spawnDots(){
-        let c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];
-        for(let i=0;i<8;i++){let a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2,
-            dot=document.createElement('div');dot.className='radar-dot';dot.style.left=x+'%';dot.style.top=y+'%';
-            c.appendChild(dot);dots.push({el:dot,x,y,vx:0,vy:0,id:i});}
-    }
-    function radarLoop(cv){
-        let ctx=cv.getContext('2d');
-        function draw(){
-            let w=cv.width,h=cv.height,cx=w/2,cy=h/2,r=Math.min(cx,cy)*.88;
-            if(!w||!h){raf=requestAnimationFrame(draw);return;}
-            phase+=.007;spin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phase)*.35)-spin)*.028;
-            angle=(angle+spin)%(Math.PI*2);
-            ctx.fillStyle='rgba(2,10,2,.18)';ctx.fillRect(0,0,w,h);
-            ctx.save();ctx.translate(cx,cy);ctx.rotate(angle);
-            let grad=ctx.createLinearGradient(0,0,r,0);grad.addColorStop(0,'rgba(0,229,255,1)');grad.addColorStop(1,'rgba(0,229,255,0)');
-            ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(r,0);ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.stroke();
-            ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();
+}
+
+function radarLoop(cv){
+    let ctx=cv.getContext('2d');
+    function draw(){
+        let w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(cx,cy)*.88;
+        if(!w||!h){raf=requestAnimationFrame(draw);return;}
+        
+        phaseAngle+=.007;
+        needleSpin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phaseAngle)*.35)-needleSpin)*.028;
+        needleAngle=(needleAngle+needleSpin)%(Math.PI*2);
+        trail[ptr]=needleAngle;
+        ptr=(ptr+1)%120;
+        
+        ctx.fillStyle='rgba(2,10,2,.18)';
+        ctx.fillRect(0,0,w,h);
+        
+        // Gambar trail (bekas jarum)
+        for(let i=0;i<119;i++){
+            let a=Math.pow(1-i/120,2.2)*.12;
+            if(a<.002)break;
+            let s=needleAngle-(i+1)*needleSpin,e=needleAngle-i*needleSpin;
+            ctx.save();
+            ctx.translate(cx,cy);
+            ctx.beginPath();
+            ctx.moveTo(0,0);
+            ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));
+            ctx.closePath();
+            ctx.fillStyle=`rgba(0,229,255,${a})`;
+            ctx.fill();
             ctx.restore();
-            raf=requestAnimationFrame(draw);
         }
-        draw();
+        
+        // Gambar jarum utama
+        ctx.save();
+        ctx.translate(cx,cy);
+        ctx.rotate(needleAngle);
+        ctx.shadowColor='rgba(0,229,255,.95)';
+        ctx.shadowBlur=12;
+        let grad=ctx.createLinearGradient(0,0,R,0);
+        grad.addColorStop(0,'rgba(0,229,255,1)');
+        grad.addColorStop(.8,'rgba(0,229,255,.4)');
+        grad.addColorStop(1,'rgba(0,229,255,0)');
+        ctx.beginPath();
+        ctx.moveTo(3,0);
+        ctx.lineTo(R,0);
+        ctx.strokeStyle=grad;
+        ctx.lineWidth=2;
+        ctx.stroke();
+        ctx.shadowBlur=20;
+        ctx.beginPath();
+        ctx.rect(-4,-4,8,8);
+        ctx.fillStyle='#00e5ff';
+        ctx.fill();
+        ctx.restore();
+        
+        // Efek glow saat jarum lewati dot
+        dots.forEach((d,i)=>{
+            let px=d.x/100*w,py=d.y/100*h;
+            let da=Math.atan2(py-cy,px-cx);
+            if(da<0)da+=Math.PI*2;
+            let diff=needleAngle-da;
+            if(diff<0)diff+=Math.PI*2;
+            let age=glowMap.get(i)??999;
+            if(diff<.18&&age>30){
+                glowMap.set(i,0);
+                if(d.el){
+                    d.el.classList.add('active');
+                    setTimeout(()=>d.el?.classList.remove('active'),800);
+                }
+            }else glowMap.set(i,age+1);
+            
+            if(age<55){
+                let t=age/55,ga=(1-t)*(1-t)*.9;
+                if(ga<.01)return;
+                let gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);
+                gr.addColorStop(0,`rgba(0,229,255,${ga})`);
+                gr.addColorStop(1,`rgba(0,229,255,0)`);
+                ctx.beginPath();
+                ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);
+                ctx.fillStyle=gr;
+                ctx.fill();
+            }
+        });
+        
+        raf=requestAnimationFrame(draw);
     }
+    draw();
+}
     
     // ============ SETTINGS ============
     function initSettings(){
