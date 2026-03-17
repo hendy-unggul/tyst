@@ -826,7 +826,6 @@ const findRealUsers = (count = 5) => {
 };
     // ============ SCANNING WITH BLAST NOTIFICATIONS ============
 const startScanningWithBlast = (gender, callback) => {
-    const radarCont = $('radarCont');
     const overlay = $('radarScanningOverlay');
     const txt = $('radarScanningText');
     const bar = $('radarScanningBar');
@@ -840,33 +839,23 @@ const startScanningWithBlast = (gender, callback) => {
     
     // Reset state
     blastWinner = null;
-    blastResolved = false;
     
-    // Ambil 5 real user terbaru
-    const candidates = findRealUsers(5);
+    // Kirim sinyal ke server via WebSocket
+    if (wsConnected) {
+        ws.send(JSON.stringify({
+            type: 'FIND_PARTNER',
+            userId: UID,
+            gender: gender
+        }));
+    }
     
-    console.log('[SEARCH] Mencari', candidates.length, 'real user');
-    
-    // Mulai blast notifications (jalan di background)
-    blastNotifications(candidates, U).then(winner => {
-        if (winner) {
-            console.log('[SEARCH] Dapat real user:', winner.username);
-            blastWinner = winner;
-        } else {
-            console.log('[SEARCH] Tidak dapat real user, fallback ke AI');
-        }
-    });
-    
-    // Mulai animasi scanning 15 detik
+    // Animasi scanning 15 detik
     startScanningAnimation(overlay, txt, bar, timer, 15, () => {
-        // Animasi selesai (15 detik)
         console.log('[SEARCH] 15 detik selesai');
         
         if (blastWinner) {
-            // Dapat real user
             callback(blastWinner.username);
         } else {
-            // Fallback ke AI
             const aiName = getRandomAI(gender);
             callback(aiName);
         }
