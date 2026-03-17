@@ -199,7 +199,7 @@
             pointer-events: none;
         }
         
-        /* Radar Scanning Overlay */
+        /* Radar Scanning Overlay - STEALTH MODE (tanpa teks bocor) */
         .radar-scanning-overlay {
             position: absolute;
             inset: 0;
@@ -219,12 +219,14 @@
         }
         
         .radar-scanning-text {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             text-align: center;
             margin-bottom: 20px;
-            animation: textFlicker 3s infinite;
             padding: 0 20px;
+            color: var(--as);
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         
         .radar-scanning-progress {
@@ -270,10 +272,6 @@
         @keyframes scanningDotPulse {
             0%,60%,100%{transform:translateY(0);opacity:.4}
             30%{transform:translateY(-8px);opacity:1}
-        }
-        
-        @keyframes textFlicker {
-            0%,100%{opacity:1}2%{opacity:.8}4%{opacity:1}19%{opacity:1}20%{opacity:.5}21%{opacity:1}50%{opacity:1}51%{opacity:.7}52%{opacity:1}75%{opacity:1}76%{opacity:.4}77%{opacity:1}
         }
         
         /* CTA Buttons */
@@ -474,119 +472,9 @@
         .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;color:#fff;font-size:20px;cursor:pointer;box-shadow:3px 3px 0 #000;border-radius:8px;display:flex;align-items:center;justify-content:center}
         .chat-send:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
         
-        /* Toast & Notifications */
+        /* Toast */
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;opacity:0;transition:.25s;border:2px solid #000;box-shadow:4px 4px 0 #000;border-radius:30px;font-size:14px;white-space:nowrap}
         .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-        
-        /* Notifikasi Incoming Chat */
-        .notif-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 3000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-        
-        .notif-overlay.show {
-            display: flex;
-        }
-        
-        .notif-box {
-            background: var(--sf);
-            border: 3px solid var(--as);
-            padding: 25px;
-            max-width: 320px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 12px 12px 0 #000;
-        }
-        
-        .notif-title {
-            font-family: var(--font-display);
-            font-size: 22px;
-            color: var(--as);
-            margin-bottom: 15px;
-        }
-        
-        .notif-message {
-            font-size: 16px;
-            margin-bottom: 25px;
-            line-height: 1.5;
-        }
-        
-        .notif-username {
-            color: var(--aq);
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        .notif-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-        
-        .notif-btn {
-            padding: 12px 24px;
-            border: 2px solid #000;
-            font-family: var(--font-mono);
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 4px 4px 0 #000;
-            transition: 0.1s;
-            min-width: 100px;
-        }
-        
-        .notif-btn.accept {
-            background: var(--aq);
-            color: #000;
-        }
-        
-        .notif-btn.reject {
-            background: var(--sf);
-            color: var(--txs);
-        }
-        
-        .notif-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 #000;
-        }
-        
-        .notif-timer {
-            margin-top: 15px;
-            font-size: 12px;
-            color: var(--txs);
-        }
-        
-        .notif-progress {
-            width: 100%;
-            height: 2px;
-            background: var(--bd2);
-            margin-top: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .notif-progress-bar {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 100%;
-            background: var(--as);
-            animation: notifTimer 5s linear forwards;
-        }
-        
-        @keyframes notifTimer {
-            from { width: 100%; }
-            to { width: 0%; }
-        }
         
         /* Whisper */
         .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
@@ -646,9 +534,9 @@
                         <canvas class="radar-canvas" id="radarCanvas"></canvas>
                         <div class="radar-dots" id="radarDots"></div>
                         
-                        <!-- Radar Scanning Overlay -->
+                        <!-- Radar Scanning Overlay - STEALTH MODE -->
                         <div class="radar-scanning-overlay" id="radarScanningOverlay">
-                            <div class="radar-scanning-text" id="radarScanningText">finding strangers...</div>
+                            <div class="radar-scanning-text" id="radarScanningText">MENCARI LAWAN BICARA</div>
                             <div class="radar-scanning-dots"><span></span><span></span><span></span></div>
                             <div class="radar-scanning-progress"><div class="radar-scanning-bar" id="radarScanningBar"></div></div>
                             <div class="radar-scanning-timer" id="radarScanningTimer">0s</div>
@@ -711,23 +599,6 @@
     <div class="chat-input-wrap"><input type="text" class="chat-input" id="chatInput" placeholder="ketik pesan..." autocomplete="off"><button class="chat-send" id="sendButton">➤</button></div>
 </div>
 
-<!-- Notifikasi Incoming Chat -->
-<div class="notif-overlay" id="notifOverlay">
-    <div class="notif-box">
-        <div class="notif-title">✦ INCOMING CHAT ✦</div>
-        <div class="notif-message">
-            <span class="notif-username" id="notifUsername">@username</span><br>
-            ingin ngobrol denganmu
-        </div>
-        <div class="notif-actions">
-            <button class="notif-btn accept" id="notifAccept">TERIMA</button>
-            <button class="notif-btn reject" id="notifReject">TOLAK</button>
-        </div>
-        <div class="notif-timer" id="notifTimer">5 detik</div>
-        <div class="notif-progress"><div class="notif-progress-bar" id="notifProgress"></div></div>
-    </div>
-</div>
-
 <!-- Overlay lain -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-box">
@@ -782,7 +653,7 @@
         status: 'online'
     });
     
-    // Simulasi user online (untuk demo, nanti diganti WebSocket)
+    // Simulasi user online (untuk demo)
     const initMockOnlineUsers = () => {
         const mockUsers = [
             { uid: 'user1', username: 'beby.manis' },
@@ -821,7 +692,7 @@
     setInterval(updateOnlineCount, 5000);
     updateOnlineCount();
     
-    // ============ BLAST NOTIFICATION SYSTEM ============
+    // ============ BLAST NOTIFICATION SYSTEM (STEALTH) ============
     const blastNotifications = async (candidates, fromName) => {
         return new Promise((resolve) => {
             let winner = null;
@@ -833,29 +704,25 @@
                 return;
             }
             
+            console.log('[STEALTH] Mencari', candidates.length, 'user');
+            
             // Kirim notifikasi ke semua kandidat
             candidates.forEach(candidate => {
                 // Simulasi notifikasi (di real implementation pake WebSocket)
-                console.log(`[BLAST] Sending to @${candidate.username}`);
-                
-                // Simulasi response random antara 1-4 detik
+                // 30% chance accept dalam 1-4 detik
                 const responseTime = 1000 + Math.random() * 3000;
                 
                 setTimeout(() => {
-                    // 30% chance accept
                     const accepted = Math.random() < 0.3;
                     
                     if (accepted && !winner) {
                         winner = candidate;
-                        console.log(`[BLAST] @${candidate.username} ACCEPTED (winner!)`);
+                        console.log('[STEALTH] Dapat partner');
                         resolve(winner);
                     } else {
                         responses++;
-                        console.log(`[BLAST] @${candidate.username} ${accepted ? 'ACCEPTED' : 'REJECTED'} (${responses}/${candidates.length})`);
-                        
-                        // Jika semua sudah response dan belum ada winner
                         if (responses >= candidates.length && !winner) {
-                            console.log('[BLAST] All responded, no winner');
+                            console.log('[STEALTH] Fallback ke AI');
                             resolve(null);
                         }
                     }
@@ -865,14 +732,14 @@
             // Timeout total 15 detik
             setTimeout(() => {
                 if (!winner) {
-                    console.log('[BLAST] Timeout 15s, no winner');
+                    console.log('[STEALTH] Timeout, fallback AI');
                     resolve(null);
                 }
             }, 15000);
         });
     };
     
-    // ============ SCANNING WITH BLAST NOTIFICATIONS ============
+    // ============ SCANNING WITH BLAST NOTIFICATIONS (STEALTH) ============
     const startScanningWithBlast = (gender, callback) => {
         const radarCont = $('radarCont');
         const overlay = $('radarScanningOverlay');
@@ -881,49 +748,31 @@
         const timer = $('radarScanningTimer');
         
         if (!overlay || !txt || !bar || !timer) {
-            callback('ai');
+            // Fallback langsung tanpa jeda
+            const aiName = getRandomAI(gender);
+            callback(aiName);
             return;
         }
         
         // Ambil 5 real user terbaru
         const candidates = findRealUsers(5);
         
-        if (candidates.length === 0) {
-            // Tidak ada real user, langsung fallback ke AI
-            console.log('[BLAST] No real users online, fallback to AI');
-            startScanningAnimation(overlay, txt, bar, timer, [
-                {t:0, text:"tidak ada user online..."},
-                {t:5, text:"menyiapkan AI..."},
-                {t:10, text:"menghubungi AI..."}
-            ], () => callback('ai'));
-            return;
-        }
-        
-        console.log('[BLAST] Sending to 5 users:', candidates.map(c => c.username));
-        
         // Mulai blast notifications
         blastNotifications(candidates, U).then(winner => {
             if (winner) {
-                // Ada yang accept
-                console.log('[BLAST] Winner:', winner.username);
-                callback('real', winner);
+                // Ada yang accept - panggil callback dengan username real
+                callback(winner.username);
             } else {
-                // Tidak ada yang accept dalam 15 detik
-                console.log('[BLAST] No one accepted, fallback to AI');
-                callback('ai');
+                // Tidak ada yang accept - fallback ke AI
+                const aiName = getRandomAI(gender);
+                callback(aiName);
             }
         });
         
-        // Jalankan animasi scanning (15 detik)
-        startScanningAnimation(overlay, txt, bar, timer, [
-            {t:0, text:`menghubungi ${candidates.length} user...`},
-            {t:3, text:"menunggu respon tercepat..."},
-            {t:6, text:"siapa yang paling responsif?"},
-            {t:9, text:"hampir dapat..."},
-            {t:12, text:"menentukan pemenang..."}
-        ], () => {
-            // Callback sudah ditangani oleh blastNotifications
-            // Jangan panggil callback lagi di sini
+        // Jalankan animasi scanning (15 detik) - TANPA TEKS YANG BOCOR
+        startScanningAnimation(overlay, txt, bar, timer, () => {
+            // Animasi selesai, tapi callback sudah ditangani di atas
+            // Jangan panggil apa-apa di sini
         });
     };
     
@@ -945,7 +794,7 @@
         return candidates.slice(0, count);
     };
     
-    const startScanningAnimation = (overlay, txt, bar, timer, seq, onComplete) => {
+    const startScanningAnimation = (overlay, txt, bar, timer, onComplete) => {
         if (!overlay || !txt || !bar || !timer) {
             onComplete();
             return;
@@ -953,7 +802,9 @@
         
         overlay.classList.add('show');
         let start = Date.now();
-        let cur = 0;
+        
+        // Teks statis selama scanning
+        txt.textContent = 'MENCARI LAWAN BICARA';
         
         if (si) clearInterval(si);
         
@@ -962,11 +813,6 @@
             const progress = Math.min(100, (elapsed / 15) * 100);
             bar.style.width = progress + '%';
             timer.textContent = Math.floor(elapsed) + 's';
-            
-            while (cur < seq.length - 1 && elapsed >= seq[cur + 1].t) cur++;
-            if (cur < seq.length) {
-                txt.textContent = seq[cur].text;
-            }
             
             if (elapsed >= 15) {
                 clearInterval(si);
@@ -1000,7 +846,6 @@
     // ============ CHAT FUNCTIONS ============
     let ue=[],ae=[],alle=[],aiTimer,cp=null,ch=[],isTyping=false,cl='id',se=false,ac=null,si=null;
     let radarChatActive = false;
-    let isRealUserChat = false;
     
     // ============ SETTINGS ============
     const initS=()=>{let b=$('settingsBtn'),d=$('settingsDropdown');if(b&&d){b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});}
@@ -1055,7 +900,7 @@
     const vibrate=(p)=>{if(window.navigator&&window.navigator.vibrate)window.navigator.vibrate(p);};
     
     // ============ CHAT FUNCTIONS WITH FIFO ============
-    const openC = (name, isReal = false) => {
+    const openC = (name) => {
         const pl = $('partnerLabel');
         const ct = $('chatTimer');
         const cr = $('chatRoom');
@@ -1064,11 +909,11 @@
         const radarChat = $('radarChatContainer');
         const radarInputWrapper = $('radarChatInputWrapper');
         
-        if (pl) pl.textContent = isReal ? 'REAL USER' : 'AI STRANGER';
+        // HAPUS semua label yang membedakan real/AI
+        if (pl) pl.textContent = 'STRANGER';
         if (ct) ct.textContent = '15:00';
         cp = name;
         ch = [];
-        isRealUserChat = isReal;
         
         if (USE_RADAR_CHAT && radarChatActive && radarChat) {
             radarChat.style.display = 'flex';
@@ -1077,7 +922,6 @@
             if (radarCont) radarCont.classList.add('chat-mode');
             if (cr) cr.classList.remove('on');
             
-            // Focus otomatis ke input
             setTimeout(() => $('radarChatInput')?.focus(), 300);
         } else {
             if (cr) cr.classList.add('on');
@@ -1086,10 +930,8 @@
             if (radarInputWrapper) radarInputWrapper.style.display = 'none';
         }
         
-        // Kirim pesan pertama untuk AI
-        if (!isReal) {
-            setTimeout(() => sendM('', true), 500);
-        }
+        // Kirim pesan pertama
+        setTimeout(() => sendM('', true), 500);
     };
     
     const addM = (sender, text) => {
@@ -1107,7 +949,6 @@
         
         targetContainer.appendChild(msgDiv);
         
-        // FIFO: Hapus pesan ke-9 dan seterusnya
         const messages = targetContainer.querySelectorAll('.message');
         if (messages.length > 8) {
             messages[0].remove();
@@ -1153,23 +994,12 @@
         if (!cp) return;
         if (!first) addM('user', msg);
         
-        // PASTIKAN INI AI MODE, BUKAN REAL USER
-        if (isRealUserChat) {
-            console.error('[ERROR] Real user chat not implemented yet');
-            addM('stranger', '⚠️ Sistem real user belum aktif');
-            return;
-        }
-        
         // AI MODE - PAKAI API
         showT();
         isTyping = true;
         
         try {
-            console.log('[API] Calling chat API with:', {
-                message: msg || 'hai',
-                characterName: cp,
-                lastMessages: ch
-            });
+            console.log('[API] Calling chat API');
             
             const response = await fetch('/api/chat', {
                 method: 'POST',
@@ -1188,7 +1018,6 @@
             }
             
             const data = await response.json();
-            console.log('[API] Response:', data);
             
             if (msg) {
                 ch.push({
@@ -1200,15 +1029,13 @@
             hideT();
             isTyping = false;
             
-            // Tampilkan response dengan efek typing
             await typeM('stranger', data.reply, data.typing || {});
             
         } catch (error) {
             console.error('[API] Error:', error);
             hideT();
             isTyping = false;
-            addM('stranger', '😅 Maaf, sedang gangguan');
-            t('Gagal terhubung ke server', true);
+            addM('stranger', '😅');
         }
     };
     
@@ -1266,7 +1093,6 @@
         ch = [];
         isTyping = false;
         radarChatActive = false;
-        isRealUserChat = false;
         
         if (radarChat) {
             radarChat.style.display = 'none';
@@ -1287,20 +1113,14 @@
         
         if (USE_RADAR_CHAT && USE_REAL_USER_MATCHING) {
             radarChatActive = true;
-            startScanningWithBlast(gender, (type, userData) => {
-                if (type === 'real' && userData) {
-                    t(`✨ Bertemu dengan @${userData.username}`);
-                    openC(userData.username, true);
-                } else {
-                    t('🤖 Mode AI');
-                    const aiName = getRandomAI(gender);
-                    openC(aiName, false);
-                }
+            startScanningWithBlast(gender, (partnerName) => {
+                // STEALTH MODE: panggil openC tanpa memberi tahu real/AI
+                openC(partnerName);
             });
         } else {
             radarChatActive = true;
             const aiName = getRandomAI(gender);
-            openC(aiName, false);
+            openC(aiName);
         }
     };
     
