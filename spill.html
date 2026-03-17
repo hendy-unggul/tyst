@@ -733,48 +733,53 @@
     };
     
     // ============ SCANNING WITH BLAST NOTIFICATIONS ============
-    const startScanningWithBlast = (gender, callback) => {
-        const radarCont = $('radarCont');
-        const overlay = $('radarScanningOverlay');
-        const txt = $('radarScanningText');
-        const bar = $('radarScanningBar');
-        const timer = $('radarScanningTimer');
+const startScanningWithBlast = (gender, callback) => {
+    const radarCont = $('radarCont');
+    const overlay = $('radarScanningOverlay');
+    const txt = $('radarScanningText');
+    const bar = $('radarScanningBar');
+    const timer = $('radarScanningTimer');
+    
+    if (!overlay || !txt || !bar || !timer) {
+        const aiName = getRandomAI(gender);
+        callback(aiName);
+        return;
+    }
+    
+    // Reset state
+    blastWinner = null;
+    blastResolved = false;
+    
+    // Ambil 5 real user terbaru
+    const candidates = findRealUsers(5);
+    
+    console.log('[SEARCH] Mencari', candidates.length, 'real user');
+    
+    // Mulai blast notifications (jalan di background)
+    blastNotifications(candidates, U).then(winner => {
+        if (winner) {
+            console.log('[SEARCH] Dapat real user:', winner.username);
+            blastWinner = winner;
+        } else {
+            console.log('[SEARCH] Tidak dapat real user, fallback ke AI');
+        }
+    });
+    
+    // Mulai animasi scanning 15 detik
+    startScanningAnimation(overlay, txt, bar, timer, 15, () => {
+        // Animasi selesai (15 detik)
+        console.log('[SEARCH] 15 detik selesai');
         
-        if (!overlay || !txt || !bar || !timer) {
+        if (blastWinner) {
+            // Dapat real user
+            callback(blastWinner.username);
+        } else {
+            // Fallback ke AI
             const aiName = getRandomAI(gender);
             callback(aiName);
-            return;
         }
-        
-        const candidates = findRealUsers(5);
-        
-        blastNotifications(candidates, U).then(winner => {
-            if (winner) {
-                callback(winner.username);
-            } else {
-                const aiName = getRandomAI(gender);
-                callback(aiName);
-            }
-        });
-        
-            // ============ FUNGSI FIND REAL USERS (TETAP) ============
-    const findRealUsers = (count = 5) => {
-        const now = Date.now();
-        const candidates = [];
-        
-        onlineUsers.forEach((user, uid) => {
-            if (uid !== UID && !user.inChat && now - user.lastSeen < 30000) {
-                candidates.push({
-                    uid,
-                    username: user.username,
-                    lastSeen: user.lastSeen
-                });
-            }
-        });
-        
-        candidates.sort((a, b) => b.lastSeen - a.lastSeen);
-        return candidates.slice(0, count);
-    };
+    });
+};
     
     // ============ SCANNING ANIMATION DENGAN NARASI ASLI ============
     let scanInterval = null;
