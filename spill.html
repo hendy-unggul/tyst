@@ -60,16 +60,16 @@
         .radar-dot{position:absolute;width:6px;height:6px;transform:translate(-50%,-50%) rotate(45deg);background:var(--as);opacity:.3;transition:opacity .1s}
         .radar-dot.active{opacity:1;transform:translate(-50%,-50%) rotate(45deg) scale(2.5)}
         
-        /* ========== RADAR CHAT CONTAINER - REDESIGN ========== */
+        /* Radar Chat Container */
         .radar-chat-container {
             position: absolute;
             inset: 0;
             background: rgba(0,0,0,0.95);
             z-index: 100;
             display: none;
-            flex-direction: column-reverse; /* REVERSE: message baru di bawah */
-            padding: 60px 12px 12px 12px; /* Top padding besar untuk input */
-            overflow: hidden; /* HIDE SCROLLBAR - pakai FIFO */
+            flex-direction: column-reverse;
+            padding: 60px 12px 12px 12px;
+            overflow: hidden;
             color: var(--tx);
             font-family: var(--font-body);
             gap: 4px;
@@ -84,7 +84,7 @@
             word-wrap: break-word;
             margin-bottom: 2px;
             animation: slideIn 0.2s ease;
-            flex-shrink: 0; /* Jangan mengecil */
+            flex-shrink: 0;
         }
         
         @keyframes slideIn {
@@ -107,12 +107,11 @@
             border-bottom-left-radius: 4px;
         }
         
-        /* FIFO: Maksimal 8 pesan, yang lama otomatis terhapus */
+        /* FIFO: Maksimal 8 pesan */
         .radar-chat-container .message:nth-last-child(n+9) {
-            display: none; /* Sembunyikan pesan ke-9 dan seterusnya */
+            display: none;
         }
         
-        /* Typing indicator di bawah (karena flex-reverse) */
         .radar-chat-container .typing-indicator {
             align-self: flex-start;
             color: var(--txs);
@@ -122,14 +121,14 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            order: -1; /* Paling bawah */
+            order: -1;
             flex-shrink: 0;
         }
         
-        /* INPUT SELALU DI ATAS (FIXED) */
+        /* INPUT DI ATAS */
         .radar-chat-input-wrapper {
             position: absolute;
-            top: 8px; /* Di atas */
+            top: 8px;
             left: 8px;
             right: 8px;
             display: flex;
@@ -186,7 +185,6 @@
             box-shadow: 0px 0px 0 #000;
         }
         
-        /* Chat header di dalam radar */
         .radar-chat-header {
             position: absolute;
             top: -30px;
@@ -656,12 +654,12 @@
                             <div class="radar-scanning-timer" id="radarScanningTimer">0s</div>
                         </div>
                         
-                        <!-- Radar Chat Container (REDESIGN) -->
+                        <!-- Radar Chat Container -->
                         <div class="radar-chat-container" id="radarChatContainer">
                             <div class="radar-chat-header">✦ CHAT ✦</div>
                         </div>
                         
-                        <!-- Radar Chat Input (SELALU DI ATAS) -->
+                        <!-- Radar Chat Input -->
                         <div class="radar-chat-input-wrapper" id="radarChatInputWrapper" style="display:none">
                             <input type="text" class="radar-chat-input" id="radarChatInput" placeholder="Ketik pesan...">
                             <button class="radar-chat-send" id="radarChatSend">➤</button>
@@ -750,6 +748,10 @@
     const USE_RADAR_CHAT = true;
     const USE_REAL_USER_MATCHING = true;
     
+    // ============ SUPABASE CONFIG ============
+    const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+    
     // ============ CORE LOGIC ============
     const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
     if(localStorage.getItem(K.l)!=='true'||!localStorage.getItem(K.u)||!localStorage.getItem(K.i)){window.location.href='index.html';return;}
@@ -780,7 +782,7 @@
         status: 'online'
     });
     
-    // Simulasi 8 user online (untuk demo)
+    // Simulasi user online (untuk demo, nanti diganti WebSocket)
     const initMockOnlineUsers = () => {
         const mockUsers = [
             { uid: 'user1', username: 'beby.manis' },
@@ -820,52 +822,54 @@
     updateOnlineCount();
     
     // ============ BLAST NOTIFICATION SYSTEM ============
-    // Kirim notifikasi ke 5 user sekaligus di detik pertama
     const blastNotifications = async (candidates, fromName) => {
-        const promises = candidates.map(candidate => {
-            return new Promise(resolve => {
-                // Simulasi kirim notifikasi ke candidate
-                // Di real implementation, ini akan via WebSocket
+        return new Promise((resolve) => {
+            let winner = null;
+            let responses = 0;
+            
+            // Jika tidak ada kandidat, langsung resolve null
+            if (candidates.length === 0) {
+                resolve(null);
+                return;
+            }
+            
+            // Kirim notifikasi ke semua kandidat
+            candidates.forEach(candidate => {
+                // Simulasi notifikasi (di real implementation pake WebSocket)
                 console.log(`[BLAST] Sending to @${candidate.username}`);
                 
-                // Tampilkan notifikasi di sisi candidate (simulasi)
+                // Simulasi response random antara 1-4 detik
+                const responseTime = 1000 + Math.random() * 3000;
+                
                 setTimeout(() => {
-                    // 30% chance accept, 70% reject (untuk demo)
+                    // 30% chance accept
                     const accepted = Math.random() < 0.3;
-                    if (accepted) {
-                        console.log(`[BLAST] @${candidate.username} ACCEPTED`);
-                        resolve({ accepted: true, candidate });
+                    
+                    if (accepted && !winner) {
+                        winner = candidate;
+                        console.log(`[BLAST] @${candidate.username} ACCEPTED (winner!)`);
+                        resolve(winner);
                     } else {
-                        console.log(`[BLAST] @${candidate.username} REJECTED/TIMEOUT`);
-                        resolve({ accepted: false, candidate });
+                        responses++;
+                        console.log(`[BLAST] @${candidate.username} ${accepted ? 'ACCEPTED' : 'REJECTED'} (${responses}/${candidates.length})`);
+                        
+                        // Jika semua sudah response dan belum ada winner
+                        if (responses >= candidates.length && !winner) {
+                            console.log('[BLAST] All responded, no winner');
+                            resolve(null);
+                        }
                     }
-                }, Math.random() * 3000 + 1000); // Random response 1-4 detik
+                }, responseTime);
             });
+            
+            // Timeout total 15 detik
+            setTimeout(() => {
+                if (!winner) {
+                    console.log('[BLAST] Timeout 15s, no winner');
+                    resolve(null);
+                }
+            }, 15000);
         });
-        
-        // Tunggu response pertama yang ACCEPT
-        const results = await Promise.race([
-            Promise.all(promises), // Semua selesai
-            new Promise(resolve => {
-                // Race: yang pertama accept langsung menang
-                const checkInterval = setInterval(() => {
-                    const anyAccept = results?.some(r => r?.accepted);
-                    if (anyAccept) {
-                        clearInterval(checkInterval);
-                        resolve('winner');
-                    }
-                }, 100);
-            })
-        ]);
-        
-        // Cari yang pertama accept
-        for (const result of await Promise.all(promises)) {
-            if (result.accepted) {
-                return result.candidate;
-            }
-        }
-        
-        return null; // Tidak ada yang accept
     };
     
     // ============ SCANNING WITH BLAST NOTIFICATIONS ============
@@ -885,19 +889,17 @@
         const candidates = findRealUsers(5);
         
         if (candidates.length === 0) {
-            // Tidak ada real user, langsung fallback
-            console.log('[BLAST] No real users online');
+            // Tidak ada real user, langsung fallback ke AI
+            console.log('[BLAST] No real users online, fallback to AI');
             startScanningAnimation(overlay, txt, bar, timer, [
                 {t:0, text:"tidak ada user online..."},
-                {t:5, text:"menyiapkan AI..."}
+                {t:5, text:"menyiapkan AI..."},
+                {t:10, text:"menghubungi AI..."}
             ], () => callback('ai'));
             return;
         }
         
         console.log('[BLAST] Sending to 5 users:', candidates.map(c => c.username));
-        
-        // DETEK PERTAMA: Langsung blast ke 5 user
-        txt.textContent = `mencari 5 user terdekat...`;
         
         // Mulai blast notifications
         blastNotifications(candidates, U).then(winner => {
@@ -906,8 +908,8 @@
                 console.log('[BLAST] Winner:', winner.username);
                 callback('real', winner);
             } else {
-                // Tidak ada yang accept
-                console.log('[BLAST] No one accepted');
+                // Tidak ada yang accept dalam 15 detik
+                console.log('[BLAST] No one accepted, fallback to AI');
                 callback('ai');
             }
         });
@@ -921,6 +923,7 @@
             {t:12, text:"menentukan pemenang..."}
         ], () => {
             // Callback sudah ditangani oleh blastNotifications
+            // Jangan panggil callback lagi di sini
         });
     };
     
@@ -998,7 +1001,6 @@
     let ue=[],ae=[],alle=[],aiTimer,cp=null,ch=[],isTyping=false,cl='id',se=false,ac=null,si=null;
     let radarChatActive = false;
     let isRealUserChat = false;
-    let messageCount = 0; // Untuk FIFO
     
     // ============ SETTINGS ============
     const initS=()=>{let b=$('settingsBtn'),d=$('settingsDropdown');if(b&&d){b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});}
@@ -1029,7 +1031,7 @@
     $('feedMeta')&&($('feedMeta').textContent=alle.length+' spill');};
     const combine=()=>{alle=[...ue,...ae];alle.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));renderS();};
     const dummyU=()=>[{author:'beby.manis',mood:'chaotic',content:'hari ini nangis karena liat mantan bahagia',reactions:{skull:15,cry:30,fire:2,upside:5},created_at:new Date().toISOString()},{author:'chili.padi',mood:'thriving',content:'akhirnya sidang ACC, lulus 🥳',reactions:{skull:3,cry:2,fire:45,upside:8},created_at:new Date(Date.now()-3600000).toISOString()},{author:'pretty.sad',mood:'doom',content:'ga semangat ngapa-ngapain 😭',reactions:{skull:22,cry:35,fire:1,upside:4},created_at:new Date(Date.now()-7200000).toISOString()}];
-    const fetchE=async()=>{try{let r=await fetch('https://fuovfrdicdhnlymnacpz.supabase.co/rest/v1/entries?select=*&order=created_at.desc&limit=10',{headers:{apikey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0'}});if(!r.ok)throw new Error();let d=await r.json();ue=d.length?d.map(e=>({author:e.username||gn(e.user_id),mood:e.mood||'chaotic',content:e.content||'...',reactions:e.reactions||{skull:0,cry:0,fire:0,upside:0},created_at:e.created_at})):dummyU();}catch(e){ue=dummyU();}combine();};
+    const fetchE=async()=>{try{let r=await fetch(`${SUPABASE_URL}/rest/v1/entries?select=*&order=created_at.desc&limit=10`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});if(!r.ok)throw new Error();let d=await r.json();ue=d.length?d.map(e=>({author:e.username||gn(e.user_id),mood:e.mood||'chaotic',content:e.content||'...',reactions:e.reactions||{skull:0,cry:0,fire:0,upside:0},created_at:e.created_at})):dummyU();}catch(e){ue=dummyU();}combine();};
     const genAI=(c=6)=>{let a=['sejuta.badai','agak.koplak','strawberry.shortcake','cinnamon.girl','satria.bajahitam','move.on'];let m=['surviving','thriving','chaotic','doom'];let ct={surviving:['deadline skripsi makin deket 😮‍💨','capek banget hari ini 🥲'],thriving:['alhamdulillah hari ini cuan! 💰','sidang kelar nilai A'],chaotic:['client minta revisi jam 11 malem 🔥','hidup lagi kacau balau'],doom:['motor mogok, dompet tipis 🫠','6 bulan nganggur']};return Array(c).fill().map(()=>{let mood=m[Math.floor(Math.random()*m.length)];return{author:a[Math.floor(Math.random()*a.length)],mood,content:ct[mood][Math.floor(Math.random()*ct[mood].length)],reactions:{skull:Math.floor(Math.random()*30)+5,cry:Math.floor(Math.random()*40)+10,fire:Math.floor(Math.random()*20)+1,upside:Math.floor(Math.random()*15)+2},created_at:new Date(Date.now()-(7+Math.floor(Math.random()*23))*24*60*60*1000).toISOString()};});};
     const initAI=()=>{if(!ae.length)ae=genAI(6);combine();if(aiTimer)clearInterval(aiTimer);aiTimer=setInterval(()=>{let n=genAI(1)[0];ae=[n,...ae.slice(0,5)];combine();},180000);};
     window.reactToSpill=(i,t)=>{if(alle[i]){alle[i].reactions[t]=(alle[i].reactions[t]||0)+1;renderS();t(`➕ ${t}`);}};
@@ -1067,7 +1069,6 @@
         cp = name;
         ch = [];
         isRealUserChat = isReal;
-        messageCount = 0;
         
         if (USE_RADAR_CHAT && radarChatActive && radarChat) {
             radarChat.style.display = 'flex';
@@ -1085,12 +1086,8 @@
             if (radarInputWrapper) radarInputWrapper.style.display = 'none';
         }
         
-        // Kirim pesan pertama
-        if (isReal) {
-            setTimeout(() => {
-                addM('stranger', 'Halo! Ada yang bisa dibantu?');
-            }, 1000);
-        } else {
+        // Kirim pesan pertama untuk AI
+        if (!isReal) {
             setTimeout(() => sendM('', true), 500);
         }
     };
@@ -1108,18 +1105,14 @@
         msgDiv.className = `message ${sender}`;
         msgDiv.textContent = text;
         
-        // Tambah ke container (flex-reverse, jadi otomatis di bawah)
         targetContainer.appendChild(msgDiv);
         
-        // FIFO: Hapus pesan ke-9 dan seterusnya (CSS sudah handle display:none)
-        // Tapi kita juga hapus dari DOM agar tidak numpuk
+        // FIFO: Hapus pesan ke-9 dan seterusnya
         const messages = targetContainer.querySelectorAll('.message');
         if (messages.length > 8) {
-            messages[0].remove(); // Hapus yang paling atas (paling lama)
+            messages[0].remove();
         }
         
-        // Scroll otomatis ke bawah (pesan terbaru)
-        // Karena flex-reverse, scroll ke 0 = bawah
         targetContainer.scrollTop = 0;
     };
     
@@ -1140,10 +1133,8 @@
         indicator.id = 'typingIndicator';
         indicator.innerHTML = 'Stranger mengetik <span class="typing-dots"><span></span><span></span><span></span></span>';
         
-        // Tambah ke container (akan muncul di bawah karena flex-reverse)
         targetContainer.appendChild(indicator);
         
-        // FIFO untuk typing indicator juga
         const messages = targetContainer.querySelectorAll('.message, .typing-indicator');
         if (messages.length > 8) {
             messages[0].remove();
@@ -1157,45 +1148,67 @@
         if (indicator) indicator.remove();
     };
     
+    // ============ API CALL UNTUK AI ============
     const sendM = async (msg, first) => {
         if (!cp) return;
         if (!first) addM('user', msg);
         
+        // PASTIKAN INI AI MODE, BUKAN REAL USER
         if (isRealUserChat) {
-            // Simulasi real user response
-            showT();
-            isTyping = true;
-            setTimeout(() => {
-                hideT();
-                isTyping = false;
-                addM('stranger', 'Pesan diterima!');
-            }, 1500);
+            console.error('[ERROR] Real user chat not implemented yet');
+            addM('stranger', '⚠️ Sistem real user belum aktif');
             return;
         }
         
-        // AI mode
+        // AI MODE - PAKAI API
         showT();
         isTyping = true;
+        
         try {
-            const r = await fetch('/api/chat', {
+            console.log('[API] Calling chat API with:', {
+                message: msg || 'hai',
+                characterName: cp,
+                lastMessages: ch
+            });
+            
+            const response = await fetch('/api/chat', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify({
                     message: msg || 'hai',
                     characterName: cp,
                     lastMessages: ch
                 })
             });
-            if (!r.ok) throw new Error();
-            const d = await r.json();
-            if (msg) ch.push({role: 'assistant', content: d.reply});
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('[API] Response:', data);
+            
+            if (msg) {
+                ch.push({
+                    role: 'assistant',
+                    content: data.reply
+                });
+            }
+            
             hideT();
             isTyping = false;
-            await typeM('stranger', d.reply, d.typing);
-        } catch (e) {
+            
+            // Tampilkan response dengan efek typing
+            await typeM('stranger', data.reply, data.typing || {});
+            
+        } catch (error) {
+            console.error('[API] Error:', error);
             hideT();
             isTyping = false;
-            addM('stranger', '😅');
+            addM('stranger', '😅 Maaf, sedang gangguan');
+            t('Gagal terhubung ke server', true);
         }
     };
     
@@ -1279,7 +1292,7 @@
                     t(`✨ Bertemu dengan @${userData.username}`);
                     openC(userData.username, true);
                 } else {
-                    t('🤖 Mode AI (tidak ada real user)');
+                    t('🤖 Mode AI');
                     const aiName = getRandomAI(gender);
                     openC(aiName, false);
                 }
