@@ -757,9 +757,7 @@
             }
         });
         
-        startScanningAnimation(overlay, txt, bar, timer, () => {});
-    };
-    
+            // ============ FUNGSI FIND REAL USERS (TETAP) ============
     const findRealUsers = (count = 5) => {
         const now = Date.now();
         const candidates = [];
@@ -778,29 +776,50 @@
         return candidates.slice(0, count);
     };
     
-    let si = null;
-    const startScanningAnimation = (overlay, txt, bar, timer, onComplete) => {
+    // ============ SCANNING ANIMATION DENGAN NARASI ASLI ============
+    let scanInterval = null;
+    
+    const startScanningAnimation = (overlay, txt, bar, timer, duration, onComplete) => {
         if (!overlay || !txt || !bar || !timer) {
             onComplete();
             return;
         }
         
+        // NARASI ASLI - JANGAN DIUBAH!
+        const narasi = [
+            { time: 0, text: "finding strangers..." },
+            { time: 4, text: "most strangers here are just people" },
+            { time: 8, text: "some are ghosts" },
+            { time: 12, text: "and a few..." },
+            { time: 14, text: "are trouble" }
+        ];
+        
         overlay.classList.add('show');
-        let start = Date.now();
+        const startTime = Date.now();
+        let currentIndex = 0;
         
-        txt.textContent = 'MENCARI LAWAN BICARA';
+        // Set teks awal
+        txt.textContent = narasi[0].text;
         
-        if (si) clearInterval(si);
+        if (scanInterval) clearInterval(scanInterval);
         
-        si = setInterval(() => {
-            const elapsed = (Date.now() - start) / 1000;
-            const progress = Math.min(100, (elapsed / 15) * 100);
+        scanInterval = setInterval(() => {
+            const elapsed = (Date.now() - startTime) / 1000;
+            const progress = Math.min(100, (elapsed / duration) * 100);
+            
             bar.style.width = progress + '%';
             timer.textContent = Math.floor(elapsed) + 's';
             
-            if (elapsed >= 15) {
-                clearInterval(si);
-                si = null;
+            // Update teks berdasarkan narasi
+            while (currentIndex < narasi.length - 1 && elapsed >= narasi[currentIndex + 1].time) {
+                currentIndex++;
+                txt.textContent = narasi[currentIndex].text;
+            }
+            
+            // Selesai 15 detik
+            if (elapsed >= duration) {
+                clearInterval(scanInterval);
+                scanInterval = null;
                 overlay.classList.remove('show');
                 onComplete();
             }
@@ -808,11 +827,12 @@
         
         overlay.onclick = (e) => {
             e.stopPropagation();
-            if (si) {
-                clearInterval(si);
-                si = null;
+            if (scanInterval) {
+                clearInterval(scanInterval);
+                scanInterval = null;
             }
             overlay.classList.remove('show');
+            onComplete();
         };
     };
     
