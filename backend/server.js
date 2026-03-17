@@ -31,14 +31,12 @@ wss.on('connection', (ws, req) => {
     console.log('New client connected');
     let currentUserId = null;
 
-    // Handle messages from client
     ws.on('message', (data) => {
         try {
             const message = JSON.parse(data);
             
             switch(message.type) {
                 case 'IDENTIFY':
-                    // User identifies themselves after login
                     currentUserId = message.userId;
                     users.set(currentUserId, {
                         ws,
@@ -46,23 +44,18 @@ wss.on('connection', (ws, req) => {
                         status: 'online',
                         lastSeen: Date.now()
                     });
-                    
-                    // Broadcast updated user list
                     broadcastUserList();
                     break;
                     
                 case 'FIND_PARTNER':
-                    // User wants to find someone to chat
                     handleFindPartner(message.userId, message.gender);
                     break;
                     
                 case 'CHAT_REQUEST_RESPONSE':
-                    // User responded to chat request (accept/reject)
                     handleChatResponse(message);
                     break;
                     
                 case 'SEND_MESSAGE':
-                    // Forward message to specific user
                     sendToUser(message.toUserId, {
                         type: 'CHAT_MESSAGE',
                         from: message.from,
@@ -76,7 +69,6 @@ wss.on('connection', (ws, req) => {
         }
     });
 
-    // Handle disconnect
     ws.on('close', () => {
         if (currentUserId) {
             users.delete(currentUserId);
@@ -87,13 +79,12 @@ wss.on('connection', (ws, req) => {
 });
 
 // Store pending chat requests
-const pendingRequests = new Map(); // Key: toUserId, Value: { fromUserId, fromUsername, timestamp }
+const pendingRequests = new Map();
 
 function handleFindPartner(userId, gender) {
     const user = users.get(userId);
     if (!user) return;
     
-    // Find online users (excluding self)
     const candidates = [];
     users.forEach((value, key) => {
         if (key !== userId && value.status === 'online') {
@@ -105,13 +96,9 @@ function handleFindPartner(userId, gender) {
         }
     });
     
-    // Sort by lastSeen (newest first)
     candidates.sort((a, b) => b.lastSeen - a.lastSeen);
-    
-    // Take top 5
     const topCandidates = candidates.slice(0, 5);
     
-    // Send notifications to candidates
     topCandidates.forEach(candidate => {
         const requestId = `${userId}_${candidate.userId}_${Date.now()}`;
         pendingRequests.set(requestId, {
@@ -121,7 +108,6 @@ function handleFindPartner(userId, gender) {
             timestamp: Date.now()
         });
         
-        // Send notification to candidate
         sendToUser(candidate.userId, {
             type: 'CHAT_REQUEST',
             requestId,
@@ -129,11 +115,9 @@ function handleFindPartner(userId, gender) {
             timestamp: Date.now()
         });
         
-        // Auto-expire after 10 seconds
         setTimeout(() => {
             if (pendingRequests.has(requestId)) {
                 pendingRequests.delete(requestId);
-                // Notify sender that request expired
                 sendToUser(userId, {
                     type: 'CHAT_REQUEST_EXPIRED',
                     requestId
@@ -142,7 +126,6 @@ function handleFindPartner(userId, gender) {
         }, 10000);
     });
     
-    // Notify sender that we're searching
     sendToUser(userId, {
         type: 'SEARCHING_PARTNER',
         count: topCandidates.length
@@ -158,7 +141,6 @@ function handleChatResponse(message) {
     pendingRequests.delete(requestId);
     
     if (accepted) {
-        // Notify both users that match is successful
         sendToUser(request.fromUserId, {
             type: 'MATCH_SUCCESS',
             partner: {
@@ -175,7 +157,6 @@ function handleChatResponse(message) {
             }
         });
     } else {
-        // Notify sender that request was rejected
         sendToUser(request.fromUserId, {
             type: 'CHAT_REQUEST_REJECTED',
             requestId
