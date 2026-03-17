@@ -7,8 +7,12 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         :root{
-            --bg:#0a0a0a;--sf:#111;--bd:#222;--bd2:#333;--tx:#fff;--txs:#888;
-            --ap:#ff3b6f;--as:#00e5ff;--aq:#ccff00;--purple:#9900ff;
+            --bg:#0A0A0A;--sf:#141414;--sfe:#1E1E1E;--bd:#2A2A2A;--bd2:#333;--tx:#FFF;--txs:#888;--txm:#555;
+            --spill:#ff3b6f;--cocomeo:#00e5ff;--jejak:#9900ff;--glitch:#FFD700;
+            --ap:var(--spill);--as:var(--cocomeo);--at:#FF006E;--aq:#bfff00;--aw:#FFD700;
+            --ms:#FF9500;--mt:#bfff00;--mc:#00e5ff;--md:#8B5CF6;--rd:#FF3333;--void:#050505;
+            
+            /* Font */
             --font-display:'Arial Black',sans-serif;--font-mono:'Courier New',monospace;--font-body:Arial,sans-serif
         }
         body{background:var(--bg);color:var(--tx);font-family:var(--font-body);height:100vh;display:flex;flex-direction:column}
@@ -29,7 +33,7 @@
         .language-select{display:flex;gap:8px}
         .lang-option{padding:2px 8px;border:1px solid var(--bd2);color:var(--txs);cursor:pointer}
         .lang-option.active{background:var(--as);color:#000;border-color:var(--as)}
-        .scroll{flex:1;overflow-y:auto;padding-bottom:62px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
+        .scroll{flex:1;overflow-y:auto;padding-bottom:70px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
         .scroll::-webkit-scrollbar{width:4px;background:var(--bg)}
         .scroll::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
         .radar-sect{background:var(--sf);border-bottom:2px solid var(--bd)}
@@ -57,7 +61,7 @@
         .radar-dot{position:absolute;width:6px;height:6px;transform:translate(-50%,-50%) rotate(45deg);background:var(--as);opacity:.3;transition:opacity .1s}
         .radar-dot.active{opacity:1;transform:translate(-50%,-50%) rotate(45deg) scale(2.5)}
         
-        /* NEW: Radar Chat Container */
+        /* Radar Chat Container */
         .radar-chat-container {
             position: absolute;
             inset: 0;
@@ -108,7 +112,7 @@
             gap: 4px;
         }
         
-        /* NEW: Radar Chat Input (di dalam radar) */
+        /* Radar Chat Input */
         .radar-chat-input-wrapper {
             position: absolute;
             bottom: 0;
@@ -156,7 +160,7 @@
             box-shadow: 0px 0px 0 #000;
         }
         
-        /* NEW: Scanning di dalam radar */
+        /* Radar Scanning Overlay */
         .radar-scanning-overlay {
             position: absolute;
             inset: 0;
@@ -229,7 +233,11 @@
             30%{transform:translateY(-8px);opacity:1}
         }
         
-        /* sisanya tetap sama */
+        @keyframes textFlicker {
+            0%,100%{opacity:1}2%{opacity:.8}4%{opacity:1}19%{opacity:1}20%{opacity:.5}21%{opacity:1}50%{opacity:1}51%{opacity:.7}52%{opacity:1}75%{opacity:1}76%{opacity:.4}77%{opacity:1}
+        }
+        
+        /* CTA Buttons */
         .radar-ctas{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
         .gender-row{display:flex;gap:10px}
         .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.1s;background:var(--sf);color:var(--tx)}
@@ -239,6 +247,8 @@
         .gender-icon{font-size:38px}
         .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;color:var(--txs);transition:.1s}
         .btn-whisper:active{border-color:var(--as);color:var(--as)}
+        
+        /* Spills Section */
         .spills-sect{padding:18px}
         .sect-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
         .spill-card{background:var(--sf);border:2px solid var(--bd2);margin-bottom:20px;padding:16px;box-shadow:4px 4px 0 #000;transition:.2s}
@@ -256,13 +266,154 @@
         .react-btn:active{background:var(--bd2);transform:translate(2px,2px)}
         .react-count{font-size:11px;font-weight:700}
         .empty-state{text-align:center;padding:40px;color:var(--txs);font-family:var(--font-mono);font-size:14px;border:2px dashed var(--bd2)}
-        .bottom-nav{background:var(--sf);border-top:2px solid var(--bd);padding:8px 12px;width:100%;max-width:500px;z-index:50}
-        .nav-container{display:flex;justify-content:space-between;gap:4px}
-        .nav-item{font-family:var(--font-mono);font-size:12px;color:var(--txs);cursor:pointer;padding:10px 8px;flex:1;text-align:center;text-decoration:none;display:block}
-        .nav-item:active{background:var(--bd);transform:scale(.95)}
-        .nav-item.active{color:var(--as);border-bottom:2px solid var(--as);background:rgba(0,229,255,.05)}
         
-        /* Chat room original (tetap ada untuk fallback) */
+        /* ========== BOTTOM NAVIGATION REDESIGN ========== */
+        .bnav {
+            background: var(--void);
+            border-top: 2px solid var(--bd);
+            padding: 8px 16px 12px;
+            width: 100%;
+            max-width: 500px;
+            z-index: 50;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .bnav::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--spill), 
+                var(--jejak), 
+                var(--glitch), 
+                var(--cocomeo), 
+                transparent
+            );
+            opacity: 0.5;
+            animation: navGlow 3s infinite;
+        }
+        
+        @keyframes navGlow {
+            0%,100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        
+        .bnav-c {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            gap: 4px;
+        }
+        
+        .ni {
+            font-family: var(--font-mono);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0 4px;
+            flex: 1;
+            border-radius: 12px 12px 0 0;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--txs);
+            position: relative;
+            overflow: hidden;
+            gap: 4px;
+        }
+        
+        .ni::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            right: 10%;
+            height: 0px;
+            background: currentColor;
+            transition: height 0.2s ease;
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .ni:hover::before,
+        .ni.act::before {
+            height: 3px;
+        }
+        
+        .ni:active {
+            transform: translateY(-2px);
+        }
+        
+        .nico {
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+            transition: transform 0.2s;
+        }
+        
+        .ni:hover .nico {
+            transform: scale(1.1);
+        }
+        
+        .ni span:last-child {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .ni:hover span:last-child {
+            opacity: 1;
+        }
+        
+        /* Warna untuk masing-masing menu */
+        .ni[href="spill.html"] { color: var(--spill); }
+        .ni[href="jejak.html"] { color: var(--jejak); }
+        .ni[href="glitch.html"] { color: var(--glitch); }
+        .ni[href="cocomeo.html"] { color: var(--cocomeo); }
+        
+        .ni.act {
+            color: var(--tx);
+            text-shadow: 0 0 8px currentColor;
+            transform: translateY(-4px);
+        }
+        
+        .ni.act .nico {
+            transform: scale(1.2);
+        }
+        
+        .ni.act::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 10px currentColor;
+            animation: pulseDot 1.5s infinite;
+        }
+        
+        @keyframes pulseDot {
+            0%,100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.5); }
+        }
+        
+        /* Hover effect background */
+        .ni:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        
+        /* Chat room original (fallback) */
         .chat-room{display:none;position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column}
         .chat-room.on{display:flex}
         .chat-head{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:2px solid var(--bd);background:var(--sf)}
@@ -285,8 +436,12 @@
         .chat-input:focus{border-color:var(--as)}
         .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;color:#fff;font-size:20px;cursor:pointer;box-shadow:3px 3px 0 #000;border-radius:8px;display:flex;align-items:center;justify-content:center}
         .chat-send:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+        
+        /* Toast */
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;opacity:0;transition:.25s;border:2px solid #000;box-shadow:4px 4px 0 #000;border-radius:30px;font-size:14px;white-space:nowrap}
         .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+        
+        /* Whisper */
         .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
         .whisper-overlay.show{display:flex}
         .whisper-box{background:var(--sf);border:3px solid var(--as);padding:25px;text-align:center;box-shadow:12px 12px 0 #000;max-width:350px;width:90%}
@@ -302,7 +457,17 @@
         @keyframes whisperGlow{0%,100%{box-shadow:0 0 5px var(--as)}50%{box-shadow:0 0 15px var(--as)}}
         .whisper-timer-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--as);animation:timerShrink 5s linear forwards}
         @keyframes timerShrink{from{width:100%}to{width:0%}}
-        @media (max-width:500px){.app{border-left:none;border-right:none}.bottom-nav{border-left:none;border-right:none}}
+        
+        .sound-toggle{position:absolute;bottom:80px;right:20px;width:44px;height:44px;background:rgba(0,0,0,.7);border:2px solid var(--as);border-radius:50%;color:var(--as);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100;box-shadow:0 0 15px var(--as);transition:.2s}
+        .sound-toggle:active{transform:scale(.9)}
+        .sound-toggle.muted{opacity:.5;border-color:var(--txs);color:var(--txs);box-shadow:none}
+        
+        @media (max-width:500px){
+            .app{border-left:none;border-right:none}
+            .bottom-nav{border-left:none;border-right:none}
+            .nico{font-size:22px}
+            .ni span:last-child{font-size:9px}
+        }
     </style>
 </head>
 <body>
@@ -335,7 +500,7 @@
                         <canvas class="radar-canvas" id="radarCanvas"></canvas>
                         <div class="radar-dots" id="radarDots"></div>
                         
-                        <!-- NEW: Radar Scanning Overlay (di dalam radar) -->
+                        <!-- Radar Scanning Overlay -->
                         <div class="radar-scanning-overlay" id="radarScanningOverlay">
                             <div class="radar-scanning-text" id="radarScanningText">finding strangers...</div>
                             <div class="radar-scanning-dots"><span></span><span></span><span></span></div>
@@ -343,10 +508,10 @@
                             <div class="radar-scanning-timer" id="radarScanningTimer">0s</div>
                         </div>
                         
-                        <!-- NEW: Radar Chat Container -->
+                        <!-- Radar Chat Container -->
                         <div class="radar-chat-container" id="radarChatContainer"></div>
                         
-                        <!-- NEW: Radar Chat Input (akan muncul saat chat mode) -->
+                        <!-- Radar Chat Input -->
                         <div class="radar-chat-input-wrapper" id="radarChatInputWrapper" style="display:none">
                             <input type="text" class="radar-chat-input" id="radarChatInput" placeholder="Ketik pesan...">
                             <button class="radar-chat-send" id="radarChatSend">➤</button>
@@ -356,8 +521,8 @@
             </div>
             <div class="radar-ctas">
                 <div class="gender-row">
-                    <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span class="gender-icon">♠️</span><span>HOT TAKE</span></button>
-                    <button class="btn-gender btn-spade" id="vibeMaleBtn"><span class="gender-icon"❤️></span><span>SOFT TALK</span></button>
+                    <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span class="gender-icon">❤️</span><span>SOFT TALK</span></button>
+                    <button class="btn-gender btn-spade" id="vibeMaleBtn"><span class="gender-icon">♠️</span><span>HOT TAKE</span></button>
                 </div>
                 <button class="btn-whisper" id="whisperBtn">✦ WHISPERER <span>NEW</span></button>
             </div>
@@ -367,17 +532,38 @@
             <div id="spillsList"><div class="empty-state">🍃 MEMUAT SPILL...</div></div>
         </div>
     </div>
-    <nav class="bottom-nav"><div class="nav-container"><a href="spill.html" class="nav-item active" data-page="spill">✕ SPILL</a><a href="jejak.html" class="nav-item" data-page="jejak">✦ JEJAK</a><a href="glitch.html" class="nav-item" data-page="glitch">⚡ GLITCH</a><a href="cocomeo.html" class="nav-item" data-page="cocomeo">〜 COCOMEO</a></div></nav>
+    
+    <!-- ========== BOTTOM NAVIGATION REDESIGN ========== -->
+    <nav class="bnav">
+        <div class="bnav-c">
+            <a href="spill.html" class="ni" data-page="spill">
+                <span class="nico">✕</span>
+                <span>Spill</span>
+            </a>
+            <a href="jejak.html" class="ni act" data-page="jejak">
+                <span class="nico">◈</span>
+                <span>Jejak</span>
+            </a>
+            <a href="glitch.html" class="ni" data-page="glitch">
+                <span class="nico">‼</span>
+                <span>Glitch</span>
+            </a>
+            <a href="cocomeo.html" class="ni" data-page="cocomeo">
+                <span class="nico">〜</span>
+                <span>Cocomeo</span>
+            </a>
+        </div>
+    </nav>
 </div>
 
-<!-- Original chat room (tetap ada sebagai fallback) -->
+<!-- Chat room original (fallback) -->
 <div class="chat-room" id="chatRoom">
     <div class="chat-head"><span id="partnerLabel">STRANGER</span><span class="chat-timer" id="chatTimer">15:00</span><button class="chat-close" id="closeChatBtn">✕</button></div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input-wrap"><input type="text" class="chat-input" id="chatInput" placeholder="ketik pesan..." autocomplete="off"><button class="chat-send" id="sendButton">➤</button></div>
 </div>
 
-<!-- Overlay lain tetap sama -->
+<!-- Overlay lain -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-box">
         <div class="whisper-title">✦ WHISPERER</div>
@@ -389,15 +575,14 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="sound-toggle" id="soundToggle">🔊</div>
 
 <script>
 (function(){
     // ============ KILL SWITCH ============
-    // Ubah ke true untuk mengaktifkan mode chat di radar
-    // Ubah ke false untuk kembali ke mode lama (chat room terpisah)
-    const USE_RADAR_CHAT = true; // ← SET KE TRUE UNTUK AKTIFKAN FITUR BARU
+    const USE_RADAR_CHAT = true;
     
-    // ============ CORE LOGIC (TIDAK BERUBAH) ============
+    // ============ CORE LOGIC ============
     const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
     if(localStorage.getItem(K.l)!=='true'||!localStorage.getItem(K.u)||!localStorage.getItem(K.i)){window.location.href='index.html';return;}
     const U=localStorage.getItem(K.u),UID=localStorage.getItem(K.i);
@@ -406,17 +591,15 @@
     const av=['beby.manis','chili.padi','pretty.sad','sejuta.badai','agak.koplak','strawberry.shortcake','cinnamon.girl','satria.bajahitam','malam.minggu','hujan.gerimis','kopi.pahit','luka.luka','senja.redup','kota.tua','patah.hati','move.on'],nc=new Map();
     const gn=(uid)=>{if(!uid)return'anonymous';if(nc.has(uid))return nc.get(uid);let h=0;for(let i=0;i<uid.length;i++)h=((h<<5)-h)+uid.charCodeAt(i),h|=0;let n=av[Math.abs(h)%av.length];nc.set(uid,n);return n;};
     
-    // ============ STATE VARIABLES (TIDAK BERUBAH) ============
     let ue=[],ae=[],alle=[],aiTimer,cp=null,ch=[],isTyping=false,cl='id',se=false,ac=null,si=null;
-    // NEW: Flag untuk mode chat di radar
     let radarChatActive = false;
     
-    // ============ SETTINGS (TIDAK BERUBAH) ============
+    // ============ SETTINGS ============
     const initS=()=>{let b=$('settingsBtn'),d=$('settingsDropdown');if(b&&d){b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});}
     $('logoutBtn')?.addEventListener('click',()=>{localStorage.removeItem(K.l);t('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);});
     document.querySelectorAll('.lang-option').forEach(o=>o.addEventListener('click',function(){document.querySelectorAll('.lang-option').forEach(o=>o.classList.remove('active'));this.classList.add('active');cl=this.dataset.lang;t(`🌐 Language: ${cl==='id'?'Indonesia':'English'}`);}));};
     
-    // ============ WHISPER (TIDAK BERUBAH) ============
+    // ============ WHISPER ============
     const initW=()=>{let b=$('whisperBtn'),o=$('whisperOverlay'),c=$('whisperCancel'),s=$('whisperSend'),tg=$('whisperTarget'),msg=$('whisperMessage');if(!b||!o)return;
     b.onclick=()=>{o.classList.add('show');tg.value='';msg.value='';tg.focus();};
     c.onclick=()=>o.classList.remove('show');
@@ -425,10 +608,16 @@
     const showIW=(s,m)=>{let cm=$('chatMessages');if(!cm)return;let d=document.createElement('div');d.className='whisper-message';d.innerHTML=`<div style="font-family:var(--font-mono);font-size:10px;color:var(--as);margin-bottom:5px;">✧ WHISPER DARI @${s}</div><div style="font-size:14px;">${m}</div><div class="whisper-timer-bar"></div>`;cm.appendChild(d);cm.scrollTop=cm.scrollHeight;setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity 0.5s';setTimeout(()=>d.remove(),500);},5000);};
     const startWP=()=>setInterval(async()=>{try{let r=await fetch(`/api/whisper?user=${U}`);if(r.ok)(await r.json()).forEach(w=>showIW(w.sender,w.message));}catch(e){}},3000);
     
-    // ============ NAV (TIDAK BERUBAH) ============
-    const initNav=()=>{let p=window.location.pathname.split('/').pop()||'spill.html';document.querySelectorAll('.nav-item').forEach(i=>i.classList.toggle('active',i.getAttribute('href')===p));};
+    // ============ NAV ============
+    const initNav=()=>{
+        let p=window.location.pathname.split('/').pop()||'spill.html';
+        document.querySelectorAll('.ni').forEach(i=>{
+            const href=i.getAttribute('href');
+            i.classList.toggle('act',href===p);
+        });
+    };
     
-    // ============ SPILLS (TIDAK BERUBAH) ============
+    // ============ SPILLS ============
     const renderS=()=>{let c=$('spillsList');if(!c)return;if(!alle.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';return;}
     c.innerHTML=alle.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${s.author}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${s.content}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="window.reactToSpill(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');
     $('feedMeta')&&($('feedMeta').textContent=alle.length+' spill');};
@@ -439,7 +628,7 @@
     const initAI=()=>{if(!ae.length)ae=genAI(6);combine();if(aiTimer)clearInterval(aiTimer);aiTimer=setInterval(()=>{let n=genAI(1)[0];ae=[n,...ae.slice(0,5)];combine();},180000);};
     window.reactToSpill=(i,t)=>{if(alle[i]){alle[i].reactions[t]=(alle[i].reactions[t]||0)+1;renderS();t(`➕ ${t}`);}};
     
-    // ============ RADAR ANIMATION (TIDAK BERUBAH) ============
+    // ============ RADAR ANIMATION ============
     let rdots=[],needleA=0,needleO=0,phA=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,glow=new Map(),raf,rint;
     const initR=()=>{let cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;let rs=()=>{let r=ct.getBoundingClientRect();if(r.width>0&&r.height>0){cv.width=r.width;cv.height=r.height;}};rs();window.addEventListener('resize',rs);spawnDots();if(rint)clearInterval(rint);rint=setInterval(()=>{rdots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);needleA=Math.random()*Math.PI*2;trail.fill(needleA);radarLoop(cv);};
     const spawnDots=()=>{let c=$('radarDots');if(!c)return;c.innerHTML='';rdots=[];for(let i=0;i<8;i++){let a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2,dot=document.createElement('div');dot.className='radar-dot';dot.style.left=x+'%';dot.style.top=y+'%';c.appendChild(dot);rdots.push({el:dot,x,y,vx:0,vy:0,id:i});}};
@@ -452,14 +641,13 @@
     if(age<55){let t=age/55,ga=(1-t)*(1-t)*.9;if(ga<.01)return;let gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}});
     raf=requestAnimationFrame(draw);};draw();};
     
-    // ============ AUDIO (TIDAK BERUBAH) ============
+    // ============ AUDIO ============
     const initA=()=>{if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}};
     const playS=(t)=>{if(!se||!ac||ac.state==='suspended')return;try{let o=ac.createOscillator(),g=ac.createGain();o.type='sine';if(t==='tick'){o.frequency.setValueAtTime(440,ac.currentTime);g.gain.setValueAtTime(0.05,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.1);}else if(t==='glitch'){o.frequency.setValueAtTime(220,ac.currentTime);g.gain.setValueAtTime(0.1,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.15);}else if(t==='complete'){o.frequency.setValueAtTime(880,ac.currentTime);g.gain.setValueAtTime(0.15,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.3);}o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+0.3);}catch(e){}};
     const vibrate=(p)=>{if(window.navigator&&window.navigator.vibrate)window.navigator.vibrate(p);};
     
-    // ============ SCANNING 15 DETIK (MODIFIED UNTUK RADAR) ============
+    // ============ SCANNING IN RADAR ============
     const startScanningInRadar = (gender, callback) => {
-        // Gunakan overlay di dalam radar
         const radarCont = $('radarCont');
         const overlay = $('radarScanningOverlay');
         const txt = $('radarScanningText');
@@ -473,7 +661,6 @@
         
         initA();
         
-        // Sequence text
         const seq = [
             {t:0, text:"finding strangers..."},
             {t:4, text:"most strangers here are just people"},
@@ -482,9 +669,7 @@
             {t:14, text:"are trouble"}
         ];
         
-        // Tambah class chat-mode untuk efek gelap
         if (radarCont) radarCont.classList.add('chat-mode');
-        
         overlay.classList.add('show');
         let start = Date.now();
         let cur = 0;
@@ -504,7 +689,6 @@
                 txt.textContent = seq[cur].text;
             }
             
-            // Random glitch
             if (Math.random() < 0.15 && elapsed - lastGlitch > 0.5) {
                 txt.style.opacity = '0.3';
                 setTimeout(() => txt.style.opacity = '1', 80);
@@ -524,16 +708,11 @@
                 overlay.classList.remove('show');
                 playS('complete');
                 vibrate([100, 50, 100]);
-                
-                // Set flag untuk mode chat
                 radarChatActive = true;
-                
-                // Panggil callback untuk buka chat
                 callback();
             }
         }, 100);
         
-        // Bisa cancel dengan klik overlay
         overlay.onclick = (e) => {
             e.stopPropagation();
             if (si) {
@@ -545,7 +724,7 @@
         };
     };
     
-    // ============ CHAT FUNCTIONS (MODIFIED UNTUK DUAL CONTAINER) ============
+    // ============ CHAT FUNCTIONS ============
     const openC = (name) => {
         const pl = $('partnerLabel');
         const ct = $('chatTimer');
@@ -555,51 +734,35 @@
         const radarChat = $('radarChatContainer');
         const radarInputWrapper = $('radarChatInputWrapper');
         
-        // Set state sama persis
         if (pl) pl.textContent = 'STRANGER';
         if (ct) ct.textContent = '15:00';
         cp = name;
         ch = [];
         
         if (USE_RADAR_CHAT && radarChatActive && radarChat) {
-            // MODE RADAR CHAT
             radarChat.style.display = 'flex';
             radarChat.innerHTML = '';
-            
-            // Tampilkan input wrapper
             if (radarInputWrapper) radarInputWrapper.style.display = 'flex';
-            
-            // Pastikan radar dalam mode chat
             if (radarCont) radarCont.classList.add('chat-mode');
-            
-            // Sembunyikan chat room biasa
             if (cr) cr.classList.remove('on');
         } else {
-            // MODE LAMA (FALLBACK)
             if (cr) cr.classList.add('on');
             if (cm) cm.innerHTML = '';
-            
-            // Sembunyikan radar chat
             if (radarChat) radarChat.style.display = 'none';
             if (radarInputWrapper) radarInputWrapper.style.display = 'none';
         }
         
-        // Kirim pesan pertama setelah 500ms
         setTimeout(() => sendM('', true), 500);
     };
     
     const addM = (sender, text) => {
-        // Tentukan target container
         let targetContainer;
-        
         if (USE_RADAR_CHAT && radarChatActive) {
             targetContainer = $('radarChatContainer');
         } else {
             targetContainer = $('chatMessages');
         }
-        
         if (!targetContainer) return;
-        
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
         msgDiv.textContent = text;
@@ -609,19 +772,14 @@
     
     const showT = () => {
         let targetContainer;
-        
         if (USE_RADAR_CHAT && radarChatActive) {
             targetContainer = $('radarChatContainer');
         } else {
             targetContainer = $('chatMessages');
         }
-        
         if (!targetContainer) return;
-        
-        // Hapus indicator lama jika ada
         const oldIndicator = document.getElementById('typingIndicator');
         if (oldIndicator) oldIndicator.remove();
-        
         const indicator = document.createElement('div');
         indicator.className = 'typing-indicator';
         indicator.id = 'typingIndicator';
@@ -637,12 +795,9 @@
     
     const sendM = async (msg, first) => {
         if (!cp) return;
-        
         if (!first) addM('user', msg);
-        
         showT();
         isTyping = true;
-        
         try {
             const r = await fetch('/api/chat', {
                 method: 'POST',
@@ -653,12 +808,9 @@
                     lastMessages: ch
                 })
             });
-            
             if (!r.ok) throw new Error();
             const d = await r.json();
-            
             if (msg) ch.push({role: 'assistant', content: d.reply});
-            
             hideT();
             isTyping = false;
             await typeM('stranger', d.reply, d.typing);
@@ -671,31 +823,25 @@
     
     const typeM = async (sender, full, info) => {
         let targetContainer;
-        
         if (USE_RADAR_CHAT && radarChatActive) {
             targetContainer = $('radarChatContainer');
         } else {
             targetContainer = $('chatMessages');
         }
-        
         if (!targetContainer) return;
-        
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
         targetContainer.appendChild(msgDiv);
-        
         const words = full.split(' ');
         let txt = '';
         let wi = 0;
         let ci = 0;
-        
         return new Promise(resolve => {
             const typeNext = () => {
                 if (wi >= words.length) {
                     resolve();
                     return;
                 }
-                
                 if (ci < words[wi].length) {
                     txt += words[wi][ci];
                     msgDiv.textContent = txt + (wi < words.length - 1 ? ' ' : '');
@@ -713,46 +859,34 @@
                     }
                 }
             };
-            
             setTimeout(typeNext, info?.initialDelay || 500);
         });
     };
     
-    // ============ CLOSE CHAT FUNCTION ============
     const closeChat = () => {
         const radarCont = $('radarCont');
         const radarChat = $('radarChatContainer');
         const radarInputWrapper = $('radarChatInputWrapper');
         const cr = $('chatRoom');
-        
-        // Reset state
         cp = null;
         ch = [];
         isTyping = false;
         radarChatActive = false;
-        
-        // Hide radar chat
         if (radarChat) radarChat.style.display = 'none';
         if (radarInputWrapper) radarInputWrapper.style.display = 'none';
-        
-        // Remove chat mode dari radar
         if (radarCont) radarCont.classList.remove('chat-mode');
-        
-        // Hide chat room biasa
         if (cr) cr.classList.remove('on');
     };
     
-    // ============ VIBE CHECK (MODIFIED) ============
+    // ============ VIBE CHECK ============
     const startVibe = (gender) => {
         if (isTyping) {
             t('Tunggu sampai pesan terkirim');
             return;
         }
-        
         if (!se) t('Klik tombol suara untuk efek audio');
         
         if (USE_RADAR_CHAT) {
-            // Mode baru: scanning di dalam radar
             startScanningInRadar(gender, () => {
                 const lists = {
                     heart: ['beby.manis', 'pretty.sad', 'strawberry.shortcake', 'cinnamon.girl', 'move.on'],
@@ -763,23 +897,14 @@
                 openC(aiChar);
             });
         } else {
-            // Mode lama: pake overlay fullscreen
-            const startS = (g, cb) => {
-                // Ini adalah fungsi lama yang sudah ada di kode original
-                // (saya tidak tulis ulang di sini karena panjang, tapi di kode asli ada)
-                // Untuk keperluan demo, kita panggil callback langsung
-                cb();
+            // Fallback ke mode lama (tidak diimplementasi detail di sini)
+            const lists = {
+                heart: ['beby.manis', 'pretty.sad', 'strawberry.shortcake', 'cinnamon.girl', 'move.on'],
+                spade: ['agak.koplak', 'bang.juned', 'chili.padi', 'sejuta.badai', 'satria.bajahitam']
             };
-            
-            startS(gender, () => {
-                const lists = {
-                    heart: ['beby.manis', 'pretty.sad', 'strawberry.shortcake', 'cinnamon.girl', 'move.on'],
-                    spade: ['agak.koplak', 'bang.juned', 'chili.padi', 'sejuta.badai', 'satria.bajahitam']
-                };
-                const list = lists[gender] || lists.heart;
-                const aiChar = list[Math.floor(Math.random() * list.length)];
-                openC(aiChar);
-            });
+            const list = lists[gender] || lists.heart;
+            const aiChar = list[Math.floor(Math.random() * list.length)];
+            openC(aiChar);
         }
     };
     
@@ -787,9 +912,7 @@
     const initRadarChatInput = () => {
         const radarInput = $('radarChatInput');
         const radarSend = $('radarChatSend');
-        
         if (!radarInput || !radarSend) return;
-        
         radarSend.onclick = async () => {
             if (isTyping) {
                 t('Tunggu sampai pesan terkirim');
@@ -800,7 +923,6 @@
             radarInput.value = '';
             await sendM(msg, false);
         };
-        
         radarInput.onkeypress = (e) => {
             if (e.key === 'Enter' && !isTyping) {
                 radarSend.click();
@@ -814,14 +936,10 @@
         if (closeBtn) {
             closeBtn.onclick = closeChat;
         }
-        
-        // Juga handle click di luar radar untuk close (opsional)
         const radarCont = $('radarCont');
         if (radarCont) {
             radarCont.addEventListener('click', (e) => {
-                // Jika chat aktif dan klik di luar area chat
                 if (radarChatActive && !e.target.closest('.radar-chat-container') && !e.target.closest('.radar-chat-input-wrapper')) {
-                    // Tanya user apakah mau close
                     if (confirm('Tutup chat?')) {
                         closeChat();
                     }
@@ -833,24 +951,18 @@
     // ============ LOAD EVENT ============
     window.addEventListener('load', async () => {
         $('userNameDisplay') && ($('userNameDisplay').textContent = '@' + U);
-        
         const o = $('onlineCount');
-        if (o) {
-            o.textContent = (Math.floor(Math.random() * 20) + 10) + ' ONLINE';
-        }
-        
+        if (o) o.textContent = (Math.floor(Math.random() * 20) + 10) + ' ONLINE';
         setTimeout(initR, 100);
         initS();
         initW();
         initNav();
         initRadarChatInput();
         initCloseChat();
-        
         await fetchE();
         initAI();
         startWP();
         
-        // Sound toggle
         const soundBtn = $('soundToggle');
         if (soundBtn) {
             soundBtn.onclick = () => {
@@ -863,18 +975,15 @@
             };
         }
         
-        // Event listeners untuk tombol vibe
         $('vibeFemaleBtn')?.addEventListener('click', (e) => {
             e.preventDefault();
             startVibe('heart');
         });
-        
         $('vibeMaleBtn')?.addEventListener('click', (e) => {
             e.preventDefault();
             startVibe('spade');
         });
         
-        // Chat send original (untuk fallback)
         const send = $('sendButton');
         const inp = $('chatInput');
         if (send && inp) {
@@ -893,14 +1002,11 @@
             };
         }
         
-        // Prevent double tap zoom
         document.querySelectorAll('button').forEach(b => 
             b.addEventListener('touchstart', e => e.preventDefault(), {passive: false})
         );
     });
 })();
 </script>
-<!-- Sound toggle untuk radar chat (tetap ada) -->
-<div class="sound-toggle" id="soundToggle">🔊</div>
 </body>
 </html>
