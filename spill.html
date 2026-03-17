@@ -1244,6 +1244,7 @@ const startScanningWithBlast = (gender, callback) => {
     window.addEventListener('load', async () => {
         $('userNameDisplay') && ($('userNameDisplay').textContent = '@' + U);
         updateOnlineCount();
+        connectWebSocket();
         setTimeout(initR, 100);
         initS();
         initW();
@@ -1252,7 +1253,7 @@ const startScanningWithBlast = (gender, callback) => {
         initCloseChat();
         await fetchE();
         initAI();
-        // startWP(); // COOMENT SEMENTARA
+        // startWP(); // COMMENT SEMENTARA
         
         const soundBtn = $('soundToggle');
         if (soundBtn) {
