@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>SPILL — vibe radar</title>
+    
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         :root{
@@ -15,7 +19,7 @@
         body{background:var(--bg);color:var(--tx);font-family:var(--font-body);height:100vh;display:flex;flex-direction:column}
         .app{max-width:500px;margin:0 auto;width:100%;height:100vh;display:flex;flex-direction:column;background:var(--bg);border-left:2px solid var(--bd);border-right:2px solid var(--bd);position:relative}
         
-        /* ===== HEADER ===== */
+        /* Header */
         .header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:2px solid var(--bd);background:var(--sf);position:relative}
         .logo{font-family:var(--font-display);font-size:34px}
         .logo .x{color:var(--ap);display:inline-block;animation:spin 4s infinite}
@@ -27,10 +31,10 @@
         .settings-dropdown.show{display:block}
         .dropdown-item{padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--bd)}
         
-        /* ===== SCROLL AREA ===== */
+        /* Scroll */
         .scroll{flex:1;overflow-y:auto;padding-bottom:70px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
         
-        /* ===== RADAR SECTION ===== */
+        /* Radar Section */
         .radar-sect{background:var(--sf);border-bottom:2px solid var(--bd)}
         .radar-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
         .radar-label{font-family:var(--font-mono);font-size:10px;color:var(--as)}
@@ -48,7 +52,7 @@
         .radar-dot{position:absolute;width:6px;height:6px;transform:translate(-50%,-50%) rotate(45deg);background:var(--as);opacity:.3}
         .radar-dot.active{opacity:1;transform:translate(-50%,-50%) rotate(45deg) scale(2.5)}
         
-        /* ===== RADAR CHAT ===== */
+        /* Radar Chat */
         .radar-chat-container {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 100;
             display: none; flex-direction: column; justify-content: flex-end;
@@ -91,51 +95,56 @@
             padding: 4px 16px; border-radius: 20px; z-index: 103;
         }
         
-        /* ===== SCANNING OVERLAY ===== */
+        /* FIFO: Hanya 5 pesan terakhir yang tampil */
+        .radar-chat-container .message:nth-last-child(n+6),
+        .radar-chat-container .typing-indicator:nth-last-child(n+6) {
+            display: none;
+        }
+        
+        /* Scanning Overlay */
         .radar-scanning-overlay {
             position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 50;
             display: none; flex-direction: column; align-items: center; justify-content: center;
             color: var(--as); font-family: var(--font-mono); backdrop-filter: blur(2px);
         }
         .radar-scanning-overlay.show { display: flex; }
-        .radar-scanning-text { font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 20px; color: var(--as); }
+        .radar-scanning-text { font-size: 16px; text-align: center; margin-bottom: 20px; color: var(--as); }
         .radar-scanning-progress { width: 80%; height: 2px; background: var(--bd2); margin: 15px 0; }
         .radar-scanning-bar { height: 100%; width: 0%; background: var(--as); transition: width 0.1s; }
         .radar-scanning-dots { display: flex; gap: 8px; margin-top: 10px; }
-        .radar-scanning-dots span { width: 6px; height: 6px; background: var(--as); border-radius: 50%; }
+        .radar-scanning-dots span { width: 6px; height: 6px; background: var(--as); border-radius: 50%; animation: pulse 1.4s infinite; }
+        @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1;transform:scale(1.5)} }
         
-        /* ===== CTA BUTTONS ===== */
+        /* Buttons */
         .radar-ctas{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
         .gender-row{display:flex;gap:10px}
-        .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--sf);color:var(--tx)}
+        .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:18px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--sf);color:var(--tx)}
         .btn-gender:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #000}
         .btn-heart{background:linear-gradient(145deg,var(--ap),#ff6b8b);color:#fff}
         .btn-spade{background:linear-gradient(145deg,var(--as),#4d7aff);color:#000}
         .gender-icon{font-size:38px}
         .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;color:var(--txs)}
         
-        /* ===== SPILLS SECTION ===== */
+        /* Spills */
         .spills-sect{padding:18px}
-        .sect-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
+        .sect-header{display:flex;justify-content:space-between;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
         .spill-card{background:var(--sf);border:2px solid var(--bd2);margin-bottom:20px;padding:16px;box-shadow:4px 4px 0 #000}
-        .spill-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-family:var(--font-mono);font-size:12px}
+        .spill-header{display:flex;justify-content:space-between;margin-bottom:12px;font-family:var(--font-mono);font-size:12px}
         .spill-author{color:var(--as)}
-        .spill-mood{padding:4px 8px;font-size:10px;font-weight:700;letter-spacing:1px}
+        .spill-mood{padding:4px 8px;font-size:10px;font-weight:700}
         .spill-mood.surviving{background:var(--ap);color:#fff}
         .spill-mood.thriving{background:var(--aq);color:#000}
         .spill-mood.chaotic{background:var(--as);color:#000}
         .spill-mood.doom{background:#9900ff;color:#fff}
-        .spill-content{font-size:14px;line-height:1.6;color:var(--tx);margin-bottom:12px}
+        .spill-content{font-size:14px;line-height:1.6;margin-bottom:12px}
         .spill-reactions{display:flex;gap:8px;border-top:2px solid var(--bd);padding-top:12px}
-        .react-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:var(--bg);border:2px solid var(--bd2);color:var(--txs);cursor:pointer;font-family:var(--font-mono);font-size:14px}
-        .react-count{font-size:11px;font-weight:700}
-        .empty-state{text-align:center;padding:40px;color:var(--txs);font-family:var(--font-mono);font-size:14px;border:2px dashed var(--bd2)}
+        .react-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--bg);border:2px solid var(--bd2);color:var(--txs);cursor:pointer}
         
-        /* ===== BOTTOM NAV ===== */
+        /* Bottom Nav */
         .bnav{background:#050505;border-top:2px solid var(--bd);padding:8px 16px 12px;width:100%;max-width:500px;z-index:50}
         .bnav-c{display:flex;justify-content:space-around;align-items:flex-end;gap:4px}
         .ni{font-family:var(--font-mono);text-decoration:none;display:flex;flex-direction:column;align-items:center;padding:8px 0 4px;flex:1;color:var(--txs);gap:4px}
-        .nico{font-size:24px;font-weight:bold;line-height:1}
+        .nico{font-size:24px;font-weight:bold}
         .ni span:last-child{font-size:10px;text-transform:uppercase}
         .ni[href="spill.html"]{color:var(--spill)}
         .ni[href="jejak.html"]{color:var(--jejak)}
@@ -144,17 +153,17 @@
         .ni.act{color:var(--tx);transform:translateY(-4px)}
         .ni.act .nico{transform:scale(1.2)}
         
-        /* ===== FALLBACK CHAT ===== */
+        /* Fallback Chat */
         .chat-room{display:none;position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column}
         .chat-room.on{display:flex}
         .chat-head{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:2px solid var(--bd);background:var(--sf)}
         .chat-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
-        .chat-input-wrap{display:flex;gap:10px;padding:12px 18px;border-top:2px solid var(--bd);background:var(--sf)}
-        .chat-input{flex:1;padding:13px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);border-radius:8px;font-size:14px}
-        .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;color:#fff;font-size:20px;cursor:pointer;border-radius:8px}
+        .chat-input-wrap{display:flex;gap:10px;padding:12px 18px;border-top:2px solid var(--bd)}
+        .chat-input{flex:1;padding:13px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);border-radius:8px}
+        .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;color:#fff;cursor:pointer;border-radius:8px}
         .chat-close{width:40px;height:40px;background:var(--bg);border:2px solid var(--bd);color:var(--txs);cursor:pointer}
         
-        /* ===== TOAST & WHISPER ===== */
+        /* Toast & Whisper */
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none}
         .toast.show{display:block}
         .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center}
@@ -167,11 +176,10 @@
         .whisper-btn.cancel{background:0 0;color:var(--txs)}
         .sound-toggle{position:fixed;bottom:80px;right:20px;width:44px;height:44px;background:rgba(0,0,0,.7);border:2px solid var(--as);border-radius:50%;color:var(--as);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100}
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <div class="app">
-    <!-- HEADER -->
+    <!-- Header -->
     <div class="header">
         <div class="logo">SP<span class="x">✕</span>LL</div>
         <div class="user-section">
@@ -183,13 +191,13 @@
         </div>
     </div>
     
-    <!-- MAIN SCROLL -->
+    <!-- Main Content -->
     <div class="scroll">
-        <!-- RADAR SECTION -->
+        <!-- Radar Section -->
         <div class="radar-sect">
             <div class="radar-header">
                 <span class="radar-label">VIBE RADAR</span>
-                <div class="online-badge"><span id="onlineCount">0 ONLINE</span></div>
+                <div class="online-badge" id="onlineCount">0 ONLINE</div>
             </div>
             <div class="radar-wrapper">
                 <div class="radar-bezel">
@@ -207,10 +215,12 @@
                             <div class="radar-scanning-progress"><div class="radar-scanning-bar" id="radarScanningBar"></div></div>
                         </div>
                         
-                        <!-- Radar Chat -->
+                        <!-- Chat Container -->
                         <div class="radar-chat-container" id="radarChatContainer">
                             <div class="radar-chat-header">✦ CHAT ✦</div>
                         </div>
+                        
+                        <!-- Chat Input -->
                         <div class="radar-chat-input-wrapper" id="radarChatInputWrapper" style="display:none">
                             <input type="text" class="radar-chat-input" id="radarChatInput" placeholder="Ketik pesan...">
                             <button class="radar-chat-send" id="radarChatSend">➤</button>
@@ -225,11 +235,11 @@
                     <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span class="gender-icon">♠️</span><span>HOT TAKE</span></button>
                     <button class="btn-gender btn-spade" id="vibeMaleBtn"><span class="gender-icon">❤️</span><span>SOFT TALK</span></button>
                 </div>
-                <button class="btn-whisper" id="whisperBtn">✦ WHISPERER <span>NEW</span></button>
+                <button class="btn-whisper" id="whisperBtn">✦ WHISPERER</button>
             </div>
         </div>
         
-        <!-- SPILLS SECTION -->
+        <!-- Spills Section -->
         <div class="spills-sect">
             <div class="sect-header">
                 <span>SPILL TERKINI</span>
@@ -239,7 +249,7 @@
         </div>
     </div>
     
-    <!-- BOTTOM NAV -->
+    <!-- Bottom Nav -->
     <nav class="bnav">
         <div class="bnav-c">
             <a href="spill.html" class="ni act"><span class="nico">✕</span><span>Spill</span></a>
@@ -250,7 +260,7 @@
     </nav>
 </div>
 
-<!-- FALLBACK CHAT -->
+<!-- Fallback Chat -->
 <div class="chat-room" id="chatRoom">
     <div class="chat-head">
         <span id="partnerLabel">STRANGER</span>
@@ -264,7 +274,7 @@
     </div>
 </div>
 
-<!-- WHISPER MODAL -->
+<!-- Whisper Modal -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-box">
         <div class="whisper-title">✦ WHISPERER</div>
@@ -277,7 +287,7 @@
     </div>
 </div>
 
-<!-- TOAST & SOUND -->
+<!-- Toast & Sound -->
 <div class="toast" id="toast"></div>
 <div class="sound-toggle" id="soundToggle">🔊</div>
 
@@ -286,8 +296,6 @@
     // ============ SUPABASE CONFIG ============
     const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
-    
-    // Inisialisasi Supabase
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
     // ============ USER ============
@@ -297,7 +305,22 @@
     
     // ============ UTILS ============
     const $=id=>document.getElementById(id);
-    const toast=(msg,err)=>{let o=$('toast');if(o){o.textContent=msg;o.className='toast'+(err?' error':'');o.classList.add('show');setTimeout(()=>o.classList.remove('show'),3000);}};
+    const toast=(msg)=>{let o=$('toast');if(o){o.textContent=msg;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),3000);}};
+    
+    // ============ AI PERSONAS ============
+    const AI_PERSONAS = [
+        { id: 'ai_beby', username: 'beby.manis', gender: 'heart', type: 'ai' },
+        { id: 'ai_pretty', username: 'pretty.sad', gender: 'heart', type: 'ai' },
+        { id: 'ai_strawberry', username: 'strawberry.shortcake', gender: 'heart', type: 'ai' },
+        { id: 'ai_cinnamon', username: 'cinnamon.girl', gender: 'heart', type: 'ai' },
+        { id: 'ai_moveon', username: 'move.on', gender: 'heart', type: 'ai' },
+        { id: 'ai_agak', username: 'agak.koplak', gender: 'spade', type: 'ai' },
+        { id: 'ai_chili', username: 'chili.padi', gender: 'spade', type: 'ai' },
+        { id: 'ai_sejuta', username: 'sejuta.badai', gender: 'spade', type: 'ai' },
+        { id: 'ai_satria', username: 'satria.bajahitam', gender: 'spade', type: 'ai' },
+        { id: 'ai_bangjuned', username: 'bang.juned', gender: 'spade', type: 'ai' }
+    ];
+    const ALWAYS_ONLINE = AI_PERSONAS.length;
     
     // ============ CHAT STATE ============
     let currentPartner = null;
@@ -305,151 +328,199 @@
     let isSearching = false;
     let radarChatActive = false;
     let isTyping = false;
-    let ch = []; // buat AI chat
+    let chatHistory = [];
     
-    // ============ AI CHARACTERS ============
-    const aiChars={heart:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on'],spade:['agak.koplak','chili.padi','sejuta.badai','satria.bajahitam']};
-    const getRandomAI = (gender) => aiChars[gender][Math.floor(Math.random()*aiChars[gender].length)];
+    // ============ ONLINE USERS TRACKING ============
+    async function updateOnlineStatus(status = 'online') {
+        await supabase
+            .from('online_users')
+            .upsert({ 
+                user_id: UID, 
+                username: U, 
+                last_seen: new Date().toISOString(),
+                status: status 
+            });
+    }
     
-    // ============ FIND PARTNER ============
+    async function getOnlineCount() {
+        const { count: humanCount } = await supabase
+            .from('online_users')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'online');
+        
+        return {
+            total: (humanCount || 0) + ALWAYS_ONLINE,
+            human: humanCount || 0,
+            ai: ALWAYS_ONLINE
+        };
+    }
+    
+    async function updateOnlineCounter() {
+        const { total, human } = await getOnlineCount();
+        const badge = $('onlineCount');
+        if (badge) {
+            if (human === 0) {
+                badge.innerHTML = `${total} ONLINE 🌙`;
+            } else if (human > 10) {
+                badge.innerHTML = `${total} ONLINE 🔥`;
+            } else {
+                badge.innerHTML = `${total} ONLINE`;
+            }
+        }
+    }
+    
+    // ============ FIND PARTNER WITH BLAST ============
     async function findPartner(gender) {
-    if (isSearching) return;
-    isSearching = true;
-    
-    // Tampilkan overlay scanning
-    $('radarScanningOverlay').classList.add('show');
-    
-    // Hapus dari waiting room kalo sebelumnya ada
-    await supabase
-        .from('waiting_room')
-        .delete()
-        .eq('user_id', UID);
-    
-    // Masuk ke waiting room
-    await supabase
-        .from('waiting_room')
-        .insert([{ 
-            user_id: UID, 
-            username: U,
-            gender: gender 
-        }]);
-    
-    // CEK APAKAH ADA PARTNER YANG SEDANG MENUNGGU
-    const { data: candidates } = await supabase
-        .from('waiting_room')
-        .select('*')
-        .eq('gender', gender)
-        .neq('user_id', UID)
-        .order('created_at', { ascending: true })
-        .limit(1);  // Ambil 1 yang paling lama nunggu
-    
-    if (candidates && candidates.length > 0) {
-        // ADA PARTNER! LANGSUNG MATCH
-        const partner = candidates[0];
+        if (isSearching) return;
+        isSearching = true;
         
-        console.log('✅ MATCH DITEMUKAN:', partner.username);
+        $('radarScanningOverlay').classList.add('show');
+        $('radarScanningText').textContent = 'MENCARI LAWAN BICARA';
         
-        // Hapus berdua dari waiting room
-        await supabase
-            .from('waiting_room')
-            .delete()
-            .eq('user_id', UID);
-        await supabase
-            .from('waiting_room')
-            .delete()
-            .eq('user_id', partner.user_id);
+        // Update online status
+        await updateOnlineStatus();
         
-        // Buat channel chat
-        const channelName = `chat_${UID}_${partner.user_id}_${Date.now()}`;
+        // Dapatkan online count
+        const { total, human } = await getOnlineCount();
+        console.log(`📊 Online: ${total} (${human} human, ${ALWAYS_ONLINE} AI)`);
         
-        // Simpan ke active_chats
-        await supabase
-            .from('active_chats')
-            .insert([{
-                user1_id: UID,
-                user2_id: partner.user_id,
-                channel_name: channelName
-            }]);
+        // Ambil human candidates
+        const { data: humans } = await supabase
+            .from('online_users')
+            .select('user_id, username, last_seen')
+            .eq('status', 'online')
+            .neq('user_id', UID)
+            .order('last_seen', { ascending: false });
         
-        // Setup channel untuk kedua user
-        setupChatChannel(channelName, partner.username);
+        // Ambil AI candidates (gender sesuai)
+        const ais = AI_PERSONAS
+            .filter(ai => ai.gender === gender)
+            .map(ai => ({
+                user_id: ai.id,
+                username: ai.username,
+                type: 'ai',
+                last_seen: new Date().toISOString()
+            }));
         
-        // Kasih tau partner lewat broadcast
-        supabase.channel('match_notification').send({
-            type: 'broadcast',
-            event: 'match_found',
-            payload: { 
-                channel: channelName,
-                partner: U,
-                partnerId: UID
+        // Gabung dan urutkan: human dulu, baru AI
+        const allCandidates = [
+            ...(humans || []).map(h => ({ ...h, type: 'human' })),
+            ...ais
+        ];
+        
+        // Tentukan jumlah blast
+        let blastCount = 5;
+        if (human === 0) blastCount = 3;
+        else if (human > 10) blastCount = 7;
+        
+        const candidates = allCandidates.slice(0, blastCount);
+        
+        if (candidates.length === 0) {
+            toast('Tidak ada yang online, coba lagi');
+            $('radarScanningOverlay').classList.remove('show');
+            isSearching = false;
+            return;
+        }
+        
+        console.log('📢 Blast ke:', candidates.map(c => 
+            c.type === 'ai' ? `🤖 ${c.username}` : `👤 ${c.username}`
+        ).join(', '));
+        
+        const requestId = `${UID}_${Date.now()}`;
+        let accepted = false;
+        
+        // Kirim ke candidates
+        candidates.forEach(candidate => {
+            if (candidate.type === 'ai') {
+                // AI auto-respond dengan delay
+                setTimeout(() => {
+                    if (!accepted && isSearching) {
+                        console.log(`🤖 AI ${candidate.username} merespon`);
+                        handleAccept(candidate, requestId);
+                    }
+                }, 2000 + Math.random() * 3000);
+            } else {
+                // Kirim ke human
+                const userChannel = supabase.channel(`user_${candidate.user_id}`);
+                userChannel.subscribe(() => {
+                    userChannel.send({
+                        type: 'broadcast',
+                        event: 'chat_request',
+                        payload: {
+                            requestId,
+                            from: U,
+                            fromId: UID,
+                            gender
+                        }
+                    });
+                });
+                setTimeout(() => supabase.removeChannel(userChannel), 1000);
             }
         });
         
-    } else {
-        console.log('⏳ Belum ada partner, menunggu...');
-        
-        // Listen untuk dipanggil partner
-        const matchListener = supabase.channel('match_notification');
-        matchListener.on('broadcast', { event: 'match_found' }, (payload) => {
-            if (payload.payload.partnerId !== UID) return;
+        // Handler accept
+        function handleAccept(acceptor, reqId) {
+            if (accepted) return;
+            accepted = true;
             
-            console.log('🎯 Dipanggil partner!');
+            console.log(`✅ ${acceptor.type === 'ai' ? 'AI' : 'Human'} ${acceptor.username} menerima`);
             
-            // Dapet match!
             $('radarScanningOverlay').classList.remove('show');
             isSearching = false;
             
-            // Setup channel
-            setupChatChannel(payload.payload.channel, payload.payload.partner);
-            
-            // Bersihin listener
-            supabase.removeChannel(matchListener);
-        });
-        matchListener.subscribe();
-        
-        // Timeout 10 detik, fallback ke AI
-        setTimeout(() => {
-            if (isSearching) {
-                console.log('⏰ Timeout, fallback ke AI');
-                $('radarScanningOverlay').classList.remove('show');
-                isSearching = false;
+            if (acceptor.type === 'ai') {
+                openChat(acceptor.username);
+            } else {
+                const channelName = `chat_${UID}_${acceptor.user_id}_${Date.now()}`;
+                setupChatChannel(channelName, acceptor.username);
                 
-                // Hapus dari waiting room
-                supabase
-                    .from('waiting_room')
-                    .delete()
-                    .eq('user_id', UID);
-                
-                // Fallback ke AI
-                const aiName = getRandomAI(gender);
-                openChat(aiName);
-                toast('Partner tidak ditemukan, coba dengan AI');
+                const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
+                partnerChannel.subscribe(() => {
+                    partnerChannel.send({
+                        type: 'broadcast',
+                        event: 'match_confirmed',
+                        payload: { channel: channelName, partner: U, partnerId: UID }
+                    });
+                });
             }
-        }, 10000);
-    }
-}
-    
-    // ============ SETUP CHAT CHANNEL ============
-    function setupChatChannel(channelName, partnerName) {
-        // Hapus channel lama kalo ada
-        if (chatChannel) {
-            supabase.removeChannel(chatChannel);
         }
         
-        // Buat channel baru
-        chatChannel = supabase.channel(channelName);
+        // Listen response dari human
+        const responseChannel = supabase.channel(`response_${requestId}`);
+        responseChannel.on('broadcast', { event: 'request_response' }, (payload) => {
+            if (payload.payload.accepted) {
+                handleAccept({
+                    type: 'human',
+                    user_id: payload.payload.fromId,
+                    username: payload.payload.fromName
+                }, requestId);
+            }
+        });
+        responseChannel.subscribe();
         
-        // Listen for messages
+        // Timeout
+        setTimeout(() => {
+            if (isSearching && !accepted) {
+                console.log('⏰ Timeout, pilih AI random');
+                const availableAI = AI_PERSONAS.filter(ai => ai.gender === gender);
+                const randomAI = availableAI[Math.floor(Math.random() * availableAI.length)];
+                handleAccept({ type: 'ai', username: randomAI.username }, requestId);
+            }
+        }, 15000);
+    }
+    
+    // ============ SETUP CHAT ============
+    function setupChatChannel(channelName, partnerName) {
+        if (chatChannel) supabase.removeChannel(chatChannel);
+        
+        chatChannel = supabase.channel(channelName);
         chatChannel.on('broadcast', { event: 'message' }, (payload) => {
             addMessage('stranger', payload.payload.text);
         });
         
-        chatChannel.subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-                // Berhasil subscribe, buka chat
-                currentPartner = partnerName;
-                openChat(partnerName);
-            }
+        chatChannel.subscribe(() => {
+            currentPartner = partnerName;
+            openChat(partnerName);
         });
     }
     
@@ -457,10 +528,7 @@
     async function sendMessage(text) {
         if (!chatChannel || !currentPartner) return;
         
-        // Tampilkan di UI sendiri
         addMessage('user', text);
-        
-        // Kirim ke partner via broadcast
         await chatChannel.send({
             type: 'broadcast',
             event: 'message',
@@ -468,84 +536,11 @@
         });
     }
     
-    // ============ LEAVE CHAT ============
-    async function leaveChat() {
-        if (chatChannel) {
-            // Hapus dari active_chats
-            await supabase
-                .from('active_chats')
-                .delete()
-                .eq('channel_name', chatChannel.topic);
-            
-            // Unsubscribe
-            supabase.removeChannel(chatChannel);
-            chatChannel = null;
-        }
-        
-        currentPartner = null;
-        closeChatUI();
-    }
-    
-    // ============ CHAT FUNCTIONS ============
-    function openChat(name) {
-        const pl = $('partnerLabel');
-        const ct = $('chatTimer');
-        const cr = $('chatRoom');
-        const cm = $('chatMessages');
-        const radarCont = $('radarCont');
-        const radarChat = $('radarChatContainer');
-        const radarInputWrapper = $('radarChatInputWrapper');
-        
-        if (pl) pl.textContent = name.toUpperCase();
-        if (ct) ct.textContent = '15:00';
-        
-        if (radarChatActive && radarChat) {
-            radarChat.style.display = 'flex';
-            radarChat.innerHTML = '<div class="radar-chat-header">✦ CHAT ✦</div>';
-            if (radarInputWrapper) radarInputWrapper.style.display = 'flex';
-            if (radarCont) radarCont.classList.add('chat-mode');
-            if (cr) cr.classList.remove('on');
-            
-            setTimeout(() => $('radarChatInput')?.focus(), 300);
-        } else {
-            if (cr) cr.classList.add('on');
-            if (cm) cm.innerHTML = '';
-            if (radarChat) radarChat.style.display = 'none';
-            if (radarInputWrapper) radarInputWrapper.style.display = 'none';
-        }
-    }
-    
-    function closeChatUI() {
-        const radarCont = $('radarCont');
-        const radarChat = $('radarChatContainer');
-        const radarInputWrapper = $('radarChatInputWrapper');
-        const cr = $('chatRoom');
-        
-        if (radarChat) {
-            radarChat.style.display = 'none';
-            radarChat.innerHTML = '<div class="radar-chat-header">✦ CHAT ✦</div>';
-        }
-        if (radarInputWrapper) radarInputWrapper.style.display = 'none';
-        if (radarCont) radarCont.classList.remove('chat-mode');
-        if (cr) cr.classList.remove('on');
-    }
-    
-    function addMessage(sender, text) {
-        let container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
-        if (!container) return;
-        
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
-        container.appendChild(msgDiv);
-    }
-    
-    // ============ AI CHAT (FALLBACK) ============
+    // ============ AI MESSAGE ============
     async function sendAIMessage(msg, first) {
         if (!currentPartner) return;
         if (!first) addMessage('user', msg);
         
-        showTyping();
         isTyping = true;
         
         try {
@@ -555,84 +550,137 @@
                 body: JSON.stringify({
                     message: msg || 'hai',
                     characterName: currentPartner,
-                    lastMessages: ch
+                    lastMessages: chatHistory
                 })
             });
             
             const data = await response.json();
-            
-            if (msg) ch.push({ role: 'assistant', content: data.reply });
-            
-            hideTyping();
+            if (msg) chatHistory.push({ role: 'assistant', content: data.reply });
             isTyping = false;
             addMessage('stranger', data.reply);
             
         } catch (error) {
-            hideTyping();
             isTyping = false;
             addMessage('stranger', '😅');
         }
     }
     
-    function showTyping() {
-        let container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
+    // ============ CHAT UI ============
+    function openChat(name) {
+        $('partnerLabel').textContent = name.toUpperCase();
+        $('chatTimer').textContent = '15:00';
+        
+        if (radarChatActive) {
+            $('radarChatContainer').style.display = 'flex';
+            $('radarChatInputWrapper').style.display = 'flex';
+            $('radarCont').classList.add('chat-mode');
+            $('chatRoom').classList.remove('on');
+            setTimeout(() => $('radarChatInput')?.focus(), 300);
+        } else {
+            $('chatRoom').classList.add('on');
+            $('chatMessages').innerHTML = '';
+        }
+    }
+    
+    function addMessage(sender, text) {
+        const container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
         if (!container) return;
         
-        const oldIndicator = document.getElementById('typingIndicator');
-        if (oldIndicator) oldIndicator.remove();
-        
-        const indicator = document.createElement('div');
-        indicator.className = 'typing-indicator';
-        indicator.id = 'typingIndicator';
-        indicator.innerHTML = 'Stranger mengetik <span class="typing-dots"><span></span><span></span><span></span></span>';
-        container.appendChild(indicator);
+        const msg = document.createElement('div');
+        msg.className = `message ${sender}`;
+        msg.textContent = text;
+        container.appendChild(msg);
     }
     
-    function hideTyping() {
-        const indicator = document.getElementById('typingIndicator');
-        if (indicator) indicator.remove();
+    function closeChatUI() {
+        $('radarChatContainer').style.display = 'none';
+        $('radarChatInputWrapper').style.display = 'none';
+        $('radarCont').classList.remove('chat-mode');
+        $('chatRoom').classList.remove('on');
     }
     
-    // ============ VIBE START ============
-    const startVibe = (gender) => {
+    // ============ START VIBE ============
+    function startVibe(gender) {
         if (isTyping) {
             toast('Tunggu sampai pesan terkirim');
             return;
         }
-        
         radarChatActive = true;
         findPartner(gender);
-    };
+    }
     
-    // ============ SEND MESSAGE WRAPPER ============
+    // ============ SEND WRAPPER ============
     const sendM = async (msg, first) => {
         if (!currentPartner) return;
         
-        // Check if it's AI or real user
-        if (aiChars.heart.includes(currentPartner) || aiChars.spade.includes(currentPartner)) {
-            // AI mode
+        if (AI_PERSONAS.some(ai => ai.username === currentPartner)) {
             await sendAIMessage(msg, first);
         } else {
-            // Real user mode via Supabase
             if (!first) await sendMessage(msg);
         }
     };
     
-    // ============ CLOSE CHAT ============
-    const closeChat = async () => {
+    // ============ LEAVE CHAT ============
+    async function leaveChat() {
         if (chatChannel) {
-            await leaveChat();
-        } else {
-            closeChatUI();
+            await supabase
+                .from('active_chats')
+                .delete()
+                .eq('channel_name', chatChannel.topic);
+            supabase.removeChannel(chatChannel);
+            chatChannel = null;
         }
         currentPartner = null;
-        ch = [];
+        chatHistory = [];
         isTyping = false;
         radarChatActive = false;
-    };
+        closeChatUI();
+    }
     
-    // ============ INIT RADAR ============
-    // (Radar animation code - copy dari yang lama)
+    // ============ REQUEST LISTENER ============
+    function setupRequestListener() {
+        const userChannel = supabase.channel(`user_${UID}`);
+        
+        userChannel.on('broadcast', { event: 'chat_request' }, (payload) => {
+            const { requestId, from, fromId } = payload.payload;
+            
+            if (confirm(`✨ @${from} ingin ngobrol. Terima?`)) {
+                const responseChannel = supabase.channel(`response_${requestId}`);
+                responseChannel.subscribe(() => {
+                    responseChannel.send({
+                        type: 'broadcast',
+                        event: 'request_response',
+                        payload: { accepted: true, fromId: UID, fromName: U }
+                    });
+                });
+                toast(`✨ Chat dengan @${from} akan dibuka`);
+            }
+        });
+        
+        userChannel.on('broadcast', { event: 'match_confirmed' }, (payload) => {
+            setupChatChannel(payload.payload.channel, payload.payload.partner);
+        });
+        
+        userChannel.subscribe();
+    }
+    
+    // ============ CLEANUP ============
+    window.addEventListener('beforeunload', async () => {
+        await supabase
+            .from('online_users')
+            .update({ status: 'offline' })
+            .eq('user_id', UID);
+        
+        if (isSearching) {
+            await supabase
+                .from('waiting_room')
+                .delete()
+                .eq('user_id', UID);
+        }
+        if (chatChannel) await leaveChat();
+    });
+    
+    // ============ RADAR ANIMATION ============
     let dots=[],needleAngle=0,needleSpin=0,phaseAngle=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,glowMap=new Map(),raf,rint;
     
     function initRadar(){
@@ -676,7 +724,6 @@
             ctx.fillStyle='rgba(2,10,2,.18)';
             ctx.fillRect(0,0,w,h);
             
-            // Gambar trail
             for(let i=0;i<119;i++){
                 let a=Math.pow(1-i/120,2.2)*.12;
                 if(a<.002)break;
@@ -686,7 +733,6 @@
                 ctx.fillStyle=`rgba(0,229,255,${a})`;ctx.fill();ctx.restore();
             }
             
-            // Gambar jarum utama
             ctx.save();ctx.translate(cx,cy);ctx.rotate(needleAngle);
             ctx.shadowColor='rgba(0,229,255,.95)';ctx.shadowBlur=12;
             let grad=ctx.createLinearGradient(0,0,R,0);
@@ -695,7 +741,6 @@
             ctx.shadowBlur=20;ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();
             ctx.restore();
             
-            // Efek glow
             dots.forEach((d,i)=>{
                 let px=d.x/100*w,py=d.y/100*h;
                 let da=Math.atan2(py-cy,px-cx);if(da<0)da+=Math.PI*2;
@@ -721,41 +766,29 @@
     // ============ SETTINGS ============
     function initSettings(){
         let b=$('settingsBtn'),d=$('settingsDropdown');
-        if(b&&d){
-            b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};
-            document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});
-        }
-        $('logoutBtn')?.addEventListener('click',()=>{localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);});
+        b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};
+        document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});
+        $('logoutBtn').onclick=()=>{localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);};
     }
     
     // ============ WHISPER ============
     function initWhisper(){
-        let b=$('whisperBtn'),o=$('whisperOverlay'),c=$('whisperCancel'),s=$('whisperSend'),tg=$('whisperTarget'),msg=$('whisperMessage');
-        if(!b||!o)return;
-        b.onclick=()=>o.classList.add('show');
-        c.onclick=()=>o.classList.remove('show');
-        s.onclick=async()=>{
+        let o=$('whisperOverlay'),tg=$('whisperTarget'),msg=$('whisperMessage');
+        $('whisperBtn').onclick=()=>o.classList.add('show');
+        $('whisperCancel').onclick=()=>o.classList.remove('show');
+        $('whisperSend').onclick=async()=>{
             let t=tg.value.trim().replace('@',''),m=msg.value.trim();
             if(!t||!m){toast('Isi semua field');return;}
             o.classList.remove('show');
             try{
                 await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from:U,to:t,message:m})});
                 toast('Whisper terkirim');
-            }catch(e){toast('Gagal mengirim whisper');}
+            }catch(e){toast('Gagal');}
         };
     }
     
-    // ============ NAV ============
-    const initNav=()=>{
-        let p=window.location.pathname.split('/').pop()||'spill.html';
-        document.querySelectorAll('.ni').forEach(i=>{
-            const href=i.getAttribute('href');
-            i.classList.toggle('act',href===p);
-        });
-    };
-    
     // ============ SPILLS ============
-    let entries=[],aiEntries=[];
+    let entries=[];
     async function loadSpills(){
         try{
             let res=await fetch(`${SUPABASE_URL}/rest/v1/entries?select=*&order=created_at.desc&limit=10`,{
@@ -766,172 +799,67 @@
                 author:e.username||'anon',
                 mood:e.mood||'chaotic',
                 content:e.content||'...',
-                reactions:e.reactions||{skull:0,cry:0,fire:0,upside:0},
-                created_at:e.created_at
+                reactions:e.reactions||{skull:0,cry:0,fire:0,upside:0}
             }));
         }catch(e){entries=[];}
-        
-        // Generate AI spills
-        let moods=['surviving','thriving','chaotic','doom'];
-        let contents={
-            surviving:['deadline skripsi makin deket 😮‍💨','capek banget hari ini 🥲'],
-            thriving:['alhamdulillah hari ini cuan! 💰','sidang kelar nilai A'],
-            chaotic:['client minta revisi jam 11 malem 🔥','hidup lagi kacau balau'],
-            doom:['motor mogok, dompet tipis 🫠','6 bulan nganggur']
-        };
-        aiEntries=[];
-        for(let i=0;i<6;i++){
-            let mood=moods[Math.floor(Math.random()*moods.length)];
-            aiEntries.push({
-                author:['sejuta.badai','agak.koplak','strawberry.shortcake','cinnamon.girl','satria.bajahitam','move.on'][Math.floor(Math.random()*6)],
-                mood:mood,
-                content:contents[mood][Math.floor(Math.random()*contents[mood].length)],
-                reactions:{
-                    skull:Math.floor(Math.random()*30)+5,
-                    cry:Math.floor(Math.random()*40)+10,
-                    fire:Math.floor(Math.random()*20)+1,
-                    upside:Math.floor(Math.random()*15)+2
-                }
-            });
-        }
-        
-        let all=[...entries,...aiEntries];
-        all.sort((a,b)=>new Date(b.created_at||Date.now())-new Date(a.created_at||Date.now()));
-        renderSpills(all);
+        renderSpills(entries);
     }
     
-    function renderSpills(all){
+    function renderSpills(spills){
         let c=$('spillsList'),meta=$('feedMeta');
-        if(!all||!all.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}
-        c.innerHTML=all.map((s,i)=>`
+        if(!spills.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}
+        c.innerHTML=spills.map(s=>`
             <div class="spill-card">
-                <div class="spill-header">
-                    <span class="spill-author">@${s.author}</span>
-                    <span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span>
-                </div>
+                <div class="spill-header"><span class="spill-author">@${s.author}</span></div>
                 <div class="spill-content">${s.content}</div>
-                <div class="spill-reactions">
-                    ${['skull','cry','fire','upside'].map(r=>`
-                        <button class="react-btn" onclick="reactToSpill(${i},'${r}')">
-                            ${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}
-                            <span class="react-count">${s.reactions[r]||0}</span>
-                        </button>
-                    `).join('')}
-                </div>
             </div>
         `).join('');
-        meta.textContent=all.length+' spill';
+        meta.textContent=spills.length+' spill';
     }
-    window.reactToSpill=(i,t)=>{toast(`➕ ${t}`);};
     
-    // ============ INIT RADAR CHAT INPUT ============
-    const initRadarChatInput = () => {
-        const radarInput = $('radarChatInput');
-        const radarSend = $('radarChatSend');
-        if (!radarInput || !radarSend) return;
-        
-        radarSend.onclick = async () => {
-            if (isTyping) {
-                toast('Tunggu sampai pesan terkirim');
-                return;
-            }
-            const msg = radarInput.value.trim();
-            if (!msg || !currentPartner) return;
-            radarInput.value = '';
-            await sendM(msg, false);
-        };
-        
-        radarInput.onkeypress = (e) => {
-            if (e.key === 'Enter' && !isTyping) {
-                radarSend.click();
-            }
-        };
-    };
-    
-    // ============ INIT CLOSE CHAT ============
-    const initCloseChat = () => {
-        const closeBtn = $('closeChatBtn');
-        if (closeBtn) {
-            closeBtn.onclick = closeChat;
-        }
-    };
-    
-    // ============ CLEANUP ON PAGE CLOSE ============
-    window.addEventListener('beforeunload', async () => {
-        if (isSearching) {
-            await supabase
-                .from('waiting_room')
-                .delete()
-                .eq('user_id', UID);
-        }
-        if (chatChannel) {
-            await leaveChat();
-        }
-    });
-    
-    // ============ LOAD EVENT ============
+    // ============ INIT ============
     window.addEventListener('load', async () => {
         $('userNameDisplay').textContent = '@' + U;
         
+        await updateOnlineStatus();
+        setupRequestListener();
         initRadar();
         initSettings();
         initWhisper();
-        initNav();
-        initRadarChatInput();
-        initCloseChat();
-        await loadSpills();
+        loadSpills();
         
-        // Sound toggle
-        let soundOn=false,audioCtx=null;
+        setInterval(updateOnlineCounter, 10000);
+        setInterval(() => updateOnlineStatus(), 30000);
+        updateOnlineCounter();
+        
         $('soundToggle').onclick=()=>{
-            soundOn=!soundOn;
-            $('soundToggle').textContent=soundOn?'🔊':'🔇';
-            if(soundOn&&!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();}
+            let s=!window.soundOn; window.soundOn=s;
+            $('soundToggle').textContent=s?'🔊':'🔇';
         };
         
-        // Vibe buttons
-        $('vibeFemaleBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            startVibe('heart');
-        });
-        $('vibeMaleBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            startVibe('spade');
-        });
+        $('vibeFemaleBtn').onclick=()=>startVibe('heart');
+        $('vibeMaleBtn').onclick=()=>startVibe('spade');
         
-        // Fallback chat
-        const send = $('sendButton');
-        const inp = $('chatInput');
-        if (send && inp) {
-            send.onclick = async () => {
-                if (isTyping) {
-                    toast('Tunggu sampai pesan terkirim');
-                    return;
-                }
-                const msg = inp.value.trim();
-                if (!msg || !currentPartner) return;
-                inp.value = '';
-                await sendM(msg, false);
-            };
-            inp.onkeypress = (e) => {
-                if (e.key === 'Enter' && !isTyping) send.click();
-            };
-        }
+        $('radarChatSend').onclick=async()=>{
+            if(isTyping)return;
+            let msg=$('radarChatInput').value.trim();
+            if(!msg||!currentPartner)return;
+            $('radarChatInput').value='';
+            await sendM(msg,false);
+        };
+        $('radarChatInput').onkeypress=e=>{if(e.key==='Enter'&&!isTyping)$('radarChatSend').click();};
+        
+        $('sendButton').onclick=async()=>{
+            if(isTyping)return;
+            let msg=$('chatInput').value.trim();
+            if(!msg||!currentPartner)return;
+            $('chatInput').value='';
+            await sendM(msg,false);
+        };
+        $('chatInput').onkeypress=e=>{if(e.key==='Enter'&&!isTyping)$('sendButton').click();};
+        
+        $('closeChatBtn').onclick=leaveChat;
     });
-        // ============ EXPOSE FUNCTIONS FOR TESTING ============
-    window.testFindPartner = findPartner;
-    window.testUID = UID;
-    window.testSupabase = supabase;
-    window.testAddToWaitingRoom = async (gender) => {
-        await supabase
-            .from('waiting_room')
-            .delete()
-            .eq('user_id', UID);
-        await supabase
-            .from('waiting_room')
-            .insert([{ user_id: UID, username: U, gender }]);
-        console.log('✅ Masuk waiting room, cek tabel!');
-    };
 })();
 </script>
 </body>
