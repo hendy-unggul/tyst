@@ -583,7 +583,31 @@
         }, 15000);
     }
     
-    
+    // ============ SETUP CHAT CHANNEL ============
+    function setupChatChannel(channelName, partnerName) {
+        console.log('🔧 SETUP CHAT CHANNEL:', { channelName, partnerName });
+        
+        if (chatChannel) {
+            console.log('🗑️ Removing old channel');
+            supabase.removeChannel(chatChannel);
+        }
+        
+        chatChannel = supabase.channel(channelName);
+        chatChannel.on('broadcast', { event: 'message' }, (payload) => {
+            console.log('💬 MESSAGE RECEIVED:', payload);
+            addMessage('stranger', payload.payload.text);
+        });
+        
+        chatChannel.subscribe((status) => {
+            console.log('📡 Chat channel status:', status);
+            if (status === 'SUBSCRIBED') {
+                console.log('✅ Chat channel siap!');
+                currentPartner = partnerName;
+                radarChatActive = true;
+                openChat(partnerName);
+            }
+        });
+    }
     
     // ============ SEND MESSAGE ============
     async function sendMessage(text) {
@@ -627,28 +651,44 @@
     }
     
     // ============ CHAT UI ============
-function openChat(name) {
-    console.log('💬 openChat dipanggil, radarChatActive:', radarChatActive);
-    console.log('💬 Nama partner:', name);
-    
-    // SET CURRENT PARTNER! (BARIS KRUSIAL INI HILANG)
-    currentPartner = name;
-    
-    $('partnerLabel').textContent = 'STRANGER';
-    $('chatTimer').textContent = '15:00';
-    
-    if (radarChatActive) {
-        console.log('✅ Menggunakan radar chat mode');
-        $('radarChatContainer').style.display = 'flex';
-        $('radarChatInputWrapper').style.display = 'flex';
-        $('radarCont').classList.add('chat-mode');
-        $('chatRoom').classList.remove('on');
-        setTimeout(() => $('radarChatInput')?.focus(), 300);
-    } else {
-        console.log('⚠️ Fallback ke chat room mode');
-        $('chatRoom').classList.add('on');
+    function openChat(name) {
+        console.log('💬 openChat dipanggil, radarChatActive:', radarChatActive);
+        console.log('💬 Nama partner:', name);
+        
+        currentPartner = name;
+        
+        $('partnerLabel').textContent = 'STRANGER';
+        $('chatTimer').textContent = '15:00';
+        
+        if (radarChatActive) {
+            console.log('✅ Menggunakan radar chat mode');
+            $('radarChatContainer').style.display = 'flex';
+            $('radarChatInputWrapper').style.display = 'flex';
+            $('radarCont').classList.add('chat-mode');
+            $('chatRoom').classList.remove('on');
+            setTimeout(() => $('radarChatInput')?.focus(), 300);
+        } else {
+            console.log('⚠️ Fallback ke chat room mode');
+            $('chatRoom').classList.add('on');
+        }
     }
-}
+    
+    function addMessage(sender, text) {
+        const container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
+        if (!container) return;
+        
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.textContent = text;
+        container.appendChild(msgDiv);
+    }
+    
+    function closeChatUI() {
+        $('radarChatContainer').style.display = 'none';
+        $('radarChatInputWrapper').style.display = 'none';
+        $('radarCont').classList.remove('chat-mode');
+        $('chatRoom').classList.remove('on');
+    }
     
     // ============ START VIBE ============
     function startVibe(gender) {
@@ -1020,29 +1060,30 @@ function openChat(name) {
         
         $('closeChatBtn').onclick = leaveChat;
     });
-    // ============ EXPOSE GLOBAL HELPERS ============
-window.forceShowChat = function() {
-    const container = document.getElementById('radarChatContainer');
-    const wrapper = document.getElementById('radarChatInputWrapper');
-    const radarCont = document.getElementById('radarCont');
     
-    if (container && wrapper && radarCont) {
-        container.style.display = 'flex';
-        wrapper.style.display = 'flex';
-        radarCont.classList.add('chat-mode');
-        console.log('✅ Chat dipaksa tampil');
-        return true;
-    }
-    return false;
-};
-
-window.getChatState = function() {
-    return {
-        currentPartner: currentPartner,
-        radarChatActive: radarChatActive,
-        chatChannel: !!chatChannel
+    // ============ EXPOSE GLOBAL HELPERS ============
+    window.forceShowChat = function() {
+        const container = document.getElementById('radarChatContainer');
+        const wrapper = document.getElementById('radarChatInputWrapper');
+        const radarCont = document.getElementById('radarCont');
+        
+        if (container && wrapper && radarCont) {
+            container.style.display = 'flex';
+            wrapper.style.display = 'flex';
+            radarCont.classList.add('chat-mode');
+            console.log('✅ Chat dipaksa tampil');
+            return true;
+        }
+        return false;
     };
-};
+    
+    window.getChatState = function() {
+        return {
+            currentPartner: currentPartner,
+            radarChatActive: radarChatActive,
+            chatChannel: !!chatChannel
+        };
+    };
 })();
 </script>
 </body>
