@@ -584,20 +584,22 @@
     }
     
     // ============ SETUP CHAT CHANNEL ============
-    function setupChatChannel(channelName, partnerName) {
-        if (chatChannel) supabase.removeChannel(chatChannel);
-        
-        chatChannel = supabase.channel(channelName);
-        chatChannel.on('broadcast', { event: 'message' }, (payload) => {
-            addMessage('stranger', payload.payload.text);
-        });
-        
-        chatChannel.subscribe(() => {
-            currentPartner = partnerName;
-            radarChatActive = true;
-            openChat(partnerName);
-        });
-    }
+function setupChatChannel(channelName, partnerName) {
+    if (chatChannel) supabase.removeChannel(chatChannel);
+    
+    chatChannel = supabase.channel(channelName);
+    chatChannel.on('broadcast', { event: 'message' }, (payload) => {
+        addMessage('stranger', payload.payload.text);
+    });
+    
+    chatChannel.subscribe(() => {
+        currentPartner = partnerName;
+        radarChatActive = true;
+        console.log('🔧 Chat channel siap, radarChatActive:', radarChatActive);
+        console.log('👥 Current partner:', currentPartner);
+        openChat(partnerName);
+    });
+}
     
     // ============ SEND MESSAGE ============
     async function sendMessage(text) {
@@ -641,20 +643,25 @@
     }
     
     // ============ CHAT UI ============
-    function openChat(name) {
-        $('partnerLabel').textContent = 'STRANGER';
-        $('chatTimer').textContent = '15:00';
-        
-        if (radarChatActive) {
-            $('radarChatContainer').style.display = 'flex';
-            $('radarChatInputWrapper').style.display = 'flex';
-            $('radarCont').classList.add('chat-mode');
-            $('chatRoom').classList.remove('on');
-            setTimeout(() => $('radarChatInput')?.focus(), 300);
-        } else {
-            $('chatRoom').classList.add('on');
-        }
+function openChat(name) {
+    console.log('💬 openChat dipanggil, radarChatActive:', radarChatActive);
+    console.log('💬 Nama partner:', name);
+    
+    $('partnerLabel').textContent = 'STRANGER';
+    $('chatTimer').textContent = '15:00';
+    
+    if (radarChatActive) {
+        console.log('✅ Menggunakan radar chat mode');
+        $('radarChatContainer').style.display = 'flex';
+        $('radarChatInputWrapper').style.display = 'flex';
+        $('radarCont').classList.add('chat-mode');
+        $('chatRoom').classList.remove('on');
+        setTimeout(() => $('radarChatInput')?.focus(), 300);
+    } else {
+        console.log('⚠️ Fallback ke chat room mode');
+        $('chatRoom').classList.add('on');
     }
+}
     
     function addMessage(sender, text) {
         const container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
