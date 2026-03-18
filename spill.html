@@ -583,23 +583,7 @@
         }, 15000);
     }
     
-    // ============ SETUP CHAT CHANNEL ============
-function setupChatChannel(channelName, partnerName) {
-    if (chatChannel) supabase.removeChannel(chatChannel);
     
-    chatChannel = supabase.channel(channelName);
-    chatChannel.on('broadcast', { event: 'message' }, (payload) => {
-        addMessage('stranger', payload.payload.text);
-    });
-    
-    chatChannel.subscribe(() => {
-        currentPartner = partnerName;
-        radarChatActive = true;
-        console.log('🔧 Chat channel siap, radarChatActive:', radarChatActive);
-        console.log('👥 Current partner:', currentPartner);
-        openChat(partnerName);
-    });
-}
     
     // ============ SEND MESSAGE ============
     async function sendMessage(text) {
