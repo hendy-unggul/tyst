@@ -1029,6 +1029,25 @@
         
         $('closeChatBtn').onclick=leaveChat;
     });
+    // ============ EXPOSE GLOBAL VARIABLES UNTUK TESTING ============
+window.testSupabase = supabase;
+window.testUID = UID;
+window.testU = U;
+window.test$ = $;
+window.testSendChatRequest = (toUserId) => {
+    const channel = supabase.channel(`user_${toUserId}`);
+    channel.subscribe(() => {
+        channel.send({
+            type: 'broadcast',
+            event: 'chat_request',
+            payload: {
+                requestId: `test_${Date.now()}`,
+                from: U,
+                fromId: UID
+            }
+        });
+    });
+};
 })();
 </script>
 </body>
