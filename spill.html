@@ -639,17 +639,25 @@
             }
         }
         
-        const responseChannel = supabase.channel(`response_${requestId}`);
-        responseChannel.on('broadcast', { event: 'request_response' }, (payload) => {
-            if (payload.payload.accepted) {
-                handleAccept({
-                    type: 'human',
-                    user_id: payload.payload.fromId,
-                    username: payload.payload.fromName
-                }, requestId);
-            }
-        });
-        responseChannel.subscribe();
+        // RESPONSE CHANNEL YANG LEBIH ROBUST
+const responseChannel = supabase.channel(`response_${requestId}`);
+responseChannel
+    .on('broadcast', { event: 'request_response' }, (payload) => {
+        console.log('📨 RESPONSE DITERIMA:', payload);
+        if (payload.payload.accepted) {
+            handleAccept({
+                type: 'human',
+                user_id: payload.payload.fromId,
+                username: payload.payload.fromName
+            }, requestId);
+        }
+    })
+    .subscribe((status) => {
+        console.log(`📡 Response channel status: ${status}`);
+        if (status === 'SUBSCRIBED') {
+            console.log('✅ Response channel siap, requestId:', requestId);
+        }
+    });
         
         searchTimeout = setTimeout(() => {
             if (isSearching && !accepted) {
