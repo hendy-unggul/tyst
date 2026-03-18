@@ -429,30 +429,35 @@
     }
     
     async function getOnlineCandidates(gender, limit = 5) {
-        const { data: humans } = await supabase
-            .from('online_users')
-            .select('user_id, username, last_seen')
-            .eq('status', 'online')
-            .neq('user_id', UID)
-            .order('last_seen', { ascending: false })
-            .limit(limit);
-        
-        const ais = AI_PERSONAS
-            .filter(ai => ai.gender === gender)
-            .map(ai => ({
-                user_id: ai.id,
-                username: ai.username,
-                type: 'ai',
-                last_seen: new Date().toISOString()
-            }));
-        
-        const all = [
-            ...(humans || []).map(h => ({ ...h, type: 'human' })),
-            ...ais
-        ];
-        
-        return all.slice(0, limit);
-    }
+    // Ambil human online - PASTIKAN BUKAN DIRI SENDIRI
+    const { data: humans } = await supabase
+        .from('online_users')
+        .select('user_id, username, last_seen')
+        .eq('status', 'online')
+        .neq('user_id', UID)  // SUDAH BENAR, TAPI COBA TAMBAHIN FILTER
+        .neq('user_id', '')    // Filter tambahan
+        .order('last_seen', { ascending: false })
+        .limit(limit + 5);     // Ambil lebih banyak buat jaga-jaga
+    
+    // Filter manual untuk pastiin ga ada UID
+    const filteredHumans = (humans || []).filter(h => h.user_id !== UID);
+    
+    const ais = AI_PERSONAS
+        .filter(ai => ai.gender === gender)
+        .map(ai => ({
+            user_id: ai.id,
+            username: ai.username,
+            type: 'ai',
+            last_seen: new Date().toISOString()
+        }));
+    
+    const all = [
+        ...filteredHumans.map(h => ({ ...h, type: 'human' })),
+        ...ais
+    ];
+    
+    return all.slice(0, limit);
+}
     
     async function updateOnlineCounter() {
         const { count } = await supabase
