@@ -816,6 +816,7 @@ responseChannel
             currentRequestId = requestId;
             currentRequester = { from, fromId };
             
+            console.log('📨 REQUEST DITERIMA:', { requestId, from }); // TAMBAHKAN LOG
             const modal = $('chatRequestModal');
             const fromSpan = $('chatRequestFrom');
             fromSpan.textContent = `@${from} ingin ngobrol`;
