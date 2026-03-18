@@ -895,6 +895,20 @@
             };
         }
     });
+        // ============ EXPOSE FUNCTIONS FOR TESTING ============
+    window.testFindPartner = findPartner;
+    window.testUID = UID;
+    window.testSupabase = supabase;
+    window.testAddToWaitingRoom = async (gender) => {
+        await supabase
+            .from('waiting_room')
+            .delete()
+            .eq('user_id', UID);
+        await supabase
+            .from('waiting_room')
+            .insert([{ user_id: UID, username: U, gender }]);
+        console.log('✅ Masuk waiting room, cek tabel!');
+    };
 })();
 </script>
 </body>
