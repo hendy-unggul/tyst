@@ -1050,6 +1050,29 @@ function openChat(name) {
         
         $('closeChatBtn').onclick = leaveChat;
     });
+    // ============ EXPOSE GLOBAL HELPERS ============
+window.forceShowChat = function() {
+    const container = document.getElementById('radarChatContainer');
+    const wrapper = document.getElementById('radarChatInputWrapper');
+    const radarCont = document.getElementById('radarCont');
+    
+    if (container && wrapper && radarCont) {
+        container.style.display = 'flex';
+        wrapper.style.display = 'flex';
+        radarCont.classList.add('chat-mode');
+        console.log('✅ Chat dipaksa tampil');
+        return true;
+    }
+    return false;
+};
+
+window.getChatState = function() {
+    return {
+        currentPartner: currentPartner,
+        radarChatActive: radarChatActive,
+        chatChannel: !!chatChannel
+    };
+};
 })();
 </script>
 </body>
