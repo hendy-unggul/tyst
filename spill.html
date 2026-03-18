@@ -647,6 +647,9 @@ function openChat(name) {
     console.log('💬 openChat dipanggil, radarChatActive:', radarChatActive);
     console.log('💬 Nama partner:', name);
     
+    // SET CURRENT PARTNER! (BARIS KRUSIAL INI HILANG)
+    currentPartner = name;
+    
     $('partnerLabel').textContent = 'STRANGER';
     $('chatTimer').textContent = '15:00';
     
@@ -662,23 +665,6 @@ function openChat(name) {
         $('chatRoom').classList.add('on');
     }
 }
-    
-    function addMessage(sender, text) {
-        const container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
-        if (!container) return;
-        
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
-        container.appendChild(msgDiv);
-    }
-    
-    function closeChatUI() {
-        $('radarChatContainer').style.display = 'none';
-        $('radarChatInputWrapper').style.display = 'none';
-        $('radarCont').classList.remove('chat-mode');
-        $('chatRoom').classList.remove('on');
-    }
     
     // ============ START VIBE ============
     function startVibe(gender) {
