@@ -313,98 +313,121 @@
     
     // ============ FIND PARTNER ============
     async function findPartner(gender) {
-        if (isSearching) return;
-        isSearching = true;
+    if (isSearching) return;
+    isSearching = true;
+    
+    // Tampilkan overlay scanning
+    $('radarScanningOverlay').classList.add('show');
+    
+    // Hapus dari waiting room kalo sebelumnya ada
+    await supabase
+        .from('waiting_room')
+        .delete()
+        .eq('user_id', UID);
+    
+    // Masuk ke waiting room
+    await supabase
+        .from('waiting_room')
+        .insert([{ 
+            user_id: UID, 
+            username: U,
+            gender: gender 
+        }]);
+    
+    // CEK APAKAH ADA PARTNER YANG SEDANG MENUNGGU
+    const { data: candidates } = await supabase
+        .from('waiting_room')
+        .select('*')
+        .eq('gender', gender)
+        .neq('user_id', UID)
+        .order('created_at', { ascending: true })
+        .limit(1);  // Ambil 1 yang paling lama nunggu
+    
+    if (candidates && candidates.length > 0) {
+        // ADA PARTNER! LANGSUNG MATCH
+        const partner = candidates[0];
         
-        // Tampilkan overlay scanning
-        $('radarScanningOverlay').classList.add('show');
+        console.log('✅ MATCH DITEMUKAN:', partner.username);
         
-        // Hapus dari waiting room kalo sebelumnya ada
+        // Hapus berdua dari waiting room
         await supabase
             .from('waiting_room')
             .delete()
             .eq('user_id', UID);
-        
-        // Masuk ke waiting room
         await supabase
             .from('waiting_room')
-            .insert([{ 
-                user_id: UID, 
-                username: U,
-                gender: gender 
+            .delete()
+            .eq('user_id', partner.user_id);
+        
+        // Buat channel chat
+        const channelName = `chat_${UID}_${partner.user_id}_${Date.now()}`;
+        
+        // Simpan ke active_chats
+        await supabase
+            .from('active_chats')
+            .insert([{
+                user1_id: UID,
+                user2_id: partner.user_id,
+                channel_name: channelName
             }]);
         
-        // Cari partner yang cocok (gender sama, bukan diri sendiri)
-        const { data: candidates } = await supabase
-            .from('waiting_room')
-            .select('*')
-            .eq('gender', gender)
-            .neq('user_id', UID)
-            .order('created_at', { ascending: false })
-            .limit(5);
+        // Setup channel untuk kedua user
+        setupChatChannel(channelName, partner.username);
         
-        if (candidates && candidates.length > 0) {
-            // Ada calon partner, pilih yang paling baru
-            const partner = candidates[0];
+        // Kasih tau partner lewat broadcast
+        supabase.channel('match_notification').send({
+            type: 'broadcast',
+            event: 'match_found',
+            payload: { 
+                channel: channelName,
+                partner: U,
+                partnerId: UID
+            }
+        });
+        
+    } else {
+        console.log('⏳ Belum ada partner, menunggu...');
+        
+        // Listen untuk dipanggil partner
+        const matchListener = supabase.channel('match_notification');
+        matchListener.on('broadcast', { event: 'match_found' }, (payload) => {
+            if (payload.payload.partnerId !== UID) return;
             
-            // Hapus dari waiting room
-            await supabase
-                .from('waiting_room')
-                .delete()
-                .eq('user_id', UID);
-            await supabase
-                .from('waiting_room')
-                .delete()
-                .eq('user_id', partner.user_id);
+            console.log('🎯 Dipanggil partner!');
             
-            // Buat channel chat
-            const channelName = `chat_${UID}_${partner.user_id}_${Date.now()}`;
-            
-            // Simpan ke active_chats
-            await supabase
-                .from('active_chats')
-                .insert([{
-                    user1_id: UID,
-                    user2_id: partner.user_id,
-                    channel_name: channelName
-                }]);
+            // Dapet match!
+            $('radarScanningOverlay').classList.remove('show');
+            isSearching = false;
             
             // Setup channel
-            setupChatChannel(channelName, partner.username);
+            setupChatChannel(payload.payload.channel, payload.payload.partner);
             
-        } else {
-            // Ga ada partner, tunggu 10 detik
-            setTimeout(() => {
-                // Cek lagi kalo masih nyari
-                if (isSearching) {
-                    $('radarScanningOverlay').classList.remove('show');
-                    isSearching = false;
-                    
-                    // Fallback ke AI
-                    const aiName = getRandomAI(gender);
-                    openChat(aiName);
-                    toast('Partner tidak ditemukan, coba dengan AI');
-                }
-            }, 10000);
-            
-            // Listen untuk dipanggil partner
-            const matchListener = supabase.channel('match_notification');
-            matchListener.on('broadcast', { event: 'match_found' }, (payload) => {
-                if (payload.payload.partnerId !== UID) return;
-                
-                // Dapet match!
+            // Bersihin listener
+            supabase.removeChannel(matchListener);
+        });
+        matchListener.subscribe();
+        
+        // Timeout 10 detik, fallback ke AI
+        setTimeout(() => {
+            if (isSearching) {
+                console.log('⏰ Timeout, fallback ke AI');
                 $('radarScanningOverlay').classList.remove('show');
                 isSearching = false;
                 
-                // Setup channel
-                setupChatChannel(payload.payload.channel, payload.payload.partner);
+                // Hapus dari waiting room
+                supabase
+                    .from('waiting_room')
+                    .delete()
+                    .eq('user_id', UID);
                 
-                // Bersihin listener
-                supabase.removeChannel(matchListener);
-            });
-            matchListener.subscribe();
-        }
+                // Fallback ke AI
+                const aiName = getRandomAI(gender);
+                openChat(aiName);
+                toast('Partner tidak ditemukan, coba dengan AI');
+            }
+        }, 10000);
     }
+}
     
     // ============ SETUP CHAT CHANNEL ============
     function setupChatChannel(channelName, partnerName) {
