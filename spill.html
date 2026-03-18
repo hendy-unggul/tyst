@@ -850,20 +850,22 @@ responseChannel
     
     // ============ MODAL HANDLERS ============
     $('chatRequestAccept').onclick = async () => {
-        if (currentRequestId) {
-            const responseChannel = supabase.channel(`response_${currentRequestId}`);
-            responseChannel.subscribe(() => {
-                responseChannel.send({
-                    type: 'broadcast',
-                    event: 'request_response',
-                    payload: { accepted: true, fromId: UID, fromName: U }
-                });
+    if (currentRequestId) {
+        console.log('📤 Mengirim response untuk request:', currentRequestId);
+        const responseChannel = supabase.channel(`response_${currentRequestId}`);
+        responseChannel.subscribe(() => {
+            responseChannel.send({
+                type: 'broadcast',
+                event: 'request_response',
+                payload: { accepted: true, fromId: UID, fromName: U }
             });
-            toast(`✨ Chat akan dibuka`);
-        }
-        $('chatRequestModal').style.display = 'none';
-        currentRequestId = null;
-    };
+            console.log('✅ Response terkirim');
+        });
+        toast(`✨ Chat akan dibuka`);
+    }
+    $('chatRequestModal').style.display = 'none';
+    currentRequestId = null;
+};
     
     $('chatRequestReject').onclick = () => {
         $('chatRequestModal').style.display = 'none';
