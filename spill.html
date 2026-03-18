@@ -11,76 +11,93 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         :root{
-            --bg:#0A0A0A;--sf:#141414;--bd:#2A2A2A;--bd2:#333;--tx:#FFF;--txs:#888;
+            --bg:#0A0A0A;--sf:#141414;--sfe:#1E1E1E;--bd:#2A2A2A;--bd2:#333;--tx:#FFF;--txs:#888;--txm:#555;
             --spill:#ff3b6f;--cocomeo:#00e5ff;--jejak:#9900ff;--glitch:#FFD700;
-            --ap:var(--spill);--as:var(--cocomeo);
+            --ap:var(--spill);--as:var(--cocomeo);--at:#FF006E;--aq:#bfff00;--aw:#FFD700;
+            --font-display:'Arial Black',sans-serif;--font-mono:'Courier New',monospace;--font-body:Arial,sans-serif
         }
-        body{background:var(--bg);color:var(--tx);height:100vh;display:flex;flex-direction:column}
-        .app{max-width:500px;margin:0 auto;width:100%;height:100vh;display:flex;flex-direction:column}
+        body{background:var(--bg);color:var(--tx);font-family:var(--font-body);height:100vh;display:flex;flex-direction:column}
+        .app{max-width:500px;margin:0 auto;width:100%;height:100vh;display:flex;flex-direction:column;background:var(--bg);border-left:2px solid var(--bd);border-right:2px solid var(--bd);position:relative}
         
         /* Header */
-        .header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:2px solid var(--bd);background:var(--sf)}
-        .logo{font-family:'Arial Black',sans-serif;font-size:34px}
+        .header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:2px solid var(--bd);background:var(--sf);position:relative}
+        .logo{font-family:var(--font-display);font-size:34px}
         .logo .x{color:var(--ap);display:inline-block;animation:spin 4s infinite}
         @keyframes spin{95%{transform:rotate(180deg)}}
-        .user-badge{background:#000;border:2px solid var(--bd);padding:4px 8px;color:var(--as);font-size:12px}
-        .settings-btn{width:30px;background:0 0;border:2px solid var(--bd2);color:var(--txs);cursor:pointer}
-        .settings-dropdown{position:absolute;top:60px;right:18px;background:var(--sf);border:2px solid var(--bd);display:none}
+        .user-section{display:flex;align-items:center;gap:12px}
+        .user-badge{font-family:var(--font-mono);background:#000;border:2px solid var(--bd);padding:4px 8px;color:var(--as);font-size:12px}
+        .settings-btn{width:30px;height:30px;background:0 0;border:2px solid var(--bd2);color:var(--txs);font-size:18px;cursor:pointer;border-radius:4px}
+        .settings-dropdown{position:absolute;top:60px;right:18px;background:var(--sf);border:2px solid var(--bd);box-shadow:6px 6px 0 #000;z-index:100;min-width:180px;display:none}
         .settings-dropdown.show{display:block}
-        .dropdown-item{padding:12px 16px;cursor:pointer}
+        .dropdown-item{padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--bd)}
         
-        /* Radar */
+        /* Scroll */
+        .scroll{flex:1;overflow-y:auto;padding-bottom:70px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
+        
+        /* Radar Section */
         .radar-sect{background:var(--sf);border-bottom:2px solid var(--bd)}
-        .radar-header{display:flex;justify-content:space-between;padding:14px 18px}
-        .radar-label{font-size:10px;color:var(--as)}
-        .online-badge{padding:6px 12px;border:1px solid var(--bd)}
+        .radar-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
+        .radar-label{font-family:var(--font-mono);font-size:10px;color:var(--as)}
+        .online-badge{background:rgba(0,0,0,.3);padding:6px 12px;border:1px solid var(--bd);font-family:var(--font-mono);font-size:11px}
         .radar-wrapper{padding:0 18px 16px}
-        .radar-bezel{padding:4px;background:var(--bg);border:2px solid var(--bd2)}
-        .radar-cont{position:relative;width:100%;aspect-ratio:1;background:#020a02;overflow:hidden}
+        .radar-bezel{position:relative;padding:4px;background:var(--bg);border:2px solid var(--bd2);box-shadow:6px 6px 0 #000}
+        .radar-cont{position:relative;width:100%;aspect-ratio:1;background:#020a02;overflow:hidden;border-radius:0}
+        .radar-cont.chat-mode{border-radius:24px;background:rgba(0,0,0,0.95)}
         .radar-grid{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(0,229,255,.04) 0,transparent 1px,transparent 28px),repeating-linear-gradient(90deg,rgba(0,229,255,.04) 0,transparent 1px,transparent 28px)}
-        .radar-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:10}
+        .radar-ring{position:absolute;inset:8%;border:1px solid rgba(0,229,255,.08);border-radius:50%}
+        .radar-ring::before{content:'';position:absolute;border-radius:50%;border:1px solid rgba(0,229,255,.05);inset:28%}
+        .radar-cross{position:absolute;inset:0;background:linear-gradient(90deg,transparent calc(50% - 1px),rgba(0,229,255,.06) calc(50% - 1px),rgba(0,229,255,.06) calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(0deg,transparent calc(50% - 1px),rgba(0,229,255,.06) calc(50% - 1px),rgba(0,229,255,.06) calc(50% + 1px),transparent calc(50% + 1px))}
+        .radar-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:10;display:block}
         .radar-dots{position:absolute;inset:0;z-index:5}
         .radar-dot{position:absolute;width:6px;height:6px;transform:translate(-50%,-50%) rotate(45deg);background:var(--as);opacity:.3}
-        .radar-dot.active{opacity:1;transform:scale(2.5)}
+        .radar-dot.active{opacity:1;transform:translate(-50%,-50%) rotate(45deg) scale(2.5)}
         
         /* Radar Chat */
         .radar-chat-container {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 100;
             display: none; flex-direction: column; justify-content: flex-end;
-            padding: 40px 12px 70px; overflow-y: auto; gap: 4px;
+            padding: 40px 12px 70px 12px; overflow-y: auto; color: var(--tx); gap: 4px;
         }
         .radar-chat-container .message {
             max-width: 85%; padding: 8px 12px; border-radius: 16px; font-size: 13px;
+            line-height: 1.4; word-wrap: break-word; margin-bottom: 2px; flex-shrink: 0;
         }
         .radar-chat-container .message.user {
             align-self: flex-end; background: var(--as); color: #000;
             border-bottom-right-radius: 4px;
         }
         .radar-chat-container .message.stranger {
-            align-self: flex-start; background: var(--sf); border:1px solid var(--bd2);
-            border-bottom-left-radius: 4px;
+            align-self: flex-start; background: var(--sf); color: var(--tx);
+            border: 1px solid var(--bd2); border-bottom-left-radius: 4px;
+        }
+        .radar-chat-container .typing-indicator {
+            align-self: flex-start; color: var(--txs); font-style: italic;
+            font-size: 11px; padding: 5px 10px; flex-shrink: 0;
         }
         .radar-chat-input-wrapper {
             position: absolute; bottom: 8px; left: 8px; right: 8px; display: flex;
-            gap: 6px; padding: 6px; background: rgba(20,20,20,0.95); border-radius: 30px;
+            gap: 6px; padding: 6px; background: rgba(20,20,20,0.95);
+            border: 2px solid var(--bd2); border-radius: 30px; z-index: 102;
         }
         .radar-chat-input {
-            flex: 1; padding: 10px 16px; background: var(--bg); border:2px solid var(--bd2);
-            color: var(--tx); border-radius: 30px; outline: none;
+            flex: 1; padding: 10px 16px; background: var(--bg); border: 2px solid var(--bd2);
+            color: var(--tx); border-radius: 30px; font-size: 14px; outline: none;
         }
         .radar-chat-send {
-            width: 44px; height: 44px; background: var(--ap); border:2px solid #000;
+            width: 44px; height: 44px; background: var(--ap); border: 2px solid #000;
             color: #fff; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; cursor: pointer;
+            justify-content: center; cursor: pointer; font-size: 18px;
         }
         .radar-chat-header {
             position: absolute; top: 8px; left: 0; right: 0; text-align: center;
+            font-family: var(--font-mono); font-size: 10px; color: var(--txs);
             background: rgba(0,0,0,0.5); width: fit-content; margin: 0 auto;
             padding: 4px 16px; border-radius: 20px; z-index: 103;
         }
         
-        /* FIFO: Hanya 5 pesan terakhir */
-        .radar-chat-container .message:nth-last-child(n+6) {
+        /* FIFO: Hanya 5 pesan terakhir yang tampil */
+        .radar-chat-container .message:nth-last-child(n+6),
+        .radar-chat-container .typing-indicator:nth-last-child(n+6) {
             display: none;
         }
         
@@ -88,62 +105,137 @@
         .radar-scanning-overlay {
             position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 50;
             display: none; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--as); font-family: var(--font-mono); backdrop-filter: blur(2px);
         }
         .radar-scanning-overlay.show { display: flex; }
-        .radar-scanning-text { font-size: 16px; margin-bottom: 20px; color: var(--as); }
-        .radar-scanning-progress { width: 80%; height: 2px; background: var(--bd2); margin:15px 0;}
+        .radar-scanning-text { font-size: 16px; text-align: center; margin-bottom: 20px; color: var(--as); }
+        .radar-scanning-progress { width: 80%; height: 2px; background: var(--bd2); margin: 15px 0; }
         .radar-scanning-bar { height: 100%; width: 0%; background: var(--as); transition: width 0.1s; }
+        .radar-scanning-dots { display: flex; gap: 8px; margin-top: 10px; }
+        .radar-scanning-dots span { width: 6px; height: 6px; background: var(--as); border-radius: 50%; animation: pulse 1.4s infinite; }
+        @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1;transform:scale(1.5)} }
         
         /* Buttons */
-        .radar-ctas{padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+        .radar-ctas{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
         .gender-row{display:flex;gap:10px}
-        .btn-gender{flex:1;padding:18px;border:2px solid #000;cursor:pointer;background:var(--sf)}
+        .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:18px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--sf);color:var(--tx)}
+        .btn-gender:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #000}
         .btn-heart{background:linear-gradient(145deg,var(--ap),#ff6b8b);color:#fff}
         .btn-spade{background:linear-gradient(145deg,var(--as),#4d7aff);color:#000}
-        .btn-whisper{width:100%;padding:14px;border:2px dashed var(--bd2);cursor:pointer}
+        .gender-icon{font-size:38px}
+        .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;color:var(--txs)}
         
         /* Spills */
         .spills-sect{padding:18px}
-        .spill-card{background:var(--sf);border:2px solid var(--bd2);margin-bottom:20px;padding:16px}
+        .sect-header{display:flex;justify-content:space-between;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
+        .spill-card{background:var(--sf);border:2px solid var(--bd2);margin-bottom:20px;padding:16px;box-shadow:4px 4px 0 #000}
+        .spill-header{display:flex;justify-content:space-between;margin-bottom:12px;font-family:var(--font-mono);font-size:12px}
         .spill-author{color:var(--as)}
-        .spill-content{font-size:14px;margin:12px 0}
+        .spill-mood{padding:4px 8px;font-size:10px;font-weight:700}
+        .spill-mood.surviving{background:var(--ap);color:#fff}
+        .spill-mood.thriving{background:var(--aq);color:#000}
+        .spill-mood.chaotic{background:var(--as);color:#000}
+        .spill-mood.doom{background:#9900ff;color:#fff}
+        .spill-content{font-size:14px;line-height:1.6;margin-bottom:12px}
+        .spill-reactions{display:flex;gap:8px;border-top:2px solid var(--bd);padding-top:12px}
+        .react-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--bg);border:2px solid var(--bd2);color:var(--txs);cursor:pointer}
         
         /* Bottom Nav */
-        .bnav{background:#050505;border-top:2px solid var(--bd);padding:8px 16px}
-        .bnav-c{display:flex;justify-content:space-around}
-        .ni{text-decoration:none;display:flex;flex-direction:column;align-items:center;color:var(--txs)}
+        .bnav{background:#050505;border-top:2px solid var(--bd);padding:8px 16px 12px;width:100%;max-width:500px;z-index:50}
+        .bnav-c{display:flex;justify-content:space-around;align-items:flex-end;gap:4px}
+        .ni{font-family:var(--font-mono);text-decoration:none;display:flex;flex-direction:column;align-items:center;padding:8px 0 4px;flex:1;color:var(--txs);gap:4px}
+        .nico{font-size:24px;font-weight:bold}
+        .ni span:last-child{font-size:10px;text-transform:uppercase}
         .ni[href="spill.html"]{color:var(--spill)}
+        .ni[href="jejak.html"]{color:var(--jejak)}
+        .ni[href="glitch.html"]{color:var(--glitch)}
+        .ni[href="cocomeo.html"]{color:var(--cocomeo)}
         .ni.act{color:var(--tx);transform:translateY(-4px)}
+        .ni.act .nico{transform:scale(1.2)}
         
         /* Fallback Chat */
         .chat-room{display:none;position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column}
         .chat-room.on{display:flex}
-        .chat-messages{flex:1;overflow-y:auto;padding:18px}
-        .chat-input-wrap{display:flex;gap:10px;padding:12px 18px}
-        .chat-input{flex:1;padding:13px;background:var(--bg);border:2px solid var(--bd2)}
-        .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;cursor:pointer}
+        .chat-head{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:2px solid var(--bd);background:var(--sf)}
+        .chat-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+        .chat-input-wrap{display:flex;gap:10px;padding:12px 18px;border-top:2px solid var(--bd)}
+        .chat-input{flex:1;padding:13px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);border-radius:8px}
+        .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;color:#fff;cursor:pointer;border-radius:8px}
+        .chat-close{width:40px;height:40px;background:var(--bg);border:2px solid var(--bd);color:var(--txs);cursor:pointer}
         
-        /* Modal */
-        #chatRequestModal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 9999; align-items: center; justify-content: center;
-        }
-        .modal-content {
-            background: var(--sf); border: 3px solid var(--as); padding: 25px;
-            max-width: 350px; text-align: center;
-        }
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .modal-btn { flex: 1; padding: 12px; border:2px solid #000; cursor: pointer; }
-        .modal-btn.accept { background: var(--as); color: #000; }
-        .modal-btn.reject { background: #333; color: #fff; }
-        
+        /* Toast */
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none}
         .toast.show{display:block}
+        
+        /* Whisper */
+        .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center}
+        .whisper-overlay.show{display:flex}
+        .whisper-box{background:var(--sf);border:3px solid var(--as);padding:25px;text-align:center;box-shadow:12px 12px 0 #000;max-width:350px;width:90%}
+        .whisper-input{width:100%;padding:15px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);margin:15px 0}
+        .whisper-actions{display:flex;gap:10px}
+        .whisper-btn{flex:1;padding:12px;border:2px solid #000;cursor:pointer}
+        .whisper-btn.send{background:var(--as);color:#000}
+        .whisper-btn.cancel{background:0 0;color:var(--txs)}
+        
+        /* Sound Toggle */
         .sound-toggle{position:fixed;bottom:80px;right:20px;width:44px;height:44px;background:rgba(0,0,0,.7);border:2px solid var(--as);border-radius:50%;color:var(--as);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100}
+        
+        /* Custom Modal untuk Chat Request */
+        #chatRequestModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+        }
+        .modal-content {
+            background: var(--sf);
+            border: 3px solid var(--as);
+            padding: 25px;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 12px 12px 0 #000;
+        }
+        .modal-title {
+            font-size: 24px;
+            color: var(--as);
+            margin-bottom: 15px;
+        }
+        .modal-from {
+            color: var(--tx);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #000;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .modal-btn.accept {
+            background: var(--as);
+            color: #000;
+        }
+        .modal-btn.reject {
+            background: #333;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 <div class="app">
+    <!-- Header -->
     <div class="header">
         <div class="logo">SP<span class="x">✕</span>LL</div>
         <div class="user-section">
@@ -155,7 +247,9 @@
         </div>
     </div>
     
+    <!-- Main Content -->
     <div class="scroll">
+        <!-- Radar Section -->
         <div class="radar-sect">
             <div class="radar-header">
                 <span class="radar-label">VIBE RADAR</span>
@@ -165,18 +259,24 @@
                 <div class="radar-bezel">
                     <div class="radar-cont" id="radarCont">
                         <div class="radar-grid"></div>
+                        <div class="radar-ring"></div>
+                        <div class="radar-cross"></div>
                         <canvas class="radar-canvas" id="radarCanvas"></canvas>
                         <div class="radar-dots" id="radarDots"></div>
                         
+                        <!-- Scanning Overlay -->
                         <div class="radar-scanning-overlay" id="radarScanningOverlay">
                             <div class="radar-scanning-text" id="radarScanningText">MENCARI LAWAN BICARA</div>
+                            <div class="radar-scanning-dots"><span></span><span></span><span></span></div>
                             <div class="radar-scanning-progress"><div class="radar-scanning-bar" id="radarScanningBar"></div></div>
                         </div>
                         
+                        <!-- Chat Container -->
                         <div class="radar-chat-container" id="radarChatContainer">
                             <div class="radar-chat-header">✦ CHAT ✦</div>
                         </div>
                         
+                        <!-- Chat Input -->
                         <div class="radar-chat-input-wrapper" id="radarChatInputWrapper" style="display:none">
                             <input type="text" class="radar-chat-input" id="radarChatInput" placeholder="Ketik pesan...">
                             <button class="radar-chat-send" id="radarChatSend">➤</button>
@@ -185,34 +285,42 @@
                 </div>
             </div>
             
+            <!-- Action Buttons -->
             <div class="radar-ctas">
                 <div class="gender-row">
-                    <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span>❤️</span><span>SOFT TALK</span></button>
-                    <button class="btn-gender btn-spade" id="vibeMaleBtn"><span>♠️</span><span>HOT TAKE</span></button>
+                    <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span class="gender-icon">❤️</span><span>SOFT TALK</span></button>
+                    <button class="btn-gender btn-spade" id="vibeMaleBtn"><span class="gender-icon">♠️</span><span>HOT TAKE</span></button>
                 </div>
                 <button class="btn-whisper" id="whisperBtn">✦ WHISPERER</button>
             </div>
         </div>
         
+        <!-- Spills Section -->
         <div class="spills-sect">
-            <div class="sect-header">SPILL TERKINI <span id="feedMeta">0 spill</span></div>
+            <div class="sect-header">
+                <span>SPILL TERKINI</span>
+                <span id="feedMeta">0 spill</span>
+            </div>
             <div id="spillsList"><div class="empty-state">🍃 MEMUAT SPILL...</div></div>
         </div>
     </div>
     
+    <!-- Bottom Nav -->
     <nav class="bnav">
         <div class="bnav-c">
-            <a href="spill.html" class="ni act">✕ Spill</a>
-            <a href="jejak.html" class="ni">◈ Jejak</a>
-            <a href="glitch.html" class="ni">‼ Glitch</a>
-            <a href="cocomeo.html" class="ni">〜 Cocomeo</a>
+            <a href="spill.html" class="ni act"><span class="nico">✕</span><span>Spill</span></a>
+            <a href="jejak.html" class="ni"><span class="nico">◈</span><span>Jejak</span></a>
+            <a href="glitch.html" class="ni"><span class="nico">‼</span><span>Glitch</span></a>
+            <a href="cocomeo.html" class="ni"><span class="nico">〜</span><span>Cocomeo</span></a>
         </div>
     </nav>
 </div>
 
+<!-- Fallback Chat -->
 <div class="chat-room" id="chatRoom">
     <div class="chat-head">
         <span id="partnerLabel">STRANGER</span>
+        <span class="chat-timer" id="chatTimer">15:00</span>
         <button class="chat-close" id="closeChatBtn">✕</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
@@ -222,11 +330,12 @@
     </div>
 </div>
 
+<!-- Whisper Modal -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-box">
         <div class="whisper-title">✦ WHISPERER</div>
-        <input type="text" id="whisperTarget" placeholder="@username">
-        <textarea id="whisperMessage" placeholder="Tulis pesan rahasia..."></textarea>
+        <input type="text" class="whisper-input" id="whisperTarget" placeholder="@username">
+        <textarea class="whisper-input" id="whisperMessage" placeholder="Tulis pesan rahasia..."></textarea>
         <div class="whisper-actions">
             <button class="whisper-btn cancel" id="whisperCancel">BATAL</button>
             <button class="whisper-btn send" id="whisperSend">KIRIM</button>
@@ -234,10 +343,17 @@
     </div>
 </div>
 
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Sound Toggle -->
+<div class="sound-toggle" id="soundToggle">🔊</div>
+
+<!-- Custom Modal untuk Chat Request -->
 <div id="chatRequestModal">
     <div class="modal-content">
         <div class="modal-title">✦ CHAT REQUEST ✦</div>
-        <div class="modal-from" id="chatRequestFrom">✨ Seseorang ingin ngobrol</div>
+        <div class="modal-from" id="chatRequestFrom">@username</div>
         <div class="modal-actions">
             <button class="modal-btn accept" id="chatRequestAccept">TERIMA</button>
             <button class="modal-btn reject" id="chatRequestReject">TOLAK</button>
@@ -245,294 +361,578 @@
     </div>
 </div>
 
-<div class="toast" id="toast"></div>
-<div class="sound-toggle" id="soundToggle">🔊</div>
-
 <script>
 (function(){
+    // ============ SUPABASE CONFIG ============
     const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
+    // ============ USER ============
     const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
     if(localStorage.getItem(K.l)!=='true'){window.location.href='index.html';return;}
     const U=localStorage.getItem(K.u),UID=localStorage.getItem(K.i);
     
+    // ============ UTILS ============
     const $=id=>document.getElementById(id);
     const toast=(msg)=>{let o=$('toast');if(o){o.textContent=msg;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),3000);}};
     
+    // ============ AI PERSONAS ============
     const AI_PERSONAS = [
-        {id:'ai_beby',username:'beby.manis',gender:'heart'},{id:'ai_pretty',username:'pretty.sad',gender:'heart'},
-        {id:'ai_strawberry',username:'strawberry.shortcake',gender:'heart'},{id:'ai_cinnamon',username:'cinnamon.girl',gender:'heart'},
-        {id:'ai_moveon',username:'move.on',gender:'heart'},{id:'ai_agak',username:'agak.koplak',gender:'spade'},
-        {id:'ai_chili',username:'chili.padi',gender:'spade'},{id:'ai_sejuta',username:'sejuta.badai',gender:'spade'},
-        {id:'ai_satria',username:'satria.bajahitam',gender:'spade'},{id:'ai_bangjuned',username:'bang.juned',gender:'spade'}
+        { id: 'ai_beby', username: 'beby.manis', gender: 'heart', type: 'ai' },
+        { id: 'ai_pretty', username: 'pretty.sad', gender: 'heart', type: 'ai' },
+        { id: 'ai_strawberry', username: 'strawberry.shortcake', gender: 'heart', type: 'ai' },
+        { id: 'ai_cinnamon', username: 'cinnamon.girl', gender: 'heart', type: 'ai' },
+        { id: 'ai_moveon', username: 'move.on', gender: 'heart', type: 'ai' },
+        { id: 'ai_agak', username: 'agak.koplak', gender: 'spade', type: 'ai' },
+        { id: 'ai_chili', username: 'chili.padi', gender: 'spade', type: 'ai' },
+        { id: 'ai_sejuta', username: 'sejuta.badai', gender: 'spade', type: 'ai' },
+        { id: 'ai_satria', username: 'satria.bajahitam', gender: 'spade', type: 'ai' },
+        { id: 'ai_bangjuned', username: 'bang.juned', gender: 'spade', type: 'ai' }
     ];
     
-    let currentPartner=null,chatChannel=null,isSearching=false,radarChatActive=false,isTyping=false;
-    let chatHistory=[],heartbeatInterval=null,searchTimeout=null,currentRequestId=null;
+    // ============ CHAT STATE ============
+    let currentPartner = null;
+    let chatChannel = null;
+    let isSearching = false;
+    let radarChatActive = false;
+    let isTyping = false;
+    let chatHistory = [];
+    let heartbeatInterval = null;
+    let searchTimeout = null;
+    let currentRequestId = null;
+    let currentRequester = null;
     
-    async function updateOnlineStatus(status='online'){
-        await supabase.from('online_users').upsert({user_id:UID,username:U,last_seen:new Date().toISOString(),status});
+    // ============ ONLINE USERS MANAGEMENT ============
+    async function updateOnlineStatus(status = 'online') {
+        try {
+            await supabase
+                .from('online_users')
+                .upsert({ 
+                    user_id: UID, 
+                    username: U, 
+                    last_seen: new Date().toISOString(),
+                    status: status 
+                });
+        } catch (e) {}
     }
     
-    async function getOnlineCandidates(gender,limit=5){
-        const {data:humans}=await supabase.from('online_users').select('user_id,username').eq('status','online').neq('user_id',UID).order('last_seen',{ascending:false}).limit(limit*2);
-        const filtered=humans?humans.filter(h=>h.user_id!==UID):[];
-        const ais=AI_PERSONAS.filter(ai=>ai.gender===gender).map(ai=>({user_id:ai.id,username:ai.username,type:'ai'}));
-        return [...filtered.map(h=>({...h,type:'human'})),...ais].slice(0,limit);
+    async function removeFromOnline() {
+        await supabase.from('online_users').delete().eq('user_id', UID);
     }
     
-    async function checkWaitingRoom(gender){
-        const {data:waiters}=await supabase.from('waiting_room').select('*').eq('gender',gender).neq('user_id',UID).limit(1);
-        if(waiters?.length){
-            const p=waiters[0];
-            await supabase.from('waiting_room').delete().eq('user_id',UID);
-            await supabase.from('waiting_room').delete().eq('user_id',p.user_id);
-            const channelName=`chat_${UID}_${p.user_id}_${Date.now()}`;
-            await supabase.from('active_chats').insert([{user1_id:UID,user2_id:p.user_id,channel_name:channelName}]);
-            setupChatChannel(channelName,p.username);
+    async function getOnlineCandidates(gender, limit = 5) {
+        const { data: humans } = await supabase
+            .from('online_users')
+            .select('user_id, username')
+            .eq('status', 'online')
+            .neq('user_id', UID)
+            .order('last_seen', { ascending: false })
+            .limit(limit * 2);
+        
+        const filteredHumans = (humans || []).filter(h => h.user_id !== UID);
+        const ais = AI_PERSONAS.filter(ai => ai.gender === gender).map(ai => ({
+            user_id: ai.id, username: ai.username, type: 'ai'
+        }));
+        
+        return [...filteredHumans.map(h => ({ ...h, type: 'human' })), ...ais].slice(0, limit);
+    }
+    
+    async function updateOnlineCounter() {
+        const { count } = await supabase
+            .from('online_users')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'online');
+        
+        const total = (count || 0) + AI_PERSONAS.length;
+        $('onlineCount').innerHTML = total + ' ONLINE';
+    }
+    
+    // ============ WAITING ROOM MANAGEMENT ============
+    async function checkWaitingRoom(gender) {
+        const { data: waiters } = await supabase
+            .from('waiting_room')
+            .select('*')
+            .eq('gender', gender)
+            .neq('user_id', UID)
+            .limit(1);
+        
+        if (waiters && waiters.length > 0) {
+            const partner = waiters[0];
+            
+            await supabase.from('waiting_room').delete().eq('user_id', UID);
+            await supabase.from('waiting_room').delete().eq('user_id', partner.user_id);
+            
+            const channelName = `chat_${UID}_${partner.user_id}_${Date.now()}`;
+            
+            await supabase.from('active_chats').insert([{
+                user1_id: UID,
+                user2_id: partner.user_id,
+                channel_name: channelName
+            }]);
+            
+            setupChatChannel(channelName, partner.username);
             return true;
         }
         return false;
     }
     
-    async function findPartner(gender){
-        if(isSearching)return; isSearching=true;
+    // ============ FIND PARTNER WITH BLAST ============
+    async function findPartner(gender) {
+        if (isSearching) return;
+        isSearching = true;
+        
         $('radarScanningOverlay').classList.add('show');
         await updateOnlineStatus('online');
-        if(await checkWaitingRoom(gender)){$('radarScanningOverlay').classList.remove('show');isSearching=false;return;}
-        await supabase.from('waiting_room').insert([{user_id:UID,username:U,gender}]);
-        const candidates=await getOnlineCandidates(gender,5);
-        if(!candidates.length){
-            setTimeout(()=>{if(isSearching){$('radarScanningOverlay').classList.remove('show');isSearching=false;openChat(AI_PERSONAS.find(ai=>ai.gender===gender).username);}},3000);
+        
+        if (await checkWaitingRoom(gender)) {
+            $('radarScanningOverlay').classList.remove('show');
+            isSearching = false;
             return;
         }
-        console.log('📢 Blast:',candidates.map(c=>c.type==='ai'?'🤖 '+c.username:'👤 '+c.username).join(', '));
-        const requestId=`${UID}_${Date.now()}`;
-        let accepted=false;
         
-        candidates.forEach(c=>{
-            if(c.type==='ai') setTimeout(()=>{if(!accepted&&isSearching) handleAccept(c,requestId);},2000+Math.random()*3000);
-            else{
-                const ch=supabase.channel(`user_${c.user_id}`);
-                ch.subscribe(()=>ch.send({type:'broadcast',event:'chat_request',payload:{requestId,from:U,fromId:UID}}));
-                setTimeout(()=>supabase.removeChannel(ch),1000);
+        await supabase.from('waiting_room').insert([{ user_id: UID, username: U, gender }]);
+        
+        const candidates = await getOnlineCandidates(gender, 5);
+        
+        if (candidates.length === 0) {
+            setTimeout(() => {
+                if (isSearching) {
+                    $('radarScanningOverlay').classList.remove('show');
+                    isSearching = false;
+                    const aiName = AI_PERSONAS.find(ai => ai.gender === gender).username;
+                    openChat(aiName);
+                }
+            }, 3000);
+            return;
+        }
+        
+        console.log('📢 Blast:', candidates.map(c => c.type === 'ai' ? '🤖 ' + c.username : '👤 ' + c.username).join(', '));
+        
+        const requestId = `${UID}_${Date.now()}`;
+        let accepted = false;
+        
+        candidates.forEach(candidate => {
+            if (candidate.type === 'ai') {
+                setTimeout(() => {
+                    if (!accepted && isSearching) handleAccept(candidate, requestId);
+                }, 2000 + Math.random() * 3000);
+            } else {
+                const userChannel = supabase.channel(`user_${candidate.user_id}`);
+                userChannel.subscribe(() => {
+                    userChannel.send({
+                        type: 'broadcast',
+                        event: 'chat_request',
+                        payload: { requestId, from: U, fromId: UID }
+                    });
+                });
+                setTimeout(() => supabase.removeChannel(userChannel), 1000);
             }
         });
         
-        function handleAccept(acceptor,reqId){
-            if(accepted) return; accepted=true;
-            $('radarScanningOverlay').classList.remove('show'); isSearching=false;
-            supabase.from('waiting_room').delete().eq('user_id',UID);
-            if(acceptor.type==='ai') openChat(acceptor.username);
-            else{
-                const channelName=`chat_${UID}_${acceptor.user_id}_${Date.now()}`;
-                supabase.from('active_chats').insert([{user1_id:UID,user2_id:acceptor.user_id,channel_name:channelName}]);
-                setupChatChannel(channelName,acceptor.username);
-                const pch=supabase.channel(`user_${acceptor.user_id}`);
-                pch.subscribe(()=>pch.send({type:'broadcast',event:'match_confirmed',payload:{channel:channelName,partner:U,partnerId:UID}}));
+        function handleAccept(acceptor, reqId) {
+            if (accepted) return;
+            accepted = true;
+            
+            $('radarScanningOverlay').classList.remove('show');
+            isSearching = false;
+            supabase.from('waiting_room').delete().eq('user_id', UID);
+            
+            if (acceptor.type === 'ai') {
+                openChat(acceptor.username);
+            } else {
+                const channelName = `chat_${UID}_${acceptor.user_id}_${Date.now()}`;
+                supabase.from('active_chats').insert([{
+                    user1_id: UID,
+                    user2_id: acceptor.user_id,
+                    channel_name: channelName
+                }]);
+                
+                setupChatChannel(channelName, acceptor.username);
+                
+                const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
+                partnerChannel.subscribe(() => {
+                    partnerChannel.send({
+                        type: 'broadcast',
+                        event: 'match_confirmed',
+                        payload: { channel: channelName, partner: U, partnerId: UID }
+                    });
+                });
             }
         }
         
-        const responseChannel=supabase.channel(`response_${requestId}`);
-        responseChannel.on('broadcast',{event:'request_response'},(p)=>{
-            if(p.payload.accepted) handleAccept({type:'human',user_id:p.payload.fromId,username:p.payload.fromName},requestId);
-        }).subscribe();
+        // RESPONSE CHANNEL
+        const responseChannel = supabase.channel(`response_${requestId}`);
+        responseChannel
+            .on('broadcast', { event: 'request_response' }, (payload) => {
+                if (payload.payload.accepted) {
+                    handleAccept({
+                        type: 'human',
+                        user_id: payload.payload.fromId,
+                        username: payload.payload.fromName
+                    }, requestId);
+                }
+            })
+            .subscribe();
         
-        searchTimeout=setTimeout(()=>{
-            if(isSearching&&!accepted){
-                const randomAI=AI_PERSONAS.filter(ai=>ai.gender===gender)[Math.floor(Math.random()*5)];
-                handleAccept({type:'ai',username:randomAI.username},requestId);
+        searchTimeout = setTimeout(() => {
+            if (isSearching && !accepted) {
+                const randomAI = AI_PERSONAS.filter(ai => ai.gender === gender)[Math.floor(Math.random() * 5)];
+                handleAccept({ type: 'ai', username: randomAI.username }, requestId);
             }
-        },15000);
+        }, 15000);
     }
     
-    function setupChatChannel(channelName,partnerName){
-        if(chatChannel) supabase.removeChannel(chatChannel);
-        chatChannel=supabase.channel(channelName);
-        chatChannel.on('broadcast',{event:'message'},(p)=>addMessage('stranger',p.payload.text));
-        chatChannel.subscribe(()=>{currentPartner=partnerName; radarChatActive=true; openChat(partnerName);});
+    // ============ SETUP CHAT CHANNEL ============
+    function setupChatChannel(channelName, partnerName) {
+        if (chatChannel) supabase.removeChannel(chatChannel);
+        
+        chatChannel = supabase.channel(channelName);
+        chatChannel.on('broadcast', { event: 'message' }, (payload) => {
+            addMessage('stranger', payload.payload.text);
+        });
+        
+        chatChannel.subscribe(() => {
+            currentPartner = partnerName;
+            radarChatActive = true; // PENTING: SET TRUE UNTUK PENERIMA
+            openChat(partnerName);
+        });
     }
     
-    async function sendMessage(text){
-        addMessage('user',text);
-        await chatChannel?.send({type:'broadcast',event:'message',payload:{text}});
+    // ============ SEND MESSAGE ============
+    async function sendMessage(text) {
+        if (!chatChannel || !currentPartner) return;
+        
+        addMessage('user', text);
+        await chatChannel.send({
+            type: 'broadcast',
+            event: 'message',
+            payload: { text }
+        });
     }
     
-    function addMessage(sender,text){
-        const c=radarChatActive?$('radarChatContainer'):$('chatMessages');
-        if(c){let m=document.createElement('div');m.className=`message ${sender}`;m.textContent=text;c.appendChild(m);}
+    // ============ AI MESSAGE ============
+    async function sendAIMessage(msg, first) {
+        if (!currentPartner) return;
+        if (!first) addMessage('user', msg);
+        
+        isTyping = true;
+        
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: msg || 'hai',
+                    characterName: currentPartner,
+                    lastMessages: chatHistory
+                })
+            });
+            
+            const data = await response.json();
+            if (msg) chatHistory.push({ role: 'assistant', content: data.reply });
+            isTyping = false;
+            addMessage('stranger', data.reply);
+            
+        } catch (error) {
+            isTyping = false;
+            addMessage('stranger', '😅');
+        }
     }
     
-    function openChat(name){
-        $('partnerLabel').textContent='STRANGER';
-        if(radarChatActive){
-            $('radarChatContainer').style.display='flex';
-            $('radarChatInputWrapper').style.display='flex';
+    // ============ CHAT UI ============
+    function openChat(name) {
+        $('partnerLabel').textContent = 'STRANGER';
+        $('chatTimer').textContent = '15:00';
+        
+        if (radarChatActive) {
+            $('radarChatContainer').style.display = 'flex';
+            $('radarChatInputWrapper').style.display = 'flex';
             $('radarCont').classList.add('chat-mode');
             $('chatRoom').classList.remove('on');
-        } else $('chatRoom').classList.add('on');
+            setTimeout(() => $('radarChatInput')?.focus(), 300);
+        } else {
+            $('chatRoom').classList.add('on');
+        }
     }
     
-    function startVibe(gender){radarChatActive=true; findPartner(gender);}
+    function addMessage(sender, text) {
+        const container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
+        if (!container) return;
+        
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.textContent = text;
+        container.appendChild(msgDiv);
+    }
     
-    const sendM=async (msg,first)=>{
-        if(!currentPartner)return;
-        if(AI_PERSONAS.some(ai=>ai.username===currentPartner)){
-            if(!first)addMessage('user',msg);
-            isTyping=true;
-            try{
-                const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg||'hai',characterName:currentPartner,lastMessages:chatHistory})});
-                const d=await r.json();
-                if(msg) chatHistory.push({role:'assistant',content:d.reply});
-                isTyping=false; addMessage('stranger',d.reply);
-            }catch(e){isTyping=false; addMessage('stranger','😅');}
-        } else if(!first) await sendMessage(msg);
+    function closeChatUI() {
+        $('radarChatContainer').style.display = 'none';
+        $('radarChatInputWrapper').style.display = 'none';
+        $('radarCont').classList.remove('chat-mode');
+        $('chatRoom').classList.remove('on');
+    }
+    
+    // ============ START VIBE ============
+    function startVibe(gender) {
+        radarChatActive = true;
+        findPartner(gender);
+    }
+    
+    // ============ SEND WRAPPER ============
+    const sendM = async (msg, first) => {
+        if (!currentPartner) return;
+        
+        if (AI_PERSONAS.some(ai => ai.username === currentPartner)) {
+            await sendAIMessage(msg, first);
+        } else {
+            if (!first) await sendMessage(msg);
+        }
     };
     
-    async function leaveChat(){
-        if(chatChannel){
-            await supabase.from('active_chats').delete().eq('channel_name',chatChannel.topic);
-            supabase.removeChannel(chatChannel); chatChannel=null;
+    // ============ LEAVE CHAT ============
+    async function leaveChat() {
+        if (chatChannel) {
+            await supabase.from('active_chats').delete().eq('channel_name', chatChannel.topic);
+            supabase.removeChannel(chatChannel);
+            chatChannel = null;
         }
-        currentPartner=null; chatHistory=[]; isTyping=false; radarChatActive=false;
-        $('radarChatContainer').style.display='none'; $('radarChatInputWrapper').style.display='none';
-        $('radarCont').classList.remove('chat-mode'); $('chatRoom').classList.remove('on');
+        
+        currentPartner = null;
+        chatHistory = [];
+        isTyping = false;
+        radarChatActive = false;
+        closeChatUI();
     }
     
-    function setupRequestListener(){
-        const userChannel=supabase.channel(`user_${UID}`);
-        userChannel.on('broadcast',{event:'chat_request'},(p)=>{
-            currentRequestId=p.payload.requestId;
-            $('chatRequestFrom').textContent='✨ Seseorang ingin ngobrol';
-            $('chatRequestModal').style.display='flex';
+    // ============ REQUEST LISTENER ============
+    function setupRequestListener() {
+        const userChannel = supabase.channel(`user_${UID}`);
+        
+        userChannel.on('broadcast', { event: 'chat_request' }, (payload) => {
+            currentRequestId = payload.payload.requestId;
+            $('chatRequestFrom').textContent = `@${payload.payload.from} ingin ngobrol`;
+            $('chatRequestModal').style.display = 'flex';
         });
-        userChannel.on('broadcast',{event:'match_confirmed'},(p)=>setupChatChannel(p.payload.channel,p.payload.partner));
+        
+        userChannel.on('broadcast', { event: 'match_confirmed' }, (payload) => {
+            setupChatChannel(payload.payload.channel, payload.payload.partner);
+        });
+        
         userChannel.subscribe();
     }
     
-    $('chatRequestAccept').onclick=()=>{
-        if(currentRequestId){
-            const rc=supabase.channel(`response_${currentRequestId}`);
-            rc.subscribe(()=>rc.send({type:'broadcast',event:'request_response',payload:{accepted:true,fromId:UID,fromName:U}}));
+    // ============ MODAL HANDLERS ============
+    $('chatRequestAccept').onclick = async () => {
+        if (currentRequestId) {
+            const responseChannel = supabase.channel(`response_${currentRequestId}`);
+            responseChannel.subscribe(() => {
+                responseChannel.send({
+                    type: 'broadcast',
+                    event: 'request_response',
+                    payload: { accepted: true, fromId: UID, fromName: U }
+                });
+            });
         }
-        $('chatRequestModal').style.display='none';
+        $('chatRequestModal').style.display = 'none';
     };
-    $('chatRequestReject').onclick=()=>{$('chatRequestModal').style.display='none';};
     
-    window.addEventListener('beforeunload',async ()=>{
-        clearInterval(heartbeatInterval); clearTimeout(searchTimeout);
-        await supabase.from('online_users').delete().eq('user_id',UID);
-        await supabase.from('waiting_room').delete().eq('user_id',UID);
-        if(chatChannel) await leaveChat();
+    $('chatRequestReject').onclick = () => {
+        $('chatRequestModal').style.display = 'none';
+    };
+    
+    // ============ CLEANUP ============
+    window.addEventListener('beforeunload', async () => {
+        clearInterval(heartbeatInterval);
+        clearTimeout(searchTimeout);
+        await removeFromOnline();
+        await supabase.from('waiting_room').delete().eq('user_id', UID);
+        if (chatChannel) await leaveChat();
     });
     
-    // Radar animation
-    let dots=[],needleAngle=0,needleSpin=0,phaseAngle=Math.random()*Math.PI*2,raf;
-    function initRadar(){
-        let cv=$('radarCanvas'),ct=$('radarCont');
-        if(!cv||!ct)return;
-        let resize=()=>{let r=ct.getBoundingClientRect();if(r.width){cv.width=r.width;cv.height=r.height;}};
-        resize(); window.addEventListener('resize',resize);
+    // ============ RADAR ANIMATION ============
+    let dots = [], needleAngle = 0, needleSpin = 0, phaseAngle = Math.random() * Math.PI * 2, raf;
+    
+    function initRadar() {
+        let cv = $('radarCanvas'), ct = $('radarCont');
+        if (!cv || !ct) return;
+        
+        let resize = () => {
+            let r = ct.getBoundingClientRect();
+            if (r.width > 0) { cv.width = r.width; cv.height = r.height; }
+        };
+        resize(); window.addEventListener('resize', resize);
         spawnDots();
-        setInterval(()=>{
-            dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;
-            d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));
-            if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});
-        },100);
-        needleAngle=Math.random()*Math.PI*2;
+        
+        setInterval(() => {
+            dots.forEach(d => {
+                d.vx = d.vx * .88 + (Math.random() - .5) * .3;
+                d.vy = d.vy * .88 + (Math.random() - .5) * .3;
+                d.x = Math.max(9, Math.min(91, d.x + d.vx));
+                d.y = Math.max(9, Math.min(91, d.y + d.vy));
+                if (d.el) { d.el.style.left = d.x + '%'; d.el.style.top = d.y + '%'; }
+            });
+        }, 100);
+        
+        needleAngle = Math.random() * Math.PI * 2;
         radarLoop(cv);
     }
-    function spawnDots(){
-        let c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];
-        for(let i=0;i<8;i++){
-            let a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2,
-            dot=document.createElement('div');dot.className='radar-dot';dot.style.left=x+'%';dot.style.top=y+'%';
-            c.appendChild(dot);dots.push({el:dot,x,y,vx:0,vy:0,id:i});
+    
+    function spawnDots() {
+        let c = $('radarDots'); if (!c) return; c.innerHTML = ''; dots = [];
+        for (let i = 0; i < 8; i++) {
+            let a = Math.random() * Math.PI * 2, d = 12 + Math.random() * 70,
+                x = 50 + Math.cos(a) * d / 2, y = 50 + Math.sin(a) * d / 2,
+                dot = document.createElement('div');
+            dot.className = 'radar-dot';
+            dot.style.left = x + '%';
+            dot.style.top = y + '%';
+            c.appendChild(dot);
+            dots.push({ el: dot, x, y, vx: 0, vy: 0, id: i });
         }
     }
-    function radarLoop(cv){
-        let ctx=cv.getContext('2d');
-        function draw(){
-            let w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(cx,cy)*.88;
-            if(!w||!h){raf=requestAnimationFrame(draw);return;}
-            phaseAngle+=.007;
-            needleSpin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phaseAngle)*.35)-needleSpin)*.028;
-            needleAngle=(needleAngle+needleSpin)%(Math.PI*2);
-            ctx.fillStyle='rgba(2,10,2,.18)';ctx.fillRect(0,0,w,h);
-            ctx.save();ctx.translate(cx,cy);ctx.rotate(needleAngle);
-            let grad=ctx.createLinearGradient(0,0,R,0);grad.addColorStop(0,'rgba(0,229,255,1)');grad.addColorStop(1,'rgba(0,229,255,0)');
-            ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(R,0);ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.stroke();
-            ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();ctx.restore();
-            raf=requestAnimationFrame(draw);
+    
+    function radarLoop(cv) {
+        let ctx = cv.getContext('2d');
+        
+        function draw() {
+            let w = cv.width, h = cv.height, cx = w / 2, cy = h / 2, R = Math.min(cx, cy) * .88;
+            if (!w || !h) { raf = requestAnimationFrame(draw); return; }
+            
+            phaseAngle += .007;
+            needleSpin += ((60 / 4 * Math.PI * 2) / (60 * 60) * (1 + Math.sin(phaseAngle) * .35) - needleSpin) * .028;
+            needleAngle = (needleAngle + needleSpin) % (Math.PI * 2);
+            
+            ctx.fillStyle = 'rgba(2,10,2,.18)';
+            ctx.fillRect(0, 0, w, h);
+            
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(needleAngle);
+            
+            let grad = ctx.createLinearGradient(0, 0, R, 0);
+            grad.addColorStop(0, 'rgba(0,229,255,1)');
+            grad.addColorStop(1, 'rgba(0,229,255,0)');
+            
+            ctx.beginPath();
+            ctx.moveTo(3, 0);
+            ctx.lineTo(R, 0);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.rect(-4, -4, 8, 8);
+            ctx.fillStyle = '#00e5ff';
+            ctx.fill();
+            ctx.restore();
+            
+            raf = requestAnimationFrame(draw);
         }
         draw();
     }
     
-    window.addEventListener('load',async()=>{
-        $('userNameDisplay').textContent='@'+U;
-        await updateOnlineStatus('online');
-        heartbeatInterval=setInterval(()=>updateOnlineStatus('online'),30000);
-        setupRequestListener(); initRadar(); initSettings(); initWhisper(); loadSpills();
-        setInterval(updateOnlineCounter,10000); updateOnlineCounter();
-        
-        $('soundToggle').onclick=()=>{let s=!window.soundOn; window.soundOn=s; $('soundToggle').textContent=s?'🔊':'🔇';};
-        $('vibeFemaleBtn').onclick=()=>startVibe('heart');
-        $('vibeMaleBtn').onclick=()=>startVibe('spade');
-        $('radarChatSend').onclick=async()=>{
-            if(isTyping)return;
-            let msg=$('radarChatInput').value.trim();
-            if(!msg||!currentPartner)return;
-            $('radarChatInput').value='';
-            await sendM(msg,false);
+    // ============ SETTINGS ============
+    function initSettings() {
+        let b = $('settingsBtn'), d = $('settingsDropdown');
+        b.onclick = e => { e.stopPropagation(); d.classList.toggle('show'); };
+        document.addEventListener('click', e => {
+            if (!b.contains(e.target) && !d.contains(e.target)) d.classList.remove('show');
+        });
+        $('logoutBtn').onclick = () => {
+            localStorage.removeItem(K.l);
+            toast('👋 Sampai jumpa!');
+            setTimeout(() => window.location.href = 'index.html', 1000);
         };
-        $('radarChatInput').onkeypress=e=>{if(e.key==='Enter'&&!isTyping)$('radarChatSend').click();};
-        $('sendButton').onclick=async()=>{
-            if(isTyping)return;
-            let msg=$('chatInput').value.trim();
-            if(!msg||!currentPartner)return;
-            $('chatInput').value='';
-            await sendM(msg,false);
-        };
-        $('chatInput').onkeypress=e=>{if(e.key==='Enter'&&!isTyping)$('sendButton').click();};
-        $('closeChatBtn').onclick=leaveChat;
-    });
-    
-    async function updateOnlineCounter(){
-        const {count}=await supabase.from('online_users').select('*',{count:'exact',head:true}).eq('status','online');
-        const total=(count||0)+AI_PERSONAS.length;
-        $('onlineCount').innerHTML=`${total} ONLINE`;
     }
     
-    function initSettings(){
-        let b=$('settingsBtn'),d=$('settingsDropdown');
-        b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};
-        document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});
-        $('logoutBtn').onclick=()=>{localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);};
-    }
-    
-    function initWhisper(){
-        let o=$('whisperOverlay'),tg=$('whisperTarget'),msg=$('whisperMessage');
-        $('whisperBtn').onclick=()=>o.classList.add('show');
-        $('whisperCancel').onclick=()=>o.classList.remove('show');
-        $('whisperSend').onclick=async()=>{
-            let t=tg.value.trim().replace('@',''),m=msg.value.trim();
-            if(!t||!m){toast('Isi semua field');return;}
+    // ============ WHISPER ============
+    function initWhisper() {
+        let o = $('whisperOverlay'), tg = $('whisperTarget'), msg = $('whisperMessage');
+        $('whisperBtn').onclick = () => o.classList.add('show');
+        $('whisperCancel').onclick = () => o.classList.remove('show');
+        $('whisperSend').onclick = async () => {
+            let t = tg.value.trim().replace('@', ''), m = msg.value.trim();
+            if (!t || !m) { toast('Isi semua field'); return; }
             o.classList.remove('show');
-            try{await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from:U,to:t,message:m})}); toast('Whisper terkirim');}catch(e){toast('Gagal');}
+            try {
+                await fetch('/api/whisper', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ from: U, to: t, message: m })
+                });
+                toast('Whisper terkirim');
+            } catch (e) { toast('Gagal'); }
         };
     }
     
-    let entries=[];
-    async function loadSpills(){
-        try{
-            let res=await fetch(`${SUPABASE_URL}/rest/v1/entries?select=*&order=created_at.desc&limit=10`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});
-            entries=(await res.json()).map(e=>({author:e.username||'anon',content:e.content||'...'}));
-        }catch(e){entries=[];}
-        $('spillsList').innerHTML=entries.map(s=>`<div class="spill-card"><span class="spill-author">@${s.author}</span><div class="spill-content">${s.content}</div></div>`).join('');
-        $('feedMeta').textContent=entries.length+' spill';
+    // ============ SPILLS ============
+    let entries = [];
+    async function loadSpills() {
+        try {
+            let res = await fetch(`${SUPABASE_URL}/rest/v1/entries?select=*&order=created_at.desc&limit=10`, {
+                headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+            });
+            let data = await res.json();
+            entries = data.map(e => ({
+                author: e.username || 'anon',
+                content: e.content || '...'
+            }));
+        } catch (e) { entries = []; }
+        
+        $('spillsList').innerHTML = entries.map(s =>
+            `<div class="spill-card">
+                <div class="spill-header"><span class="spill-author">@${s.author}</span></div>
+                <div class="spill-content">${s.content}</div>
+            </div>`
+        ).join('');
+        $('feedMeta').textContent = entries.length + ' spill';
     }
+    
+    // ============ INIT ============
+    window.addEventListener('load', async () => {
+        $('userNameDisplay').textContent = '@' + U;
+        
+        await updateOnlineStatus('online');
+        heartbeatInterval = setInterval(() => updateOnlineStatus('online'), 30000);
+        
+        setupRequestListener();
+        initRadar();
+        initSettings();
+        initWhisper();
+        loadSpills();
+        
+        setInterval(updateOnlineCounter, 10000);
+        updateOnlineCounter();
+        
+        $('soundToggle').onclick = () => {
+            let s = !window.soundOn; window.soundOn = s;
+            $('soundToggle').textContent = s ? '🔊' : '🔇';
+        };
+        
+        $('vibeFemaleBtn').onclick = () => startVibe('heart');
+        $('vibeMaleBtn').onclick = () => startVibe('spade');
+        
+        $('radarChatSend').onclick = async () => {
+            if (isTyping) return;
+            let msg = $('radarChatInput').value.trim();
+            if (!msg || !currentPartner) return;
+            $('radarChatInput').value = '';
+            await sendM(msg, false);
+        };
+        $('radarChatInput').onkeypress = e => { if (e.key === 'Enter' && !isTyping) $('radarChatSend').click(); };
+        
+        $('sendButton').onclick = async () => {
+            if (isTyping) return;
+            let msg = $('chatInput').value.trim();
+            if (!msg || !currentPartner) return;
+            $('chatInput').value = '';
+            await sendM(msg, false);
+        };
+        $('chatInput').onkeypress = e => { if (e.key === 'Enter' && !isTyping) $('sendButton').click(); };
+        
+        $('closeChatBtn').onclick = leaveChat;
+    });
 })();
 </script>
 </body>
