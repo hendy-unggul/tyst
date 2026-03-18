@@ -764,37 +764,18 @@ responseChannel
     
     // ============ CHAT UI ============
     function openChat(name) {
-        $('partnerLabel').textContent = name.toUpperCase();
-        $('chatTimer').textContent = '15:00';
-        
-        if (radarChatActive) {
-            $('radarChatContainer').style.display = 'flex';
-            $('radarChatInputWrapper').style.display = 'flex';
-            $('radarCont').classList.add('chat-mode');
-            $('chatRoom').classList.remove('on');
-            setTimeout(() => $('radarChatInput')?.focus(), 300);
-        } else {
-            $('chatRoom').classList.add('on');
-            $('chatMessages').innerHTML = '';
-        }
-    }
+    $('partnerLabel').textContent = 'STRANGER'; // GA USAH PAKE NAME
+    $('chatTimer').textContent = '15:00';
     
-    function addMessage(sender, text) {
-        const container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
-        if (!container) return;
-        
-        const msg = document.createElement('div');
-        msg.className = `message ${sender}`;
-        msg.textContent = text;
-        container.appendChild(msg);
+    // PASTIKAN YANG INI YANG JALAN
+    if (radarChatActive) {
+        $('radarChatContainer').style.display = 'flex';
+        $('radarChatInputWrapper').style.display = 'flex';
+        $('radarCont').classList.add('chat-mode');
+        $('chatRoom').classList.remove('on'); // FALLBACK CHAT DIMATIKAN
+        setTimeout(() => $('radarChatInput')?.focus(), 300);
     }
-    
-    function closeChatUI() {
-        $('radarChatContainer').style.display = 'none';
-        $('radarChatInputWrapper').style.display = 'none';
-        $('radarCont').classList.remove('chat-mode');
-        $('chatRoom').classList.remove('on');
-    }
+}
     
     // ============ START VIBE ============
     function startVibe(gender) {
