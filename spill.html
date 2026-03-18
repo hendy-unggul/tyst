@@ -282,10 +282,12 @@
 
 <script>
 (function(){
-    // ============ KONFIGURASI ============
+    // ============ SUPABASE CONFIG ============
     const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
-    const USE_RADAR_CHAT = true;
+    
+    // Inisialisasi Supabase
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     
     // ============ USER ============
     const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
@@ -296,93 +298,419 @@
     const $=id=>document.getElementById(id);
     const toast=(msg,err)=>{let o=$('toast');if(o){o.textContent=msg;o.className='toast'+(err?' error':'');o.classList.add('show');setTimeout(()=>o.classList.remove('show'),3000);}};
     
+    // ============ CHAT STATE ============
+    let currentPartner = null;
+    let chatChannel = null;
+    let isSearching = false;
+    let radarChatActive = false;
+    let isTyping = false;
+    let ch = []; // buat AI chat
+    
     // ============ AI CHARACTERS ============
     const aiChars={heart:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on'],spade:['agak.koplak','chili.padi','sejuta.badai','satria.bajahitam']};
+    const getRandomAI = (gender) => aiChars[gender][Math.floor(Math.random()*aiChars[gender].length)];
     
-    // ============ WEBSOCKET ============
-    let ws=null,wsConnected=false;
-    function connectWebSocket() {
-        ws = new WebSocket('ws://localhost:3001');
-        ws.onopen=()=>{wsConnected=true;ws.send(JSON.stringify({type:'IDENTIFY',userId:UID,username:U}));};
-        ws.onmessage=(e)=>{let d=JSON.parse(e.data);
-            if(d.type==='CHAT_REQUEST'&&confirm(`@${d.from} ingin ngobrol?`)){
-                ws.send(JSON.stringify({type:'CHAT_REQUEST_RESPONSE',requestId:d.requestId,accepted:true}));
-            }else if(d.type==='MATCH_SUCCESS'){openChat(d.partner.username);
-            }else if(d.type==='CHAT_MESSAGE'){addMessage('stranger',d.text);}
-        };
-        ws.onclose=()=>{wsConnected=false;setTimeout(connectWebSocket,3000);};
-    }
-    
-    // ============ CHAT STATE ============
-    let currentPartner=null,chatHistory=[],isTyping=false,radarChatActive=false;
-    
-    function openChat(name){
-        currentPartner=name;chatHistory=[];
-        if(USE_RADAR_CHAT){
-            $('radarChatContainer').style.display='flex';
-            $('radarChatInputWrapper').style.display='flex';
-            $('radarCont').classList.add('chat-mode');
-            $('chatRoom').classList.remove('on');
-        }else{
-            $('chatRoom').classList.add('on');
-        }
-        setTimeout(()=>sendMessage('',true),500);
-    }
-    
-    function addMessage(sender,text){
-        let container=USE_RADAR_CHAT?$('radarChatContainer'):$('chatMessages');
-        if(!container)return;
-        let msg=document.createElement('div');
-        msg.className=`message ${sender}`;
-        msg.textContent=text;
-        container.appendChild(msg);
-    }
-    
-    async function sendMessage(msg,first){
-        if(!currentPartner)return;
-        if(!first)addMessage('user',msg);
-        isTyping=true;
-        try{
-            let res=await fetch('/api/chat',{
-                method:'POST',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify({message:msg||'hai',characterName:currentPartner,lastMessages:chatHistory})
-            });
-            let data=await res.json();
-            if(msg)chatHistory.push({role:'assistant',content:data.reply});
-            isTyping=false;
-            addMessage('stranger',data.reply);
-        }catch(e){isTyping=false;addMessage('stranger','😅');}
-    }
-    
-    function closeChat(){
-        currentPartner=null;chatHistory=[];isTyping=false;radarChatActive=false;
-        $('radarChatContainer').style.display='none';
-        $('radarChatInputWrapper').style.display='none';
-        $('radarCont').classList.remove('chat-mode');
-        $('chatRoom').classList.remove('on');
-    }
-    
-    // ============ VIBE ============
-    function startVibe(gender){
-        radarChatActive=true;
+    // ============ FIND PARTNER ============
+    async function findPartner(gender) {
+        if (isSearching) return;
+        isSearching = true;
+        
+        // Tampilkan overlay scanning
         $('radarScanningOverlay').classList.add('show');
-        if(wsConnected){
-            ws.send(JSON.stringify({type:'FIND_PARTNER',userId:UID,gender:gender}));
+        
+        // Hapus dari waiting room kalo sebelumnya ada
+        await supabase
+            .from('waiting_room')
+            .delete()
+            .eq('user_id', UID);
+        
+        // Masuk ke waiting room
+        await supabase
+            .from('waiting_room')
+            .insert([{ 
+                user_id: UID, 
+                username: U,
+                gender: gender 
+            }]);
+        
+        // Cari partner yang cocok (gender sama, bukan diri sendiri)
+        const { data: candidates } = await supabase
+            .from('waiting_room')
+            .select('*')
+            .eq('gender', gender)
+            .neq('user_id', UID)
+            .order('created_at', { ascending: false })
+            .limit(5);
+        
+        if (candidates && candidates.length > 0) {
+            // Ada calon partner, pilih yang paling baru
+            const partner = candidates[0];
+            
+            // Hapus dari waiting room
+            await supabase
+                .from('waiting_room')
+                .delete()
+                .eq('user_id', UID);
+            await supabase
+                .from('waiting_room')
+                .delete()
+                .eq('user_id', partner.user_id);
+            
+            // Buat channel chat
+            const channelName = `chat_${UID}_${partner.user_id}_${Date.now()}`;
+            
+            // Simpan ke active_chats
+            await supabase
+                .from('active_chats')
+                .insert([{
+                    user1_id: UID,
+                    user2_id: partner.user_id,
+                    channel_name: channelName
+                }]);
+            
+            // Setup channel
+            setupChatChannel(channelName, partner.username);
+            
+        } else {
+            // Ga ada partner, tunggu 10 detik
+            setTimeout(() => {
+                // Cek lagi kalo masih nyari
+                if (isSearching) {
+                    $('radarScanningOverlay').classList.remove('show');
+                    isSearching = false;
+                    
+                    // Fallback ke AI
+                    const aiName = getRandomAI(gender);
+                    openChat(aiName);
+                    toast('Partner tidak ditemukan, coba dengan AI');
+                }
+            }, 10000);
+            
+            // Listen untuk dipanggil partner
+            const matchListener = supabase.channel('match_notification');
+            matchListener.on('broadcast', { event: 'match_found' }, (payload) => {
+                if (payload.payload.partnerId !== UID) return;
+                
+                // Dapet match!
+                $('radarScanningOverlay').classList.remove('show');
+                isSearching = false;
+                
+                // Setup channel
+                setupChatChannel(payload.payload.channel, payload.payload.partner);
+                
+                // Bersihin listener
+                supabase.removeChannel(matchListener);
+            });
+            matchListener.subscribe();
         }
-        setTimeout(()=>{
-            $('radarScanningOverlay').classList.remove('show');
-            let aiName=aiChars[gender][Math.floor(Math.random()*aiChars[gender].length)];
-            openChat(aiName);
-        },3000);
+    }
+    
+    // ============ SETUP CHAT CHANNEL ============
+    function setupChatChannel(channelName, partnerName) {
+        // Hapus channel lama kalo ada
+        if (chatChannel) {
+            supabase.removeChannel(chatChannel);
+        }
+        
+        // Buat channel baru
+        chatChannel = supabase.channel(channelName);
+        
+        // Listen for messages
+        chatChannel.on('broadcast', { event: 'message' }, (payload) => {
+            addMessage('stranger', payload.payload.text);
+        });
+        
+        chatChannel.subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                // Berhasil subscribe, buka chat
+                currentPartner = partnerName;
+                openChat(partnerName);
+            }
+        });
+    }
+    
+    // ============ SEND MESSAGE ============
+    async function sendMessage(text) {
+        if (!chatChannel || !currentPartner) return;
+        
+        // Tampilkan di UI sendiri
+        addMessage('user', text);
+        
+        // Kirim ke partner via broadcast
+        await chatChannel.send({
+            type: 'broadcast',
+            event: 'message',
+            payload: { text }
+        });
+    }
+    
+    // ============ LEAVE CHAT ============
+    async function leaveChat() {
+        if (chatChannel) {
+            // Hapus dari active_chats
+            await supabase
+                .from('active_chats')
+                .delete()
+                .eq('channel_name', chatChannel.topic);
+            
+            // Unsubscribe
+            supabase.removeChannel(chatChannel);
+            chatChannel = null;
+        }
+        
+        currentPartner = null;
+        closeChatUI();
+    }
+    
+    // ============ CHAT FUNCTIONS ============
+    function openChat(name) {
+        const pl = $('partnerLabel');
+        const ct = $('chatTimer');
+        const cr = $('chatRoom');
+        const cm = $('chatMessages');
+        const radarCont = $('radarCont');
+        const radarChat = $('radarChatContainer');
+        const radarInputWrapper = $('radarChatInputWrapper');
+        
+        if (pl) pl.textContent = name.toUpperCase();
+        if (ct) ct.textContent = '15:00';
+        
+        if (radarChatActive && radarChat) {
+            radarChat.style.display = 'flex';
+            radarChat.innerHTML = '<div class="radar-chat-header">✦ CHAT ✦</div>';
+            if (radarInputWrapper) radarInputWrapper.style.display = 'flex';
+            if (radarCont) radarCont.classList.add('chat-mode');
+            if (cr) cr.classList.remove('on');
+            
+            setTimeout(() => $('radarChatInput')?.focus(), 300);
+        } else {
+            if (cr) cr.classList.add('on');
+            if (cm) cm.innerHTML = '';
+            if (radarChat) radarChat.style.display = 'none';
+            if (radarInputWrapper) radarInputWrapper.style.display = 'none';
+        }
+    }
+    
+    function closeChatUI() {
+        const radarCont = $('radarCont');
+        const radarChat = $('radarChatContainer');
+        const radarInputWrapper = $('radarChatInputWrapper');
+        const cr = $('chatRoom');
+        
+        if (radarChat) {
+            radarChat.style.display = 'none';
+            radarChat.innerHTML = '<div class="radar-chat-header">✦ CHAT ✦</div>';
+        }
+        if (radarInputWrapper) radarInputWrapper.style.display = 'none';
+        if (radarCont) radarCont.classList.remove('chat-mode');
+        if (cr) cr.classList.remove('on');
+    }
+    
+    function addMessage(sender, text) {
+        let container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
+        if (!container) return;
+        
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.textContent = text;
+        container.appendChild(msgDiv);
+    }
+    
+    // ============ AI CHAT (FALLBACK) ============
+    async function sendAIMessage(msg, first) {
+        if (!currentPartner) return;
+        if (!first) addMessage('user', msg);
+        
+        showTyping();
+        isTyping = true;
+        
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: msg || 'hai',
+                    characterName: currentPartner,
+                    lastMessages: ch
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (msg) ch.push({ role: 'assistant', content: data.reply });
+            
+            hideTyping();
+            isTyping = false;
+            addMessage('stranger', data.reply);
+            
+        } catch (error) {
+            hideTyping();
+            isTyping = false;
+            addMessage('stranger', '😅');
+        }
+    }
+    
+    function showTyping() {
+        let container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
+        if (!container) return;
+        
+        const oldIndicator = document.getElementById('typingIndicator');
+        if (oldIndicator) oldIndicator.remove();
+        
+        const indicator = document.createElement('div');
+        indicator.className = 'typing-indicator';
+        indicator.id = 'typingIndicator';
+        indicator.innerHTML = 'Stranger mengetik <span class="typing-dots"><span></span><span></span><span></span></span>';
+        container.appendChild(indicator);
+    }
+    
+    function hideTyping() {
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) indicator.remove();
+    }
+    
+    // ============ VIBE START ============
+    const startVibe = (gender) => {
+        if (isTyping) {
+            toast('Tunggu sampai pesan terkirim');
+            return;
+        }
+        
+        radarChatActive = true;
+        findPartner(gender);
+    };
+    
+    // ============ SEND MESSAGE WRAPPER ============
+    const sendM = async (msg, first) => {
+        if (!currentPartner) return;
+        
+        // Check if it's AI or real user
+        if (aiChars.heart.includes(currentPartner) || aiChars.spade.includes(currentPartner)) {
+            // AI mode
+            await sendAIMessage(msg, first);
+        } else {
+            // Real user mode via Supabase
+            if (!first) await sendMessage(msg);
+        }
+    };
+    
+    // ============ CLOSE CHAT ============
+    const closeChat = async () => {
+        if (chatChannel) {
+            await leaveChat();
+        } else {
+            closeChatUI();
+        }
+        currentPartner = null;
+        ch = [];
+        isTyping = false;
+        radarChatActive = false;
+    };
+    
+    // ============ INIT RADAR ============
+    // (Radar animation code - copy dari yang lama)
+    let dots=[],needleAngle=0,needleSpin=0,phaseAngle=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,glowMap=new Map(),raf,rint;
+    
+    function initRadar(){
+        let cv=$('radarCanvas'),ct=$('radarCont');
+        if(!cv||!ct)return;
+        let resize=()=>{let r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};
+        resize();window.addEventListener('resize',resize);
+        spawnDots();
+        if(rint)clearInterval(rint);
+        rint=setInterval(()=>{
+            dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;
+            d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));
+            if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});
+        },100);
+        needleAngle=Math.random()*Math.PI*2;
+        trail.fill(needleAngle);
+        radarLoop(cv);
+    }
+    
+    function spawnDots(){
+        let c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];
+        for(let i=0;i<8;i++){
+            let a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2,
+            dot=document.createElement('div');dot.className='radar-dot';dot.style.left=x+'%';dot.style.top=y+'%';
+            c.appendChild(dot);dots.push({el:dot,x,y,vx:0,vy:0,id:i});
+        }
+    }
+    
+    function radarLoop(cv){
+        let ctx=cv.getContext('2d');
+        function draw(){
+            let w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(cx,cy)*.88;
+            if(!w||!h){raf=requestAnimationFrame(draw);return;}
+            
+            phaseAngle+=.007;
+            needleSpin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phaseAngle)*.35)-needleSpin)*.028;
+            needleAngle=(needleAngle+needleSpin)%(Math.PI*2);
+            trail[ptr]=needleAngle;
+            ptr=(ptr+1)%120;
+            
+            ctx.fillStyle='rgba(2,10,2,.18)';
+            ctx.fillRect(0,0,w,h);
+            
+            // Gambar trail
+            for(let i=0;i<119;i++){
+                let a=Math.pow(1-i/120,2.2)*.12;
+                if(a<.002)break;
+                let s=needleAngle-(i+1)*needleSpin,e=needleAngle-i*needleSpin;
+                ctx.save();ctx.translate(cx,cy);
+                ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));ctx.closePath();
+                ctx.fillStyle=`rgba(0,229,255,${a})`;ctx.fill();ctx.restore();
+            }
+            
+            // Gambar jarum utama
+            ctx.save();ctx.translate(cx,cy);ctx.rotate(needleAngle);
+            ctx.shadowColor='rgba(0,229,255,.95)';ctx.shadowBlur=12;
+            let grad=ctx.createLinearGradient(0,0,R,0);
+            grad.addColorStop(0,'rgba(0,229,255,1)');grad.addColorStop(.8,'rgba(0,229,255,.4)');grad.addColorStop(1,'rgba(0,229,255,0)');
+            ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(R,0);ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.stroke();
+            ctx.shadowBlur=20;ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();
+            ctx.restore();
+            
+            // Efek glow
+            dots.forEach((d,i)=>{
+                let px=d.x/100*w,py=d.y/100*h;
+                let da=Math.atan2(py-cy,px-cx);if(da<0)da+=Math.PI*2;
+                let diff=needleAngle-da;if(diff<0)diff+=Math.PI*2;
+                let age=glowMap.get(i)??999;
+                if(diff<.18&&age>30){glowMap.set(i,0);if(d.el){d.el.classList.add('active');setTimeout(()=>d.el?.classList.remove('active'),800);}
+                }else glowMap.set(i,age+1);
+                
+                if(age<55){
+                    let t=age/55,ga=(1-t)*(1-t)*.9;
+                    if(ga<.01)return;
+                    let gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);
+                    gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);
+                    ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();
+                }
+            });
+            
+            raf=requestAnimationFrame(draw);
+        }
+        draw();
+    }
+    
+    // ============ SETTINGS ============
+    function initSettings(){
+        let b=$('settingsBtn'),d=$('settingsDropdown');
+        if(b&&d){
+            b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};
+            document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});
+        }
+        $('logoutBtn')?.addEventListener('click',()=>{localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);});
     }
     
     // ============ WHISPER ============
     function initWhisper(){
-        let o=$('whisperOverlay'),tg=$('whisperTarget'),msg=$('whisperMessage');
-        $('whisperBtn').onclick=()=>o.classList.add('show');
-        $('whisperCancel').onclick=()=>o.classList.remove('show');
-        $('whisperSend').onclick=async()=>{
+        let b=$('whisperBtn'),o=$('whisperOverlay'),c=$('whisperCancel'),s=$('whisperSend'),tg=$('whisperTarget'),msg=$('whisperMessage');
+        if(!b||!o)return;
+        b.onclick=()=>o.classList.add('show');
+        c.onclick=()=>o.classList.remove('show');
+        s.onclick=async()=>{
             let t=tg.value.trim().replace('@',''),m=msg.value.trim();
             if(!t||!m){toast('Isi semua field');return;}
             o.classList.remove('show');
@@ -392,6 +720,15 @@
             }catch(e){toast('Gagal mengirim whisper');}
         };
     }
+    
+    // ============ NAV ============
+    const initNav=()=>{
+        let p=window.location.pathname.split('/').pop()||'spill.html';
+        document.querySelectorAll('.ni').forEach(i=>{
+            const href=i.getAttribute('href');
+            i.classList.toggle('act',href===p);
+        });
+    };
     
     // ============ SPILLS ============
     let entries=[],aiEntries=[];
@@ -434,7 +771,6 @@
             });
         }
         
-        // Combine and sort
         let all=[...entries,...aiEntries];
         all.sort((a,b)=>new Date(b.created_at||Date.now())-new Date(a.created_at||Date.now()));
         renderSpills(all);
@@ -462,141 +798,64 @@
         `).join('');
         meta.textContent=all.length+' spill';
     }
-    window.reactToSpill=(i,t)=>{/* reactions work but not saved */toast(`➕ ${t}`);};
+    window.reactToSpill=(i,t)=>{toast(`➕ ${t}`);};
     
-    // ============ RADAR ANIMATION ============
-let dots=[],needleAngle=0,needleSpin=0,phaseAngle=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,glowMap=new Map(),raf,rint;
-
-function initRadar(){
-    let cv=$('radarCanvas'),ct=$('radarCont');
-    if(!cv||!ct)return;
-    let resize=()=>{let r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};
-    resize();window.addEventListener('resize',resize);
-    spawnDots();
-    if(rint)clearInterval(rint);
-    rint=setInterval(()=>{
-        dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;
-        d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));
-        if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});
-    },100);
-    needleAngle=Math.random()*Math.PI*2;
-    trail.fill(needleAngle);
-    radarLoop(cv);
-}
-
-function spawnDots(){
-    let c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];
-    for(let i=0;i<8;i++){
-        let a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2,
-        dot=document.createElement('div');dot.className='radar-dot';dot.style.left=x+'%';dot.style.top=y+'%';
-        c.appendChild(dot);dots.push({el:dot,x,y,vx:0,vy:0,id:i});
-    }
-}
-
-function radarLoop(cv){
-    let ctx=cv.getContext('2d');
-    function draw(){
-        let w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(cx,cy)*.88;
-        if(!w||!h){raf=requestAnimationFrame(draw);return;}
+    // ============ INIT RADAR CHAT INPUT ============
+    const initRadarChatInput = () => {
+        const radarInput = $('radarChatInput');
+        const radarSend = $('radarChatSend');
+        if (!radarInput || !radarSend) return;
         
-        phaseAngle+=.007;
-        needleSpin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phaseAngle)*.35)-needleSpin)*.028;
-        needleAngle=(needleAngle+needleSpin)%(Math.PI*2);
-        trail[ptr]=needleAngle;
-        ptr=(ptr+1)%120;
-        
-        ctx.fillStyle='rgba(2,10,2,.18)';
-        ctx.fillRect(0,0,w,h);
-        
-        // Gambar trail (bekas jarum)
-        for(let i=0;i<119;i++){
-            let a=Math.pow(1-i/120,2.2)*.12;
-            if(a<.002)break;
-            let s=needleAngle-(i+1)*needleSpin,e=needleAngle-i*needleSpin;
-            ctx.save();
-            ctx.translate(cx,cy);
-            ctx.beginPath();
-            ctx.moveTo(0,0);
-            ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));
-            ctx.closePath();
-            ctx.fillStyle=`rgba(0,229,255,${a})`;
-            ctx.fill();
-            ctx.restore();
-        }
-        
-        // Gambar jarum utama
-        ctx.save();
-        ctx.translate(cx,cy);
-        ctx.rotate(needleAngle);
-        ctx.shadowColor='rgba(0,229,255,.95)';
-        ctx.shadowBlur=12;
-        let grad=ctx.createLinearGradient(0,0,R,0);
-        grad.addColorStop(0,'rgba(0,229,255,1)');
-        grad.addColorStop(.8,'rgba(0,229,255,.4)');
-        grad.addColorStop(1,'rgba(0,229,255,0)');
-        ctx.beginPath();
-        ctx.moveTo(3,0);
-        ctx.lineTo(R,0);
-        ctx.strokeStyle=grad;
-        ctx.lineWidth=2;
-        ctx.stroke();
-        ctx.shadowBlur=20;
-        ctx.beginPath();
-        ctx.rect(-4,-4,8,8);
-        ctx.fillStyle='#00e5ff';
-        ctx.fill();
-        ctx.restore();
-        
-        // Efek glow saat jarum lewati dot
-        dots.forEach((d,i)=>{
-            let px=d.x/100*w,py=d.y/100*h;
-            let da=Math.atan2(py-cy,px-cx);
-            if(da<0)da+=Math.PI*2;
-            let diff=needleAngle-da;
-            if(diff<0)diff+=Math.PI*2;
-            let age=glowMap.get(i)??999;
-            if(diff<.18&&age>30){
-                glowMap.set(i,0);
-                if(d.el){
-                    d.el.classList.add('active');
-                    setTimeout(()=>d.el?.classList.remove('active'),800);
-                }
-            }else glowMap.set(i,age+1);
-            
-            if(age<55){
-                let t=age/55,ga=(1-t)*(1-t)*.9;
-                if(ga<.01)return;
-                let gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);
-                gr.addColorStop(0,`rgba(0,229,255,${ga})`);
-                gr.addColorStop(1,`rgba(0,229,255,0)`);
-                ctx.beginPath();
-                ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);
-                ctx.fillStyle=gr;
-                ctx.fill();
+        radarSend.onclick = async () => {
+            if (isTyping) {
+                toast('Tunggu sampai pesan terkirim');
+                return;
             }
-        });
+            const msg = radarInput.value.trim();
+            if (!msg || !currentPartner) return;
+            radarInput.value = '';
+            await sendM(msg, false);
+        };
         
-        raf=requestAnimationFrame(draw);
-    }
-    draw();
-}
+        radarInput.onkeypress = (e) => {
+            if (e.key === 'Enter' && !isTyping) {
+                radarSend.click();
+            }
+        };
+    };
     
-    // ============ SETTINGS ============
-    function initSettings(){
-        let b=$('settingsBtn'),d=$('settingsDropdown');
-        b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};
-        document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});
-        $('logoutBtn').onclick=()=>{localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);};
-    }
+    // ============ INIT CLOSE CHAT ============
+    const initCloseChat = () => {
+        const closeBtn = $('closeChatBtn');
+        if (closeBtn) {
+            closeBtn.onclick = closeChat;
+        }
+    };
     
-    // ============ INIT ============
-    window.addEventListener('load',()=>{
-        $('userNameDisplay').textContent='@'+U;
-        connectWebSocket();
+    // ============ CLEANUP ON PAGE CLOSE ============
+    window.addEventListener('beforeunload', async () => {
+        if (isSearching) {
+            await supabase
+                .from('waiting_room')
+                .delete()
+                .eq('user_id', UID);
+        }
+        if (chatChannel) {
+            await leaveChat();
+        }
+    });
+    
+    // ============ LOAD EVENT ============
+    window.addEventListener('load', async () => {
+        $('userNameDisplay').textContent = '@' + U;
+        
         initRadar();
         initSettings();
         initWhisper();
-        loadSpills();
+        initNav();
+        initRadarChatInput();
+        initCloseChat();
+        await loadSpills();
         
         // Sound toggle
         let soundOn=false,audioCtx=null;
@@ -607,31 +866,33 @@ function radarLoop(cv){
         };
         
         // Vibe buttons
-        $('vibeFemaleBtn').onclick=()=>startVibe('heart');
-        $('vibeMaleBtn').onclick=()=>startVibe('spade');
-        
-        // Radar chat input
-        $('radarChatSend').onclick=async()=>{
-            if(isTyping)return;
-            let msg=$('radarChatInput').value.trim();
-            if(!msg||!currentPartner)return;
-            $('radarChatInput').value='';
-            await sendMessage(msg,false);
-        };
-        $('radarChatInput').onkeypress=e=>{if(e.key==='Enter'&&!isTyping)$('radarChatSend').click();};
+        $('vibeFemaleBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            startVibe('heart');
+        });
+        $('vibeMaleBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            startVibe('spade');
+        });
         
         // Fallback chat
-        $('sendButton').onclick=async()=>{
-            if(isTyping)return;
-            let msg=$('chatInput').value.trim();
-            if(!msg||!currentPartner)return;
-            $('chatInput').value='';
-            await sendMessage(msg,false);
-        };
-        $('chatInput').onkeypress=e=>{if(e.key==='Enter'&&!isTyping)$('sendButton').click();};
-        
-        // Close chat
-        $('closeChatBtn').onclick=closeChat;
+        const send = $('sendButton');
+        const inp = $('chatInput');
+        if (send && inp) {
+            send.onclick = async () => {
+                if (isTyping) {
+                    toast('Tunggu sampai pesan terkirim');
+                    return;
+                }
+                const msg = inp.value.trim();
+                if (!msg || !currentPartner) return;
+                inp.value = '';
+                await sendM(msg, false);
+            };
+            inp.onkeypress = (e) => {
+                if (e.key === 'Enter' && !isTyping) send.click();
+            };
+        }
     });
 })();
 </script>
