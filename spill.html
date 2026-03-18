@@ -597,47 +597,82 @@
         });
         
         function handleAccept(acceptor, reqId) {
-            if (accepted) return;
-            accepted = true;
-            
-            console.log(`✅ ${acceptor.type === 'ai' ? 'AI' : 'Human'} ${acceptor.username} menerima`);
-            
-            $('radarScanningOverlay').classList.remove('show');
-            isSearching = false;
-            
-            supabase.from('waiting_room').delete().eq('user_id', UID);
-            
-            if (acceptor.type === 'ai') {
-                openChat(acceptor.username);
-            } else {
-                const channelName = `chat_${UID}_${acceptor.user_id}_${Date.now()}`;
-                
-                const user1 = UID < acceptor.user_id ? UID : acceptor.user_id;
-                const user2 = UID < acceptor.user_id ? acceptor.user_id : UID;
-                
-                supabase
-                    .from('active_chats')
-                    .insert([{
-                        user1_id: user1,
-                        user2_id: user2,
-                        channel_name: channelName
-                    }]);
-                
-                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
-                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', acceptor.user_id);
-                
-                setupChatChannel(channelName, acceptor.username);
-                
-                const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
-                partnerChannel.subscribe(() => {
-                    partnerChannel.send({
-                        type: 'broadcast',
-                        event: 'match_confirmed',
-                        payload: { channel: channelName, partner: U, partnerId: UID }
-                    });
-                });
-            }
+    console.log('🎯 HANDLE ACCEPT DIPANGGIL:', { acceptor, reqId });
+    if (accepted) {
+        console.log('⏭️ Already accepted, skipping');
+        return;
+    }
+    accepted = true;
+    
+    console.log(`✅ ${acceptor.type === 'ai' ? 'AI' : 'Human'} ${acceptor.username} menerima`);
+    
+    $('radarScanningOverlay').classList.remove('show');
+    isSearching = false;
+    
+    supabase.from('waiting_room').delete().eq('user_id', UID);
+    
+    if (acceptor.type === 'ai') {
+        console.log('🤖 Opening AI chat with:', acceptor.username);
+        openChat(acceptor.username);
+    } else {
+        console.log('👥 Setting up human chat with:', acceptor.username);
+        const channelName = `chat_${UID}_${acceptor.user_id}_${Date.now()}`;
+        console.log('📢 Channel name:', channelName);
+        
+        const user1 = UID < acceptor.user_id ? UID : acceptor.user_id;
+        const user2 = UID < acceptor.user_id ? acceptor.user_id : UID;
+        
+        supabase
+            .from('active_chats')
+            .insert([{
+                user1_id: user1,
+                user2_id: user2,
+                channel_name: channelName
+            }])
+            .then(() => console.log('✅ active_chats inserted'))
+            .catch(e => console.error('❌ active_chats error:', e));
+        
+        supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
+        supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', acceptor.user_id);
+        
+        console.log('🔄 Setting up chat channel...');
+        setupChatChannel(channelName, acceptor.username);
+        
+        const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
+        partnerChannel.subscribe(() => {
+            partnerChannel.send({
+                type: 'broadcast',
+                event: 'match_confirmed',
+                payload: { channel: channelName, partner: U, partnerId: UID }
+            });
+            console.log('📨 Match confirmed sent to partner');
+        });
+    }
+}
+
+function setupChatChannel(channelName, partnerName) {
+    console.log('🔧 SETUP CHAT CHANNEL:', { channelName, partnerName });
+    
+    if (chatChannel) {
+        console.log('🗑️ Removing old channel');
+        supabase.removeChannel(chatChannel);
+    }
+    
+    chatChannel = supabase.channel(channelName);
+    chatChannel.on('broadcast', { event: 'message' }, (payload) => {
+        console.log('💬 MESSAGE RECEIVED:', payload);
+        addMessage('stranger', payload.payload.text);
+    });
+    
+    chatChannel.subscribe((status) => {
+        console.log('📡 Chat channel status:', status);
+        if (status === 'SUBSCRIBED') {
+            console.log('✅ Chat channel siap!');
+            currentPartner = partnerName;
+            openChat(partnerName);
         }
+    });
+}
         
         // RESPONSE CHANNEL YANG LEBIH ROBUST
 const responseChannel = supabase.channel(`response_${requestId}`);
