@@ -163,9 +163,11 @@
         .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;color:#fff;cursor:pointer;border-radius:8px}
         .chat-close{width:40px;height:40px;background:var(--bg);border:2px solid var(--bd);color:var(--txs);cursor:pointer}
         
-        /* Toast & Whisper */
+        /* Toast */
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none}
         .toast.show{display:block}
+        
+        /* Whisper */
         .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center}
         .whisper-overlay.show{display:flex}
         .whisper-box{background:var(--sf);border:3px solid var(--as);padding:25px;text-align:center;box-shadow:12px 12px 0 #000;max-width:350px;width:90%}
@@ -174,7 +176,61 @@
         .whisper-btn{flex:1;padding:12px;border:2px solid #000;cursor:pointer}
         .whisper-btn.send{background:var(--as);color:#000}
         .whisper-btn.cancel{background:0 0;color:var(--txs)}
+        
+        /* Sound Toggle */
         .sound-toggle{position:fixed;bottom:80px;right:20px;width:44px;height:44px;background:rgba(0,0,0,.7);border:2px solid var(--as);border-radius:50%;color:var(--as);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100}
+        
+        /* Custom Modal untuk Chat Request */
+        #chatRequestModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+        }
+        .modal-content {
+            background: var(--sf);
+            border: 3px solid var(--as);
+            padding: 25px;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 12px 12px 0 #000;
+        }
+        .modal-title {
+            font-size: 24px;
+            color: var(--as);
+            margin-bottom: 15px;
+        }
+        .modal-from {
+            color: var(--tx);
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #000;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .modal-btn.accept {
+            background: var(--as);
+            color: #000;
+        }
+        .modal-btn.reject {
+            background: #333;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -287,9 +343,23 @@
     </div>
 </div>
 
-<!-- Toast & Sound -->
+<!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- Sound Toggle -->
 <div class="sound-toggle" id="soundToggle">🔊</div>
+
+<!-- Custom Modal untuk Chat Request -->
+<div id="chatRequestModal">
+    <div class="modal-content">
+        <div class="modal-title">✦ CHAT REQUEST ✦</div>
+        <div class="modal-from" id="chatRequestFrom">@username</div>
+        <div class="modal-actions">
+            <button class="modal-btn accept" id="chatRequestAccept">TERIMA</button>
+            <button class="modal-btn reject" id="chatRequestReject">TOLAK</button>
+        </div>
+    </div>
+</div>
 
 <script>
 (function(){
@@ -307,7 +377,7 @@
     const $=id=>document.getElementById(id);
     const toast=(msg)=>{let o=$('toast');if(o){o.textContent=msg;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),3000);}};
     
-    // ============ AI PERSONAS (10 KARAKTER SELALU ONLINE) ============
+    // ============ AI PERSONAS ============
     const AI_PERSONAS = [
         { id: 'ai_beby', username: 'beby.manis', gender: 'heart', type: 'ai' },
         { id: 'ai_pretty', username: 'pretty.sad', gender: 'heart', type: 'ai' },
@@ -330,6 +400,8 @@
     let chatHistory = [];
     let heartbeatInterval = null;
     let searchTimeout = null;
+    let currentRequestId = null;
+    let currentRequester = null;
     
     // ============ ONLINE USERS MANAGEMENT ============
     async function updateOnlineStatus(status = 'online') {
@@ -357,7 +429,6 @@
     }
     
     async function getOnlineCandidates(gender, limit = 5) {
-        // Ambil human online dari tabel
         const { data: humans } = await supabase
             .from('online_users')
             .select('user_id, username, last_seen')
@@ -366,7 +437,6 @@
             .order('last_seen', { ascending: false })
             .limit(limit);
         
-        // Ambil AI sesuai gender
         const ais = AI_PERSONAS
             .filter(ai => ai.gender === gender)
             .map(ai => ({
@@ -376,7 +446,6 @@
                 last_seen: new Date().toISOString()
             }));
         
-        // Gabung, prioritaskan human
         const all = [
             ...(humans || []).map(h => ({ ...h, type: 'human' })),
             ...ais
@@ -406,7 +475,6 @@
     
     // ============ WAITING ROOM MANAGEMENT ============
     async function checkWaitingRoom(gender) {
-        // Cek apakah ada yang waiting dengan gender sama
         const { data: waiters } = await supabase
             .from('waiting_room')
             .select('*')
@@ -418,7 +486,6 @@
         if (waiters && waiters.length > 0) {
             const partner = waiters[0];
             
-            // Hapus dari waiting room
             await supabase
                 .from('waiting_room')
                 .delete()
@@ -428,10 +495,8 @@
                 .delete()
                 .eq('user_id', partner.user_id);
             
-            // Buat channel chat
             const channelName = `chat_${UID}_${partner.user_id}_${Date.now()}`;
             
-            // Simpan ke active_chats
             const user1 = UID < partner.user_id ? UID : partner.user_id;
             const user2 = UID < partner.user_id ? partner.user_id : UID;
             
@@ -443,7 +508,6 @@
                     channel_name: channelName
                 }]);
             
-            // Update status online_users jadi 'in_chat'
             await supabase
                 .from('online_users')
                 .update({ status: 'in_chat' })
@@ -453,7 +517,6 @@
                 .update({ status: 'in_chat' })
                 .eq('user_id', partner.user_id);
             
-            // Setup chat
             setupChatChannel(channelName, partner.username);
             return true;
         }
@@ -468,10 +531,8 @@
         $('radarScanningOverlay').classList.add('show');
         $('radarScanningText').textContent = 'MENCARI LAWAN BICARA';
         
-        // Update online status
         await updateOnlineStatus('online');
         
-        // CEK DULU DI WAITING ROOM (overlap 15 detik)
         const matched = await checkWaitingRoom(gender);
         if (matched) {
             $('radarScanningOverlay').classList.remove('show');
@@ -479,16 +540,13 @@
             return;
         }
         
-        // Masuk ke waiting room (jaga-jaga ada yang nyari bareng)
         await supabase
             .from('waiting_room')
             .insert([{ user_id: UID, username: U, gender }]);
         
-        // Ambil candidates untuk blast
         const candidates = await getOnlineCandidates(gender, 5);
         
         if (candidates.length === 0) {
-            // Fallback ke AI
             setTimeout(() => {
                 if (isSearching) {
                     $('radarScanningOverlay').classList.remove('show');
@@ -497,7 +555,6 @@
                     openChat(aiName);
                     toast('Tidak ada user online, coba dengan AI');
                     
-                    // Hapus dari waiting room
                     supabase.from('waiting_room').delete().eq('user_id', UID);
                 }
             }, 3000);
@@ -509,17 +566,14 @@
         const requestId = `${UID}_${Date.now()}`;
         let accepted = false;
         
-        // Kirim blast ke candidates
         candidates.forEach(candidate => {
             if (candidate.type === 'ai') {
-                // AI auto-respond dengan delay
                 setTimeout(() => {
                     if (!accepted && isSearching) {
                         handleAccept(candidate, requestId);
                     }
                 }, 2000 + Math.random() * 3000);
             } else {
-                // Kirim ke human via broadcast
                 const userChannel = supabase.channel(`user_${candidate.user_id}`);
                 userChannel.subscribe(() => {
                     userChannel.send({
@@ -537,7 +591,6 @@
             }
         });
         
-        // Handler accept
         function handleAccept(acceptor, reqId) {
             if (accepted) return;
             accepted = true;
@@ -547,17 +600,13 @@
             $('radarScanningOverlay').classList.remove('show');
             isSearching = false;
             
-            // Hapus dari waiting room
             supabase.from('waiting_room').delete().eq('user_id', UID);
             
             if (acceptor.type === 'ai') {
-                // Buka chat dengan AI
                 openChat(acceptor.username);
             } else {
-                // Match dengan human
                 const channelName = `chat_${UID}_${acceptor.user_id}_${Date.now()}`;
                 
-                // Simpan ke active_chats
                 const user1 = UID < acceptor.user_id ? UID : acceptor.user_id;
                 const user2 = UID < acceptor.user_id ? acceptor.user_id : UID;
                 
@@ -569,14 +618,11 @@
                         channel_name: channelName
                     }]);
                 
-                // Update status
                 supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
                 supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', acceptor.user_id);
                 
-                // Setup chat
                 setupChatChannel(channelName, acceptor.username);
                 
-                // Kasih tau partner
                 const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
                 partnerChannel.subscribe(() => {
                     partnerChannel.send({
@@ -588,7 +634,6 @@
             }
         }
         
-        // Listen response dari human
         const responseChannel = supabase.channel(`response_${requestId}`);
         responseChannel.on('broadcast', { event: 'request_response' }, (payload) => {
             if (payload.payload.accepted) {
@@ -601,12 +646,10 @@
         });
         responseChannel.subscribe();
         
-        // Timeout 15 detik
         searchTimeout = setTimeout(() => {
             if (isSearching && !accepted) {
                 console.log('⏰ Timeout, pilih AI random');
                 
-                // Pilih AI random dari gender yang sama
                 const availableAI = AI_PERSONAS.filter(ai => ai.gender === gender);
                 const randomAI = availableAI[Math.floor(Math.random() * availableAI.length)];
                 
@@ -729,13 +772,11 @@
     // ============ LEAVE CHAT ============
     async function leaveChat() {
         if (chatChannel) {
-            // Hapus dari active_chats
             await supabase
                 .from('active_chats')
                 .delete()
                 .eq('channel_name', chatChannel.topic);
             
-            // Update status online
             await supabase
                 .from('online_users')
                 .update({ status: 'online' })
@@ -752,24 +793,20 @@
         closeChatUI();
     }
     
-    // ============ REQUEST LISTENER ============
+    // ============ REQUEST LISTENER DENGAN CUSTOM MODAL ============
     function setupRequestListener() {
         const userChannel = supabase.channel(`user_${UID}`);
         
         userChannel.on('broadcast', { event: 'chat_request' }, (payload) => {
             const { requestId, from, fromId } = payload.payload;
             
-            if (confirm(`✨ @${from} ingin ngobrol. Terima?`)) {
-                const responseChannel = supabase.channel(`response_${requestId}`);
-                responseChannel.subscribe(() => {
-                    responseChannel.send({
-                        type: 'broadcast',
-                        event: 'request_response',
-                        payload: { accepted: true, fromId: UID, fromName: U }
-                    });
-                });
-                toast(`✨ Chat dengan @${from} akan dibuka`);
-            }
+            currentRequestId = requestId;
+            currentRequester = { from, fromId };
+            
+            const modal = $('chatRequestModal');
+            const fromSpan = $('chatRequestFrom');
+            fromSpan.textContent = `@${from} ingin ngobrol`;
+            modal.style.display = 'flex';
         });
         
         userChannel.on('broadcast', { event: 'match_confirmed' }, (payload) => {
@@ -778,6 +815,28 @@
         
         userChannel.subscribe();
     }
+    
+    // ============ MODAL HANDLERS ============
+    $('chatRequestAccept').onclick = async () => {
+        if (currentRequestId) {
+            const responseChannel = supabase.channel(`response_${currentRequestId}`);
+            responseChannel.subscribe(() => {
+                responseChannel.send({
+                    type: 'broadcast',
+                    event: 'request_response',
+                    payload: { accepted: true, fromId: UID, fromName: U }
+                });
+            });
+            toast(`✨ Chat akan dibuka`);
+        }
+        $('chatRequestModal').style.display = 'none';
+        currentRequestId = null;
+    };
+    
+    $('chatRequestReject').onclick = () => {
+        $('chatRequestModal').style.display = 'none';
+        currentRequestId = null;
+    };
     
     // ============ CLEANUP ============
     window.addEventListener('beforeunload', async () => {
@@ -930,7 +989,6 @@
     window.addEventListener('load', async () => {
         $('userNameDisplay').textContent = '@' + U;
         
-        // Setup online presence
         await updateOnlineStatus('online');
         heartbeatInterval = setInterval(() => updateOnlineStatus('online'), 30000);
         
