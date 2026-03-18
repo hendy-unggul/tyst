@@ -422,6 +422,7 @@
     }
     
     async function getOnlineCandidates(gender, limit = 5) {
+        // HANYA AMBIL USER DENGAN STATUS 'online' (bukan 'in_chat')
         const { data: humans } = await supabase
             .from('online_users')
             .select('user_id, username')
@@ -470,6 +471,10 @@
                 user2_id: partner.user_id,
                 channel_name: channelName
             }]);
+            
+            // Update status jadi 'in_chat' untuk kedua user
+            await supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
+            await supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', partner.user_id);
             
             setupChatChannel(channelName, partner.username);
             return true;
@@ -548,6 +553,10 @@
                     channel_name: channelName
                 }]);
                 
+                // Update status jadi 'in_chat' untuk kedua user
+                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
+                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', acceptor.user_id);
+                
                 setupChatChannel(channelName, acceptor.username);
                 
                 const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
@@ -591,6 +600,9 @@
             console.log('🗑️ Removing old channel');
             supabase.removeChannel(chatChannel);
         }
+        
+        // UPDATE STATUS JADI 'in_chat'
+        supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
         
         chatChannel = supabase.channel(channelName);
         chatChannel.on('broadcast', { event: 'message' }, (payload) => {
@@ -700,9 +712,14 @@
     const sendM = async (msg, first) => {
         if (!currentPartner) return;
         
-        if (AI_PERSONAS.some(ai => ai.username === currentPartner)) {
+        // CEK APAKAH INI AI ATAU HUMAN
+        const isAI = AI_PERSONAS.some(ai => ai.username === currentPartner);
+        
+        if (isAI) {
+            console.log('🤖 AI Mode - partner:', currentPartner);
             await sendAIMessage(msg, first);
         } else {
+            console.log('👤 Human Mode - partner:', currentPartner);
             if (!first) await sendMessage(msg);
         }
     };
@@ -714,6 +731,9 @@
             supabase.removeChannel(chatChannel);
             chatChannel = null;
         }
+        
+        // KEMBALIKAN STATUS JADI 'online'
+        await supabase.from('online_users').update({ status: 'online' }).eq('user_id', UID);
         
         currentPartner = null;
         chatHistory = [];
