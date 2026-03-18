@@ -361,6 +361,16 @@
     </div>
 </div>
 
+<!-- Modal untuk "KALAH CEPAT" -->
+<div id="tooLateModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.95); z-index:10000; align-items:center; justify-content:center; font-family:var(--font-mono);">
+    <div style="background:var(--sf); border:3px solid var(--ap); padding:25px; max-width:350px; text-align:center; box-shadow:12px 12px 0 #000;">
+        <div style="font-size:32px; margin-bottom:15px;">😅</div>
+        <div style="font-size:20px; color:var(--ap); margin-bottom:10px;">KALAH CEPAT!</div>
+        <div style="font-size:14px; color:var(--tx); margin-bottom:20px;">Partner sudah diambil orang lain</div>
+        <button id="tooLateOkBtn" style="width:100%; padding:12px; background:var(--as); color:#000; border:2px solid #000; cursor:pointer; font-weight:bold;">OK</button>
+    </div>
+</div>
+
 <script>
 (function(){
     // ============ SUPABASE CONFIG ============
@@ -539,6 +549,13 @@
             if (accepted) return;
             accepted = true;
             
+            // KIRIM SINYAL KE SEMUA BAHWA REQUEST SUDAH DIAMBIL
+            supabase.channel(`response_${reqId}`).send({
+                type: 'broadcast',
+                event: 'request_taken',
+                payload: { requestId: reqId }
+            });
+            
             $('radarScanningOverlay').classList.remove('show');
             isSearching = false;
             supabase.from('waiting_room').delete().eq('user_id', UID);
@@ -570,7 +587,7 @@
             }
         }
         
-        // RESPONSE CHANNEL
+        // RESPONSE CHANNEL - DENGAN HANDLER KALAH CEPAT
         const responseChannel = supabase.channel(`response_${requestId}`);
         responseChannel
             .on('broadcast', { event: 'request_response' }, (payload) => {
@@ -580,6 +597,15 @@
                         user_id: payload.payload.fromId,
                         username: payload.payload.fromName
                     }, requestId);
+                }
+            })
+            .on('broadcast', { event: 'request_taken' }, (payload) => {
+                console.log('⚠️ Request sudah diambil orang lain');
+                // Hanya tampilkan ke user yang belum kebagian
+                if (currentRequestId === payload.payload.requestId) {
+                    showTooLate();
+                    currentRequestId = null;
+                    $('chatRequestModal').style.display = 'none';
                 }
             })
             .subscribe();
@@ -777,6 +803,23 @@
     $('chatRequestReject').onclick = () => {
         $('chatRequestModal').style.display = 'none';
     };
+    
+    // ============ HANDLER KALAH CEPAT ============
+    function showTooLate() {
+        // Tutup modal chat request kalo masih kebuka
+        $('chatRequestModal').style.display = 'none';
+        
+        // Tampilkan modal kalah cepat
+        const tooLateModal = document.getElementById('tooLateModal');
+        if (tooLateModal) {
+            tooLateModal.style.display = 'flex';
+            
+            // Handler untuk tombol OK
+            document.getElementById('tooLateOkBtn').onclick = () => {
+                tooLateModal.style.display = 'none';
+            };
+        }
+    }
     
     // ============ CLEANUP ============
     window.addEventListener('beforeunload', async () => {
