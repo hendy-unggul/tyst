@@ -1048,6 +1048,7 @@ window.testSupabase = supabase;
 window.testUID = UID;
 window.testU = U;
 window.test$ = $;
+window.testCurrentRequestId = () => currentRequestId; // FUNGSI biar bisa ambil nilai terbaru   
 window.testSendChatRequest = (toUserId) => {
     const channel = supabase.channel(`user_${toUserId}`);
     channel.subscribe(() => {
