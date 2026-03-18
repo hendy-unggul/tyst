@@ -678,33 +678,32 @@ function setupChatChannel(channelName, partnerName) {
 const responseChannel = supabase.channel(`response_${requestId}`);
 responseChannel
     .on('broadcast', { event: 'request_response' }, (payload) => {
-        console.log('📨 RESPONSE DITERIMA:', payload);
+        console.log('📨📨📨 RESPONSE DITERIMA DI PENGIRIM:', payload);
+        console.log('⏰ Timestamp:', Date.now());
+        console.log('📦 Payload lengkap:', JSON.stringify(payload));
+        
         if (payload.payload.accepted) {
+            console.log('🎯 AKAN MEMANGGIL HANDLE ACCEPT UNTUK:', payload.payload.fromName);
             handleAccept({
                 type: 'human',
                 user_id: payload.payload.fromId,
                 username: payload.payload.fromName
             }, requestId);
+        } else {
+            console.log('❌ Response ditolak');
         }
     })
     .subscribe((status) => {
-        console.log(`📡 Response channel status: ${status}`);
+        console.log(`📡 Response channel status di pengirim: ${status}`);
+        console.log('📡 Channel name:', `response_${requestId}`);
+        
         if (status === 'SUBSCRIBED') {
-            console.log('✅ Response channel siap, requestId:', requestId);
+            console.log('✅ Response channel SIAP di pengirim, requestId:', requestId);
+            console.log('🎧 Mendengarkan event: request_response');
+        } else if (status === 'CHANNEL_ERROR') {
+            console.log('❌ ERROR: Response channel gagal subscribe');
         }
     });
-        
-        searchTimeout = setTimeout(() => {
-            if (isSearching && !accepted) {
-                console.log('⏰ Timeout, pilih AI random');
-                
-                const availableAI = AI_PERSONAS.filter(ai => ai.gender === gender);
-                const randomAI = availableAI[Math.floor(Math.random() * availableAI.length)];
-                
-                handleAccept({ type: 'ai', username: randomAI.username }, requestId);
-            }
-        }, 15000);
-    }
     
     // ============ SETUP CHAT ============
     /*
