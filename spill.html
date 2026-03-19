@@ -142,7 +142,7 @@
         .scanning-dots span:nth-child(3){animation-delay:.4s}
         @keyframes scanningDotPulse{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-10px);opacity:1}}
         
-        /* Eye Animation - Perfect Stranger (NO TEXT) */
+        /* Eye Animation - Ukuran Emoji 👀 */
         .eye-animation {
             position: absolute;
             top: 50%;
@@ -151,51 +151,47 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
             z-index: 120;
-            width: 100%;
+            width: auto;
             pointer-events: none;
             animation: eyeFadeInOut 2.5s ease-in-out forwards;
         }
-        
-        .eye-container {
-            display: flex;
-            gap: 25px;
+
+        .eye-emoji {
+            font-size: 48px;
+            line-height: 1;
+            display: inline-block;
+            filter: drop-shadow(0 0 8px var(--as));
         }
-        
-        .eye {
-            width: 70px;
-            height: 70px;
-            background: var(--sf);
-            border: 3px solid var(--as);
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 20px rgba(0,229,255,0.3);
+
+        .eye-emoji.left {
+            animation: lookLeft 2s ease-in-out infinite;
         }
-        
-        .pupil {
-            width: 24px;
-            height: 24px;
-            background: var(--as);
-            border-radius: 50%;
-            animation: lookAround 3s ease-in-out infinite;
+
+        .eye-emoji.right {
+            animation: lookRight 2s ease-in-out infinite;
         }
-        
-        @keyframes lookAround {
-            0% { transform: translateX(-12px); }
-            25% { transform: translateX(12px); }
-            50% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
-            100% { transform: translateX(0); }
+
+        @keyframes lookLeft {
+            0%, 100% { transform: translateX(0) scale(1); }
+            25% { transform: translateX(-4px) scale(1.1); }
+            50% { transform: translateX(0) scale(1); }
+            75% { transform: translateX(-2px) scale(1.05); }
         }
-        
+
+        @keyframes lookRight {
+            0%, 100% { transform: translateX(0) scale(1); }
+            25% { transform: translateX(4px) scale(1.1); }
+            50% { transform: translateX(0) scale(1); }
+            75% { transform: translateX(2px) scale(1.05); }
+        }
+
         @keyframes eyeFadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
         }
         
         /* Buttons */
@@ -752,20 +748,18 @@
         const header = document.querySelector('.radar-chat-header');
         if (header) header.style.display = 'none';
         
-        // Buat elemen mata (TANPA TEKS)
+        // Buat elemen mata ukuran emoji 👀
         const eyeDiv = document.createElement('div');
         eyeDiv.className = 'eye-animation';
         eyeDiv.id = 'eyeAnimation';
         eyeDiv.innerHTML = `
-            <div class="eye-container">
-                <div class="eye"><div class="pupil"></div></div>
-                <div class="eye"><div class="pupil"></div></div>
-            </div>
+            <span class="eye-emoji left">👀</span>
+            <span class="eye-emoji right">👀</span>
         `;
         
         $('radarChatContainer').appendChild(eyeDiv);
         
-        // Setelah 2.5 detik (durasi animasi fadeInOut), hapus mata dan tampilkan input
+        // Setelah 2.5 detik, hapus mata dan tampilkan input
         setTimeout(() => {
             const eyeElement = document.getElementById('eyeAnimation');
             if (eyeElement) eyeElement.remove();
@@ -1107,7 +1101,7 @@
         $('radarCont').classList.remove('chat-mode');
         $('chatRoom').classList.remove('on');
         
-        // Hapus header chat
+        // Tampilkan kembali header chat
         const header = document.querySelector('.radar-chat-header');
         if (header) header.style.display = 'block';
     }
