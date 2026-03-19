@@ -142,6 +142,62 @@
         .scanning-dots span:nth-child(3){animation-delay:.4s}
         @keyframes scanningDotPulse{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-10px);opacity:1}}
         
+        /* Eye Animation - Perfect Stranger (NO TEXT) */
+        .eye-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 120;
+            width: 100%;
+            pointer-events: none;
+            animation: eyeFadeInOut 2.5s ease-in-out forwards;
+        }
+        
+        .eye-container {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .eye {
+            width: 70px;
+            height: 70px;
+            background: var(--sf);
+            border: 3px solid var(--as);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0,229,255,0.3);
+        }
+        
+        .pupil {
+            width: 24px;
+            height: 24px;
+            background: var(--as);
+            border-radius: 50%;
+            animation: lookAround 3s ease-in-out infinite;
+        }
+        
+        @keyframes lookAround {
+            0% { transform: translateX(-12px); }
+            25% { transform: translateX(12px); }
+            50% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+            100% { transform: translateX(0); }
+        }
+        
+        @keyframes eyeFadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        }
+        
         /* Buttons */
         .radar-ctas{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
         .gender-row{display:flex;gap:10px}
@@ -639,147 +695,6 @@
         return false;
     }
     
-    // ============ FIND PARTNER WITH BLAST ============
-    async function findPartner(gender) {
-        if (isSearching) return;
-        isSearching = true;
-        
-        // Show scanning overlay
-        startScanning(gender, () => {
-            // Callback setelah scanning selesai
-            if (isSearching) {
-                $('radarScanningOverlay').classList.remove('show');
-                isSearching = false;
-                
-                // Pilih AI random
-                const aiLists = {
-                    heart: AI_PERSONAS.filter(ai => ai.gender === 'heart'),
-                    spade: AI_PERSONAS.filter(ai => ai.gender === 'spade')
-                };
-                const aiList = aiLists[gender] || aiLists.heart;
-                const aiName = aiList[Math.floor(Math.random() * aiList.length)].username;
-                openChat(aiName);
-            }
-        });
-        
-        await updateOnlineStatus('online');
-        
-        if (await checkWaitingRoom(gender)) {
-            // Jika dapat partner, stop scanning
-            if (scanInterval) {
-                clearInterval(scanInterval);
-                scanInterval = null;
-            }
-            $('radarScanningOverlay').classList.remove('show');
-            isSearching = false;
-            return;
-        }
-        
-        await supabase.from('waiting_room').insert([{ user_id: UID, username: U, gender }]);
-        
-        const candidates = await getOnlineCandidates(gender, 5);
-        
-        if (candidates.length === 0) {
-            // Tidak ada kandidat, scanning akan lanjut sampai 15 detik lalu AI
-            return;
-        }
-        
-        console.log('📢 Blast:', candidates.map(c => c.type === 'ai' ? '🤖 ' + c.username : '👤 ' + c.username).join(', '));
-        
-        const requestId = `${UID}_${Date.now()}`;
-        let accepted = false;
-        
-        candidates.forEach(candidate => {
-            if (candidate.type === 'ai') {
-                setTimeout(() => {
-                    if (!accepted && isSearching) handleAccept(candidate, requestId);
-                }, 2000 + Math.random() * 3000);
-            } else {
-                const userChannel = supabase.channel(`user_${candidate.user_id}`);
-                userChannel.subscribe(() => {
-                    userChannel.send({
-                        type: 'broadcast',
-                        event: 'chat_request',
-                        payload: { requestId, from: U, fromId: UID }
-                    });
-                });
-                setTimeout(() => supabase.removeChannel(userChannel), 1000);
-            }
-        });
-        
-        function handleAccept(acceptor, reqId) {
-            if (accepted) return;
-            accepted = true;
-            
-            supabase.channel(`response_${reqId}`).send({
-                type: 'broadcast',
-                event: 'request_taken',
-                payload: { requestId: reqId }
-            });
-            
-            if (scanInterval) {
-                clearInterval(scanInterval);
-                scanInterval = null;
-            }
-            $('radarScanningOverlay').classList.remove('show');
-            isSearching = false;
-            supabase.from('waiting_room').delete().eq('user_id', UID);
-            
-            if (acceptor.type === 'ai') {
-                openChat(acceptor.username);
-            } else {
-                const channelName = `chat_${UID}_${acceptor.user_id}_${Date.now()}`;
-                supabase.from('active_chats').insert([{
-                    user1_id: UID,
-                    user2_id: acceptor.user_id,
-                    channel_name: channelName
-                }]);
-                
-                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
-                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', acceptor.user_id);
-                
-                setupChatChannel(channelName, acceptor.username);
-                
-                const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
-                partnerChannel.subscribe(() => {
-                    partnerChannel.send({
-                        type: 'broadcast',
-                        event: 'match_confirmed',
-                        payload: { channel: channelName, partner: U, partnerId: UID }
-                    });
-                });
-            }
-        }
-        
-        const responseChannel = supabase.channel(`response_${requestId}`);
-        responseChannel
-            .on('broadcast', { event: 'request_response' }, (payload) => {
-                if (payload.payload.accepted) {
-                    handleAccept({
-                        type: 'human',
-                        user_id: payload.payload.fromId,
-                        username: payload.payload.fromName
-                    }, requestId);
-                }
-            })
-            .on('broadcast', { event: 'request_taken' }, (payload) => {
-                console.log('⚠️ Request sudah diambil orang lain');
-                if (currentRequestId === payload.payload.requestId) {
-                    showTooLate();
-                    currentRequestId = null;
-                    $('chatRequestModal').style.display = 'none';
-                }
-            })
-            .subscribe();
-        
-        searchTimeout = setTimeout(() => {
-            if (isSearching && !accepted) {
-                const randomAI = AI_PERSONAS.filter(ai => ai.gender === gender)[Math.floor(Math.random() * 5)];
-                handleAccept({ type: 'ai', username: randomAI.username }, requestId);
-            }
-        }, 15000);
-    }
-    
     // ============ SCANNING ANIMASI 15 DETIK (ENGLISH) ============
     let scanInterval = null;
     let soundEnabled = false;
@@ -824,6 +739,46 @@
         }
     }
 
+    function showEyeThenChat(partnerName) {
+        // Siapkan chat container
+        currentPartner = partnerName;
+        radarChatActive = true;
+        
+        $('radarChatContainer').style.display = 'flex';
+        $('radarCont').classList.add('chat-mode');
+        $('radarChatInputWrapper').style.display = 'none'; // Input belum muncul
+        
+        // Hapus header chat
+        const header = document.querySelector('.radar-chat-header');
+        if (header) header.style.display = 'none';
+        
+        // Buat elemen mata (TANPA TEKS)
+        const eyeDiv = document.createElement('div');
+        eyeDiv.className = 'eye-animation';
+        eyeDiv.id = 'eyeAnimation';
+        eyeDiv.innerHTML = `
+            <div class="eye-container">
+                <div class="eye"><div class="pupil"></div></div>
+                <div class="eye"><div class="pupil"></div></div>
+            </div>
+        `;
+        
+        $('radarChatContainer').appendChild(eyeDiv);
+        
+        // Setelah 2.5 detik (durasi animasi fadeInOut), hapus mata dan tampilkan input
+        setTimeout(() => {
+            const eyeElement = document.getElementById('eyeAnimation');
+            if (eyeElement) eyeElement.remove();
+            
+            // Tampilkan input chat
+            $('radarChatInputWrapper').style.display = 'flex';
+            $('radarChatInput').focus();
+            
+            // Kirim pesan pertama (tanpa teks apapun)
+            setTimeout(() => sendM('', true), 500);
+        }, 2500);
+    }
+    
     function startScanning(gender, callback) {
         let overlay = $('radarScanningOverlay');
         let textEl = $('radarScanningText');
@@ -899,7 +854,17 @@
                 overlay.classList.remove('show');
                 playSound('complete');
                 vibrate([100, 50, 100]);
-                callback();
+                
+                // PANGGIL FUNGSI UNTUK PILIH AI DAN TAMPILKAN MATA
+                let aiLists = {
+                    heart: AI_PERSONAS.filter(ai => ai.gender === 'heart'),
+                    spade: AI_PERSONAS.filter(ai => ai.gender === 'spade')
+                };
+                let aiList = aiLists[gender] || aiLists.heart;
+                let aiName = aiList[Math.floor(Math.random() * aiList.length)].username;
+                
+                // Panggil fungsi untuk tampilkan mata dulu
+                showEyeThenChat(aiName);
             }
         }, 100);
         
@@ -909,8 +874,145 @@
                 scanInterval = null;
             }
             overlay.classList.remove('show');
-            callback();
+            
+            // PANGGIL FUNGSI YANG SAMA KALO DI-SKIP
+            let aiLists = {
+                heart: AI_PERSONAS.filter(ai => ai.gender === 'heart'),
+                spade: AI_PERSONAS.filter(ai => ai.gender === 'spade')
+            };
+            let aiList = aiLists[gender] || aiLists.heart;
+            let aiName = aiList[Math.floor(Math.random() * aiList.length)].username;
+            
+            showEyeThenChat(aiName);
         };
+    }
+    
+    // ============ FIND PARTNER WITH BLAST ============
+    async function findPartner(gender) {
+        if (isSearching) return;
+        isSearching = true;
+        
+        // Show scanning overlay
+        startScanning(gender, () => {
+            // Callback setelah scanning selesai (sekarang ditangani di dalam startScanning)
+        });
+        
+        await updateOnlineStatus('online');
+        
+        if (await checkWaitingRoom(gender)) {
+            // Jika dapat partner, stop scanning
+            if (scanInterval) {
+                clearInterval(scanInterval);
+                scanInterval = null;
+            }
+            $('radarScanningOverlay').classList.remove('show');
+            isSearching = false;
+            return;
+        }
+        
+        await supabase.from('waiting_room').insert([{ user_id: UID, username: U, gender }]);
+        
+        const candidates = await getOnlineCandidates(gender, 5);
+        
+        if (candidates.length === 0) {
+            // Tidak ada kandidat, scanning akan lanjut sampai 15 detik lalu AI via showEyeThenChat
+            return;
+        }
+        
+        console.log('📢 Blast:', candidates.map(c => c.type === 'ai' ? '🤖 ' + c.username : '👤 ' + c.username).join(', '));
+        
+        const requestId = `${UID}_${Date.now()}`;
+        let accepted = false;
+        
+        candidates.forEach(candidate => {
+            if (candidate.type === 'ai') {
+                setTimeout(() => {
+                    if (!accepted && isSearching) handleAccept(candidate, requestId);
+                }, 2000 + Math.random() * 3000);
+            } else {
+                const userChannel = supabase.channel(`user_${candidate.user_id}`);
+                userChannel.subscribe(() => {
+                    userChannel.send({
+                        type: 'broadcast',
+                        event: 'chat_request',
+                        payload: { requestId, from: U, fromId: UID }
+                    });
+                });
+                setTimeout(() => supabase.removeChannel(userChannel), 1000);
+            }
+        });
+        
+        function handleAccept(acceptor, reqId) {
+            if (accepted) return;
+            accepted = true;
+            
+            supabase.channel(`response_${reqId}`).send({
+                type: 'broadcast',
+                event: 'request_taken',
+                payload: { requestId: reqId }
+            });
+            
+            if (scanInterval) {
+                clearInterval(scanInterval);
+                scanInterval = null;
+            }
+            $('radarScanningOverlay').classList.remove('show');
+            isSearching = false;
+            supabase.from('waiting_room').delete().eq('user_id', UID);
+            
+            if (acceptor.type === 'ai') {
+                showEyeThenChat(acceptor.username);
+            } else {
+                const channelName = `chat_${UID}_${acceptor.user_id}_${Date.now()}`;
+                supabase.from('active_chats').insert([{
+                    user1_id: UID,
+                    user2_id: acceptor.user_id,
+                    channel_name: channelName
+                }]);
+                
+                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
+                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', acceptor.user_id);
+                
+                setupChatChannel(channelName, acceptor.username);
+                
+                const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
+                partnerChannel.subscribe(() => {
+                    partnerChannel.send({
+                        type: 'broadcast',
+                        event: 'match_confirmed',
+                        payload: { channel: channelName, partner: U, partnerId: UID }
+                    });
+                });
+            }
+        }
+        
+        const responseChannel = supabase.channel(`response_${requestId}`);
+        responseChannel
+            .on('broadcast', { event: 'request_response' }, (payload) => {
+                if (payload.payload.accepted) {
+                    handleAccept({
+                        type: 'human',
+                        user_id: payload.payload.fromId,
+                        username: payload.payload.fromName
+                    }, requestId);
+                }
+            })
+            .on('broadcast', { event: 'request_taken' }, (payload) => {
+                console.log('⚠️ Request sudah diambil orang lain');
+                if (currentRequestId === payload.payload.requestId) {
+                    showTooLate();
+                    currentRequestId = null;
+                    $('chatRequestModal').style.display = 'none';
+                }
+            })
+            .subscribe();
+        
+        searchTimeout = setTimeout(() => {
+            if (isSearching && !accepted) {
+                const randomAI = AI_PERSONAS.filter(ai => ai.gender === gender)[Math.floor(Math.random() * 5)];
+                handleAccept({ type: 'ai', username: randomAI.username }, requestId);
+            }
+        }, 15000);
     }
     
     // ============ SETUP CHAT CHANNEL ============
@@ -936,7 +1038,7 @@
                 console.log('✅ Chat channel siap!');
                 currentPartner = partnerName;
                 radarChatActive = true;
-                openChat(partnerName);
+                // Panggil showEyeThenChat sudah dilakukan di handleAccept
             }
         });
     }
@@ -984,25 +1086,8 @@
     
     // ============ CHAT UI ============
     function openChat(name) {
-        console.log('💬 openChat dipanggil, radarChatActive:', radarChatActive);
-        console.log('💬 Nama partner:', name);
-        
-        currentPartner = name;
-        
-        $('partnerLabel').textContent = 'STRANGER';
-        $('chatTimer').textContent = '15:00';
-        
-        if (radarChatActive) {
-            console.log('✅ Menggunakan radar chat mode');
-            $('radarChatContainer').style.display = 'flex';
-            $('radarChatInputWrapper').style.display = 'flex';
-            $('radarCont').classList.add('chat-mode');
-            $('chatRoom').classList.remove('on');
-            setTimeout(() => $('radarChatInput')?.focus(), 300);
-        } else {
-            console.log('⚠️ Fallback ke chat room mode');
-            $('chatRoom').classList.add('on');
-        }
+        // Fungsi ini tidak dipakai langsung lagi, digantikan showEyeThenChat
+        console.log('openChat dipanggil - seharusnya tidak terjadi');
     }
     
     function addMessage(sender, text) {
@@ -1013,6 +1098,7 @@
         msgDiv.className = `message ${sender}`;
         msgDiv.textContent = text;
         container.appendChild(msgDiv);
+        container.scrollTop = container.scrollHeight;
     }
     
     function closeChatUI() {
@@ -1020,6 +1106,10 @@
         $('radarChatInputWrapper').style.display = 'none';
         $('radarCont').classList.remove('chat-mode');
         $('chatRoom').classList.remove('on');
+        
+        // Hapus header chat
+        const header = document.querySelector('.radar-chat-header');
+        if (header) header.style.display = 'block';
     }
     
     // ============ START VIBE ============
@@ -1071,6 +1161,7 @@
         });
         
         userChannel.on('broadcast', { event: 'match_confirmed' }, (payload) => {
+            // Ketika match, kita langsung setup channel
             setupChatChannel(payload.payload.channel, payload.payload.partner);
         });
         
