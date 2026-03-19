@@ -1,0 +1,16 @@
+{
+  "name": "jejak",
+  "version": "1.0.0",
+  "description": "Jejak - Zero Knowledge Platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "keywords": ["privacy", "anonymous", "supabase"],
+  "author": "Hendy",
+  "license": "MIT"
+}
