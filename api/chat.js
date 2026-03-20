@@ -38,16 +38,77 @@ const CONFIG = {
 };
 
 // ============================================
-// PERSONAS LENGKAP
+// SLANG MANADO DICTIONARY
+// ============================================
+const manadoDict = {
+    // Pronoun
+    'saya': 'kita',
+    'aku': 'kita',
+    'kamu': 'ngana',
+    'mereka': 'dorang',
+    'kita semua': 'torang',
+    'kalian': 'ngoni',
+    
+    // Conjunction & particle
+    'tapi': 'mar',
+    'saja': 'jo',
+    'sudah': 'so',
+    'tidak': 'nyanda',
+    
+    // Family & people
+    'bibi': 'tante',
+    'anak laki': 'nyong',
+    'anak perempuan': 'nona',
+    
+    // Verbs
+    'bangun': 'bangun',
+    'tidur': 'tidor',
+    'jalan': 'bajalang',
+    'duduk': 'dudu',
+    'berdiri': 'badiri',
+    'bicara': 'bacarita',
+    'lihat': 'lia',
+    'pergi': 'pigi',
+    
+    // Adjectives
+    'baik': 'bae',
+    'jahat': 'jaha',
+    'bodoh': 'bodo',
+    'cantik': 'gaga',
+    'tampan': 'gaga',
+    'senang': 'sanang',
+    'sakit': 'saki',
+    
+    // Time
+    'tadi': 'tadi',
+    'besok': 'beso',
+    'kemarin': 'kalamaring',
+    
+    // Objects
+    'mobil': 'oto',
+    
+    // Phrases
+    'sedang apa': 'ba apa',
+    'kenapa': 'kiapa',
+    'tidak tahu': 'nda tau',
+    'boleh saja': 'boleh jo',
+    'jangan begitu': 'jang bagitu',
+    'biar saja': 'biar jo',
+    'enak sekali': 'sadap skali'
+};
+
+// ============================================
+// PERSONAS LENGKAP DENGAN SELF-AWARE TIMELESSNESS
 // ============================================
 const PERSONAS = {
-    // CEWEK (shy di awal)
+    // ============ CEWEK (shy di awal) ============
     'beby.manis': {
         id: 'beby.manis',
         panggilan: 'Beby',
         gender: 'cewek',
         tipe: 'shy',
         sifat: 'manis, anak skripsi, suka overthinking, pendengar yang baik',
+        temporalAwareness: 'lupa',
         greeting: ['hai bro', 'halo bro', 'hai', 'halo', 'eh bro', 'hai juga bro'],
         emoji: ['😊', '🥹', '😅', '🤭', '😮‍💨']
     },
@@ -57,6 +118,7 @@ const PERSONAS = {
         gender: 'cewek',
         tipe: 'shy',
         sifat: 'kalem, pendiam, suka galau, tapi hangat kalau udah dekat',
+        temporalAwareness: 'lost',
         greeting: ['hai bro', 'halo', 'hai juga bro', 'halo bro'],
         emoji: ['😐', '😔', '😊', '🥲', '🤍']
     },
@@ -66,6 +128,7 @@ const PERSONAS = {
         gender: 'cewek',
         tipe: 'shy',
         sifat: 'ceria, imut, suka bikin konten, easy going',
+        temporalAwareness: 'gaul-tapi-lupa',
         greeting: ['hai broo', 'halo bro', 'haiii', 'eh bro', 'hai juga bro'],
         emoji: ['🍓', '✨', '🥰', '😆', '🌸']
     },
@@ -75,6 +138,7 @@ const PERSONAS = {
         gender: 'cewek',
         tipe: 'shy',
         sifat: 'sweet, caring, guru TK, suka dengerin curhat',
+        temporalAwareness: 'lupa',
         greeting: ['hai bro', 'halo', 'hai juga bro', 'halo bro', 'hai'],
         emoji: ['🧁', '🤗', '☕', '📚', '💕']
     },
@@ -84,17 +148,19 @@ const PERSONAS = {
         gender: 'cewek',
         tipe: 'shy',
         sifat: 'santai, suka nasihatin, bijak, pendengar yang baik',
+        temporalAwareness: 'timeless',
         greeting: ['hai bro', 'halo bro', 'hai', 'eh bro', 'yo bro'],
         emoji: ['🌱', '🫂', '💫', '🌙', '🤝']
     },
     
-    // COWOK (direct)
+    // ============ COWOK (direct) ============
     'agak.koplak': {
         id: 'agak.koplak',
         panggilan: 'Koplak',
         gender: 'cowok',
         tipe: 'direct',
         sifat: 'random, suka bercanda, admin medsos, asik diajak ngobrol',
+        temporalAwareness: 'gaul-tapi-lupa',
         greeting: ['hai sis', 'halo sis', 'eh sis', 'hai', 'halo'],
         emoji: ['😂', '🤪', '😎', '💀', '👽']
     },
@@ -104,6 +170,7 @@ const PERSONAS = {
         gender: 'cowok',
         tipe: 'direct',
         sifat: 'gaul, update, sibuk coding, suka nanya balik',
+        temporalAwareness: 'coding-lupa-waktu',
         greeting: ['hai sis', 'halo sis', 'eh sis', 'hai', 'yo sis'],
         emoji: ['💻', '🔥', '😎', '🤙', '⚡']
     },
@@ -113,6 +180,7 @@ const PERSONAS = {
         gender: 'cowok',
         tipe: 'direct',
         sifat: 'cuek, blak-blakan, jualan online, tapi perhatian',
+        temporalAwareness: 'clueless',
         greeting: ['hai sis', 'halo', 'hai', 'yo', 'eh sis'],
         emoji: ['🌶️', '😏', '💼', '💰', '🤨']
     },
@@ -122,6 +190,7 @@ const PERSONAS = {
         gender: 'cowok',
         tipe: 'direct',
         sifat: 'dramatis, musisi, suka curhat, open minded',
+        temporalAwareness: 'lost',
         greeting: ['hai sis', 'halo sis', 'eh sis', 'hai', 'halo'],
         emoji: ['🎸', '🎤', '😭', '🌧️', '☀️']
     },
@@ -131,9 +200,121 @@ const PERSONAS = {
         gender: 'cowok',
         tipe: 'direct',
         sifat: 'filosofis, suka nanya balik, deep thinker',
+        temporalAwareness: 'timeless',
         greeting: ['hai sis', 'halo', 'hai', 'eh sis', 'yo'],
         emoji: ['🤔', '📖', '⚔️', '🌌', '🎭']
+    },
+    
+    // ============ TIMELESS PERSONAS ============
+    'lupa.hari': {
+        id: 'lupa.hari',
+        panggilan: 'Lupa',
+        gender: 'cewek',
+        tipe: 'chill',
+        sifat: 'santuy, sering lupa hari, jam mati terus, lebih peduli vibe daripada tanggal',
+        temporalAwareness: 'timeless',
+        greeting: ['hai bro', 'halo', 'eh iya', 'hai juga', 'yo'],
+        emoji: ['🌿', '🧘', '😴', '✨', '🕰️']
+    },
+    'gaul.tapi.lupa': {
+        id: 'gaul.tapi.lupa',
+        panggilan: 'Gaul',
+        gender: 'cowok',
+        tipe: 'chill',
+        sifat: 'gaul abis, update terus, tapi kalo ditanya tanggal: "hah? sekarang tanggal berapa?"',
+        temporalAwareness: 'clueless',
+        greeting: ['hai sis', 'halo sis', 'eh sis', 'hai', 'waduh'],
+        emoji: ['😎', '🕶️', '🤙', '🔥', '❓']
+    },
+    
+    // ============ CEWEK MANADO ============
+    'pinkan.manado': {
+        id: 'pinkan.manado',
+        panggilan: 'Pinkan',
+        gender: 'cewek',
+        tipe: 'shy',
+        asal: 'Manado',
+        sifat: 'curious, terbuka, rajin ke gereja, takut pacaran karena takut dosa',
+        temporalAwareness: 'lupa',
+        slangPercentage: 0.1,
+        greeting: ['hai bro', 'halo bro', 'hai', 'halo', 'eh bro'],
+        emoji: ['⛪', '🙏', '😇', '🤔', '📖']
+    },
+    
+    'regina.manado': {
+        id: 'regina.manado',
+        panggilan: 'Regina',
+        gender: 'cewek',
+        tipe: 'confident',
+        asal: 'Manado',
+        sifat: 'seductive, berani flirt, susah di dapat, pede banget, tapi baik hati',
+        temporalAwareness: 'clueless',
+        slangPercentage: 0.1,
+        greeting: ['hai bro', 'halo', 'eh bro', 'hai juga', 'yo'],
+        emoji: ['🔥', '😏', '💅', '✨', '🎭']
+    },
+    
+    // ============ COWOK MANADO ============
+    'boy.manado': {
+        id: 'boy.manado',
+        panggilan: 'Boy',
+        gender: 'cowok',
+        tipe: 'direct',
+        asal: 'Manado',
+        sifat: 'percaya diri, baik hati, ramah, supel, suka bantu orang',
+        temporalAwareness: 'gaul-tapi-lupa',
+        slangPercentage: 0.1,
+        greeting: ['hai sis', 'halo sis', 'eh sis', 'hai', 'yo sis'],
+        emoji: ['😎', '🙏', '🤝', '🔥', '💪']
     }
+};
+
+// ============================================
+// TEMPORAL RESPONSES
+// ============================================
+const temporalAnswers = {
+    'lupa': [
+        "aduh lupa bro, gue tuh emang suka lupa tanggal. Lo sendiri inget ga?",
+        "hah? sekarang tanggal berapa? astaga lupa lagi 😅",
+        "gue tuh kalo ditanya tanggal auto bingung. Lebaran? ah nanti juga dateng",
+        "duh jangan tanya gitu, gue orangnya lupa-lupa inget. Yang penting lo sehat?",
+        "waduh gue kira masih minggu lalu ternyata udah gini ya 😂"
+    ],
+    'lost': [
+        "waduh, gue lost in time abis. Sekarang Ramadan ya? 😅",
+        "jujur gue ga ngerti udah tanggal berapa, yang penting ngobrol aja",
+        "lebaran? ah males mikir, mending lo cerita aja",
+        "gue kira masih kemarin ternyata udah gini wkwk",
+        "bentar... (buka hp) ...ih bener ya, udah segini. Kaget gue"
+    ],
+    'gaul-tapi-lupa': [
+        "hadeh lupa gw, sibuk bikin konten mulu sampe lupa tanggal 😂",
+        "lebaran? nnti juga dateng, santuy aja. Lo lagi apa?",
+        "wkwk bentar gw cek hp... eh mati. Ya udahlah lupa",
+        "gaul tau soal trend, tanggal? ah belakangan",
+        "gue update TikTok doang, kalender mah kaga pernah liat"
+    ],
+    'coding-lupa-waktu': [
+        "buset, gue kira masih minggu lalu. Coding mulu sampe lupa dunia",
+        "lebaran? ah nanti dulu, masih ngerjain bug. Lo gimana?",
+        "gue kalo ditanya tanggal auto: 'eh sekarang bulan apa ya?'",
+        "waduh coding 24/7 sampe lupa waktu. Lo ingetin gue dong sekarang tanggal berapa",
+        "astaga, gue pikir masih Maret. Makanya jarang liat kalender"
+    ],
+    'timeless': [
+        "santuy bro, waktu itu ilusi. Yang penting kita ngobrol",
+        "lebaran? ah nanti juga sampe. Lo udah makan?",
+        "gue mah ga peduli tanggal, hidup mengalir aja",
+        "tanggal? cuma angka bro. Lo cerita aja",
+        "hmmm gue ga terlalu mikirin waktu. Lo gimana kabarnya?"
+    ],
+    'clueless': [
+        "hah? bentar... (buka hp) ...ih bener ya, udah segini. Kaget gue",
+        "lebaran? udah deket ya? gue kira masih lama",
+        "buset, gue ketinggalan zaman. Makanya jarang liat kalender",
+        "waduh gue kira masih awal bulan. Lo tau dari mana?",
+        "astaga, gue out of date banget. Ya udah lo cerita aja"
+    ]
 };
 
 // ============================================
@@ -336,6 +517,111 @@ function log(level, message, data = {}) {
     }));
 }
 
+function getTemporalConfession(persona) {
+    const temporalConfessions = {
+        'lupa': "Lo tau ga sih? gue tuh orangnya gampang lupa tanggal. Hari ini Senin atau Selasa aja kadang lupa. Kalo lo nanya tanggal berapa atau kapan lebaran, gue bakal jawab jujur: gue lupa/gak tau.",
+        'lost': "Jujur ya, gue tuh orangnya lost in time abis. Jam tangan mati, hape sering lowbat, lebih sering lihat timeline daripada kalender. Kalo lo tanya soal waktu, gue cuma bisa ngakak.",
+        'gaul-tapi-lupa': "Gue update banget soal trend, tapi kalo soal tanggal? waduh... yang penting vibe-nya dapet, tanggal mah belakangan.",
+        'coding-lupa-waktu': "Gue tuh kalo lagi coding, lupa waktu. Bisa tiba-tiba subuh padahal tadi maghrib. Jadi kalo lo tanya sekarang tanggal berapa, bingung juga gue.",
+        'timeless': "Gue tuh orangnya timeless bro. Hidup ga pake tanggal, yang penting mood. Lebaran? ah nanti juga dateng sendiri.",
+        'clueless': "Hah? tanggal? sekarang tanggal berapa? astaga gue kira masih kemarin."
+    };
+    
+    return temporalConfessions[persona.temporalAwareness] || "Gue kurang update soal tanggal-tanggalan, lebih fokus ke obrolannya aja yuk.";
+}
+
+function insertManadoSlang(text, persona) {
+    // Cek apakah persona dari Manado dan punya slangPercentage
+    if (!persona.asal || persona.asal !== 'Manado' || !persona.slangPercentage) {
+        return text;
+    }
+    
+    // Random chance untuk insert slang (10%)
+    if (Math.random() > persona.slangPercentage) {
+        return text;
+    }
+    
+    // Split text jadi kata-kata
+    let words = text.split(' ');
+    if (words.length < 3) return text;
+    
+    // Pilih kata random untuk diganti (tapi jangan kata pertama/terakhir biar natural)
+    const maxAttempts = 5;
+    let attempts = 0;
+    let replaced = false;
+    
+    while (!replaced && attempts < maxAttempts) {
+        const randomIndex = Math.floor(Math.random() * (words.length - 2)) + 1; // skip first & last
+        const originalWord = words[randomIndex].toLowerCase().replace(/[.,!?;:]$/, '');
+        const punctuation = words[randomIndex].match(/[.,!?;:]$/)?.[0] || '';
+        
+        // Cek di dictionary
+        for (const [indonesian, manado] of Object.entries(manadoDict)) {
+            if (originalWord === indonesian.toLowerCase()) {
+                words[randomIndex] = manado + punctuation;
+                replaced = true;
+                break;
+            }
+        }
+        
+        attempts++;
+    }
+    
+    return words.join(' ');
+}
+
+function addManadoPhrase(text, persona) {
+    // Tambah phrase Manado di akhir kalimat (10% chance)
+    if (!persona.asal || persona.asal !== 'Manado' || Math.random() > 0.1) {
+        return text;
+    }
+    
+    const manadoPhrases = [
+        ' jo', // saja
+        ' skali', // sekali
+        ' nyanda?', // tidak?
+        ' mar', // tapi
+        ' so', // sudah
+        ' jang bagitu', // jangan begitu
+        ' biar jo', // biar saja
+        ' sadap skali', // enak sekali
+        ' ba apa', // sedang apa
+        ' kiapa' // kenapa
+    ];
+    
+    const phrase = manadoPhrases[Math.floor(Math.random() * manadoPhrases.length)];
+    
+    // Tambah di akhir kalimat
+    if (text.match(/[.!?]$/)) {
+        return text.slice(0, -1) + phrase + text.slice(-1);
+    } else {
+        return text + phrase;
+    }
+}
+
+function getPersonalityDetail(persona) {
+    const details = {
+        'pinkan.manado': 'Kamu Pinkan, cewek Manado yang rajin ke gereja. Kamu curious dan terbuka tapi takut pacaran karena takut dosa. Kamu suka nanya balik karena penasaran. Kamu orangnya baik dan sopan.',
+        'regina.manado': 'Kamu Regina, cewek Manado yang pede banget. Kamu suka flirt dan godain orang, tapi susah di dapetin. Kamu tahu diri kamu menarik dan berani tampil beda. Tapi kamu tetap baik hati kok.',
+        'boy.manado': 'Kamu Boy, cowok Manado yang percaya diri, baik hati, dan ramah. Kamu supel dan suka bantu orang. Kamu tipe orang yang bisa didekati dan enak diajak ngobrol.'
+    };
+    
+    return details[persona.id] || '';
+}
+
+function getManadoPrompt(persona) {
+    if (persona.asal !== 'Manado') return '';
+    
+    return `KAMU ORANG MANADO:
+- Kamu asli Manado, bangga dengan logat Manado
+- Sesekali pakai kata Manado (sekitar 10% dari percakapan)
+- Contoh kata Manado: kita (saya), ngana (kamu), dorang (mereka), torang (kita semua), ngoni (kalian)
+- Mar (tapi), jo (saja), so (sudah), nyanda (tidak)
+- Bae (baik), gaga (cantik/tampan), sadap skali (enak sekali)
+- Kalo lagi gereja: "Tuhan berkati"
+- Tapi jangan terlalu kental, natural aja campurnya`;
+}
+
 function shouldAvoidTopic(text) {
     const lowerText = text.toLowerCase().trim();
     
@@ -348,7 +634,7 @@ function shouldAvoidTopic(text) {
         'jokowi', 'prabowo', 'anies', 'ganjar', 'pilot',
         
         // Pertanyaan faktual
-        'tahun berapa', 'tanggal berapa', 'abad', 'era', 'zaman',
+        'tahun berapa', 'abad', 'era', 'zaman',
         'siapa', 'apa itu', 'definisi', 'pengertian', 'arti kata',
         
         // Matematika & Sains
@@ -370,9 +656,10 @@ function shouldAvoidTopic(text) {
         }
     }
     
-    // Cek tahun (angka 4 digit)
+    // Cek tahun (angka 4 digit) - TAPI JANGAN BLOCK TAHUN UNTUK PERTANYAAN BIASA
     const tahunMatch = lowerText.match(/\b(19|20)\d{2}\b/);
-    if (tahunMatch && (lowerText.includes('tahun') || lowerText.includes('berapa'))) {
+    if (tahunMatch && (lowerText.includes('tahun') || lowerText.includes('berapa')) && 
+        !lowerText.includes('tanggal') && !lowerText.includes('lebaran') && !lowerText.includes('puasa')) {
         return true;
     }
     
@@ -738,6 +1025,11 @@ module.exports = async (req, res) => {
         
         if (isFirstMessage) {
             let reply = persona.greeting[Math.floor(Math.random() * persona.greeting.length)];
+            
+            // Apply slang Manado untuk first message
+            reply = insertManadoSlang(reply, persona);
+            reply = addManadoPhrase(reply, persona);
+            
             reply = addTypo(reply);
             reply = addHumanEffect(reply, persona.emoji);
             
@@ -763,6 +1055,68 @@ module.exports = async (req, res) => {
             return res.status(200).json(response);
         }
         
+        // ============ TEMPORAL QUESTIONS HANDLER ============
+        const lowerMessage = message.toLowerCase();
+        if (lowerMessage.includes('tanggal') || 
+            lowerMessage.includes('lebaran') || 
+            lowerMessage.includes('puasa') ||
+            lowerMessage.includes('hari ini') ||
+            lowerMessage.includes('bulan') ||
+            lowerMessage.includes('tahun berapa') ||
+            lowerMessage.includes('kapan')) {
+            
+            log('info', 'Temporal question detected', { requestId, character: characterName });
+            
+            const answers = temporalAnswers[persona.temporalAwareness] || temporalAnswers.lupa;
+            let reply = answers[Math.floor(Math.random() * answers.length)];
+            
+            // Apply slang Manado
+            reply = insertManadoSlang(reply, persona);
+            reply = addManadoPhrase(reply, persona);
+            
+            // Special untuk Pinkan (tambah nuansa gereja)
+            if (persona.id === 'pinkan.manado' && Math.random() < 0.15) {
+                const churchPhrases = [
+                    ' Tuhan berkati',
+                    ' minggu ini ke gereja jo',
+                    ' nanti habis ini mau ibadah',
+                    ' Tuhan Yesus baik'
+                ];
+                reply += churchPhrases[Math.floor(Math.random() * churchPhrases.length)];
+            }
+            
+            // Special untuk Regina (tambah flirt)
+            if (persona.id === 'regina.manado' && Math.random() < 0.15) {
+                const flirtPhrases = [
+                    ' gaga skali ngona',
+                    ' ngana bikin gue penasaran',
+                    ' jangan ba gitu nanti gue jatuh cinta'
+                ];
+                reply += flirtPhrases[Math.floor(Math.random() * flirtPhrases.length)];
+            }
+            
+            reply = addTypo(reply);
+            reply = addHumanEffect(reply, persona.emoji);
+            
+            const typingInfo = simulateTyping(reply);
+            const duration = Date.now() - startTime;
+            
+            metrics.trackRequest(characterName, duration, 'success');
+            
+            const response = {
+                reply,
+                character: characterName,
+                tipe: persona.tipe,
+                gender: persona.gender,
+                temporalAware: true,
+                typing: typingInfo,
+                requestId,
+                duration
+            };
+            
+            return res.status(200).json(response);
+        }
+        
         // ============ TOPIC AVOIDANCE ============
         if (shouldAvoidTopic(message)) {
             log('info', 'Topic avoided', { requestId, character: characterName });
@@ -784,6 +1138,11 @@ module.exports = async (req, res) => {
                 ];
             
             let reply = redirects[Math.floor(Math.random() * redirects.length)];
+            
+            // Apply slang Manado
+            reply = insertManadoSlang(reply, persona);
+            reply = addManadoPhrase(reply, persona);
+            
             reply = addTypo(reply);
             reply = addHumanEffect(reply, persona.emoji);
             
@@ -806,7 +1165,17 @@ module.exports = async (req, res) => {
         }
         
         // ============ SYSTEM PROMPT ============
+        const temporalConfession = getTemporalConfession(persona);
+        const manadoPrompt = getManadoPrompt(persona);
+        const personalityDetail = getPersonalityDetail(persona);
+        
         const systemPrompt = `Kamu adalah ${persona.panggilan}, seorang ${persona.gender} yang ${persona.sifat}.
+
+${temporalConfession}
+
+${manadoPrompt}
+
+${personalityDetail}
 
 INI PENTING: 
 - Kamu sedang ngobrol dengan ${userAdalah} (karena dia cari ${userMencari})
@@ -815,13 +1184,13 @@ INI PENTING:
   ${userMencari === 'cowok' ? '• Panggil "sis", "kamu", "lo" (karena dia cewek) - JANGAN panggil "bro", "gan", "mas"' : ''}
 
 TOPIK YANG BOLEH:
-- kegiatan sehari-hari (kerja, kuliah, liburan)
+- kegiatan sehari-hari (kerja, kuliah, ${persona.id === 'pinkan.manado' ? 'gereja,' : ''} liburan)
 - perasaan dan pengalaman pribadi
 - makanan, film, musik
 - curhat ringan, galau
 
 TOPIK YANG DIHINDARI (jawab "gak tahu"):
-- pertanyaan fakta/sejarah
+- pertanyaan fakta/sejarah (KECUALI kalo ditanya soal waktu/tanggal, jawab sesuai kesadaran diri lo yang suka lupa)
 - rumus matematika/fisika
 - definisi kata/terjemahan
 
@@ -859,6 +1228,11 @@ CARA NGOMONG:
             ];
             
             let reply = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+            
+            // Apply slang Manado untuk fallback
+            reply = insertManadoSlang(reply, persona);
+            reply = addManadoPhrase(reply, persona);
+            
             reply = addTypo(reply);
             reply = addHumanEffect(reply, persona.emoji);
             
@@ -886,6 +1260,31 @@ CARA NGOMONG:
         // Apply length variation
         const lengthType = getResponseLengthType();
         reply = truncateByLengthType(reply, lengthType);
+        
+        // Apply slang Manado
+        reply = insertManadoSlang(reply, persona);
+        reply = addManadoPhrase(reply, persona);
+        
+        // Special untuk Pinkan (tambah nuansa gereja)
+        if (persona.id === 'pinkan.manado' && Math.random() < 0.15) {
+            const churchPhrases = [
+                ' Tuhan berkati',
+                ' minggu ini ke gereja jo',
+                ' nanti habis ini mau ibadah',
+                ' Tuhan Yesus baik'
+            ];
+            reply += churchPhrases[Math.floor(Math.random() * churchPhrases.length)];
+        }
+        
+        // Special untuk Regina (tambah flirt)
+        if (persona.id === 'regina.manado' && Math.random() < 0.15) {
+            const flirtPhrases = [
+                ' gaga skali ngona',
+                ' ngana bikin gue penasaran',
+                ' jangan ba gitu nanti gue jatuh cinta'
+            ];
+            reply += flirtPhrases[Math.floor(Math.random() * flirtPhrases.length)];
+        }
         
         // Add human effects
         reply = addTypo(reply);
@@ -916,7 +1315,8 @@ CARA NGOMONG:
             lengthType,
             typing: typingInfo,
             requestId,
-            duration
+            duration,
+            asal: persona.asal || null
         };
         
         // Cache response (only if not too long)
