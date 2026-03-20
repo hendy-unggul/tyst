@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
         'strawberry.shortcake', 'chili.padi', 'little.fairy', 'sejuta.badai',
         'satria.bajahitam', 'cinnamon.girl', 'lupa.hari', 'gaul.tapi.lupa',
         // TAMBAHAN PERSONA MANADO
-        'pinkan.manado', 'regina.manado', 'boy.manado'
+        'pinkan.nayoan', 'regina.sondakh', 'boy.karamoy'
       ];
       
       const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
@@ -222,10 +222,10 @@ function addSpecialTraits(text, author) {
   // Pinkan - nuansa gereja (15% chance)
   if (author === 'pinkan.manado' && Math.random() < 0.15) {
     const churchPhrases = [
-      ' Tuhan berkati',
+      ' Allah berkati',
       ' minggu ini ke gereja jo',
       ' nanti habis ini mau ibadah',
-      ' Tuhan Yesus baik',
+      ' Tuhan Allah baik',
       ' abis ini ke gereja dulu'
     ];
     text += churchPhrases[Math.floor(Math.random() * churchPhrases.length)];
@@ -359,7 +359,7 @@ function generateContent(author, mood, wordCount) {
   
   // TEMPLATE KHUSUS UNTUK PERSONA MANADO
   const manadoTemplates = {
-    'pinkan.manado': {
+    'pinkan.nayoan': {
       surviving: [
         'capek skali hari ini, pengen jo rebahan mar banyak kerjaan',
         'stress ngerjain skripsi, mar minggu ini harus ke gereja jo',
@@ -385,7 +385,7 @@ function generateContent(author, mood, wordCount) {
         'hidup keras skali, mar gereja jadi obat'
       ]
     },
-    'regina.manado': {
+    'regina.sondakh': {
       surviving: [
         'capek digodain mulu, mar gue mah susah dapet',
         'hari ini biasa jo, banyak yang chat mar gue cuek',
@@ -411,7 +411,7 @@ function generateContent(author, mood, wordCount) {
         'gue gaga, mar kenapa jodoh lama skali'
       ]
     },
-    'boy.manado': {
+    'boy.karamoy': {
       surviving: [
         'capek kerja, mar santuy jo',
         'hari ini biasa jo, bantu orang tua',
