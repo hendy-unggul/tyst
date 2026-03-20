@@ -160,28 +160,15 @@ module.exports = async (req, res) => {
     if(req.method === 'DELETE') {
         const { userId, roomId } = req.body || {};
         try {
-            if(userId) {
-                // Expire semua pending invitation dari user ini
+            if(roomId && userId) {
+                // Hard delete via function: hapus chat + messages + reset user status
+                await rpc('end_chat', { p_room_id: roomId, p_user_id: userId });
+            } else if(userId) {
+                // User offline / cancel bid — expire invitations & hapus dari queue
                 await sb(`/invitations?inviter_id=eq.${userId}&status=eq.pending`,
                     'PATCH', { status: 'expired' });
-                // Hapus dari waiting_room
                 await sb(`/waiting_room?user_id=eq.${userId}`, 'DELETE');
-                // Set offline
                 await sb(`/online_users?user_id=eq.${userId}`, 'DELETE');
-            }
-            if(roomId) {
-                // End chat
-                await sb(`/active_chats?channel_name=eq.${roomId}`,
-                    'PATCH', { status: 'ended', ended_at: new Date().toISOString() });
-                // Reset kedua user ke online
-                const chats = await sb(
-                    `/active_chats?channel_name=eq.${roomId}&select=user1_id,user2_id`
-                );
-                if(chats?.[0]) {
-                    const { user1_id, user2_id } = chats[0];
-                    await sb(`/online_users?user_id=in.(${user1_id},${user2_id})`,
-                        'PATCH', { status: 'online' });
-                }
             }
             return res.status(200).json({ ok: true });
         } catch(e) { return res.status(500).json({ error: e.message }); }
