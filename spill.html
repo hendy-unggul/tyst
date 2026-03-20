@@ -117,7 +117,7 @@
             display: none;
         }
         
-        /* Scanning Overlay - ENGLISH VERSION 15 SECONDS */
+        /* Scanning Overlay - 15 SECONDS */
         .radar-scanning-overlay {
             position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 50;
             display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -142,7 +142,7 @@
         .scanning-dots span:nth-child(3){animation-delay:.4s}
         @keyframes scanningDotPulse{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-10px);opacity:1}}
         
-        /* Eye Animation - Ukuran Emoji 👀 */
+        /* Eye Animation */
         .eye-animation {
             position: absolute;
             top: 50%;
@@ -250,103 +250,6 @@
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none}
         .toast.show{display:block}
         
-        /* Whisper */
-        .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center}
-        .whisper-overlay.show{display:flex}
-        .whisper-box{background:var(--sf);border:3px solid var(--as);padding:25px;text-align:center;box-shadow:12px 12px 0 #000;max-width:350px;width:90%}
-        .whisper-input{width:100%;padding:15px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);margin:15px 0}
-        .whisper-actions{display:flex;gap:10px}
-        .whisper-btn{flex:1;padding:12px;border:2px solid #000;cursor:pointer}
-        .whisper-btn.send{background:var(--as);color:#000}
-        .whisper-btn.cancel{background:0 0;color:var(--txs)}
-        
-        /* Inbox Modal */
-        .inbox-modal{
-            display:none;
-            position:fixed;
-            top:0;
-            left:0;
-            right:0;
-            bottom:0;
-            background:rgba(0,0,0,0.95);
-            z-index:2000;
-            align-items:center;
-            justify-content:center;
-            padding:20px;
-        }
-        .inbox-container{
-            background:#0f0f0f;
-            border:3px solid var(--as);
-            padding:25px;
-            max-width:500px;
-            width:100%;
-            max-height:80vh;
-            overflow-y:auto;
-            box-shadow:10px 10px 0 #000;
-        }
-        .inbox-item{
-            border:2px solid #222;
-            padding:15px;
-            margin-bottom:15px;
-            background:#1a1a1a;
-        }
-        .inbox-meta{
-            display:flex;
-            justify-content:space-between;
-            margin-bottom:10px;
-            font-size:12px;
-            color:#888;
-        }
-        .inbox-from{
-            color:var(--as);
-        }
-        .inbox-message{
-            margin-bottom:10px;
-            color:#fff;
-        }
-        .inbox-read{
-            width:100%;
-            padding:10px;
-            background:var(--as);
-            color:#000;
-            border:2px solid #000;
-            cursor:pointer;
-            font-weight:bold;
-        }
-        .whisper-reading{
-            padding:20px;
-            background:#1a1a1a;
-            border:2px solid var(--as);
-            text-align:center;
-        }
-        .whisper-message{
-            font-size:18px;
-            margin-bottom:15px;
-            color:#fff;
-        }
-        .whisper-countdown{
-            font-size:24px;
-            color:var(--aw);
-            margin-bottom:10px;
-            animation:pulse 1s infinite;
-        }
-        .whisper-warning{
-            color:var(--ap);
-            font-size:12px;
-        }
-        .close-modal{
-            margin-top:20px;
-            padding:10px;
-            background:#333;
-            color:#fff;
-            border:none;
-            cursor:pointer;
-            width:100%;
-        }
-        
-        /* Sound Toggle */
-        .sound-toggle{position:fixed;bottom:80px;right:20px;width:44px;height:44px;background:rgba(0,0,0,.7);border:2px solid var(--as);border-radius:50%;color:var(--as);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100}
-        
         /* Custom Modal untuk Chat Request */
         #chatRequestModal {
             display: none;
@@ -413,6 +316,9 @@
             justify-content: center;
             font-family: var(--font-mono);
         }
+        
+        /* Sound Toggle */
+        .sound-toggle{position:fixed;bottom:80px;right:20px;width:44px;height:44px;background:rgba(0,0,0,.7);border:2px solid var(--as);border-radius:50%;color:var(--as);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100}
     </style>
 </head>
 <body>
@@ -424,7 +330,7 @@
             <span class="user-badge" id="userNameDisplay">@loading...</span>
             <div style="position:relative;">
                 <button class="settings-btn" id="settingsBtn">⋮</button>
-                <span class="whisper-badge" id="whisperBadge">0</span>
+                <span class="whisper-badge" id="whisperBadge" style="display:none;">0</span>
             </div>
         </div>
         <div class="settings-dropdown" id="settingsDropdown">
@@ -449,7 +355,7 @@
                         <canvas class="radar-canvas" id="radarCanvas"></canvas>
                         <div class="radar-dots" id="radarDots"></div>
                         
-                        <!-- Scanning Overlay - ENGLISH VERSION -->
+                        <!-- Scanning Overlay -->
                         <div class="radar-scanning-overlay" id="radarScanningOverlay">
                             <div class="scanning-box">
                                 <div class="scanning-text" id="radarScanningText"></div>
@@ -481,7 +387,7 @@
                 </div>
                 <button class="btn-whisper" id="whisperBtn">
                     <span>✦ WHISPERER</span>
-                    <span id="whisperBtnCount"></span>
+                    <span id="whisperBtnCount" style="color:#ff3b6f;">(coming soon)</span>
                 </button>
             </div>
         </div>
@@ -518,29 +424,6 @@
     <div class="chat-input-wrap">
         <input type="text" class="chat-input" id="chatInput" placeholder="ketik pesan...">
         <button class="chat-send" id="sendButton">➤</button>
-    </div>
-</div>
-
-<!-- Whisper Modal -->
-<div class="whisper-overlay" id="whisperOverlay">
-    <div class="whisper-box">
-        <div class="whisper-title">✦ WHISPERER</div>
-        <input type="text" class="whisper-input" id="whisperTarget" placeholder="@username (contoh: susi.22)">
-        <textarea class="whisper-input" id="whisperMessage" placeholder="Tulis pesan rahasia..."></textarea>
-        <div class="whisper-actions">
-            <button class="whisper-btn cancel" id="whisperCancel">BATAL</button>
-            <button class="whisper-btn send" id="whisperSend">KIRIM</button>
-        </div>
-    </div>
-</div>
-
-<!-- Inbox Modal -->
-<div class="inbox-modal" id="inboxModal">
-    <div class="inbox-container">
-        <h2 style="color: var(--as); margin-bottom: 20px;">🥷 INBOX WHISPERER</h2>
-        <div id="inboxList"></div>
-        <div id="inboxDetail"></div>
-        <button class="close-modal" onclick="document.getElementById('inboxModal').style.display='none'">TUTUP</button>
     </div>
 </div>
 
@@ -613,6 +496,7 @@
     let searchTimeout = null;
     let currentRequestId = null;
     let currentRequester = null;
+    let userChannel = null;
     
     // ============ ONLINE USERS MANAGEMENT ============
     async function updateOnlineStatus(status = 'online') {
@@ -691,7 +575,7 @@
         return false;
     }
     
-    // ============ SCANNING ANIMASI 15 DETIK (ENGLISH) ============
+    // ============ SCANNING ANIMASI ============
     let scanInterval = null;
     let soundEnabled = false;
     let audioContext = null;
@@ -736,19 +620,16 @@
     }
 
     function showEyeThenChat(partnerName) {
-        // Siapkan chat container
         currentPartner = partnerName;
         radarChatActive = true;
         
         $('radarChatContainer').style.display = 'flex';
         $('radarCont').classList.add('chat-mode');
-        $('radarChatInputWrapper').style.display = 'none'; // Input belum muncul
+        $('radarChatInputWrapper').style.display = 'none';
         
-        // Hapus header chat
         const header = document.querySelector('.radar-chat-header');
         if (header) header.style.display = 'none';
         
-        // Buat elemen mata ukuran emoji 👀
         const eyeDiv = document.createElement('div');
         eyeDiv.className = 'eye-animation';
         eyeDiv.id = 'eyeAnimation';
@@ -759,16 +640,13 @@
         
         $('radarChatContainer').appendChild(eyeDiv);
         
-        // Setelah 2.5 detik, hapus mata dan tampilkan input
         setTimeout(() => {
             const eyeElement = document.getElementById('eyeAnimation');
             if (eyeElement) eyeElement.remove();
             
-            // Tampilkan input chat
             $('radarChatInputWrapper').style.display = 'flex';
             $('radarChatInput').focus();
             
-            // Kirim pesan pertama (tanpa teks apapun)
             setTimeout(() => sendM('', true), 500);
         }, 2500);
     }
@@ -786,7 +664,6 @@
         
         initAudio();
         
-        // ENGLISH SEQUENCE - 15 SECONDS
         let sequences = [
             { t: 0, text: "finding strangers..." },
             { t: 4, text: "most strangers here are just people" },
@@ -801,7 +678,6 @@
         let lastGlitch = 0;
         let lastTick = 0;
         
-        // Sound toggle
         $('soundToggle').onclick = () => {
             soundEnabled = !soundEnabled;
             $('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
@@ -849,7 +725,6 @@
                 playSound('complete');
                 vibrate([100, 50, 100]);
                 
-                // PANGGIL FUNGSI UNTUK PILIH AI DAN TAMPILKAN MATA
                 let aiLists = {
                     heart: AI_PERSONAS.filter(ai => ai.gender === 'heart'),
                     spade: AI_PERSONAS.filter(ai => ai.gender === 'spade')
@@ -857,7 +732,6 @@
                 let aiList = aiLists[gender] || aiLists.heart;
                 let aiName = aiList[Math.floor(Math.random() * aiList.length)].username;
                 
-                // Panggil fungsi untuk tampilkan mata dulu
                 showEyeThenChat(aiName);
             }
         }, 100);
@@ -869,7 +743,6 @@
             }
             overlay.classList.remove('show');
             
-            // PANGGIL FUNGSI YANG SAMA KALO DI-SKIP
             let aiLists = {
                 heart: AI_PERSONAS.filter(ai => ai.gender === 'heart'),
                 spade: AI_PERSONAS.filter(ai => ai.gender === 'spade')
@@ -881,20 +754,108 @@
         };
     }
     
-    // ============ FIND PARTNER WITH BLAST ============
+    // ============ SETUP REALTIME LISTENER (FIXED) ============
+    function setupRequestListener() {
+        console.log('📡 Setting up realtime listener for user-to-user chat');
+        
+        if (!UID) {
+            console.error('UID tidak ditemukan');
+            return;
+        }
+        
+        const channelName = `user:${UID}`;
+        console.log('📡 Channel name:', channelName);
+        
+        if (userChannel) {
+            supabase.removeChannel(userChannel);
+        }
+        
+        userChannel = supabase.channel(channelName, {
+            config: {
+                broadcast: { 
+                    ack: true,
+                    self: true
+                }
+            }
+        });
+        
+        userChannel
+            .on('broadcast', { event: 'chat_request' }, (payload) => {
+                console.log('📨 Chat request received:', payload);
+                
+                currentRequestId = payload.payload.requestId;
+                currentRequester = payload.payload.from;
+                
+                const modal = document.getElementById('chatRequestModal');
+                const fromEl = document.getElementById('chatRequestFrom');
+                
+                if (fromEl) {
+                    fromEl.textContent = `✨ @${payload.payload.from} ingin ngobrol`;
+                }
+                
+                if (modal) {
+                    modal.style.display = 'flex';
+                    
+                    if (window.navigator?.vibrate) {
+                        window.navigator.vibrate([200, 100, 200]);
+                    }
+                }
+            })
+            .on('broadcast', { event: 'match_confirmed' }, (payload) => {
+                console.log('✅ Match confirmed:', payload);
+                
+                if (payload.payload && payload.payload.channel) {
+                    setupChatChannel(
+                        payload.payload.channel, 
+                        payload.payload.partner
+                    );
+                }
+            })
+            .on('broadcast', { event: 'request_taken' }, (payload) => {
+                console.log('⚠️ Request taken by someone else');
+                
+                if (currentRequestId === payload.payload.requestId) {
+                    showTooLate();
+                    currentRequestId = null;
+                    
+                    const modal = document.getElementById('chatRequestModal');
+                    if (modal) modal.style.display = 'none';
+                }
+            });
+        
+        userChannel.subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('✅ Realtime channel siap untuk user-to-user chat');
+                
+                userChannel.send({
+                    type: 'broadcast',
+                    event: 'user_online',
+                    payload: { 
+                        userId: UID, 
+                        username: U,
+                        timestamp: new Date().toISOString()
+                    }
+                });
+            } else if (status === 'CHANNEL_ERROR') {
+                console.error('❌ Channel error, retrying in 5s...');
+                setTimeout(setupRequestListener, 5000);
+            }
+        });
+    }
+    
+    // ============ FIND PARTNER ============
     async function findPartner(gender) {
         if (isSearching) return;
         isSearching = true;
         
-        // Show scanning overlay
-        startScanning(gender, () => {
-            // Callback setelah scanning selesai (sekarang ditangani di dalam startScanning)
-        });
+        console.log(`🔍 Mencari partner ${gender}...`);
+        
+        startScanning(gender, () => {});
         
         await updateOnlineStatus('online');
         
         if (await checkWaitingRoom(gender)) {
-            // Jika dapat partner, stop scanning
+            console.log('✅ Dapat partner dari waiting room');
             if (scanInterval) {
                 clearInterval(scanInterval);
                 scanInterval = null;
@@ -904,47 +865,139 @@
             return;
         }
         
-        await supabase.from('waiting_room').insert([{ user_id: UID, username: U, gender }]);
+        await supabase.from('waiting_room').insert([{ 
+            user_id: UID, 
+            username: U, 
+            gender 
+        }]);
         
         const candidates = await getOnlineCandidates(gender, 5);
         
         if (candidates.length === 0) {
-            // Tidak ada kandidat, scanning akan lanjut sampai 15 detik lalu AI via showEyeThenChat
+            console.log('📢 No candidates, will use AI after scan');
             return;
         }
         
-        console.log('📢 Blast:', candidates.map(c => c.type === 'ai' ? '🤖 ' + c.username : '👤 ' + c.username).join(', '));
+        console.log('📢 Blast ke', candidates.map(c => c.type === 'ai' ? '🤖 ' + c.username : '👤 ' + c.username).join(', '));
         
         const requestId = `${UID}_${Date.now()}`;
+        currentRequestId = requestId;
         let accepted = false;
+        
+        // Fallback ke AI setelah 8 detik
+        const aiFallbackTimer = setTimeout(() => {
+            if (isSearching && !accepted) {
+                console.log('⏰ Fallback ke AI (8 detik)');
+                const aiList = gender === 'heart' 
+                    ? AI_PERSONAS.filter(ai => ai.gender === 'heart')
+                    : AI_PERSONAS.filter(ai => ai.gender === 'spade');
+                const randomAI = aiList[0];
+                handleAccept({ 
+                    type: 'ai', 
+                    user_id: randomAI.id, 
+                    username: randomAI.username 
+                }, requestId);
+            }
+        }, 8000);
+        
+        // Force stop setelah 15 detik
+        const forceStopTimer = setTimeout(() => {
+            if (isSearching && !accepted) {
+                console.log('⏰ Force stop searching');
+                isSearching = false;
+                $('radarScanningOverlay').classList.remove('show');
+            }
+        }, 15000);
         
         candidates.forEach(candidate => {
             if (candidate.type === 'ai') {
                 setTimeout(() => {
-                    if (!accepted && isSearching) handleAccept(candidate, requestId);
+                    if (!accepted && isSearching) {
+                        handleAccept({
+                            type: 'ai',
+                            user_id: candidate.user_id,
+                            username: candidate.username
+                        }, requestId);
+                    }
                 }, 2000 + Math.random() * 3000);
             } else {
-                const userChannel = supabase.channel(`user_${candidate.user_id}`);
-                userChannel.subscribe(() => {
-                    userChannel.send({
+                console.log(`📨 Sending request ke human: ${candidate.username}`);
+                
+                const targetChannel = supabase.channel(`user:${candidate.user_id}`, {
+                    config: { broadcast: { ack: true } }
+                });
+                
+                targetChannel.subscribe(async () => {
+                    await new Promise(r => setTimeout(r, 500));
+                    
+                    await targetChannel.send({
                         type: 'broadcast',
                         event: 'chat_request',
-                        payload: { requestId, from: U, fromId: UID }
+                        payload: { 
+                            requestId, 
+                            from: U, 
+                            fromId: UID 
+                        }
                     });
+                    
+                    console.log(`📨 Request terkirim ke ${candidate.username}`);
+                    
+                    setTimeout(() => {
+                        supabase.removeChannel(targetChannel);
+                    }, 3000);
                 });
-                setTimeout(() => supabase.removeChannel(userChannel), 1000);
             }
         });
+        
+        const responseChannel = supabase.channel(`response:${requestId}`, {
+            config: { broadcast: { ack: true } }
+        });
+        
+        responseChannel
+            .on('broadcast', { event: 'request_response' }, (payload) => {
+                if (payload.payload.accepted && !accepted) {
+                    console.log('✅ Request diterima oleh:', payload.payload.fromName);
+                    accepted = true;
+                    
+                    clearTimeout(aiFallbackTimer);
+                    clearTimeout(forceStopTimer);
+                    
+                    handleAccept({
+                        type: 'human',
+                        user_id: payload.payload.fromId,
+                        username: payload.payload.fromName
+                    }, requestId);
+                }
+            })
+            .on('broadcast', { event: 'request_taken' }, (payload) => {
+                if (payload.payload.requestId === requestId) {
+                    console.log('⚠️ Request diambil orang lain');
+                    if (!accepted) {
+                        showTooLate();
+                    }
+                }
+            })
+            .subscribe();
+        
+        searchTimeout = setTimeout(() => {
+            if (isSearching && !accepted) {
+                console.log('⏰ Timeout, fallback ke AI');
+                const aiList = gender === 'heart' 
+                    ? AI_PERSONAS.filter(ai => ai.gender === 'heart')
+                    : AI_PERSONAS.filter(ai => ai.gender === 'spade');
+                
+                const randomAI = aiList[Math.floor(Math.random() * aiList.length)];
+                handleAccept({ 
+                    type: 'ai', 
+                    user_id: randomAI.id, 
+                    username: randomAI.username 
+                }, requestId);
+            }
+        }, 15000);
         
         function handleAccept(acceptor, reqId) {
             if (accepted) return;
             accepted = true;
-            
-            supabase.channel(`response_${reqId}`).send({
-                type: 'broadcast',
-                event: 'request_taken',
-                payload: { requestId: reqId }
-            });
             
             if (scanInterval) {
                 clearInterval(scanInterval);
@@ -969,7 +1022,7 @@
                 
                 setupChatChannel(channelName, acceptor.username);
                 
-                const partnerChannel = supabase.channel(`user_${acceptor.user_id}`);
+                const partnerChannel = supabase.channel(`user:${acceptor.user_id}`);
                 partnerChannel.subscribe(() => {
                     partnerChannel.send({
                         type: 'broadcast',
@@ -979,34 +1032,6 @@
                 });
             }
         }
-        
-        const responseChannel = supabase.channel(`response_${requestId}`);
-        responseChannel
-            .on('broadcast', { event: 'request_response' }, (payload) => {
-                if (payload.payload.accepted) {
-                    handleAccept({
-                        type: 'human',
-                        user_id: payload.payload.fromId,
-                        username: payload.payload.fromName
-                    }, requestId);
-                }
-            })
-            .on('broadcast', { event: 'request_taken' }, (payload) => {
-                console.log('⚠️ Request sudah diambil orang lain');
-                if (currentRequestId === payload.payload.requestId) {
-                    showTooLate();
-                    currentRequestId = null;
-                    $('chatRequestModal').style.display = 'none';
-                }
-            })
-            .subscribe();
-        
-        searchTimeout = setTimeout(() => {
-            if (isSearching && !accepted) {
-                const randomAI = AI_PERSONAS.filter(ai => ai.gender === gender)[Math.floor(Math.random() * 5)];
-                handleAccept({ type: 'ai', username: randomAI.username }, requestId);
-            }
-        }, 15000);
     }
     
     // ============ SETUP CHAT CHANNEL ============
@@ -1032,7 +1057,6 @@
                 console.log('✅ Chat channel siap!');
                 currentPartner = partnerName;
                 radarChatActive = true;
-                // Panggil showEyeThenChat sudah dilakukan di handleAccept
             }
         });
     }
@@ -1079,11 +1103,6 @@
     }
     
     // ============ CHAT UI ============
-    function openChat(name) {
-        // Fungsi ini tidak dipakai langsung lagi, digantikan showEyeThenChat
-        console.log('openChat dipanggil - seharusnya tidak terjadi');
-    }
-    
     function addMessage(sender, text) {
         const container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
         if (!container) return;
@@ -1101,7 +1120,6 @@
         $('radarCont').classList.remove('chat-mode');
         $('chatRoom').classList.remove('on');
         
-        // Tampilkan kembali header chat
         const header = document.querySelector('.radar-chat-header');
         if (header) header.style.display = 'block';
     }
@@ -1144,28 +1162,10 @@
         closeChatUI();
     }
     
-    // ============ REQUEST LISTENER ============
-    function setupRequestListener() {
-        const userChannel = supabase.channel(`user_${UID}`);
-        
-        userChannel.on('broadcast', { event: 'chat_request' }, (payload) => {
-            currentRequestId = payload.payload.requestId;
-            $('chatRequestFrom').textContent = `✨ Seseorang ingin ngobrol`;
-            $('chatRequestModal').style.display = 'flex';
-        });
-        
-        userChannel.on('broadcast', { event: 'match_confirmed' }, (payload) => {
-            // Ketika match, kita langsung setup channel
-            setupChatChannel(payload.payload.channel, payload.payload.partner);
-        });
-        
-        userChannel.subscribe();
-    }
-    
     // ============ MODAL HANDLERS ============
     $('chatRequestAccept').onclick = async () => {
         if (currentRequestId) {
-            const responseChannel = supabase.channel(`response_${currentRequestId}`);
+            const responseChannel = supabase.channel(`response:${currentRequestId}`);
             responseChannel.subscribe(() => {
                 responseChannel.send({
                     type: 'broadcast',
@@ -1203,6 +1203,7 @@
         await removeFromOnline();
         await supabase.from('waiting_room').delete().eq('user_id', UID);
         if (chatChannel) await leaveChat();
+        if (userChannel) supabase.removeChannel(userChannel);
     });
     
     // ============ RADAR ANIMATION ============
@@ -1350,210 +1351,49 @@
         };
     }
     
-    // ============ WHISPERER - INTEGRASI ============
-    const WHISPERER_API = 'https://jejak-dun.vercel.app/api';
-    let countdownTimers = {};
-
-    function initWhisperer(username) {
-        console.log('🥷 Whisperer aktif untuk:', username);
-        checkInbox();
-        setInterval(checkInbox, 30000);
-    }
-
-    async function sendWhisper() {
-        const target = $('whisperTarget').value.trim().replace('@', '');
-        const message = $('whisperMessage').value.trim();
-        
-        if (!target || !message) {
-            toast('Isi semua field');
-            return;
+    // ============ WHISPERER - DIMATIKAN TOTAL ============
+    console.log('⚪ Whisperer: Dimatikan total untuk prioritaskan chat user-to-user');
+    
+    // Sembunyikan semua elemen whisperer
+    const whisperBadge = document.getElementById('whisperBadge');
+    const whisperBtnCount = document.getElementById('whisperBtnCount');
+    
+    if (whisperBadge) whisperBadge.style.display = 'none';
+    if (whisperBtnCount) whisperBtnCount.textContent = '(coming soon)';
+    
+    // Override semua fungsi whisperer
+    window.initWhisperer = () => {
+        console.log('⚪ Whisperer non-aktif');
+        return Promise.resolve();
+    };
+    window.checkInbox = () => Promise.resolve({ ok: true, total: 0 });
+    window.sendWhisper = () => toast('✨ Whisperer coming soon');
+    window.readWhisper = () => toast('✨ Whisperer coming soon');
+    window.showInbox = () => toast('✨ Whisperer coming soon');
+    
+    // Blok interval yang mencurigakan
+    const originalSetInterval = window.setInterval;
+    window.setInterval = function(callback, delay) {
+        const callbackStr = callback.toString();
+        if (callbackStr.includes('whisper') || callbackStr.includes('inbox')) {
+            return 9999;
         }
-        
-        if (!target.includes('.')) {
-            toast('❌ Format username harus "kata.kata" (contoh: susi.22)');
-            return;
-        }
-        
-        const btn = $('whisperSend');
-        const originalText = btn.textContent;
-        btn.textContent = '🔄 MENGIRIM...';
-        btn.disabled = true;
-        
-        try {
-            const response = await fetch(`${WHISPERER_API}/whisper?action=send`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    target_username: target,
-                    message: message
-                })
+        return originalSetInterval(callback, delay);
+    };
+    
+    // Blok fetch ke endpoint whisper
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options) {
+        if (typeof url === 'string' && url.includes('/api/whisper')) {
+            return Promise.resolve({
+                ok: true,
+                status: 200,
+                json: async () => ({ ok: true, total: 0, messages: [] })
             });
-            
-            const data = await response.json();
-            
-            if (data.ok) {
-                toast('✅ Whisper terkirim ke @' + target);
-                $('whisperTarget').value = '';
-                $('whisperMessage').value = '';
-                $('whisperOverlay').classList.remove('show');
-            } else {
-                toast('❌ ' + (data.error || 'Gagal kirim'));
-            }
-        } catch (error) {
-            toast('❌ Gagal konek server');
-            console.error(error);
-        } finally {
-            btn.textContent = originalText;
-            btn.disabled = false;
         }
-    }
-
-    async function checkInbox() {
-        if (!U) return;
-        
-        try {
-            const response = await fetch(`${WHISPERER_API}/whisper?action=inbox&username=${U}`);
-            const data = await response.json();
-            
-            if (data.ok) {
-                const badge = $('whisperBadge');
-                const btnCount = $('whisperBtnCount');
-                
-                if (data.total > 0) {
-                    badge.textContent = data.total;
-                    badge.style.display = 'flex';
-                    btnCount.textContent = `(${data.total} baru)`;
-                    
-                    if (Notification.permission === 'granted') {
-                        new Notification('🥷 Whisperer', {
-                            body: `Kamu punya ${data.total} pesan rahasia baru`,
-                            icon: '/icon.png'
-                        });
-                    }
-                    
-                    localStorage.setItem('whisperer_inbox', JSON.stringify(data.messages));
-                } else {
-                    badge.style.display = 'none';
-                    btnCount.textContent = '';
-                }
-            }
-        } catch (error) {
-            console.error('Gagal cek inbox:', error);
-        }
-    }
-
-    async function readWhisper(messageId) {
-        try {
-            const response = await fetch(`${WHISPERER_API}/whisper?action=read`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message_id: messageId })
-            });
-            
-            const data = await response.json();
-            
-            if (!data.ok) {
-                toast('❌ ' + (data.error || 'Pesan sudah meledak'));
-                return;
-            }
-            
-            const inboxList = $('inboxList');
-            const inboxDetail = $('inboxDetail');
-            
-            inboxList.style.display = 'none';
-            inboxDetail.style.display = 'block';
-            
-            inboxDetail.innerHTML = `
-                <div class="whisper-reading">
-                    <div class="whisper-message">${data.message}</div>
-                    <div class="whisper-countdown" id="countdown-${messageId}">⏱️ 5 detik</div>
-                    <div class="whisper-warning">⚠️ AKAN MELEDAK!</div>
-                </div>
-            `;
-            
-            let countdown = 5;
-            if (countdownTimers[messageId]) clearInterval(countdownTimers[messageId]);
-            
-            countdownTimers[messageId] = setInterval(() => {
-                countdown--;
-                const el = document.getElementById(`countdown-${messageId}`);
-                if (el) {
-                    if (countdown > 0) {
-                        el.innerHTML = `⏱️ ${countdown} detik`;
-                    } else {
-                        clearInterval(countdownTimers[messageId]);
-                        el.innerHTML = '💥 MELEDAK!';
-                        setTimeout(() => {
-                            inboxDetail.style.display = 'none';
-                            inboxList.style.display = 'block';
-                            inboxList.innerHTML = '';
-                            checkInbox();
-                        }, 1000);
-                    }
-                }
-            }, 1000);
-            
-        } catch (error) {
-            toast('❌ Gagal baca pesan');
-            console.error(error);
-        }
-    }
-
-    function showInbox() {
-        const inboxData = localStorage.getItem('whisperer_inbox');
-        if (!inboxData) {
-            toast('Tidak ada pesan baru');
-            return;
-        }
-        
-        const messages = JSON.parse(inboxData);
-        const modal = $('inboxModal');
-        const list = $('inboxList');
-        const detail = $('inboxDetail');
-        
-        list.style.display = 'block';
-        detail.style.display = 'none';
-        
-        list.innerHTML = messages.map(msg => `
-            <div class="inbox-item">
-                <div class="inbox-meta">
-                    <span class="inbox-from">👤 ???</span>
-                    <span class="inbox-time">${msg.waktu || 'baru'}</span>
-                </div>
-                <div class="inbox-message">${msg.message.substring(0, 50)}${msg.message.length > 50 ? '...' : ''}</div>
-                <button onclick="readWhisper('${msg.id}')" class="inbox-read">🔍 BACA (5 DETIK!)</button>
-            </div>
-        `).join('');
-        
-        modal.style.display = 'flex';
-    }
-
-    function setupWhispererUI() {
-        if (Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
-        
-        $('whisperBtn').onclick = () => {
-            $('whisperOverlay').classList.add('show');
-        };
-        
-        $('whisperCancel').onclick = () => {
-            $('whisperOverlay').classList.remove('show');
-        };
-        
-        $('whisperSend').onclick = sendWhisper;
-        
-        $('whisperBtnCount').onclick = (e) => {
-            e.stopPropagation();
-            showInbox();
-        };
-        
-        $('inboxModal').onclick = (e) => {
-            if (e.target === $('inboxModal')) {
-                $('inboxModal').style.display = 'none';
-            }
-        };
-    }
+        return originalFetch(url, options);
+    };
+    // ============ END WHISPERER ============
     
     // ============ SPILLS ============
     let entries = [];
@@ -1641,11 +1481,11 @@
         await updateOnlineStatus('online');
         heartbeatInterval = setInterval(() => updateOnlineStatus('online'), 30000);
         
+        // Setup listener untuk user-to-user chat
         setupRequestListener();
+        
         initRadar();
         initSettings();
-        setupWhispererUI();
-        initWhisperer(U);
         loadSpills();
         
         setInterval(updateOnlineCounter, 10000);
@@ -1678,6 +1518,11 @@
         $('chatInput').onkeypress = e => { if (e.key === 'Enter' && !isTyping) $('sendButton').click(); };
         
         $('closeChatBtn').onclick = leaveChat;
+        
+        console.log('✅ INISIALISASI SELESAI');
+        console.log('   - Chat user-to-user: AKTIF');
+        console.log('   - Chat AI: AKTIF');
+        console.log('   - Whisperer: NON-AKTIF');
     });
     
     window.forceShowChat = function() {
@@ -1699,12 +1544,10 @@
         return {
             currentPartner: currentPartner,
             radarChatActive: radarChatActive,
-            chatChannel: !!chatChannel
+            chatChannel: !!chatChannel,
+            userChannel: !!userChannel
         };
     };
-    
-    window.readWhisper = readWhisper;
-    window.showInbox = showInbox;
 })();
 </script>
 </body>
