@@ -1,4 +1,4 @@
-// api/brew.js - VERSI DENGAN VARIASI PANJANG
+// api/brew.js - VERSI DENGAN VARIASI PANJANG + PERSONA MANADO
 module.exports = async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,10 +24,13 @@ module.exports = async (req, res) => {
     try {
       const { count = 1 } = req.body;
       
+      // AUTHORS LENGKAP DENGAN PERSONA MANADO
       const authors = [
         'beby.manis', 'agak.koplak', 'pretty.sad', 'bang.juned', 
         'strawberry.shortcake', 'chili.padi', 'little.fairy', 'sejuta.badai',
-        'satria.bajahitam', 'cinnamon.girl'
+        'satria.bajahitam', 'cinnamon.girl', 'lupa.hari', 'gaul.tapi.lupa',
+        // TAMBAHAN PERSONA MANADO
+        'pinkan.manado', 'regina.manado', 'boy.manado'
       ];
       
       const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
@@ -42,8 +45,14 @@ module.exports = async (req, res) => {
         const mood = moods[Math.floor(Math.random() * moods.length)];
         const targetKata = panjangOptions[Math.floor(Math.random() * panjangOptions.length)];
         
-        // Generate content dengan panjang tertentu
+        // Generate content dengan panjang tertentu + slang Manado kalo perlu
         let content = generateContent(author, mood, targetKata);
+        
+        // Apply slang Manado untuk persona tertentu (10% chance)
+        if (isManadoPersona(author)) {
+          content = insertManadoSlang(content, author);
+          content = addManadoPhrase(content, author);
+        }
         
         spills.push({
           id: `spill_${Date.now()}_${i}`,
@@ -75,7 +84,183 @@ module.exports = async (req, res) => {
   return res.status(404).json({ error: 'Not found' });
 };
 
-// Fungsi generate content (sementara pake template)
+// ============================================
+// SLANG MANADO DICTIONARY
+// ============================================
+const manadoDict = {
+  // Pronoun
+  'saya': 'kita',
+  'aku': 'kita',
+  'kamu': 'ngana',
+  'mereka': 'dorang',
+  'kita semua': 'torang',
+  'kalian': 'ngoni',
+  
+  // Conjunction & particle
+  'tapi': 'mar',
+  'saja': 'jo',
+  'sudah': 'so',
+  'tidak': 'nyanda',
+  
+  // Family & people
+  'bibi': 'tante',
+  'anak laki': 'nyong',
+  'anak perempuan': 'nona',
+  
+  // Verbs
+  'bangun': 'bangun',
+  'tidur': 'tidor',
+  'jalan': 'bajalang',
+  'duduk': 'dudu',
+  'berdiri': 'badiri',
+  'bicara': 'bacarita',
+  'lihat': 'lia',
+  'pergi': 'pigi',
+  
+  // Adjectives
+  'baik': 'bae',
+  'jahat': 'jaha',
+  'bodoh': 'bodo',
+  'cantik': 'gaga',
+  'tampan': 'gaga',
+  'senang': 'sanang',
+  'sakit': 'saki',
+  
+  // Time
+  'tadi': 'tadi',
+  'besok': 'beso',
+  'kemarin': 'kalamaring',
+  
+  // Objects
+  'mobil': 'oto',
+  
+  // Phrases
+  'sedang apa': 'ba apa',
+  'kenapa': 'kiapa',
+  'tidak tahu': 'nda tau',
+  'boleh saja': 'boleh jo',
+  'jangan begitu': 'jang bagitu',
+  'biar saja': 'biar jo',
+  'enak sekali': 'sadap skali'
+};
+
+// ============================================
+// MANADO PERSONAS CHECK
+// ============================================
+function isManadoPersona(author) {
+  const manadoPersonas = ['pinkan.manado', 'regina.manado', 'boy.manado'];
+  return manadoPersonas.includes(author);
+}
+
+// ============================================
+// INSERT SLANG MANADO
+// ============================================
+function insertManadoSlang(text, author) {
+  // 10% chance aja
+  if (Math.random() > 0.1) return text;
+  
+  const words = text.split(' ');
+  if (words.length < 3) return text;
+  
+  const maxAttempts = 5;
+  let attempts = 0;
+  let replaced = false;
+  
+  while (!replaced && attempts < maxAttempts) {
+    const randomIndex = Math.floor(Math.random() * (words.length - 2)) + 1; // skip first & last
+    const originalWord = words[randomIndex].toLowerCase().replace(/[.,!?;:]$/, '');
+    const punctuation = words[randomIndex].match(/[.,!?;:]$/)?.[0] || '';
+    
+    for (const [indonesian, manado] of Object.entries(manadoDict)) {
+      if (originalWord === indonesian.toLowerCase()) {
+        words[randomIndex] = manado + punctuation;
+        replaced = true;
+        break;
+      }
+    }
+    
+    attempts++;
+  }
+  
+  return words.join(' ');
+}
+
+// ============================================
+// ADD MANADO PHRASE
+// ============================================
+function addManadoPhrase(text, author) {
+  // 10% chance
+  if (Math.random() > 0.1) return text;
+  
+  const manadoPhrases = [
+    ' jo', // saja
+    ' skali', // sekali
+    ' nyanda?', // tidak?
+    ' mar', // tapi
+    ' so', // sudah
+    ' jang bagitu', // jangan begitu
+    ' biar jo', // biar saja
+    ' sadap skali', // enak sekali
+    ' ba apa', // sedang apa
+    ' kiapa' // kenapa
+  ];
+  
+  const phrase = manadoPhrases[Math.floor(Math.random() * manadoPhrases.length)];
+  
+  // Tambah di akhir kalimat
+  if (text.match(/[.!?]$/)) {
+    return text.slice(0, -1) + phrase + text.slice(-1);
+  } else {
+    return text + phrase;
+  }
+}
+
+// ============================================
+// SPECIAL TRAITS PER KARAKTER MANADO
+// ============================================
+function addSpecialTraits(text, author) {
+  // Pinkan - nuansa gereja (15% chance)
+  if (author === 'pinkan.manado' && Math.random() < 0.15) {
+    const churchPhrases = [
+      ' Tuhan berkati',
+      ' minggu ini ke gereja jo',
+      ' nanti habis ini mau ibadah',
+      ' Tuhan Yesus baik',
+      ' abis ini ke gereja dulu'
+    ];
+    text += churchPhrases[Math.floor(Math.random() * churchPhrases.length)];
+  }
+  
+  // Regina - nuansa flirt (15% chance)
+  if (author === 'regina.manado' && Math.random() < 0.15) {
+    const flirtPhrases = [
+      ' gaga skali ngona',
+      ' ngana bikin gue penasaran',
+      ' jangan ba gitu nanti gue jatuh cinta',
+      ' sadap skali liat ngona',
+      ' gue suka cara ngona bacarita'
+    ];
+    text += flirtPhrases[Math.floor(Math.random() * flirtPhrases.length)];
+  }
+  
+  // Boy - nuansa ramah (15% chance)
+  if (author === 'boy.manado' && Math.random() < 0.15) {
+    const friendlyPhrases = [
+      ' torang sama-sama jo',
+      ' ngana bae skali',
+      ' santuy jo',
+      ' boleh bantu jo kalo ada apa-apa',
+      ' nyanda usah sungkan'
+    ];
+    text += friendlyPhrases[Math.floor(Math.random() * friendlyPhrases.length)];
+  }
+  
+  return text;
+}
+
+// ============================================
+// GENERATE CONTENT DENGAN TEMPLATE MANADO
+// ============================================
 function generateContent(author, mood, wordCount) {
   const templates = {
     surviving: {
@@ -172,8 +357,103 @@ function generateContent(author, mood, wordCount) {
     }
   };
   
+  // TEMPLATE KHUSUS UNTUK PERSONA MANADO
+  const manadoTemplates = {
+    'pinkan.manado': {
+      surviving: [
+        'capek skali hari ini, pengen jo rebahan mar banyak kerjaan',
+        'stress ngerjain skripsi, mar minggu ini harus ke gereja jo',
+        'Tuhan Yesus baik, mar hati masih galau',
+        'ba apa lagi? gue abis dari gereja, capek mar sanang'
+      ],
+      thriving: [
+        'alhamdulillah Tuhan berkati, hari ini cuan jo',
+        'gereja tadi pagi enak skali, hati jadi tenang',
+        'Tuhan Yesus baik skali, doa gue dijawab',
+        'sanang skali hati, minggu ini banyak berkat'
+      ],
+      chaotic: [
+        'adoh, hari ini kacau skali: bangun kesiangan, ke gereja telat, mar Tuhan Yesus tetap baik',
+        'antara mau nangis mar ketawa, hidup memang begini jo',
+        'stress mar harus tetap kuat, Tuhan Yesus tau yang terbaik',
+        'bingung mau cerita, mar yang penting Tuhan berkati'
+      ],
+      doom: [
+        'hari ini sedih skali, mar Tuhan Yesus pasti kasih jalan',
+        'capek fisik mar mental, mar nyanda boleh menyerah',
+        'doa belum dijawab, mar gue percaya Tuhan Yesus tau waktu yang tepat',
+        'hidup keras skali, mar gereja jadi obat'
+      ]
+    },
+    'regina.manado': {
+      surviving: [
+        'capek digodain mulu, mar gue mah susah dapet',
+        'hari ini biasa jo, banyak yang chat mar gue cuek',
+        'lelaki pada bae-bae jo, mar gue belum tertarik',
+        'ba apa? gue santuy jo, banyak yang naksir mar gue mah milih-milih'
+      ],
+      thriving: [
+        'pede jo, emang gue gaga skali',
+        'hari ini ada yang ngajak dinner, gue pikir-pikir dulu',
+        'banyak yang suka, mar gue milih yang serius',
+        'tampang gue emang gaga, mar hati mah jaga'
+      ],
+      chaotic: [
+        'adoh, dua cowok chat berantem gegara gue, wkwk',
+        'hari ini kacau: yang lama balik, yang baru nembak, gue bingung',
+        'antara mau pilih yang kaya mar ganteng, mar susah jo',
+        'stress digodain terus, mar nyanda boleh lemah'
+      ],
+      doom: [
+        'capek digodain, mar jodoh belum dateng',
+        'tiap hari ada yang chat, mar yang beneran serius nyanda ada',
+        'sendiri itu enak, mar kadang kesepian jo',
+        'gue gaga, mar kenapa jodoh lama skali'
+      ]
+    },
+    'boy.manado': {
+      surviving: [
+        'capek kerja, mar santuy jo',
+        'hari ini biasa jo, bantu orang tua',
+        'banyak kerjaan, mar gue kuat',
+        'lelah mar bae-bae jo'
+      ],
+      thriving: [
+        'alhamdulillah, hari ini bisa bantu banyak orang',
+        'sanang skali hati kalo bisa bantu sesama',
+        'ramah itu gratis jo, nyanda usah sombong',
+        'kerja keras akhirnya berbuah, mar yang penting bae'
+      ],
+      chaotic: [
+        'hari ini sibuk skali, banyak yang minta tolong mar gue senang',
+        'antara capek mar senang bisa bantu orang',
+        'rame skali hari ini, mar gue happy jo',
+        'stress mar tetap ramah, itu kunci'
+      ],
+      doom: [
+        'capek skali, mar nyanda boleh ngeluh',
+        'hari ini berat, mar gue harus kuat buat keluarga',
+        'banyak masalah, mar Tuhan Yesus pasti bantu',
+        'lelah mar tetap tersenyum, itu prinsip gue'
+      ]
+    }
+  };
+  
+  // PAKAI TEMPLATE MANADO KALO ADA
+  if (isManadoPersona(author) && manadoTemplates[author] && manadoTemplates[author][mood]) {
+    const templates = manadoTemplates[author][mood];
+    let content = templates[Math.floor(Math.random() * templates.length)];
+    return content;
+  }
+  
+  // PAKAI TEMPLATE REGULER KALO BUKAN MANADO ATAU TEMPLATE MANADO NYA GA ADA
   const moodTemplates = templates[mood]?.[wordCount] || templates.surviving[7];
-  return moodTemplates[Math.floor(Math.random() * moodTemplates.length)] + getRandomEmoji(mood);
+  let content = moodTemplates[Math.floor(Math.random() * moodTemplates.length)];
+  
+  // Tambah emoji
+  content += getRandomEmoji(mood);
+  
+  return content;
 }
 
 function getRandomEmoji(mood) {
