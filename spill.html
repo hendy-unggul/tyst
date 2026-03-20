@@ -4,347 +4,539 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>SPILL — vibe radar</title>
-    
-    <!-- Supabase Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         :root{
             --bg:#0A0A0A;--sf:#141414;--sfe:#1E1E1E;--bd:#2A2A2A;--bd2:#333;--tx:#FFF;--txs:#888;--txm:#555;
             --spill:#ff3b6f;--cocomeo:#00e5ff;--jejak:#9900ff;--glitch:#FFD700;
             --ap:var(--spill);--as:var(--cocomeo);--at:#FF006E;--aq:#bfff00;--aw:#FFD700;
+            --ms:#FF9500;--mt:#bfff00;--mc:#00e5ff;--md:#8B5CF6;--rd:#FF3333;--void:#050505;
+            
             --font-display:'Arial Black',sans-serif;--font-mono:'Courier New',monospace;--font-body:Arial,sans-serif
         }
         body{background:var(--bg);color:var(--tx);font-family:var(--font-body);height:100vh;display:flex;flex-direction:column}
         .app{max-width:500px;margin:0 auto;width:100%;height:100vh;display:flex;flex-direction:column;background:var(--bg);border-left:2px solid var(--bd);border-right:2px solid var(--bd);position:relative}
-        
-        /* Header */
         .header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:2px solid var(--bd);background:var(--sf);position:relative}
         .logo{font-family:var(--font-display);font-size:34px}
         .logo .x{color:var(--ap);display:inline-block;animation:spin 4s infinite}
         @keyframes spin{95%{transform:rotate(180deg)}}
-        .user-section{display:flex;align-items:center;gap:12px;position:relative}
+        .user-section{display:flex;align-items:center;gap:12px}
         .user-badge{font-family:var(--font-mono);background:#000;border:2px solid var(--bd);padding:4px 8px;color:var(--as);font-size:12px}
-        .whisper-badge{
-            position:absolute;
-            top:-5px;
-            right:-5px;
-            background:#ff2d55;
-            color:white;
-            border-radius:50%;
-            width:20px;
-            height:20px;
-            font-size:12px;
-            display:none;
-            align-items:center;
-            justify-content:center;
-            font-weight:bold;
-            border:2px solid black;
-        }
-        .settings-btn{width:30px;height:30px;background:0 0;border:2px solid var(--bd2);color:var(--txs);font-size:18px;cursor:pointer;border-radius:4px}
+        .settings-btn{width:30px;height:30px;background:0 0;border:2px solid var(--bd2);color:var(--txs);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:.1s}
+        .settings-btn:active{border-color:var(--as);color:var(--as)}
         .settings-dropdown{position:absolute;top:60px;right:18px;background:var(--sf);border:2px solid var(--bd);box-shadow:6px 6px 0 #000;z-index:100;min-width:180px;display:none}
         .settings-dropdown.show{display:block}
-        .dropdown-item{padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--bd)}
-        
-        /* Scroll */
+        .dropdown-item{padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px}
+        .dropdown-item:active{background:var(--bd)}
+        .dropdown-item.language{display:flex;justify-content:space-between}
+        .language-select{display:flex;gap:8px}
+        .lang-option{padding:2px 8px;border:1px solid var(--bd2);color:var(--txs);cursor:pointer}
+        .lang-option.active{background:var(--as);color:#000;border-color:var(--as)}
         .scroll{flex:1;overflow-y:auto;padding-bottom:70px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
-        
-        /* Radar Section */
+        .scroll::-webkit-scrollbar{width:4px;background:var(--bg)}
+        .scroll::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
         .radar-sect{background:var(--sf);border-bottom:2px solid var(--bd)}
         .radar-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
-        .radar-label{font-family:var(--font-mono);font-size:10px;color:var(--as)}
-        .online-badge{background:rgba(0,0,0,.3);padding:6px 12px;border:1px solid var(--bd);font-family:var(--font-mono);font-size:11px}
+        .radar-label{font-family:var(--font-mono);font-size:10px;color:var(--as);display:flex;align-items:center;gap:8px}
+        .online-badge{background:rgba(0,0,0,.3);padding:6px 12px;border:1px solid var(--bd);font-family:var(--font-mono);font-size:11px;display:flex;align-items:center;gap:6px}
+        .online-icon{width:16px;height:16px;display:flex;align-items:center;justify-content:center}
+        .online-icon::before{content:'❤️';color:var(--ap);animation:switchIcon 2s infinite}
+        @keyframes switchIcon{0%,45%{content:'❤️'}50%,95%{content:'♠️'}100%{content:'❤️'}}
         .radar-wrapper{padding:0 18px 16px}
         .radar-bezel{position:relative;padding:4px;background:var(--bg);border:2px solid var(--bd2);box-shadow:6px 6px 0 #000}
-        .radar-cont{position:relative;width:100%;aspect-ratio:1;background:#020a02;overflow:hidden;border-radius:0}
+        .radar-cont{position:relative;width:100%;aspect-ratio:1;background:#020a02;overflow:hidden;border-radius:0;transition:all 0.3s ease}
         .radar-cont.chat-mode{border-radius:24px;background:rgba(0,0,0,0.95)}
-        .radar-grid{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(0,229,255,.04) 0,transparent 1px,transparent 28px),repeating-linear-gradient(90deg,rgba(0,229,255,.04) 0,transparent 1px,transparent 28px)}
-        .radar-ring{position:absolute;inset:8%;border:1px solid rgba(0,229,255,.08);border-radius:50%}
+        .radar-grid{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,rgba(0,229,255,.04) 0,transparent 1px,transparent 28px),repeating-linear-gradient(90deg,rgba(0,229,255,.04) 0,transparent 1px,transparent 28px);transition:opacity 0.3s}
+        .radar-cont.chat-mode .radar-grid{opacity:0.15}
+        .radar-ring{position:absolute;inset:8%;border:1px solid rgba(0,229,255,.08);border-radius:50%;transition:opacity 0.3s}
+        .radar-cont.chat-mode .radar-ring{opacity:0.15}
         .radar-ring::before{content:'';position:absolute;border-radius:50%;border:1px solid rgba(0,229,255,.05);inset:28%}
-        .radar-cross{position:absolute;inset:0;background:linear-gradient(90deg,transparent calc(50% - 1px),rgba(0,229,255,.06) calc(50% - 1px),rgba(0,229,255,.06) calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(0deg,transparent calc(50% - 1px),rgba(0,229,255,.06) calc(50% - 1px),rgba(0,229,255,.06) calc(50% + 1px),transparent calc(50% + 1px))}
-        .radar-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:10;display:block}
-        .radar-dots{position:absolute;inset:0;z-index:5}
-        .radar-dot{position:absolute;width:6px;height:6px;transform:translate(-50%,-50%) rotate(45deg);background:var(--as);opacity:.3}
+        .radar-cross{position:absolute;inset:0;background:linear-gradient(90deg,transparent calc(50% - 1px),rgba(0,229,255,.06) calc(50% - 1px),rgba(0,229,255,.06) calc(50% + 1px),transparent calc(50% + 1px)),linear-gradient(0deg,transparent calc(50% - 1px),rgba(0,229,255,.06) calc(50% - 1px),rgba(0,229,255,.06) calc(50% + 1px),transparent calc(50% + 1px));transition:opacity 0.3s}
+        .radar-cont.chat-mode .radar-cross{opacity:0.15}
+        .radar-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:10;display:block;transition:opacity 0.3s}
+        .radar-cont.chat-mode .radar-canvas{opacity:0.15}
+        .radar-dots{position:absolute;inset:0;z-index:5;transition:opacity 0.3s}
+        .radar-cont.chat-mode .radar-dots{opacity:0.3}
+        .radar-dot{position:absolute;width:6px;height:6px;transform:translate(-50%,-50%) rotate(45deg);background:var(--as);opacity:.3;transition:opacity .1s}
         .radar-dot.active{opacity:1;transform:translate(-50%,-50%) rotate(45deg) scale(2.5)}
         
-        /* Radar Chat */
+        /* ========== RADAR CHAT CONTAINER - FINAL VERSION ========== */
         .radar-chat-container {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 100;
-            display: none; flex-direction: column; justify-content: flex-end;
-            padding: 40px 12px 70px 12px; overflow-y: auto; color: var(--tx); gap: 4px;
-        }
-        .radar-chat-container .message {
-            max-width: 85%; padding: 8px 12px; border-radius: 16px; font-size: 13px;
-            line-height: 1.4; word-wrap: break-word; margin-bottom: 2px; flex-shrink: 0;
-        }
-        .radar-chat-container .message.user {
-            align-self: flex-end; background: var(--as); color: #000;
-            border-bottom-right-radius: 4px;
-        }
-        .radar-chat-container .message.stranger {
-            align-self: flex-start; background: var(--sf); color: var(--tx);
-            border: 1px solid var(--bd2); border-bottom-left-radius: 4px;
-        }
-        .radar-chat-container .typing-indicator {
-            align-self: flex-start; color: var(--txs); font-style: italic;
-            font-size: 11px; padding: 5px 10px; flex-shrink: 0;
-        }
-        .radar-chat-input-wrapper {
-            position: absolute; bottom: 8px; left: 8px; right: 8px; display: flex;
-            gap: 6px; padding: 6px; background: rgba(20,20,20,0.95);
-            border: 2px solid var(--bd2); border-radius: 30px; z-index: 102;
-        }
-        .radar-chat-input {
-            flex: 1; padding: 10px 16px; background: var(--bg); border: 2px solid var(--bd2);
-            color: var(--tx); border-radius: 30px; font-size: 14px; outline: none;
-        }
-        .radar-chat-send {
-            width: 44px; height: 44px; background: var(--ap); border: 2px solid #000;
-            color: #fff; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; cursor: pointer; font-size: 18px;
-        }
-        .radar-chat-header {
-            position: absolute; top: 8px; left: 0; right: 0; text-align: center;
-            font-family: var(--font-mono); font-size: 10px; color: var(--txs);
-            background: rgba(0,0,0,0.5); width: fit-content; margin: 0 auto;
-            padding: 4px 16px; border-radius: 20px; z-index: 103;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 40px 12px 70px 12px; /* Top padding untuk header, bottom untuk input */
+            overflow: hidden; /* NO SCROLL - auto clear via CSS */
+            color: var(--tx);
+            font-family: var(--font-body);
+            gap: 4px;
         }
         
-        /* FIFO: Hanya 5 pesan terakhir yang tampil */
-        .radar-chat-container .message:nth-last-child(n+6),
+        /* Pesan user & stranger */
+        .radar-chat-container .message {
+            max-width: 85%;
+            padding: 8px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            margin-bottom: 2px;
+            animation: slideIn 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .radar-chat-container .message.user {
+            align-self: flex-end;
+            background: var(--as);
+            color: #000;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .radar-chat-container .message.stranger {
+            align-self: flex-start;
+            background: var(--sf);
+            color: var(--tx);
+            border: 1px solid var(--bd2);
+            border-bottom-left-radius: 4px;
+        }
+        
+        /* AUTO CLEAR: Hanya tampilkan 5 pesan terakhir */
+        .radar-chat-container .message:nth-last-child(n+6) {
+            display: none; /* Pesan ke-6 dan seterusnya hilang */
+        }
+        
+        /* Typing indicator */
+        .radar-chat-container .typing-indicator {
+            align-self: flex-start;
+            color: var(--txs);
+            font-style: italic;
+            font-size: 11px;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        
+        /* Typing indicator juga auto clear */
         .radar-chat-container .typing-indicator:nth-last-child(n+6) {
             display: none;
         }
         
-        /* Scanning Overlay - 15 SECONDS */
-        .radar-scanning-overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.95); z-index: 50;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--as); font-family: var(--font-mono); backdrop-filter: blur(4px);
-        }
-        .radar-scanning-overlay.show { display: flex; }
-        .scanning-box{text-align:center;width:100%;max-width:400px;padding:20px;position:relative;z-index:10}
-        .scanning-text{font-size:24px;font-weight:700;letter-spacing:4px;min-height:120px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.8;color:var(--as);text-shadow:0 0 10px var(--as);animation:textFlicker 3s infinite}
-        @keyframes textFlicker{0%,100%{opacity:1}2%{opacity:.8}4%{opacity:1}19%{opacity:1}20%{opacity:.5}21%{opacity:1}50%{opacity:1}51%{opacity:.7}52%{opacity:1}75%{opacity:1}76%{opacity:.4}77%{opacity:1}}
-        .scanning-box::before{content:'';position:absolute;top:0;left:0;right:0;height:100%;background:linear-gradient(to bottom,transparent 0%,rgba(0,229,255,.03) 50%,transparent 100%);animation:scanline 6s linear infinite;pointer-events:none;z-index:5}
-        @keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(200%)}}
-        .radar-scanning-overlay::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.15) 0px,rgba(0,229,255,.03) 1px,transparent 2px,transparent 4px);pointer-events:none;opacity:.3;animation:staticNoise .2s infinite;z-index:1}
-        @keyframes staticNoise{0%{background-position:0 0}100%{background-position:0 5px}}
-        .scanning-text.glitch{animation:hardGlitch .3s infinite}
-        @keyframes hardGlitch{0%{transform:skew(0)}20%{transform:skew(5deg);color:#ff00ff}40%{transform:skew(-5deg);color:#00ffff}60%{transform:skew(3deg);color:#ffff00}80%{transform:skew(-3deg)}100%{transform:skew(0)}}
-        .scanning-progress{width:100%;height:2px;background:var(--bd2);margin-top:30px;position:relative;overflow:hidden}
-        .scanning-bar{position:absolute;left:0;top:0;height:100%;width:0%;background:var(--as);box-shadow:0 0 20px var(--as)}
-        .scanning-timer{margin-top:20px;font-size:14px;color:var(--txs);letter-spacing:2px}
-        .scanning-dots{margin-top:15px;display:flex;justify-content:center;gap:8px}
-        .scanning-dots span{width:8px;height:8px;background:var(--as);border-radius:50%;animation:scanningDotPulse 1.4s infinite;box-shadow:0 0 10px var(--as)}
-        .scanning-dots span:nth-child(2){animation-delay:.2s}
-        .scanning-dots span:nth-child(3){animation-delay:.4s}
-        @keyframes scanningDotPulse{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-10px);opacity:1}}
-        
-        /* Eye Animation */
-        .eye-animation {
+        /* INPUT DI BAWAH - FIXED */
+        .radar-chat-input-wrapper {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            display: flex;
+            gap: 6px;
+            padding: 6px;
+            background: rgba(20,20,20,0.95);
+            border: 2px solid var(--bd2);
+            border-radius: 30px;
+            z-index: 102;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        
+        .radar-chat-input {
+            flex: 1;
+            padding: 10px 16px;
+            background: var(--bg);
+            border: 2px solid var(--bd2);
+            color: var(--tx);
+            border-radius: 30px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+        
+        .radar-chat-input:focus {
+            border-color: var(--as);
+            box-shadow: 0 0 0 2px rgba(0,229,255,0.2);
+        }
+        
+        .radar-chat-input::placeholder {
+            color: var(--txm);
+            font-style: italic;
+        }
+        
+        .radar-chat-send {
+            width: 44px;
+            height: 44px;
+            background: var(--ap);
+            border: 2px solid #000;
+            color: #fff;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            z-index: 120;
-            width: auto;
-            pointer-events: none;
-            animation: eyeFadeInOut 2.5s ease-in-out forwards;
-        }
-
-        .eye-emoji {
-            font-size: 48px;
-            line-height: 1;
-            display: inline-block;
-            filter: drop-shadow(0 0 8px var(--as));
-        }
-
-        .eye-emoji.left {
-            animation: lookLeft 2s ease-in-out infinite;
-        }
-
-        .eye-emoji.right {
-            animation: lookRight 2s ease-in-out infinite;
-        }
-
-        @keyframes lookLeft {
-            0%, 100% { transform: translateX(0) scale(1); }
-            25% { transform: translateX(-4px) scale(1.1); }
-            50% { transform: translateX(0) scale(1); }
-            75% { transform: translateX(-2px) scale(1.05); }
-        }
-
-        @keyframes lookRight {
-            0%, 100% { transform: translateX(0) scale(1); }
-            25% { transform: translateX(4px) scale(1.1); }
-            50% { transform: translateX(0) scale(1); }
-            75% { transform: translateX(2px) scale(1.05); }
-        }
-
-        @keyframes eyeFadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            15% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            85% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            cursor: pointer;
+            box-shadow: 3px 3px 0 #000;
+            transition: 0.1s;
+            font-size: 18px;
         }
         
-        /* Buttons */
+        .radar-chat-send:active {
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px 0 #000;
+        }
+        
+        /* Header chat di atas */
+        .radar-chat-header {
+            position: absolute;
+            top: 8px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--txs);
+            letter-spacing: 2px;
+            z-index: 103;
+            background: rgba(0,0,0,0.5);
+            padding: 4px;
+            border-radius: 20px;
+            width: fit-content;
+            margin: 0 auto;
+            padding: 4px 16px;
+        }
+        
+        /* Radar Scanning Overlay */
+        .radar-scanning-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 50;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--as);
+            font-family: var(--font-mono);
+            backdrop-filter: blur(2px);
+        }
+        
+        .radar-scanning-overlay.show {
+            display: flex;
+        }
+        
+        .radar-scanning-text {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 0 20px;
+            color: var(--as);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .radar-scanning-progress {
+            width: 80%;
+            height: 2px;
+            background: var(--bd2);
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        
+        .radar-scanning-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--as);
+            box-shadow: 0 0 10px var(--as);
+            transition: width 0.1s linear;
+        }
+        
+        .radar-scanning-timer {
+            font-size: 12px;
+            color: var(--txs);
+        }
+        
+        .radar-scanning-dots {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .radar-scanning-dots span {
+            width: 6px;
+            height: 6px;
+            background: var(--as);
+            border-radius: 50%;
+            animation: scanningDotPulse 1.4s infinite;
+        }
+        
+        @keyframes scanningDotPulse {
+            0%,60%,100%{transform:translateY(0);opacity:.4}
+            30%{transform:translateY(-8px);opacity:1}
+        }
+        
+        /* CTA Buttons */
         .radar-ctas{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
         .gender-row{display:flex;gap:10px}
-        .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:18px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--sf);color:var(--tx)}
+        .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.1s;background:var(--sf);color:var(--tx)}
         .btn-gender:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #000}
         .btn-heart{background:linear-gradient(145deg,var(--ap),#ff6b8b);color:#fff}
         .btn-spade{background:linear-gradient(145deg,var(--as),#4d7aff);color:#000}
         .gender-icon{font-size:38px}
-        .btn-whisper{
-            width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);
-            font-family:var(--font-body);cursor:pointer;display:flex;
-            justify-content:space-between;color:var(--txs);position:relative;
-        }
+        .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;color:var(--txs);transition:.1s}
+        .btn-whisper:active{border-color:var(--as);color:var(--as)}
         
-        /* Spills */
+        /* Spills Section */
         .spills-sect{padding:18px}
-        .sect-header{display:flex;justify-content:space-between;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
-        .spill-card{background:var(--sf);border:2px solid var(--bd2);margin-bottom:20px;padding:16px;box-shadow:4px 4px 0 #000}
-        .spill-header{display:flex;justify-content:space-between;margin-bottom:12px;font-family:var(--font-mono);font-size:12px}
+        .sect-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
+        .spill-card{background:var(--sf);border:2px solid var(--bd2);margin-bottom:20px;padding:16px;box-shadow:4px 4px 0 #000;transition:.2s}
+        .spill-card:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #000}
+        .spill-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-family:var(--font-mono);font-size:12px}
         .spill-author{color:var(--as)}
-        .spill-mood{padding:4px 8px;font-size:10px;font-weight:700}
+        .spill-mood{padding:4px 8px;font-size:10px;font-weight:700;letter-spacing:1px}
         .spill-mood.surviving{background:var(--ap);color:#fff}
         .spill-mood.thriving{background:var(--aq);color:#000}
         .spill-mood.chaotic{background:var(--as);color:#000}
         .spill-mood.doom{background:#9900ff;color:#fff}
-        .spill-content{font-size:14px;line-height:1.6;margin-bottom:12px}
+        .spill-content{font-size:14px;line-height:1.6;color:var(--tx);margin-bottom:12px}
         .spill-reactions{display:flex;gap:8px;border-top:2px solid var(--bd);padding-top:12px}
-        .react-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--bg);border:2px solid var(--bd2);color:var(--txs);cursor:pointer}
+        .react-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:var(--bg);border:2px solid var(--bd2);color:var(--txs);cursor:pointer;font-family:var(--font-mono);font-size:14px;transition:.1s}
+        .react-btn:active{background:var(--bd2);transform:translate(2px,2px)}
+        .react-count{font-size:11px;font-weight:700}
+        .empty-state{text-align:center;padding:40px;color:var(--txs);font-family:var(--font-mono);font-size:14px;border:2px dashed var(--bd2)}
         
-        /* Bottom Nav */
-        .bnav{background:#050505;border-top:2px solid var(--bd);padding:8px 16px 12px;width:100%;max-width:500px;z-index:50}
-        .bnav-c{display:flex;justify-content:space-around;align-items:flex-end;gap:4px}
-        .ni{font-family:var(--font-mono);text-decoration:none;display:flex;flex-direction:column;align-items:center;padding:8px 0 4px;flex:1;color:var(--txs);gap:4px}
-        .nico{font-size:24px;font-weight:bold}
-        .ni span:last-child{font-size:10px;text-transform:uppercase}
-        .ni[href="spill.html"]{color:var(--spill)}
-        .ni[href="jejak.html"]{color:var(--jejak)}
-        .ni[href="glitch.html"]{color:var(--glitch)}
-        .ni[href="cocomeo.html"]{color:var(--cocomeo)}
-        .ni.act{color:var(--tx);transform:translateY(-4px)}
-        .ni.act .nico{transform:scale(1.2)}
+        /* Bottom Navigation */
+        .bnav {
+            background: var(--void);
+            border-top: 2px solid var(--bd);
+            padding: 8px 16px 12px;
+            width: 100%;
+            max-width: 500px;
+            z-index: 50;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+            position: relative;
+        }
         
-        /* Fallback Chat */
+        .bnav::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                var(--spill), 
+                var(--jejak), 
+                var(--glitch), 
+                var(--cocomeo), 
+                transparent
+            );
+            opacity: 0.5;
+            animation: navGlow 3s infinite;
+        }
+        
+        @keyframes navGlow {
+            0%,100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        
+        .bnav-c {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            gap: 4px;
+        }
+        
+        .ni {
+            font-family: var(--font-mono);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0 4px;
+            flex: 1;
+            border-radius: 12px 12px 0 0;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--txs);
+            position: relative;
+            overflow: hidden;
+            gap: 4px;
+        }
+        
+        .ni::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            right: 10%;
+            height: 0px;
+            background: currentColor;
+            transition: height 0.2s ease;
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .ni:hover::before,
+        .ni.act::before {
+            height: 3px;
+        }
+        
+        .ni:active {
+            transform: translateY(-2px);
+        }
+        
+        .nico {
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5));
+            transition: transform 0.2s;
+        }
+        
+        .ni:hover .nico {
+            transform: scale(1.1);
+        }
+        
+        .ni span:last-child {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .ni:hover span:last-child {
+            opacity: 1;
+        }
+        
+        .ni[href="spill.html"] { color: var(--spill); }
+        .ni[href="jejak.html"] { color: var(--jejak); }
+        .ni[href="glitch.html"] { color: var(--glitch); }
+        .ni[href="cocomeo.html"] { color: var(--cocomeo); }
+        
+        .ni.act {
+            color: var(--tx);
+            text-shadow: 0 0 8px currentColor;
+            transform: translateY(-4px);
+        }
+        
+        .ni.act .nico {
+            transform: scale(1.2);
+        }
+        
+        .ni.act::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 10px currentColor;
+            animation: pulseDot 1.5s infinite;
+        }
+        
+        @keyframes pulseDot {
+            0%,100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.5); }
+        }
+        
+        .ni:hover {
+            background: rgba(255,255,255,0.02);
+        }
+        
+        /* Chat room original (fallback) */
         .chat-room{display:none;position:fixed;inset:0;background:var(--bg);z-index:500;flex-direction:column}
         .chat-room.on{display:flex}
         .chat-head{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:2px solid var(--bd);background:var(--sf)}
-        .chat-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
-        .chat-input-wrap{display:flex;gap:10px;padding:12px 18px;border-top:2px solid var(--bd)}
-        .chat-input{flex:1;padding:13px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);border-radius:8px}
-        .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;color:#fff;cursor:pointer;border-radius:8px}
-        .chat-close{width:40px;height:40px;background:var(--bg);border:2px solid var(--bd);color:var(--txs);cursor:pointer}
+        #partnerLabel{font-family:var(--font-mono);font-size:12px;color:var(--as);background:rgba(0,229,255,.1);padding:6px 14px;border:1px solid var(--bd)}
+        .chat-timer{font-family:var(--font-display);font-size:22px;color:var(--aq);background:var(--bg);padding:8px 14px;border:2px solid var(--bd);box-shadow:3px 3px 0 #000}
+        .chat-close{width:40px;height:40px;background:var(--bg);border:2px solid var(--bd);color:var(--txs);font-size:18px;cursor:pointer;box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center}
+        .chat-close:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+        .chat-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
+        .message{max-width:80%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.4;word-wrap:break-word}
+        .message.user{align-self:flex-end;background:var(--as);color:#000;border-bottom-right-radius:4px}
+        .message.stranger{align-self:flex-start;background:var(--sf);color:var(--tx);border:1px solid var(--bd2);border-bottom-left-radius:4px}
+        .typing-indicator{align-self:flex-start;color:var(--txs);font-style:italic;font-size:12px;padding:5px 10px;display:flex;align-items:center;gap:4px}
+        .typing-dots{display:flex;gap:3px}
+        .typing-dots span{width:4px;height:4px;background:var(--txs);border-radius:50%;animation:typingDot 1.4s infinite}
+        .typing-dots span:nth-child(2){animation-delay:.2s}
+        .typing-dots span:nth-child(3){animation-delay:.4s}
+        @keyframes typingDot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+        .chat-input-wrap{display:flex;gap:10px;padding:12px 18px;border-top:2px solid var(--bd);background:var(--sf)}
+        .chat-input{flex:1;padding:13px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);font-family:var(--font-body);outline:0;border-radius:8px;font-size:14px}
+        .chat-input:focus{border-color:var(--as)}
+        .chat-send{width:48px;height:48px;background:var(--ap);border:2px solid #000;color:#fff;font-size:20px;cursor:pointer;box-shadow:3px 3px 0 #000;border-radius:8px;display:flex;align-items:center;justify-content:center}
+        .chat-send:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
         
         /* Toast */
-        .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none}
-        .toast.show{display:block}
+        .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;opacity:0;transition:.25s;border:2px solid #000;box-shadow:4px 4px 0 #000;border-radius:30px;font-size:14px;white-space:nowrap}
+        .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
         
-        /* Custom Modal untuk Chat Request */
-        #chatRequestModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-mono);
-        }
-        .modal-content {
-            background: var(--sf);
-            border: 3px solid var(--as);
-            padding: 25px;
-            max-width: 350px;
-            text-align: center;
-            box-shadow: 12px 12px 0 #000;
-        }
-        .modal-title {
-            font-size: 24px;
-            color: var(--as);
-            margin-bottom: 15px;
-        }
-        .modal-from {
-            color: var(--tx);
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #000;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .modal-btn.accept {
-            background: var(--as);
-            color: #000;
-        }
-        .modal-btn.reject {
-            background: #333;
-            color: #fff;
-        }
+        /* Whisper */
+        .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+        .whisper-overlay.show{display:flex}
+        .whisper-box{background:var(--sf);border:3px solid var(--as);padding:25px;text-align:center;box-shadow:12px 12px 0 #000;max-width:350px;width:90%}
+        .whisper-title{font-family:var(--font-display);font-size:24px;color:var(--as);margin-bottom:15px}
+        .whisper-input{width:100%;padding:15px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);margin:15px 0;resize:none;min-height:100px}
+        .whisper-input:focus{border-color:var(--as);outline:0}
+        .whisper-actions{display:flex;gap:10px}
+        .whisper-btn{flex:1;padding:12px;border:2px solid #000;font-family:var(--font-mono);cursor:pointer;box-shadow:3px 3px 0 #000;transition:.1s}
+        .whisper-btn.send{background:var(--as);color:#000}
+        .whisper-btn.cancel{background:0 0;color:var(--txs)}
+        .whisper-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+        .whisper-message{background:var(--sf);border:2px solid var(--as);padding:15px;margin:10px 0;position:relative;animation:whisperGlow 2s infinite}
+        @keyframes whisperGlow{0%,100%{box-shadow:0 0 5px var(--as)}50%{box-shadow:0 0 15px var(--as)}}
+        .whisper-timer-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--as);animation:timerShrink 5s linear forwards}
+        @keyframes timerShrink{from{width:100%}to{width:0%}}
         
-        /* Modal untuk "KALAH CEPAT" */
-        #tooLateModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-mono);
-        }
+        .sound-toggle{position:absolute;bottom:80px;right:20px;width:44px;height:44px;background:rgba(0,0,0,.7);border:2px solid var(--as);border-radius:50%;color:var(--as);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100;box-shadow:0 0 15px var(--as);transition:.2s}
+        .sound-toggle:active{transform:scale(.9)}
+        .sound-toggle.muted{opacity:.5;border-color:var(--txs);color:var(--txs);box-shadow:none}
         
-        /* Sound Toggle */
-        .sound-toggle{position:fixed;bottom:80px;right:20px;width:44px;height:44px;background:rgba(0,0,0,.7);border:2px solid var(--as);border-radius:50%;color:var(--as);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2100}
+        @media (max-width:500px){
+            .app{border-left:none;border-right:none}
+            .nico{font-size:22px}
+            .ni span:last-child{font-size:9px}
+        }
     </style>
 </head>
 <body>
 <div class="app">
-    <!-- Header -->
     <div class="header">
         <div class="logo">SP<span class="x">✕</span>LL</div>
         <div class="user-section">
             <span class="user-badge" id="userNameDisplay">@loading...</span>
-            <div style="position:relative;">
-                <button class="settings-btn" id="settingsBtn">⋮</button>
-                <span class="whisper-badge" id="whisperBadge" style="display:none;">0</span>
-            </div>
+            <button class="settings-btn" id="settingsBtn">⋮</button>
         </div>
         <div class="settings-dropdown" id="settingsDropdown">
-            <div class="dropdown-item" id="logoutBtn">🚪 Logout</div>
+            <div class="dropdown-item" id="logoutBtn"><span>🚪</span> Logout</div>
+            <div class="dropdown-item language"><span>🌐</span> Language
+                <div class="language-select"><span class="lang-option active" data-lang="id">ID</span><span class="lang-option" data-lang="en">EN</span></div>
+            </div>
         </div>
     </div>
-    
-    <!-- Main Content -->
     <div class="scroll">
-        <!-- Radar Section -->
         <div class="radar-sect">
             <div class="radar-header">
                 <span class="radar-label">VIBE RADAR</span>
-                <div class="online-badge" id="onlineCount">0 ONLINE</div>
+                <div class="online-badge"><span class="online-icon"></span><span id="onlineCount">17 ONLINE</span></div>
             </div>
             <div class="radar-wrapper">
                 <div class="radar-bezel">
@@ -355,22 +547,20 @@
                         <canvas class="radar-canvas" id="radarCanvas"></canvas>
                         <div class="radar-dots" id="radarDots"></div>
                         
-                        <!-- Scanning Overlay -->
+                        <!-- Radar Scanning Overlay -->
                         <div class="radar-scanning-overlay" id="radarScanningOverlay">
-                            <div class="scanning-box">
-                                <div class="scanning-text" id="radarScanningText"></div>
-                                <div class="scanning-dots"><span></span><span></span><span></span></div>
-                                <div class="scanning-progress"><div class="scanning-bar" id="radarScanningBar"></div></div>
-                                <div class="scanning-timer" id="scanningTimer">0s</div>
-                            </div>
+                            <div class="radar-scanning-text" id="radarScanningText">MENCARI LAWAN BICARA</div>
+                            <div class="radar-scanning-dots"><span></span><span></span><span></span></div>
+                            <div class="radar-scanning-progress"><div class="radar-scanning-bar" id="radarScanningBar"></div></div>
+                            <div class="radar-scanning-timer" id="radarScanningTimer">0s</div>
                         </div>
                         
-                        <!-- Chat Container -->
+                        <!-- Radar Chat Container - FINAL VERSION -->
                         <div class="radar-chat-container" id="radarChatContainer">
                             <div class="radar-chat-header">✦ CHAT ✦</div>
                         </div>
                         
-                        <!-- Chat Input -->
+                        <!-- Radar Chat Input (DI BAWAH) -->
                         <div class="radar-chat-input-wrapper" id="radarChatInputWrapper" style="display:none">
                             <input type="text" class="radar-chat-input" id="radarChatInput" placeholder="Ketik pesan...">
                             <button class="radar-chat-send" id="radarChatSend">➤</button>
@@ -378,1176 +568,736 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Action Buttons -->
             <div class="radar-ctas">
                 <div class="gender-row">
-                    <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span class="gender-icon">❤️</span><span>SOFT TALK</span></button>
-                    <button class="btn-gender btn-spade" id="vibeMaleBtn"><span class="gender-icon">♠️</span><span>HOT TAKE</span></button>
+                    <button class="btn-gender btn-heart" id="vibeFemaleBtn"><span class="gender-icon">♠️</span><span>HOT TAKE</span></button>
+                    <button class="btn-gender btn-spade" id="vibeMaleBtn"><span class="gender-icon">❤️</span><span>SOFT TALK</span></button>
                 </div>
-                <button class="btn-whisper" id="whisperBtn">
-                    <span>✦ WHISPERER</span>
-                    <span id="whisperBtnCount" style="color:#ff3b6f;">(coming soon)</span>
-                </button>
+                <button class="btn-whisper" id="whisperBtn">✦ WHISPERER <span>NEW</span></button>
             </div>
         </div>
-        
-        <!-- Spills Section -->
         <div class="spills-sect">
-            <div class="sect-header">
-                <span>SPILL TERKINI</span>
-                <span id="feedMeta">0 spill</span>
-            </div>
+            <div class="sect-header"><div class="sect-title">SPILL TERKINI</div><span id="feedMeta">0 spill</span></div>
             <div id="spillsList"><div class="empty-state">🍃 MEMUAT SPILL...</div></div>
         </div>
     </div>
     
-    <!-- Bottom Nav -->
+    <!-- Bottom Navigation -->
     <nav class="bnav">
         <div class="bnav-c">
-            <a href="spill.html" class="ni act"><span class="nico">✕</span><span>Spill</span></a>
-            <a href="jejak.html" class="ni"><span class="nico">◈</span><span>Jejak</span></a>
-            <a href="glitch.html" class="ni"><span class="nico">‼</span><span>Glitch</span></a>
-            <a href="cocomeo.html" class="ni"><span class="nico">〜</span><span>Cocomeo</span></a>
+            <a href="spill.html" class="ni act" data-page="spill">
+                <span class="nico">✕</span>
+                <span>Spill</span>
+            </a>
+            <a href="jejak.html" class="ni" data-page="jejak">
+                <span class="nico">◈</span>
+                <span>Jejak</span>
+            </a>
+            <a href="glitch.html" class="ni" data-page="glitch">
+                <span class="nico">‼</span>
+                <span>Glitch</span>
+            </a>
+            <a href="cocomeo.html" class="ni" data-page="cocomeo">
+                <span class="nico">〜</span>
+                <span>Cocomeo</span>
+            </a>
         </div>
     </nav>
 </div>
 
-<!-- Fallback Chat -->
+<!-- Chat room original (fallback) -->
 <div class="chat-room" id="chatRoom">
-    <div class="chat-head">
-        <span id="partnerLabel">STRANGER</span>
-        <span class="chat-timer" id="chatTimer">15:00</span>
-        <button class="chat-close" id="closeChatBtn">✕</button>
-    </div>
+    <div class="chat-head"><span id="partnerLabel">STRANGER</span><span class="chat-timer" id="chatTimer">15:00</span><button class="chat-close" id="closeChatBtn">✕</button></div>
     <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input-wrap">
-        <input type="text" class="chat-input" id="chatInput" placeholder="ketik pesan...">
-        <button class="chat-send" id="sendButton">➤</button>
+    <div class="chat-input-wrap"><input type="text" class="chat-input" id="chatInput" placeholder="ketik pesan..." autocomplete="off"><button class="chat-send" id="sendButton">➤</button></div>
+</div>
+
+<!-- Overlay lain -->
+<div class="whisper-overlay" id="whisperOverlay">
+    <div class="whisper-box">
+        <div class="whisper-title">✦ WHISPERER</div>
+        <div class="whisper-timer">Kirim ke siapapun</div>
+        <input type="text" class="whisper-input" id="whisperTarget" placeholder="@username" maxlength="30">
+        <textarea class="whisper-input" id="whisperMessage" placeholder="Tulis pesan rahasia..." maxlength="200" rows="3"></textarea>
+        <div class="whisper-actions"><button class="whisper-btn cancel" id="whisperCancel">BATAL</button><button class="whisper-btn send" id="whisperSend">KIRIM</button></div>
     </div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
-
-<!-- Sound Toggle -->
 <div class="sound-toggle" id="soundToggle">🔊</div>
-
-<!-- Custom Modal untuk Chat Request -->
-<div id="chatRequestModal">
-    <div class="modal-content">
-        <div class="modal-title">✦ CHAT REQUEST ✦</div>
-        <div class="modal-from" id="chatRequestFrom">✨ Seseorang ingin ngobrol</div>
-        <div class="modal-actions">
-            <button class="modal-btn accept" id="chatRequestAccept">TERIMA</button>
-            <button class="modal-btn reject" id="chatRequestReject">TOLAK</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal untuk "KALAH CEPAT" -->
-<div id="tooLateModal" style="display:none;">
-    <div style="background:var(--sf); border:3px solid var(--ap); padding:25px; max-width:350px; text-align:center; box-shadow:12px 12px 0 #000;">
-        <div style="font-size:32px; margin-bottom:15px;">😅</div>
-        <div style="font-size:20px; color:var(--ap); margin-bottom:10px;">KALAH CEPAT!</div>
-        <div style="font-size:14px; color:var(--tx); margin-bottom:20px;">Partner sudah diambil orang lain</div>
-        <button id="tooLateOkBtn" style="width:100%; padding:12px; background:var(--as); color:#000; border:2px solid #000; cursor:pointer; font-weight:bold;">OK</button>
-    </div>
-</div>
 
 <script>
 (function(){
+    // ============ KILL SWITCH ============
+    const USE_RADAR_CHAT = true;
+    const USE_REAL_USER_MATCHING = true;
+    
     // ============ SUPABASE CONFIG ============
     const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ============ WEBSOCKET CONNECTION ============
+let ws = null;
+let wsConnected = false;
+
+function connectWebSocket() {
+    ws = new WebSocket('ws://localhost:3001'); // Sesuaiin dengan backend lo
     
-    // ============ USER ============
-    const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
-    if(localStorage.getItem(K.l)!=='true'){window.location.href='index.html';return;}
-    const U=localStorage.getItem(K.u),UID=localStorage.getItem(K.i);
-    
-    // ============ UTILS ============
-    const $=id=>document.getElementById(id);
-    const toast=(msg)=>{let o=$('toast');if(o){o.textContent=msg;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),3000);}};
-    
-    // ============ AI PERSONAS ============
-    const AI_PERSONAS = [
-        { id: 'ai_beby', username: 'beby.manis', gender: 'heart', type: 'ai' },
-        { id: 'ai_pretty', username: 'pretty.sad', gender: 'heart', type: 'ai' },
-        { id: 'ai_strawberry', username: 'strawberry.shortcake', gender: 'heart', type: 'ai' },
-        { id: 'ai_cinnamon', username: 'cinnamon.girl', gender: 'heart', type: 'ai' },
-        { id: 'ai_moveon', username: 'move.on', gender: 'heart', type: 'ai' },
-        { id: 'ai_agak', username: 'agak.koplak', gender: 'spade', type: 'ai' },
-        { id: 'ai_chili', username: 'chili.padi', gender: 'spade', type: 'ai' },
-        { id: 'ai_sejuta', username: 'sejuta.badai', gender: 'spade', type: 'ai' },
-        { id: 'ai_satria', username: 'satria.bajahitam', gender: 'spade', type: 'ai' },
-        { id: 'ai_bangjuned', username: 'bang.juned', gender: 'spade', type: 'ai' }
-    ];
-    
-    // ============ CHAT STATE ============
-    let currentPartner = null;
-    let chatChannel = null;
-    let isSearching = false;
-    let radarChatActive = false;
-    let isTyping = false;
-    let chatHistory = [];
-    let heartbeatInterval = null;
-    let searchTimeout = null;
-    let currentRequestId = null;
-    let currentRequester = null;
-    let userChannel = null;
-    
-    // ============ ONLINE USERS MANAGEMENT ============
-    async function updateOnlineStatus(status = 'online') {
-        try {
-            await supabase
-                .from('online_users')
-                .upsert({ 
-                    user_id: UID, 
-                    username: U, 
-                    last_seen: new Date().toISOString(),
-                    status: status 
-                });
-        } catch (e) {}
-    }
-    
-    async function removeFromOnline() {
-        await supabase.from('online_users').delete().eq('user_id', UID);
-    }
-    
-    async function getOnlineCandidates(gender, limit = 5) {
-        const { data: humans } = await supabase
-            .from('online_users')
-            .select('user_id, username')
-            .eq('status', 'online')
-            .neq('user_id', UID)
-            .order('last_seen', { ascending: false })
-            .limit(limit * 2);
+    ws.onopen = () => {
+        console.log('WebSocket connected');
+        wsConnected = true;
         
-        const filteredHumans = (humans || []).filter(h => h.user_id !== UID);
-        const ais = AI_PERSONAS.filter(ai => ai.gender === gender).map(ai => ({
-            user_id: ai.id, username: ai.username, type: 'ai'
+        // Identify user setelah login
+        ws.send(JSON.stringify({
+            type: 'IDENTIFY',
+            userId: UID,
+            username: U
+        }));
+    };
+    
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        handleWebSocketMessage(data);
+    };
+    
+    ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        wsConnected = false;
+        // Coba reconnect setelah 3 detik
+        setTimeout(connectWebSocket, 3000);
+    };
+    
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+}
+
+function handleWebSocketMessage(data) {
+    switch(data.type) {
+        case 'CHAT_REQUEST':
+            // Munculin notifikasi "Ada yang ingin ngobrol"
+            showChatRequest(data);
+            break;
+            
+        case 'MATCH_SUCCESS':
+            // Langsung buka chat dengan partner
+            openC(data.partner.username);
+            break;
+            
+        case 'SEARCHING_PARTNER':
+            console.log(`Searching among ${data.count} users`);
+            break;
+            
+        case 'CHAT_MESSAGE':
+            // Terima pesan dari real user
+            addM('stranger', data.text);
+            break;
+    }
+}
+
+function showChatRequest(data) {
+    // Munculin notifikasi (bisa pake custom modal)
+    const accept = confirm(`@${data.from} ingin ngobrol denganmu. Terima?`);
+    
+    if (wsConnected) {
+        ws.send(JSON.stringify({
+            type: 'CHAT_REQUEST_RESPONSE',
+            requestId: data.requestId,
+            accepted: accept
         }));
         
-        return [...filteredHumans.map(h => ({ ...h, type: 'human' })), ...ais].slice(0, limit);
-    }
-    
-    async function updateOnlineCounter() {
-        const { count } = await supabase
-            .from('online_users')
-            .select('*', { count: 'exact', head: true })
-            .eq('status', 'online');
-        
-        const total = (count || 0) + AI_PERSONAS.length;
-        $('onlineCount').innerHTML = total + ' ONLINE';
-    }
-    
-    // ============ WAITING ROOM MANAGEMENT ============
-    async function checkWaitingRoom(gender) {
-        const { data: waiters } = await supabase
-            .from('waiting_room')
-            .select('*')
-            .eq('gender', gender)
-            .neq('user_id', UID)
-            .limit(1);
-        
-        if (waiters && waiters.length > 0) {
-            const partner = waiters[0];
-            
-            await supabase.from('waiting_room').delete().eq('user_id', UID);
-            await supabase.from('waiting_room').delete().eq('user_id', partner.user_id);
-            
-            const channelName = `chat_${UID}_${partner.user_id}_${Date.now()}`;
-            
-            await supabase.from('active_chats').insert([{
-                user1_id: UID,
-                user2_id: partner.user_id,
-                channel_name: channelName
-            }]);
-            
-            await supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
-            await supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', partner.user_id);
-            
-            setupChatChannel(channelName, partner.username);
-            return true;
+        if (accept) {
+            t(`✨ Terima kasih! Chat dengan @${data.from} akan dibuka`);
         }
-        return false;
     }
+}
+    // ============ CORE LOGIC ============
+    const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
+    if(localStorage.getItem(K.l)!=='true'||!localStorage.getItem(K.u)||!localStorage.getItem(K.i)){window.location.href='index.html';return;}
+    const U=localStorage.getItem(K.u),UID=localStorage.getItem(K.i);
+    const $=id=>document.getElementById(id);
+    const t=(m,e)=>{let o=$('toast');if(!o)return;o.textContent=m;o.className='toast'+(e?' error':'');o.classList.add('show');setTimeout(()=>o.classList.remove('show'),3000);};
+    const av=['beby.manis','chili.padi','pretty.sad','sejuta.badai','agak.koplak','strawberry.shortcake','cinnamon.girl','satria.bajahitam','malam.minggu','hujan.gerimis','kopi.pahit','luka.luka','senja.redup','kota.tua','patah.hati','move.on'],nc=new Map();
+    const gn=(uid)=>{if(!uid)return'anonymous';if(nc.has(uid))return nc.get(uid);let h=0;for(let i=0;i<uid.length;i++)h=((h<<5)-h)+uid.charCodeAt(i),h|=0;let n=av[Math.abs(h)%av.length];nc.set(uid,n);return n;};
     
-    // ============ SCANNING ANIMASI ============
-    let scanInterval = null;
-    let soundEnabled = false;
-    let audioContext = null;
-
-    function initAudio() {
-        if (audioContext) return;
-        try {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (e) {}
-    }
-
-    function playSound(type) {
-        if (!soundEnabled || !audioContext || audioContext.state === 'suspended') return;
-        try {
-            let osc = audioContext.createOscillator();
-            let gain = audioContext.createGain();
-            osc.type = 'sine';
-            if (type === 'tick') {
-                osc.frequency.setValueAtTime(440, audioContext.currentTime);
-                gain.gain.setValueAtTime(0.05, audioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
-            } else if (type === 'glitch') {
-                osc.frequency.setValueAtTime(220, audioContext.currentTime);
-                gain.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
-            } else if (type === 'complete') {
-                osc.frequency.setValueAtTime(880, audioContext.currentTime);
-                gain.gain.setValueAtTime(0.15, audioContext.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+    // ============ REAL USER MATCHING SYSTEM ============
+    const onlineUsers = new Map();
+    
+    // Inisialisasi user sendiri ke online
+    onlineUsers.set(UID, {
+        username: U,
+        lastSeen: Date.now(),
+        inChat: false,
+        status: 'online'
+    });
+    
+    // Simulasi user online
+    const initMockOnlineUsers = () => {
+        const mockUsers = [
+            { uid: 'user1', username: 'beby.manis' },
+            { uid: 'user2', username: 'chili.padi' },
+            { uid: 'user3', username: 'pretty.sad' },
+            { uid: 'user4', username: 'sejuta.badai' },
+            { uid: 'user5', username: 'agak.koplak' },
+            { uid: 'user6', username: 'strawberry.shortcake' },
+            { uid: 'user7', username: 'cinnamon.girl' },
+            { uid: 'user8', username: 'satria.bajahitam' }
+        ];
+        
+        mockUsers.forEach((user, index) => {
+            onlineUsers.set(user.uid, {
+                username: user.username,
+                lastSeen: Date.now() - (index * 2000),
+                inChat: false,
+                status: 'online'
+            });
+        });
+    };
+    initMockOnlineUsers();
+    
+    // Update online count
+    const updateOnlineCount = () => {
+        const now = Date.now();
+        let count = 0;
+        onlineUsers.forEach((user, uid) => {
+            if (uid !== UID && now - user.lastSeen < 30000) {
+                count++;
             }
-            osc.connect(gain);
-            gain.connect(audioContext.destination);
-            osc.start();
-            osc.stop(audioContext.currentTime + 0.3);
-        } catch (e) {}
-    }
-
-    function vibrate(pattern) {
-        if (window.navigator && window.navigator.vibrate) {
-            window.navigator.vibrate(pattern);
+        });
+        const o = $('onlineCount');
+        if (o) o.textContent = count + ' ONLINE';
+    };
+    setInterval(updateOnlineCount, 5000);
+    updateOnlineCount();
+    
+    // ============ BLAST NOTIFICATION SYSTEM ============
+    const blastNotifications = async (candidates, fromName) => {
+        return new Promise((resolve) => {
+            let winner = null;
+            let responses = 0;
+            
+            if (candidates.length === 0) {
+                resolve(null);
+                return;
+            }
+            
+            candidates.forEach(candidate => {
+                const responseTime = 1000 + Math.random() * 3000;
+                
+                setTimeout(() => {
+                    const accepted = Math.random() < 0.3;
+                    
+                    if (accepted && !winner) {
+                        winner = candidate;
+                        resolve(winner);
+                    } else {
+                        responses++;
+                        if (responses >= candidates.length && !winner) {
+                            resolve(null);
+                        }
+                    }
+                }, responseTime);
+            });
+            
+            setTimeout(() => {
+                if (!winner) {
+                    resolve(null);
+                }
+            }, 15000);
+        });
+    };
+    // ============ FUNGSI FIND REAL USERS (PINDAH KE ATAS) ============
+const findRealUsers = (count = 5) => {
+    const now = Date.now();
+    const candidates = [];
+    
+    onlineUsers.forEach((user, uid) => {
+        if (uid !== UID && !user.inChat && now - user.lastSeen < 30000) {
+            candidates.push({
+                uid,
+                username: user.username,
+                lastSeen: user.lastSeen
+            });
         }
-    }
-
-    function showEyeThenChat(partnerName) {
-        currentPartner = partnerName;
-        radarChatActive = true;
-        
-        $('radarChatContainer').style.display = 'flex';
-        $('radarCont').classList.add('chat-mode');
-        $('radarChatInputWrapper').style.display = 'none';
-        
-        const header = document.querySelector('.radar-chat-header');
-        if (header) header.style.display = 'none';
-        
-        const eyeDiv = document.createElement('div');
-        eyeDiv.className = 'eye-animation';
-        eyeDiv.id = 'eyeAnimation';
-        eyeDiv.innerHTML = `
-            <span class="eye-emoji left">👀</span>
-            <span class="eye-emoji right">👀</span>
-        `;
-        
-        $('radarChatContainer').appendChild(eyeDiv);
-        
-        setTimeout(() => {
-            const eyeElement = document.getElementById('eyeAnimation');
-            if (eyeElement) eyeElement.remove();
-            
-            $('radarChatInputWrapper').style.display = 'flex';
-            $('radarChatInput').focus();
-            
-            setTimeout(() => sendM('', true), 500);
-        }, 2500);
+    });
+    
+    candidates.sort((a, b) => b.lastSeen - a.lastSeen);
+    return candidates.slice(0, count);
+};
+    // ============ SCANNING WITH BLAST NOTIFICATIONS ============
+const startScanningWithBlast = (gender, callback) => {
+    const overlay = $('radarScanningOverlay');
+    const txt = $('radarScanningText');
+    const bar = $('radarScanningBar');
+    const timer = $('radarScanningTimer');
+    
+    if (!overlay || !txt || !bar || !timer) {
+        const aiName = getRandomAI(gender);
+        callback(aiName);
+        return;
     }
     
-    function startScanning(gender, callback) {
-        let overlay = $('radarScanningOverlay');
-        let textEl = $('radarScanningText');
-        let barEl = $('radarScanningBar');
-        let timerEl = $('scanningTimer');
+    // Reset state
+    blastWinner = null;
+    
+    // Kirim sinyal ke server via WebSocket
+    if (wsConnected) {
+        ws.send(JSON.stringify({
+            type: 'FIND_PARTNER',
+            userId: UID,
+            gender: gender
+        }));
+    }
+    
+    // Animasi scanning 15 detik
+    startScanningAnimation(overlay, txt, bar, timer, 15, () => {
+        console.log('[SEARCH] 15 detik selesai');
         
-        if (!overlay || !textEl || !barEl || !timerEl) {
-            callback();
+        if (blastWinner) {
+            callback(blastWinner.username);
+        } else {
+            const aiName = getRandomAI(gender);
+            callback(aiName);
+        }
+    });
+};
+    
+    // ============ SCANNING ANIMATION DENGAN NARASI ASLI ============
+    let scanInterval = null;
+    
+    const startScanningAnimation = (overlay, txt, bar, timer, duration, onComplete) => {
+        if (!overlay || !txt || !bar || !timer) {
+            onComplete();
             return;
         }
         
-        initAudio();
-        
-        let sequences = [
-            { t: 0, text: "finding strangers..." },
-            { t: 4, text: "most strangers here are just people" },
-            { t: 8, text: "some are ghosts" },
-            { t: 12, text: "and a few..." },
-            { t: 14, text: "are trouble" }
+        // NARASI ASLI - JANGAN DIUBAH!
+        const narasi = [
+            { time: 0, text: "finding strangers..." },
+            { time: 4, text: "most strangers here are just people" },
+            { time: 8, text: "some are ghosts" },
+            { time: 12, text: "and a few..." },
+            { time: 14, text: "are trouble" }
         ];
         
         overlay.classList.add('show');
-        let startTime = Date.now();
-        let currentSeq = 0;
-        let lastGlitch = 0;
-        let lastTick = 0;
+        const startTime = Date.now();
+        let currentIndex = 0;
         
-        $('soundToggle').onclick = () => {
-            soundEnabled = !soundEnabled;
-            $('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
-            if (soundEnabled && audioContext && audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-        };
+        // Set teks awal
+        txt.textContent = narasi[0].text;
         
         if (scanInterval) clearInterval(scanInterval);
         
         scanInterval = setInterval(() => {
-            let elapsed = (Date.now() - startTime) / 1000;
-            let progress = Math.min(100, (elapsed / 15) * 100);
-            barEl.style.width = progress + '%';
-            timerEl.textContent = Math.floor(elapsed) + 's';
+            const elapsed = (Date.now() - startTime) / 1000;
+            const progress = Math.min(100, (elapsed / duration) * 100);
             
-            while (currentSeq < sequences.length - 1 && elapsed >= sequences[currentSeq + 1].t) {
-                currentSeq++;
-            }
-            if (currentSeq < sequences.length) {
-                textEl.textContent = sequences[currentSeq].text;
-                textEl.classList.toggle('glitch', 
-                    sequences[currentSeq].text.includes('ghosts') || 
-                    sequences[currentSeq].text.includes('trouble')
-                );
+            bar.style.width = progress + '%';
+            timer.textContent = Math.floor(elapsed) + 's';
+            
+            // Update teks berdasarkan narasi
+            while (currentIndex < narasi.length - 1 && elapsed >= narasi[currentIndex + 1].time) {
+                currentIndex++;
+                txt.textContent = narasi[currentIndex].text;
             }
             
-            if (Math.random() < 0.15 && elapsed - lastGlitch > 0.5) {
-                textEl.style.opacity = '0.3';
-                setTimeout(() => textEl.style.opacity = '1', 80);
-                playSound('glitch');
-                vibrate(50);
-                lastGlitch = elapsed;
-            }
-            
-            if (Math.floor(elapsed) !== lastTick) {
-                playSound('tick');
-                lastTick = Math.floor(elapsed);
-            }
-            
-            if (elapsed >= 15) {
+            // Selesai 15 detik
+            if (elapsed >= duration) {
                 clearInterval(scanInterval);
                 scanInterval = null;
                 overlay.classList.remove('show');
-                playSound('complete');
-                vibrate([100, 50, 100]);
-                
-                let aiLists = {
-                    heart: AI_PERSONAS.filter(ai => ai.gender === 'heart'),
-                    spade: AI_PERSONAS.filter(ai => ai.gender === 'spade')
-                };
-                let aiList = aiLists[gender] || aiLists.heart;
-                let aiName = aiList[Math.floor(Math.random() * aiList.length)].username;
-                
-                showEyeThenChat(aiName);
+                onComplete();
             }
         }, 100);
         
-        overlay.onclick = () => {
+        overlay.onclick = (e) => {
+            e.stopPropagation();
             if (scanInterval) {
                 clearInterval(scanInterval);
                 scanInterval = null;
             }
             overlay.classList.remove('show');
-            
-            let aiLists = {
-                heart: AI_PERSONAS.filter(ai => ai.gender === 'heart'),
-                spade: AI_PERSONAS.filter(ai => ai.gender === 'spade')
-            };
-            let aiList = aiLists[gender] || aiLists.heart;
-            let aiName = aiList[Math.floor(Math.random() * aiList.length)].username;
-            
-            showEyeThenChat(aiName);
+            onComplete();
         };
-    }
+    };
     
-    // ============ SETUP REALTIME LISTENER (FIXED) ============
-    function setupRequestListener() {
-        console.log('📡 Setting up realtime listener for user-to-user chat');
-        
-        if (!UID) {
-            console.error('UID tidak ditemukan');
-            return;
-        }
-        
-        const channelName = `user:${UID}`;
-        console.log('📡 Channel name:', channelName);
-        
-        if (userChannel) {
-            supabase.removeChannel(userChannel);
-        }
-        
-        userChannel = supabase.channel(channelName, {
-            config: {
-                broadcast: { 
-                    ack: true,
-                    self: true
-                }
-            }
-        });
-        
-        userChannel
-            .on('broadcast', { event: 'chat_request' }, (payload) => {
-                console.log('📨 Chat request received:', payload);
-                
-                currentRequestId = payload.payload.requestId;
-                currentRequester = payload.payload.from;
-                
-                const modal = document.getElementById('chatRequestModal');
-                const fromEl = document.getElementById('chatRequestFrom');
-                
-                if (fromEl) {
-                    fromEl.textContent = `✨ @${payload.payload.from} ingin ngobrol`;
-                }
-                
-                if (modal) {
-                    modal.style.display = 'flex';
-                    
-                    if (window.navigator?.vibrate) {
-                        window.navigator.vibrate([200, 100, 200]);
-                    }
-                }
-            })
-            .on('broadcast', { event: 'match_confirmed' }, (payload) => {
-                console.log('✅ Match confirmed:', payload);
-                
-                if (payload.payload && payload.payload.channel) {
-                    setupChatChannel(
-                        payload.payload.channel, 
-                        payload.payload.partner
-                    );
-                }
-            })
-            .on('broadcast', { event: 'request_taken' }, (payload) => {
-                console.log('⚠️ Request taken by someone else');
-                
-                if (currentRequestId === payload.payload.requestId) {
-                    showTooLate();
-                    currentRequestId = null;
-                    
-                    const modal = document.getElementById('chatRequestModal');
-                    if (modal) modal.style.display = 'none';
-                }
-            });
-        
-        userChannel.subscribe((status) => {
-            if (status === 'SUBSCRIBED') {
-                console.log('✅ Realtime channel siap untuk user-to-user chat');
-                
-                userChannel.send({
-                    type: 'broadcast',
-                    event: 'user_online',
-                    payload: { 
-                        userId: UID, 
-                        username: U,
-                        timestamp: new Date().toISOString()
-                    }
-                });
-            } else if (status === 'CHANNEL_ERROR') {
-                console.error('❌ Channel error, retrying in 5s...');
-                setTimeout(setupRequestListener, 5000);
-            }
-        });
-    }
+    // ============ AI CHARACTERS ============
+    const aiCharacters = {
+        heart: ['beby.manis', 'pretty.sad', 'strawberry.shortcake', 'cinnamon.girl', 'move.on'],
+        spade: ['agak.koplak', 'bang.juned', 'chili.padi', 'sejuta.badai', 'satria.bajahitam']
+    };
     
-    // ============ FIND PARTNER ============
-    async function findPartner(gender) {
-        if (isSearching) return;
-        isSearching = true;
-        
-        console.log(`🔍 Mencari partner ${gender}...`);
-        
-        startScanning(gender, () => {});
-        
-        await updateOnlineStatus('online');
-        
-        if (await checkWaitingRoom(gender)) {
-            console.log('✅ Dapat partner dari waiting room');
-            if (scanInterval) {
-                clearInterval(scanInterval);
-                scanInterval = null;
-            }
-            $('radarScanningOverlay').classList.remove('show');
-            isSearching = false;
-            return;
-        }
-        
-        await supabase.from('waiting_room').insert([{ 
-            user_id: UID, 
-            username: U, 
-            gender 
-        }]);
-        
-        const candidates = await getOnlineCandidates(gender, 5);
-        
-        if (candidates.length === 0) {
-            console.log('📢 No candidates, will use AI after scan');
-            return;
-        }
-        
-        console.log('📢 Blast ke', candidates.map(c => c.type === 'ai' ? '🤖 ' + c.username : '👤 ' + c.username).join(', '));
-        
-        const requestId = `${UID}_${Date.now()}`;
-        currentRequestId = requestId;
-        let accepted = false;
-        
-        // Fallback ke AI setelah 8 detik
-        const aiFallbackTimer = setTimeout(() => {
-            if (isSearching && !accepted) {
-                console.log('⏰ Fallback ke AI (8 detik)');
-                const aiList = gender === 'heart' 
-                    ? AI_PERSONAS.filter(ai => ai.gender === 'heart')
-                    : AI_PERSONAS.filter(ai => ai.gender === 'spade');
-                const randomAI = aiList[0];
-                handleAccept({ 
-                    type: 'ai', 
-                    user_id: randomAI.id, 
-                    username: randomAI.username 
-                }, requestId);
-            }
-        }, 8000);
-        
-        // Force stop setelah 15 detik
-        const forceStopTimer = setTimeout(() => {
-            if (isSearching && !accepted) {
-                console.log('⏰ Force stop searching');
-                isSearching = false;
-                $('radarScanningOverlay').classList.remove('show');
-            }
-        }, 15000);
-        
-        candidates.forEach(candidate => {
-            if (candidate.type === 'ai') {
-                setTimeout(() => {
-                    if (!accepted && isSearching) {
-                        handleAccept({
-                            type: 'ai',
-                            user_id: candidate.user_id,
-                            username: candidate.username
-                        }, requestId);
-                    }
-                }, 2000 + Math.random() * 3000);
-            } else {
-                console.log(`📨 Sending request ke human: ${candidate.username}`);
-                
-                const targetChannel = supabase.channel(`user:${candidate.user_id}`, {
-                    config: { broadcast: { ack: true } }
-                });
-                
-                targetChannel.subscribe(async () => {
-                    await new Promise(r => setTimeout(r, 500));
-                    
-                    await targetChannel.send({
-                        type: 'broadcast',
-                        event: 'chat_request',
-                        payload: { 
-                            requestId, 
-                            from: U, 
-                            fromId: UID 
-                        }
-                    });
-                    
-                    console.log(`📨 Request terkirim ke ${candidate.username}`);
-                    
-                    setTimeout(() => {
-                        supabase.removeChannel(targetChannel);
-                    }, 3000);
-                });
-            }
+    const getRandomAI = (gender) => {
+        const list = aiCharacters[gender] || aiCharacters.heart;
+        return list[Math.floor(Math.random() * list.length)];
+    };
+    
+    // ============ CHAT FUNCTIONS ============
+    let ue=[],ae=[],alle=[],aiTimer,cp=null,ch=[],isTyping=false,cl='id',se=false,ac=null;
+    let radarChatActive = false;
+    
+    // ============ SETTINGS ============
+    const initS=()=>{let b=$('settingsBtn'),d=$('settingsDropdown');if(b&&d){b.onclick=e=>{e.stopPropagation();d.classList.toggle('show');};document.addEventListener('click',e=>{if(!b.contains(e.target)&&!d.contains(e.target))d.classList.remove('show');});}
+    $('logoutBtn')?.addEventListener('click',()=>{localStorage.removeItem(K.l);t('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);});
+    document.querySelectorAll('.lang-option').forEach(o=>o.addEventListener('click',function(){document.querySelectorAll('.lang-option').forEach(o=>o.classList.remove('active'));this.classList.add('active');cl=this.dataset.lang;t(`🌐 Language: ${cl==='id'?'Indonesia':'English'}`);}));};
+    
+    // ============ WHISPER ============
+    const initW=()=>{let b=$('whisperBtn'),o=$('whisperOverlay'),c=$('whisperCancel'),s=$('whisperSend'),tg=$('whisperTarget'),msg=$('whisperMessage');if(!b||!o)return;
+    b.onclick=()=>{o.classList.add('show');tg.value='';msg.value='';tg.focus();};
+    c.onclick=()=>o.classList.remove('show');
+    s.onclick=async()=>{let t=tg.value.trim().replace('@',''),m=msg.value.trim();if(!t){t('Masukkan username tujuan');return;}if(!m){t('Pesan tidak boleh kosong');return;}o.classList.remove('show');showLW(`@${t}: ${m}`);try{let r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from:U,to:t,message:m})});if(!r.ok)throw new Error();t(`✧ Whisper terkirim ke @${t}`);}catch(e){t('Gagal mengirim whisper');}};};
+    const showLW=(t)=>{let cm=$('chatMessages');if(!cm)return;let d=document.createElement('div');d.className='whisper-message';d.innerHTML=`<div style="font-family:var(--font-mono);font-size:10px;color:var(--as);margin-bottom:5px;">✧ WHISPER TERKIRIM</div><div style="font-size:14px;">${t}</div><div class="whisper-timer-bar"></div>`;cm.appendChild(d);cm.scrollTop=cm.scrollHeight;setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity 0.5s';setTimeout(()=>d.remove(),500);},5000);};
+    const showIW=(s,m)=>{let cm=$('chatMessages');if(!cm)return;let d=document.createElement('div');d.className='whisper-message';d.innerHTML=`<div style="font-family:var(--font-mono);font-size:10px;color:var(--as);margin-bottom:5px;">✧ WHISPER DARI @${s}</div><div style="font-size:14px;">${m}</div><div class="whisper-timer-bar"></div>`;cm.appendChild(d);cm.scrollTop=cm.scrollHeight;setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity 0.5s';setTimeout(()=>d.remove(),500);},5000);};
+    const startWP=()=>setInterval(async()=>{try{let r=await fetch(`/api/whisper?user=${U}`);if(r.ok)(await r.json()).forEach(w=>showIW(w.sender,w.message));}catch(e){}},3000);
+    
+    // ============ NAV ============
+    const initNav=()=>{
+        let p=window.location.pathname.split('/').pop()||'spill.html';
+        document.querySelectorAll('.ni').forEach(i=>{
+            const href=i.getAttribute('href');
+            i.classList.toggle('act',href===p);
         });
+    };
+    
+    // ============ SPILLS ============
+    const renderS=()=>{let c=$('spillsList');if(!c)return;if(!alle.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';return;}
+    c.innerHTML=alle.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${s.author}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${s.content}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="window.reactToSpill(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');
+    $('feedMeta')&&($('feedMeta').textContent=alle.length+' spill');};
+    const combine=()=>{alle=[...ue,...ae];alle.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));renderS();};
+    const dummyU=()=>[{author:'beby.manis',mood:'chaotic',content:'hari ini nangis karena liat mantan bahagia',reactions:{skull:15,cry:30,fire:2,upside:5},created_at:new Date().toISOString()},{author:'chili.padi',mood:'thriving',content:'akhirnya sidang ACC, lulus 🥳',reactions:{skull:3,cry:2,fire:45,upside:8},created_at:new Date(Date.now()-3600000).toISOString()},{author:'pretty.sad',mood:'doom',content:'ga semangat ngapa-ngapain 😭',reactions:{skull:22,cry:35,fire:1,upside:4},created_at:new Date(Date.now()-7200000).toISOString()}];
+    const fetchE=async()=>{try{let r=await fetch(`${SUPABASE_URL}/rest/v1/entries?select=*&order=created_at.desc&limit=10`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${SUPABASE_KEY}`}});if(!r.ok)throw new Error();let d=await r.json();ue=d.length?d.map(e=>({author:e.username||gn(e.user_id),mood:e.mood||'chaotic',content:e.content||'...',reactions:e.reactions||{skull:0,cry:0,fire:0,upside:0},created_at:e.created_at})):dummyU();}catch(e){ue=dummyU();}combine();};
+    const genAI=(c=6)=>{let a=['sejuta.badai','agak.koplak','strawberry.shortcake','cinnamon.girl','satria.bajahitam','move.on'];let m=['surviving','thriving','chaotic','doom'];let ct={surviving:['deadline skripsi makin deket 😮‍💨','capek banget hari ini 🥲'],thriving:['alhamdulillah hari ini cuan! 💰','sidang kelar nilai A'],chaotic:['client minta revisi jam 11 malem 🔥','hidup lagi kacau balau'],doom:['motor mogok, dompet tipis 🫠','6 bulan nganggur']};return Array(c).fill().map(()=>{let mood=m[Math.floor(Math.random()*m.length)];return{author:a[Math.floor(Math.random()*a.length)],mood,content:ct[mood][Math.floor(Math.random()*ct[mood].length)],reactions:{skull:Math.floor(Math.random()*30)+5,cry:Math.floor(Math.random()*40)+10,fire:Math.floor(Math.random()*20)+1,upside:Math.floor(Math.random()*15)+2},created_at:new Date(Date.now()-(7+Math.floor(Math.random()*23))*24*60*60*1000).toISOString()};});};
+    const initAI=()=>{if(!ae.length)ae=genAI(6);combine();if(aiTimer)clearInterval(aiTimer);aiTimer=setInterval(()=>{let n=genAI(1)[0];ae=[n,...ae.slice(0,5)];combine();},180000);};
+    window.reactToSpill=(i,t)=>{if(alle[i]){alle[i].reactions[t]=(alle[i].reactions[t]||0)+1;renderS();t(`➕ ${t}`);}};
+    
+    // ============ RADAR ANIMATION ============
+    let rdots=[],needleA=0,needleO=0,phA=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,glow=new Map(),raf,rint;
+    const initR=()=>{let cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;let rs=()=>{let r=ct.getBoundingClientRect();if(r.width>0&&r.height>0){cv.width=r.width;cv.height=r.height;}};rs();window.addEventListener('resize',rs);spawnDots();if(rint)clearInterval(rint);rint=setInterval(()=>{rdots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);needleA=Math.random()*Math.PI*2;trail.fill(needleA);radarLoop(cv);};
+    const spawnDots=()=>{let c=$('radarDots');if(!c)return;c.innerHTML='';rdots=[];for(let i=0;i<8;i++){let a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2,dot=document.createElement('div');dot.className='radar-dot';dot.style.left=x+'%';dot.style.top=y+'%';c.appendChild(dot);rdots.push({el:dot,x,y,vx:0,vy:0,id:i});}};
+    const radarLoop=cv=>{let ctx=cv.getContext('2d');let draw=()=>{let W=cv.width,H=cv.height,cx=W/2,cy=H/2,R=Math.min(cx,cy)*.88;if(!W||!H){raf=requestAnimationFrame(draw);return;}
+    phA+=.007;needleO+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phA)*.35)-needleO)*.028;needleA=(needleA+needleO)%(Math.PI*2);trail[ptr]=needleA;ptr=(ptr+1)%120;
+    ctx.fillStyle='rgba(2,10,2,.18)';ctx.fillRect(0,0,W,H);
+    for(let i=0;i<119;i++){let a=Math.pow(1-i/120,2.2)*.12;if(a<.002)break;let s=needleA-(i+1)*needleO,e=needleA-i*needleO;ctx.save();ctx.translate(cx,cy);ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));ctx.closePath();ctx.fillStyle=`rgba(0,229,255,${a})`;ctx.fill();ctx.restore();}
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(needleA);ctx.shadowColor='rgba(0,229,255,.95)';ctx.shadowBlur=12;let g=ctx.createLinearGradient(0,0,R,0);g.addColorStop(0,'rgba(0,229,255,1)');g.addColorStop(.8,'rgba(0,229,255,.4)');g.addColorStop(1,'rgba(0,229,255,0)');ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(R,0);ctx.strokeStyle=g;ctx.lineWidth=2;ctx.stroke();ctx.shadowBlur=20;ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();ctx.restore();
+    rdots.forEach((d,i)=>{let px=d.x/100*W,py=d.y/100*H;let da=Math.atan2(py-cy,px-cx);if(da<0)da+=Math.PI*2;let diff=needleA-da;if(diff<0)diff+=Math.PI*2;let age=glow.get(i)??999;if(diff<.18&&age>30){glow.set(i,0);if(d.el){d.el.classList.add('active');setTimeout(()=>d.el?.classList.remove('active'),800);}}else glow.set(i,age+1);
+    if(age<55){let t=age/55,ga=(1-t)*(1-t)*.9;if(ga<.01)return;let gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}});
+    raf=requestAnimationFrame(draw);};draw();};
+    
+    // ============ AUDIO ============
+    const initA=()=>{if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}};
+    const playS=(t)=>{if(!se||!ac||ac.state==='suspended')return;try{let o=ac.createOscillator(),g=ac.createGain();o.type='sine';if(t==='tick'){o.frequency.setValueAtTime(440,ac.currentTime);g.gain.setValueAtTime(0.05,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.1);}else if(t==='glitch'){o.frequency.setValueAtTime(220,ac.currentTime);g.gain.setValueAtTime(0.1,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.15);}else if(t==='complete'){o.frequency.setValueAtTime(880,ac.currentTime);g.gain.setValueAtTime(0.15,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.3);}o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+0.3);}catch(e){}};
+    const vibrate=(p)=>{if(window.navigator&&window.navigator.vibrate)window.navigator.vibrate(p);};
+    
+    // ============ CHAT FUNCTIONS WITH AUTO CLEAR ============
+    const openC = (name) => {
+        const pl = $('partnerLabel');
+        const ct = $('chatTimer');
+        const cr = $('chatRoom');
+        const cm = $('chatMessages');
+        const radarCont = $('radarCont');
+        const radarChat = $('radarChatContainer');
+        const radarInputWrapper = $('radarChatInputWrapper');
         
-        const responseChannel = supabase.channel(`response:${requestId}`, {
-            config: { broadcast: { ack: true } }
-        });
+        if (pl) pl.textContent = 'STRANGER';
+        if (ct) ct.textContent = '15:00';
+        cp = name;
+        ch = [];
         
-        responseChannel
-            .on('broadcast', { event: 'request_response' }, (payload) => {
-                if (payload.payload.accepted && !accepted) {
-                    console.log('✅ Request diterima oleh:', payload.payload.fromName);
-                    accepted = true;
-                    
-                    clearTimeout(aiFallbackTimer);
-                    clearTimeout(forceStopTimer);
-                    
-                    handleAccept({
-                        type: 'human',
-                        user_id: payload.payload.fromId,
-                        username: payload.payload.fromName
-                    }, requestId);
-                }
-            })
-            .on('broadcast', { event: 'request_taken' }, (payload) => {
-                if (payload.payload.requestId === requestId) {
-                    console.log('⚠️ Request diambil orang lain');
-                    if (!accepted) {
-                        showTooLate();
-                    }
-                }
-            })
-            .subscribe();
-        
-        searchTimeout = setTimeout(() => {
-            if (isSearching && !accepted) {
-                console.log('⏰ Timeout, fallback ke AI');
-                const aiList = gender === 'heart' 
-                    ? AI_PERSONAS.filter(ai => ai.gender === 'heart')
-                    : AI_PERSONAS.filter(ai => ai.gender === 'spade');
-                
-                const randomAI = aiList[Math.floor(Math.random() * aiList.length)];
-                handleAccept({ 
-                    type: 'ai', 
-                    user_id: randomAI.id, 
-                    username: randomAI.username 
-                }, requestId);
-            }
-        }, 15000);
-        
-        function handleAccept(acceptor, reqId) {
-            if (accepted) return;
-            accepted = true;
+        if (USE_RADAR_CHAT && radarChatActive && radarChat) {
+            radarChat.style.display = 'flex';
+            radarChat.innerHTML = '<div class="radar-chat-header">✦ CHAT ✦</div>';
+            if (radarInputWrapper) radarInputWrapper.style.display = 'flex';
+            if (radarCont) radarCont.classList.add('chat-mode');
+            if (cr) cr.classList.remove('on');
             
-            if (scanInterval) {
-                clearInterval(scanInterval);
-                scanInterval = null;
-            }
-            $('radarScanningOverlay').classList.remove('show');
-            isSearching = false;
-            supabase.from('waiting_room').delete().eq('user_id', UID);
-            
-            if (acceptor.type === 'ai') {
-                showEyeThenChat(acceptor.username);
-            } else {
-                const channelName = `chat_${UID}_${acceptor.user_id}_${Date.now()}`;
-                supabase.from('active_chats').insert([{
-                    user1_id: UID,
-                    user2_id: acceptor.user_id,
-                    channel_name: channelName
-                }]);
-                
-                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
-                supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', acceptor.user_id);
-                
-                setupChatChannel(channelName, acceptor.username);
-                
-                const partnerChannel = supabase.channel(`user:${acceptor.user_id}`);
-                partnerChannel.subscribe(() => {
-                    partnerChannel.send({
-                        type: 'broadcast',
-                        event: 'match_confirmed',
-                        payload: { channel: channelName, partner: U, partnerId: UID }
-                    });
-                });
-            }
-        }
-    }
-    
-    // ============ SETUP CHAT CHANNEL ============
-    function setupChatChannel(channelName, partnerName) {
-        console.log('🔧 SETUP CHAT CHANNEL:', { channelName, partnerName });
-        
-        if (chatChannel) {
-            console.log('🗑️ Removing old channel');
-            supabase.removeChannel(chatChannel);
+            setTimeout(() => $('radarChatInput')?.focus(), 300);
+        } else {
+            if (cr) cr.classList.add('on');
+            if (cm) cm.innerHTML = '';
+            if (radarChat) radarChat.style.display = 'none';
+            if (radarInputWrapper) radarInputWrapper.style.display = 'none';
         }
         
-        supabase.from('online_users').update({ status: 'in_chat' }).eq('user_id', UID);
-        
-        chatChannel = supabase.channel(channelName);
-        chatChannel.on('broadcast', { event: 'message' }, (payload) => {
-            console.log('💬 MESSAGE RECEIVED:', payload);
-            addMessage('stranger', payload.payload.text);
-        });
-        
-        chatChannel.subscribe((status) => {
-            console.log('📡 Chat channel status:', status);
-            if (status === 'SUBSCRIBED') {
-                console.log('✅ Chat channel siap!');
-                currentPartner = partnerName;
-                radarChatActive = true;
-            }
-        });
-    }
+        setTimeout(() => sendM('', true), 500);
+    };
     
-    // ============ SEND MESSAGE ============
-    async function sendMessage(text) {
-        if (!chatChannel || !currentPartner) return;
+    // FUNGSI CHAT - TANPA LOGIC HAJUS, AUTO CLEAR VIA CSS
+    const addM = (sender, text) => {
+        let targetContainer;
+        if (USE_RADAR_CHAT && radarChatActive) {
+            targetContainer = $('radarChatContainer');
+        } else {
+            targetContainer = $('chatMessages');
+        }
+        if (!targetContainer) return;
         
-        addMessage('user', text);
-        await chatChannel.send({
-            type: 'broadcast',
-            event: 'message',
-            payload: { text }
-        });
-    }
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.textContent = text;
+        
+        targetContainer.appendChild(msgDiv);
+        
+        // TIDAK ADA LOGIC HAJUS - CSS YANG URUS
+        // TIDAK ADA SCROLL - CSS YANG URUS
+    };
     
-    // ============ AI MESSAGE ============
-    async function sendAIMessage(msg, first) {
-        if (!currentPartner) return;
-        if (!first) addMessage('user', msg);
+    const showT = () => {
+        let targetContainer;
+        if (USE_RADAR_CHAT && radarChatActive) {
+            targetContainer = $('radarChatContainer');
+        } else {
+            targetContainer = $('chatMessages');
+        }
+        if (!targetContainer) return;
         
+        const oldIndicator = document.getElementById('typingIndicator');
+        if (oldIndicator) oldIndicator.remove();
+        
+        const indicator = document.createElement('div');
+        indicator.className = 'typing-indicator';
+        indicator.id = 'typingIndicator';
+        indicator.innerHTML = 'Stranger mengetik <span class="typing-dots"><span></span><span></span><span></span></span>';
+        
+        targetContainer.appendChild(indicator);
+        // CSS YANG URUS AUTO CLEAR
+    };
+    
+    const hideT = () => {
+        const indicator = document.getElementById('typingIndicator');
+        if (indicator) indicator.remove();
+    };
+    
+    // ============ API CALL UNTUK AI ============
+    const sendM = async (msg, first) => {
+        if (!cp) return;
+        if (!first) addM('user', msg);
+        
+        showT();
         isTyping = true;
         
         try {
             const response = await fetch('/api/chat', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
                 body: JSON.stringify({
                     message: msg || 'hai',
-                    characterName: currentPartner,
-                    lastMessages: chatHistory
+                    characterName: cp,
+                    lastMessages: ch
                 })
             });
             
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const data = await response.json();
-            if (msg) chatHistory.push({ role: 'assistant', content: data.reply });
+            
+            if (msg) {
+                ch.push({
+                    role: 'assistant',
+                    content: data.reply
+                });
+            }
+            
+            hideT();
             isTyping = false;
-            addMessage('stranger', data.reply);
+            
+            await typeM('stranger', data.reply, data.typing || {});
             
         } catch (error) {
+            hideT();
             isTyping = false;
-            addMessage('stranger', '😅');
+            addM('stranger', '😅');
         }
-    }
+    };
     
-    // ============ CHAT UI ============
-    function addMessage(sender, text) {
-        const container = radarChatActive ? $('radarChatContainer') : $('chatMessages');
-        if (!container) return;
+    const typeM = async (sender, full, info) => {
+        let targetContainer;
+        if (USE_RADAR_CHAT && radarChatActive) {
+            targetContainer = $('radarChatContainer');
+        } else {
+            targetContainer = $('chatMessages');
+        }
+        if (!targetContainer) return;
         
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
-        container.appendChild(msgDiv);
-        container.scrollTop = container.scrollHeight;
-    }
-    
-    function closeChatUI() {
-        $('radarChatContainer').style.display = 'none';
-        $('radarChatInputWrapper').style.display = 'none';
-        $('radarCont').classList.remove('chat-mode');
-        $('chatRoom').classList.remove('on');
+        targetContainer.appendChild(msgDiv);
         
-        const header = document.querySelector('.radar-chat-header');
-        if (header) header.style.display = 'block';
-    }
-    
-    // ============ START VIBE ============
-    function startVibe(gender) {
-        radarChatActive = true;
-        findPartner(gender);
-    }
-    
-    // ============ SEND WRAPPER ============
-    const sendM = async (msg, first) => {
-        if (!currentPartner) return;
+        const words = full.split(' ');
+        let txt = '';
+        let wi = 0;
+        let ci = 0;
         
-        const isAI = AI_PERSONAS.some(ai => ai.username === currentPartner);
-        
-        if (isAI) {
-            console.log('🤖 AI Mode - partner:', currentPartner);
-            await sendAIMessage(msg, first);
-        } else {
-            console.log('👤 Human Mode - partner:', currentPartner);
-            if (!first) await sendMessage(msg);
-        }
+        return new Promise(resolve => {
+            const typeNext = () => {
+                if (wi >= words.length) {
+                    resolve();
+                    return;
+                }
+                if (ci < words[wi].length) {
+                    txt += words[wi][ci];
+                    msgDiv.textContent = txt + (wi < words.length - 1 ? ' ' : '');
+                    ci++;
+                    setTimeout(typeNext, info?.speed || 80);
+                } else {
+                    wi++;
+                    ci = 0;
+                    if (wi < words.length) {
+                        txt += ' ';
+                        setTimeout(typeNext, info?.wordPause || 150);
+                    } else {
+                        msgDiv.textContent = full;
+                        setTimeout(resolve, 300);
+                    }
+                }
+            };
+            setTimeout(typeNext, info?.initialDelay || 500);
+        });
     };
     
-    // ============ LEAVE CHAT ============
-    async function leaveChat() {
-        if (chatChannel) {
-            await supabase.from('active_chats').delete().eq('channel_name', chatChannel.topic);
-            supabase.removeChannel(chatChannel);
-            chatChannel = null;
-        }
-        
-        await supabase.from('online_users').update({ status: 'online' }).eq('user_id', UID);
-        
-        currentPartner = null;
-        chatHistory = [];
+    const closeChat = () => {
+        const radarCont = $('radarCont');
+        const radarChat = $('radarChatContainer');
+        const radarInputWrapper = $('radarChatInputWrapper');
+        const cr = $('chatRoom');
+        cp = null;
+        ch = [];
         isTyping = false;
         radarChatActive = false;
-        closeChatUI();
-    }
-    
-    // ============ MODAL HANDLERS ============
-    $('chatRequestAccept').onclick = async () => {
-        if (currentRequestId) {
-            const responseChannel = supabase.channel(`response:${currentRequestId}`);
-            responseChannel.subscribe(() => {
-                responseChannel.send({
-                    type: 'broadcast',
-                    event: 'request_response',
-                    payload: { accepted: true, fromId: UID, fromName: U }
-                });
-            });
+        
+        if (radarChat) {
+            radarChat.style.display = 'none';
+            radarChat.innerHTML = '<div class="radar-chat-header">✦ CHAT ✦</div>';
         }
-        $('chatRequestModal').style.display = 'none';
+        if (radarInputWrapper) radarInputWrapper.style.display = 'none';
+        if (radarCont) radarCont.classList.remove('chat-mode');
+        if (cr) cr.classList.remove('on');
     };
     
-    $('chatRequestReject').onclick = () => {
-        $('chatRequestModal').style.display = 'none';
-    };
-    
-    // ============ HANDLER KALAH CEPAT ============
-    function showTooLate() {
-        $('chatRequestModal').style.display = 'none';
-        
-        const tooLateModal = document.getElementById('tooLateModal');
-        if (tooLateModal) {
-            tooLateModal.style.display = 'flex';
-            
-            document.getElementById('tooLateOkBtn').onclick = () => {
-                tooLateModal.style.display = 'none';
-            };
-        }
-    }
-    
-    // ============ CLEANUP ============
-    window.addEventListener('beforeunload', async () => {
-        clearInterval(heartbeatInterval);
-        clearTimeout(searchTimeout);
-        if (scanInterval) clearInterval(scanInterval);
-        await removeFromOnline();
-        await supabase.from('waiting_room').delete().eq('user_id', UID);
-        if (chatChannel) await leaveChat();
-        if (userChannel) supabase.removeChannel(userChannel);
-    });
-    
-    // ============ RADAR ANIMATION ============
-    let dots = [], needleAngle = 0, needleSpin = 0, phaseAngle = Math.random() * Math.PI * 2;
-    let trail = new Float32Array(120), ptr = 0, glowMap = new Map(), raf, rint;
-    
-    function initRadar() {
-        let cv = $('radarCanvas'), ct = $('radarCont');
-        if (!cv || !ct) return;
-        
-        let resize = () => {
-            let r = ct.getBoundingClientRect();
-            if (r.width > 0) { cv.width = r.width; cv.height = r.height; }
-        };
-        resize(); window.addEventListener('resize', resize);
-        spawnDots();
-        
-        if (rint) clearInterval(rint);
-        rint = setInterval(() => {
-            dots.forEach(d => {
-                d.vx = d.vx * .88 + (Math.random() - .5) * .3;
-                d.vy = d.vy * .88 + (Math.random() - .5) * .3;
-                d.x = Math.max(9, Math.min(91, d.x + d.vx));
-                d.y = Math.max(9, Math.min(91, d.y + d.vy));
-                if (d.el) { d.el.style.left = d.x + '%'; d.el.style.top = d.y + '%'; }
-            });
-        }, 100);
-        
-        needleAngle = Math.random() * Math.PI * 2;
-        trail.fill(needleAngle);
-        radarLoop(cv);
-    }
-    
-    function spawnDots() {
-        let c = $('radarDots'); if (!c) return; c.innerHTML = ''; dots = [];
-        for (let i = 0; i < 8; i++) {
-            let a = Math.random() * Math.PI * 2, d = 12 + Math.random() * 70,
-                x = 50 + Math.cos(a) * d / 2, y = 50 + Math.sin(a) * d / 2,
-                dot = document.createElement('div');
-            dot.className = 'radar-dot';
-            dot.style.left = x + '%';
-            dot.style.top = y + '%';
-            c.appendChild(dot);
-            dots.push({ el: dot, x, y, vx: 0, vy: 0, id: i });
-        }
-    }
-    
-    function radarLoop(cv) {
-        let ctx = cv.getContext('2d');
-        
-        function draw() {
-            let w = cv.width, h = cv.height, cx = w / 2, cy = h / 2, R = Math.min(cx, cy) * .88;
-            if (!w || !h) { raf = requestAnimationFrame(draw); return; }
-            
-            phaseAngle += .007;
-            needleSpin += ((60 / 4 * Math.PI * 2) / (60 * 60) * (1 + Math.sin(phaseAngle) * .35) - needleSpin) * .028;
-            needleAngle = (needleAngle + needleSpin) % (Math.PI * 2);
-            trail[ptr] = needleAngle;
-            ptr = (ptr + 1) % 120;
-            
-            ctx.fillStyle = 'rgba(2,10,2,.18)';
-            ctx.fillRect(0, 0, w, h);
-            
-            for (let i = 0; i < 119; i++) {
-                let a = Math.pow(1 - i / 120, 2.2) * .12;
-                if (a < .002) break;
-                let s = needleAngle - (i + 1) * needleSpin, e = needleAngle - i * needleSpin;
-                ctx.save();
-                ctx.translate(cx, cy);
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.arc(0, 0, R, Math.min(s, e), Math.max(s, e));
-                ctx.closePath();
-                ctx.fillStyle = `rgba(0,229,255,${a})`;
-                ctx.fill();
-                ctx.restore();
-            }
-            
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(needleAngle);
-            ctx.shadowColor = 'rgba(0,229,255,.95)';
-            ctx.shadowBlur = 12;
-            let grad = ctx.createLinearGradient(0, 0, R, 0);
-            grad.addColorStop(0, 'rgba(0,229,255,1)');
-            grad.addColorStop(.8, 'rgba(0,229,255,.4)');
-            grad.addColorStop(1, 'rgba(0,229,255,0)');
-            ctx.beginPath();
-            ctx.moveTo(3, 0);
-            ctx.lineTo(R, 0);
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            ctx.shadowBlur = 20;
-            ctx.beginPath();
-            ctx.rect(-4, -4, 8, 8);
-            ctx.fillStyle = '#00e5ff';
-            ctx.fill();
-            ctx.restore();
-            
-            dots.forEach((d, i) => {
-                let px = d.x / 100 * w, py = d.y / 100 * h;
-                let da = Math.atan2(py - cy, px - cx);
-                if (da < 0) da += Math.PI * 2;
-                let diff = needleAngle - da;
-                if (diff < 0) diff += Math.PI * 2;
-                let age = glowMap.get(i) ?? 999;
-                if (diff < .18 && age > 30) {
-                    glowMap.set(i, 0);
-                    if (d.el) {
-                        d.el.classList.add('active');
-                        setTimeout(() => d.el?.classList.remove('active'), 800);
-                    }
-                } else glowMap.set(i, age + 1);
-                
-                if (age < 55) {
-                    let t = age / 55, ga = (1 - t) * (1 - t) * .9;
-                    if (ga < .01) return;
-                    let gr = ctx.createRadialGradient(px, py, 0, px, py, 16 * (1 - t) + 3);
-                    gr.addColorStop(0, `rgba(0,229,255,${ga})`);
-                    gr.addColorStop(1, `rgba(0,229,255,0)`);
-                    ctx.beginPath();
-                    ctx.arc(px, py, 16 * (1 - t) + 3, 0, Math.PI * 2);
-                    ctx.fillStyle = gr;
-                    ctx.fill();
-                }
-            });
-            
-            raf = requestAnimationFrame(draw);
-        }
-        draw();
-    }
-    
-    // ============ SETTINGS ============
-    function initSettings() {
-        let b = $('settingsBtn'), d = $('settingsDropdown');
-        b.onclick = e => { e.stopPropagation(); d.classList.toggle('show'); };
-        document.addEventListener('click', e => {
-            if (!b.contains(e.target) && !d.contains(e.target)) d.classList.remove('show');
-        });
-        $('logoutBtn').onclick = () => {
-            localStorage.removeItem(K.l);
-            toast('👋 Sampai jumpa!');
-            setTimeout(() => window.location.href = 'index.html', 1000);
-        };
-    }
-    
-    // ============ WHISPERER - DIMATIKAN TOTAL ============
-    console.log('⚪ Whisperer: Dimatikan total untuk prioritaskan chat user-to-user');
-    
-    // Sembunyikan semua elemen whisperer
-    const whisperBadge = document.getElementById('whisperBadge');
-    const whisperBtnCount = document.getElementById('whisperBtnCount');
-    
-    if (whisperBadge) whisperBadge.style.display = 'none';
-    if (whisperBtnCount) whisperBtnCount.textContent = '(coming soon)';
-    
-    // Override semua fungsi whisperer
-    window.initWhisperer = () => {
-        console.log('⚪ Whisperer non-aktif');
-        return Promise.resolve();
-    };
-    window.checkInbox = () => Promise.resolve({ ok: true, total: 0 });
-    window.sendWhisper = () => toast('✨ Whisperer coming soon');
-    window.readWhisper = () => toast('✨ Whisperer coming soon');
-    window.showInbox = () => toast('✨ Whisperer coming soon');
-    
-    // Blok interval yang mencurigakan
-    const originalSetInterval = window.setInterval;
-    window.setInterval = function(callback, delay) {
-        const callbackStr = callback.toString();
-        if (callbackStr.includes('whisper') || callbackStr.includes('inbox')) {
-            return 9999;
-        }
-        return originalSetInterval(callback, delay);
-    };
-    
-    // Blok fetch ke endpoint whisper
-    const originalFetch = window.fetch;
-    window.fetch = function(url, options) {
-        if (typeof url === 'string' && url.includes('/api/whisper')) {
-            return Promise.resolve({
-                ok: true,
-                status: 200,
-                json: async () => ({ ok: true, total: 0, messages: [] })
-            });
-        }
-        return originalFetch(url, options);
-    };
-    // ============ END WHISPERER ============
-    
-    // ============ SPILLS ============
-    let entries = [];
-    let aiEntries = [];
-    
-    async function loadSpills() {
-        try {
-            let res = await fetch(`${SUPABASE_URL}/rest/v1/entries?select=*&order=created_at.desc&limit=10`, {
-                headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
-            });
-            let data = await res.json();
-            entries = data.map(e => ({
-                author: e.username || 'anon',
-                mood: e.mood || 'chaotic',
-                content: e.content || '...',
-                reactions: e.reactions || { skull: 0, cry: 0, fire: 0, upside: 0 },
-                created_at: e.created_at
-            }));
-        } catch (e) { entries = []; }
-        
-        let moods = ['surviving', 'thriving', 'chaotic', 'doom'];
-        let contents = {
-            surviving: ['deadline skripsi makin deket 😮‍💨', 'capek banget hari ini 🥲'],
-            thriving: ['alhamdulillah hari ini cuan! 💰', 'sidang kelar nilai A'],
-            chaotic: ['client minta revisi jam 11 malem 🔥', 'hidup lagi kacau balau'],
-            doom: ['motor mogok, dompet tipis 🫠', '6 bulan nganggur']
-        };
-        
-        aiEntries = [];
-        for (let i = 0; i < 6; i++) {
-            let mood = moods[Math.floor(Math.random() * moods.length)];
-            aiEntries.push({
-                author: ['sejuta.badai', 'agak.koplak', 'strawberry.shortcake', 'cinnamon.girl', 'satria.bajahitam', 'move.on'][Math.floor(Math.random() * 6)],
-                mood: mood,
-                content: contents[mood][Math.floor(Math.random() * contents[mood].length)],
-                reactions: {
-                    skull: Math.floor(Math.random() * 30) + 5,
-                    cry: Math.floor(Math.random() * 40) + 10,
-                    fire: Math.floor(Math.random() * 20) + 1,
-                    upside: Math.floor(Math.random() * 15) + 2
-                }
-            });
-        }
-        
-        let all = [...entries, ...aiEntries];
-        all.sort((a, b) => new Date(b.created_at || Date.now()) - new Date(a.created_at || Date.now()));
-        renderSpills(all);
-    }
-    
-    function renderSpills(all) {
-        let c = $('spillsList'), meta = $('feedMeta');
-        if (!all || !all.length) {
-            c.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
-            meta.textContent = '0 spill';
+    // ============ VIBE CHECK ============
+    const startVibe = (gender) => {
+        if (isTyping) {
+            t('Tunggu sampai pesan terkirim');
             return;
         }
-        c.innerHTML = all.map((s, i) => `
-            <div class="spill-card">
-                <div class="spill-header">
-                    <span class="spill-author">@${s.author}</span>
-                    <span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span>
-                </div>
-                <div class="spill-content">${s.content}</div>
-                <div class="spill-reactions">
-                    ${['skull', 'cry', 'fire', 'upside'].map(r => `
-                        <button class="react-btn" onclick="window.reactToSpill(${i},'${r}')">
-                            ${r === 'skull' ? '💀' : r === 'cry' ? '😭' : r === 'fire' ? '🔥' : '🙃'}
-                            <span class="react-count">${s.reactions[r] || 0}</span>
-                        </button>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('');
-        meta.textContent = all.length + ' spill';
-    }
-    
-    window.reactToSpill = (i, t) => {
-        toast(`➕ ${t}`);
-    };
-    
-    // ============ INIT ============
-    window.addEventListener('load', async () => {
-        $('userNameDisplay').textContent = '@' + U;
+        if (!se) t('Klik tombol suara untuk efek audio');
         
-        await updateOnlineStatus('online');
-        heartbeatInterval = setInterval(() => updateOnlineStatus('online'), 30000);
-        
-        // Setup listener untuk user-to-user chat
-        setupRequestListener();
-        
-        initRadar();
-        initSettings();
-        loadSpills();
-        
-        setInterval(updateOnlineCounter, 10000);
-        updateOnlineCounter();
-        
-        $('soundToggle').onclick = () => {
-            let s = !window.soundOn; window.soundOn = s;
-            $('soundToggle').textContent = s ? '🔊' : '🔇';
-        };
-        
-        $('vibeFemaleBtn').onclick = () => startVibe('heart');
-        $('vibeMaleBtn').onclick = () => startVibe('spade');
-        
-        $('radarChatSend').onclick = async () => {
-            if (isTyping) return;
-            let msg = $('radarChatInput').value.trim();
-            if (!msg || !currentPartner) return;
-            $('radarChatInput').value = '';
-            await sendM(msg, false);
-        };
-        $('radarChatInput').onkeypress = e => { if (e.key === 'Enter' && !isTyping) $('radarChatSend').click(); };
-        
-        $('sendButton').onclick = async () => {
-            if (isTyping) return;
-            let msg = $('chatInput').value.trim();
-            if (!msg || !currentPartner) return;
-            $('chatInput').value = '';
-            await sendM(msg, false);
-        };
-        $('chatInput').onkeypress = e => { if (e.key === 'Enter' && !isTyping) $('sendButton').click(); };
-        
-        $('closeChatBtn').onclick = leaveChat;
-        
-        console.log('✅ INISIALISASI SELESAI');
-        console.log('   - Chat user-to-user: AKTIF');
-        console.log('   - Chat AI: AKTIF');
-        console.log('   - Whisperer: NON-AKTIF');
-    });
-    
-    window.forceShowChat = function() {
-        const container = document.getElementById('radarChatContainer');
-        const wrapper = document.getElementById('radarChatInputWrapper');
-        const radarCont = document.getElementById('radarCont');
-        
-        if (container && wrapper && radarCont) {
-            container.style.display = 'flex';
-            wrapper.style.display = 'flex';
-            radarCont.classList.add('chat-mode');
-            console.log('✅ Chat dipaksa tampil');
-            return true;
+        if (USE_RADAR_CHAT && USE_REAL_USER_MATCHING) {
+            radarChatActive = true;
+            startScanningWithBlast(gender, (partnerName) => {
+                openC(partnerName);
+            });
+        } else {
+            radarChatActive = true;
+            const aiName = getRandomAI(gender);
+            openC(aiName);
         }
-        return false;
     };
     
-    window.getChatState = function() {
-        return {
-            currentPartner: currentPartner,
-            radarChatActive: radarChatActive,
-            chatChannel: !!chatChannel,
-            userChannel: !!userChannel
+    // ============ INIT RADAR CHAT INPUT ============
+    const initRadarChatInput = () => {
+        const radarInput = $('radarChatInput');
+        const radarSend = $('radarChatSend');
+        if (!radarInput || !radarSend) return;
+        
+        radarSend.onclick = async () => {
+            if (isTyping) {
+                t('Tunggu sampai pesan terkirim');
+                return;
+            }
+            const msg = radarInput.value.trim();
+            if (!msg || !cp) return;
+            radarInput.value = '';
+            await sendM(msg, false);
+        };
+        
+        radarInput.onkeypress = (e) => {
+            if (e.key === 'Enter' && !isTyping) {
+                radarSend.click();
+            }
         };
     };
+    
+    // ============ INIT CLOSE CHAT ============
+    const initCloseChat = () => {
+        const closeBtn = $('closeChatBtn');
+        if (closeBtn) {
+            closeBtn.onclick = closeChat;
+        }
+        const radarCont = $('radarCont');
+        if (radarCont) {
+            radarCont.addEventListener('click', (e) => {
+                if (radarChatActive && !e.target.closest('.radar-chat-container') && !e.target.closest('.radar-chat-input-wrapper')) {
+                    if (confirm('Tutup chat?')) {
+                        closeChat();
+                    }
+                }
+            });
+        }
+    };
+    
+    // ============ LOAD EVENT ============
+    window.addEventListener('load', async () => {
+        $('userNameDisplay') && ($('userNameDisplay').textContent = '@' + U);
+        updateOnlineCount();
+        connectWebSocket();
+        setTimeout(initR, 100);
+        initS();
+        initW();
+        initNav();
+        initRadarChatInput();
+        initCloseChat();
+        await fetchE();
+        initAI();
+        // startWP(); // COMMENT SEMENTARA
+        
+        const soundBtn = $('soundToggle');
+        if (soundBtn) {
+            soundBtn.onclick = () => {
+                se = !se;
+                soundBtn.textContent = se ? '🔊' : '🔇';
+                soundBtn.classList.toggle('muted', !se);
+                if (se && ac && ac.state === 'suspended') {
+                    ac.resume();
+                }
+            };
+        }
+        
+        $('vibeFemaleBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            startVibe('heart');
+        });
+        $('vibeMaleBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            startVibe('spade');
+        });
+        
+        const send = $('sendButton');
+        const inp = $('chatInput');
+        if (send && inp) {
+            send.onclick = async () => {
+                if (isTyping) {
+                    t('Tunggu sampai pesan terkirim');
+                    return;
+                }
+                const msg = inp.value.trim();
+                if (!msg || !cp) return;
+                inp.value = '';
+                await sendM(msg, false);
+            };
+            inp.onkeypress = (e) => {
+                if (e.key === 'Enter' && !isTyping) send.click();
+            };
+        }
+        
+        document.querySelectorAll('button').forEach(b => 
+            b.addEventListener('touchstart', e => e.preventDefault(), {passive: false})
+        );
+    });
 })();
 </script>
 </body>
