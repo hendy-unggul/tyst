@@ -67,16 +67,15 @@ module.exports = async (req, res) => {
         }
 
         // BID: klik HOT TAKE / SOFT TALK
-        // Cek waiting_room dulu, jika tidak ada → blast invitation
         if(action === 'bid') {
             if(!vibe) return res.status(400).json({ error: 'vibe required' });
             try {
                 const result = await rpc('start_bidding', {
                     p_user_id:    userId,
+                    p_username:   username,
                     p_session_id: sessionId || '',
                     p_vibe:       vibe
                 });
-                // PRIVACY: result tidak mengandung nama/id partner
                 return res.status(200).json(result);
             } catch(e) { return res.status(500).json({ error: e.message }); }
         }
