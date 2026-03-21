@@ -394,6 +394,7 @@ async function pollMatch(){
     try{
         const r=await fetch(`/api/invite?userId=${UID}&role=inviter`);
         const d=await r.json();
+        console.log('pollMatch response:', JSON.stringify(d)); // TAMBAH INI
         if(d.matched){
             clearBidTimers();
             enterChatReal(d.room_id,d.vibe||vibe);
