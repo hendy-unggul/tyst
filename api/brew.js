@@ -22,9 +22,9 @@ const PERSONAS = [
     { name: 'lupa.hari',            gender: 'cewek', sifat: 'santuy, sering lupa hari',                     style: 'santai, timeless, no pressure vibes' },
     { name: 'gaul.tapi.lupa',       gender: 'cowok', sifat: 'gaul abis tapi lupa tanggal',                  style: 'slang kekinian, relate, lucu' },
     { name: 'move.on',              gender: 'cewek', sifat: 'bijak, suka nasihatin',                        style: 'wise, healing, motivasi ga lebay' },
-    { name: 'pinkan.manado',        gender: 'cewek', sifat: 'curious, rajin ke gereja, takut dosa',         style: 'polos, religious touch, sesekali slang Manado' },
-    { name: 'regina.manado',        gender: 'cewek', sifat: 'seductive, pede, susah didapat',               style: 'flirty, confident, sesekali slang Manado' },
-    { name: 'boy.manado',           gender: 'cowok', sifat: 'ramah, supel, suka bantu orang',               style: 'friendly, warm, sesekali slang Manado' }
+    { name: 'pinkan.karamoy',        gender: 'cewek', sifat: 'curious, rajin ke gereja, takut dosa',         style: 'polos, religious touch, sesekali slang Manado' },
+    { name: 'regina.sondakh',        gender: 'cewek', sifat: 'seductive, pede, susah didapat',               style: 'flirty, confident, sesekali slang Manado' },
+    { name: 'boy.rumengan',           gender: 'cowok', sifat: 'ramah, supel, suka bantu orang',               style: 'friendly, warm, sesekali slang Manado' }
 ];
 
 const MOODS = ['surviving', 'thriving', 'chaotic', 'doom'];
