@@ -335,6 +335,7 @@ async function init(){
     startHeartbeat();
     loadCount();
     setInterval(loadCount,15000);
+    startBrewInterval(); // auto brew setiap 7 menit
     // Poll invitation setiap 2 detik
     tPollInv=setInterval(pollInvitation,POLL_INV_MS);
 }
@@ -628,12 +629,27 @@ const BREW_KEY = 'spill_last_brew';
 async function maybeBrewSpill(){
     const last = parseInt(localStorage.getItem(BREW_KEY)||'0');
     const now  = Date.now();
-    if(now - last < BREW_INTERVAL_MS) return; // belum 7 menit
+    if(now - last < BREW_INTERVAL_MS) return false; // belum 7 menit
     localStorage.setItem(BREW_KEY, now.toString());
     try{
         await fetch('/api/brew',{method:'POST',headers:{'Content-Type':'application/json'}});
-        // Tidak perlu baca response — brew.js sudah INSERT langsung ke DB
-    }catch(e){ console.warn('[Brew] trigger failed:', e.message); }
+        return true; // brew berhasil
+    }catch(e){
+        console.warn('[Brew] trigger failed:', e.message);
+        localStorage.setItem(BREW_KEY, '0'); // reset agar bisa retry
+        return false;
+    }
+}
+
+// Auto-brew setiap 7 menit + reload feed setelah brew
+function startBrewInterval(){
+    setInterval(async()=>{
+        localStorage.setItem(BREW_KEY,'0'); // force trigger tiap interval
+        const brewed = await maybeBrewSpill();
+        if(brewed){
+            setTimeout(loadSpills, 3000); // reload feed 3 detik setelah brew
+        }
+    }, BREW_INTERVAL_MS);
 }
 
 async function loadSpills(){
