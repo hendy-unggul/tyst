@@ -394,7 +394,6 @@ async function pollMatch(){
     try{
         const r=await fetch(`/api/invite?userId=${UID}&role=inviter`);
         const d=await r.json();
-        console.log('pollMatch response:', JSON.stringify(d)); // TAMBAH INI
         if(d.matched){
             clearBidTimers();
             enterChatReal(d.room_id,d.vibe||vibe);
@@ -447,8 +446,6 @@ async function acceptInv(){
     const inv=pendingInv; hidePopup();
     try{
         const r=await api('/api/invite',{action:'accept',userId:UID,username:ME,invitationId:inv.id});
-        console.log('Accept response:', JSON.stringify(r)); // TAMBAH INI
-        console.log('room_id value:', r.room_id);           // TAMBAH INI
         if(r.success){
             enterChatReal(r.room_id,r.vibe||inv.vibe);
         }else{
@@ -509,7 +506,6 @@ async function pollMsg(){
 }
 
 async function sendReal(content){
-    console.log('DEBUG sendReal:', {roomId, state, content});
     if(!roomId||!content.trim())return;
     addMsg('user',content);
     try{
