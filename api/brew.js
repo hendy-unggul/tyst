@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
         'strawberry.shortcake', 'chili.padi', 'little.fairy', 'sejuta.badai',
         'satria.bajahitam', 'cinnamon.girl', 'lupa.hari', 'gaul.tapi.lupa',
         // TAMBAHAN PERSONA MANADO
-        'pinkan.nayoan', 'regina.sondakh', 'boy.karamoy'
+        'pinkan.karamoy', 'regina.sondakh', 'boy.rumengan'
       ];
       
       const moods = ['surviving', 'thriving', 'chaotic', 'doom'];
@@ -148,7 +148,7 @@ const manadoDict = {
 // MANADO PERSONAS CHECK
 // ============================================
 function isManadoPersona(author) {
-  const manadoPersonas = ['pinkan.manado', 'regina.manado', 'boy.manado'];
+  const manadoPersonas = ['pinkan.karamoy', 'regina.sondakh', 'boy.rumengan'];
   return manadoPersonas.includes(author);
 }
 
@@ -220,7 +220,7 @@ function addManadoPhrase(text, author) {
 // ============================================
 function addSpecialTraits(text, author) {
   // Pinkan - nuansa gereja (15% chance)
-  if (author === 'pinkan.manado' && Math.random() < 0.15) {
+  if (author === 'pinkan.karamoy' && Math.random() < 0.15) {
     const churchPhrases = [
       ' Allah berkati',
       ' minggu ini ke gereja jo',
@@ -232,7 +232,7 @@ function addSpecialTraits(text, author) {
   }
   
   // Regina - nuansa flirt (15% chance)
-  if (author === 'regina.manado' && Math.random() < 0.15) {
+  if (author === 'regina.sondakh' && Math.random() < 0.15) {
     const flirtPhrases = [
       ' gaga skali ngona',
       ' ngana bikin gue penasaran',
@@ -244,7 +244,7 @@ function addSpecialTraits(text, author) {
   }
   
   // Boy - nuansa ramah (15% chance)
-  if (author === 'boy.manado' && Math.random() < 0.15) {
+  if (author === 'boy.rumengan' && Math.random() < 0.15) {
     const friendlyPhrases = [
       ' torang sama-sama jo',
       ' ngana bae skali',
