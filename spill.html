@@ -446,6 +446,8 @@ async function acceptInv(){
     const inv=pendingInv; hidePopup();
     try{
         const r=await api('/api/invite',{action:'accept',userId:UID,username:ME,invitationId:inv.id});
+        console.log('Accept response:', JSON.stringify(r)); // TAMBAH INI
+        console.log('room_id value:', r.room_id);           // TAMBAH INI
         if(r.success){
             enterChatReal(r.room_id,r.vibe||inv.vibe);
         }else{
