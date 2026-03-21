@@ -329,13 +329,12 @@ let pendingInv=null;
 // ── LIFECYCLE ─────────────────────────────────────────────────
 async function init(){
     $('userNameDisplay').textContent='@'+ME;
-    initRadar(); loadSpills();
+    initRadar(); loadSpills(); startBrewInterval();
     // Register online — username disimpan di server, tidak di-expose ke user lain
     await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
     startHeartbeat();
     loadCount();
     setInterval(loadCount,15000);
-    startBrewInterval(); // auto brew setiap 7 menit
     // Poll invitation setiap 2 detik
     tPollInv=setInterval(pollInvitation,POLL_INV_MS);
 }
@@ -643,8 +642,12 @@ async function maybeBrewSpill(){
 
 // Auto-brew setiap 7 menit + reload feed setelah brew
 function startBrewInterval(){
+    // Langsung coba brew saat pertama buka (jika sudah > 7 menit)
+    maybeBrewSpill().then(brewed=>{
+        if(brewed) setTimeout(loadSpills, 3000);
+    });
+    // Lalu set interval untuk brew berikutnya
     setInterval(async()=>{
-        localStorage.setItem(BREW_KEY,'0'); // force trigger tiap interval
         const brewed = await maybeBrewSpill();
         if(brewed){
             setTimeout(loadSpills, 3000); // reload feed 3 detik setelah brew
