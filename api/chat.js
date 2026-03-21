@@ -1080,7 +1080,7 @@ module.exports = async (req, res) => {
                     ' Tuhan berkati',
                     ' minggu ini ke gereja jo',
                     ' nanti habis ini mau ibadah',
-                    ' Tuhan Yesus baik'
+                    ' Tuhan Allah baik'
                 ];
                 reply += churchPhrases[Math.floor(Math.random() * churchPhrases.length)];
             }
@@ -1269,9 +1269,10 @@ CARA NGOMONG:
         if (persona.id === 'pinkan.manado' && Math.random() < 0.15) {
             const churchPhrases = [
                 ' Tuhan berkati',
+                ' Tuangalla',
                 ' minggu ini ke gereja jo',
                 ' nanti habis ini mau ibadah',
-                ' Tuhan Yesus baik'
+                ' Tuhan Allah baik'
             ];
             reply += churchPhrases[Math.floor(Math.random() * churchPhrases.length)];
         }
