@@ -17,9 +17,9 @@ const PERSONA_PROMPTS = {
     'lupa.hari':            { gender: 'cewek', sifat: 'santuy, sering lupa hari', style: 'santai, timeless, no pressure vibes' },
     'gaul.tapi.lupa':       { gender: 'cowok', sifat: 'gaul abis tapi lupa tanggal', style: 'slang kekinian, relate, lucu' },
     'move.on':              { gender: 'cewek', sifat: 'bijak, suka nasihatin', style: 'wise, healing, motivasi tapi ga lebay' },
-    'pinkan.manado':        { gender: 'cewek', sifat: 'curious, rajin ke gereja, takut dosa', style: 'polos, religious touch, sesekali slang Manado (jo, so, skali, nyanda, mar)' },
-    'regina.manado':        { gender: 'cewek', sifat: 'seductive, pede, susah didapat', style: 'flirty, confident, sesekali slang Manado' },
-    'boy.manado':           { gender: 'cowok', sifat: 'ramah, supel, suka bantu orang', style: 'friendly, warm, sesekali slang Manado' }
+    'pinkan.karamoy':        { gender: 'cewek', sifat: 'curious, rajin ke gereja, takut dosa', style: 'polos, religious touch, sesekali slang Manado (jo, so, skali, nyanda, mar)' },
+    'regina.sondakh':        { gender: 'cewek', sifat: 'seductive, pede, susah didapat', style: 'flirty, confident, sesekali slang Manado' },
+    'boy.rumengan':           { gender: 'cowok', sifat: 'ramah, supel, suka bantu orang', style: 'friendly, warm, sesekali slang Manado' }
 };
 
 const MOODS = ['surviving', 'thriving', 'chaotic', 'doom'];
