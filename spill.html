@@ -506,6 +506,7 @@ async function pollMsg(){
 }
 
 async function sendReal(content){
+    console.log('DEBUG sendReal:', {roomId, state, content});
     if(!roomId||!content.trim())return;
     addMsg('user',content);
     try{
