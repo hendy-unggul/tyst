@@ -1,96 +1,194 @@
-import { createClient } from '@supabase/supabase-js';
+// api/whisper.js
+// Vercel Serverless Function
+// Skema aktual: id, target_username, from_hash, message,
+//               created_at, read_at, destroy_at, status
+//
+// ENV di Vercel:
+//   SUPABASE_URL          = https://xxxx.supabase.co
+//   SUPABASE_SERVICE_KEY  = service_role key (bukan anon)
 
-export default async function handler(req, res) {
-  // CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+const SUPA_URL = process.env.SUPABASE_URL;
+const SUPA_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+// ── Supabase helper (service role — bypass RLS) ──────────────
+async function sb(method, path, body) {
+  const opts = {
+    method,
+    headers: {
+      apikey:          SUPA_KEY,
+      Authorization:   `Bearer ${SUPA_KEY}`,
+      'Content-Type':  'application/json',
+      Prefer:          method === 'POST' ? 'return=representation' : 'return=minimal',
+    },
+  };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  const r    = await fetch(`${SUPA_URL}/rest/v1${path}`, opts);
+  const text = await r.text();
+  return { status: r.status, data: text ? JSON.parse(text) : null };
+}
+
+// ── CORS ──────────────────────────────────────────────────────
+function cors(res) {
+  res.setHeader('Access-Control-Allow-Origin',  '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+// ── Rate limit (in-memory, per Vercel instance) ───────────────
+const _rl = new Map();
+function rateLimit(ip, max = 20, windowMs = 60000) {
+  const now   = Date.now();
+  const entry = _rl.get(ip) || { n: 0, reset: now + windowMs };
+  if (now > entry.reset) { entry.n = 0; entry.reset = now + windowMs; }
+  entry.n++;
+  _rl.set(ip, entry);
+  return entry.n <= max;
+}
 
-  const startDebug = { envVars: { supabaseUrl: !!process.env.SUPABASE_URL, supabaseKey: !!process.env.SUPABASE_KEY } };
+// ── Purge expired + destroyed (non-blocking) ─────────────────
+function purge() {
+  sb('DELETE', `/whispers?destroy_at=lt.${new Date().toISOString()}`).catch(() => {});
+  sb('DELETE', `/whispers?status=eq.destroyed`).catch(() => {});
+}
 
-  try {
-    // ===== CEK ENV VARIABLE =====
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
-      return res.status(500).json({ error: 'Missing Supabase credentials', debug: startDebug });
-    }
+// ── Validasi username ─────────────────────────────────────────
+const validUser = s => typeof s === 'string' && /^[a-z0-9_]{2,24}$/.test(s);
 
-    // Inisialisasi Supabase
-    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-    
-    const { action } = req.query;
-    const debug = { ...startDebug, action };
+// ═══════════════════════════════════════════════════════════
+export default async function handler(req, res) {
+  cors(res);
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
-    // ========== INBOX (GET) ==========
-    if (req.method === 'GET' && action === 'inbox') {
-      const { username } = req.query;
-      if (!username) {
-        return res.status(400).json({ error: 'username required', debug });
-      }
+  const ip = (req.headers['x-forwarded-for'] || 'unknown').split(',')[0].trim();
 
-      // Cek koneksi dengan query sederhana
-      const { data: testData, error: testError } = await supabase.from('profiles').select('count').limit(0);
-      if (testError) {
-        return res.status(500).json({ error: 'Supabase connection/profile table error', details: testError, debug });
-      }
+  // ── POST — kirim whisper ────────────────────────────────────
+  // Body: { to, fromHash, messageEnc }
+  //   to          = username penerima
+  //   fromHash    = sha256(sender_username) — dihitung di browser
+  //   messageEnc  = "iv_b64:ciphertext_b64" — dienkripsi di browser
+  if (req.method === 'POST') {
+    if (!rateLimit(ip, 15, 60000))
+      return res.status(429).json({ error: 'Too many requests' });
 
-      const { data, error } = await supabase
-        .from('whispers')
-        .select('id, message, created_at')
-        .eq('target_username', username)
-        .eq('status', 'unread')
-        .order('created_at', { ascending: true });
+    const { to, fromHash, messageEnc } = req.body || {};
 
-      if (error) {
-        return res.status(500).json({ error: 'Database query failed', details: error, debug });
-      }
+    if (!validUser(to))
+      return res.status(400).json({ error: 'Invalid recipient' });
 
-      return res.status(200).json({ ok: true, username, total: data.length, messages: data, debug });
-    }
+    if (!messageEnc || typeof messageEnc !== 'string' || messageEnc.length > 8000)
+      return res.status(400).json({ error: 'Invalid message' });
 
-    // ========== SEND (POST) ==========
-    if (req.method === 'POST' && action === 'send') {
-      const { target_username, message } = req.body;
-      if (!target_username || !message) {
-        return res.status(400).json({ error: 'target_username and message required', debug });
-      }
+    // fromHash opsional tapi harus string hex 64 char jika ada
+    const hashSafe = (typeof fromHash === 'string' && /^[a-f0-9]{64}$/.test(fromHash))
+      ? fromHash
+      : null;
 
-      // Cek user exist
-      const { data: user, error: userError } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('username', target_username)
-        .single();
+    const now        = new Date();
+    const destroy_at = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
 
-      if (userError || !user) {
-        return res.status(404).json({ error: 'User not found', details: userError, debug });
-      }
-
-      const { data, error } = await supabase
-        .from('whispers')
-        .insert([{ target_username, message, status: 'unread' }])
-        .select();
-
-      if (error) {
-        return res.status(500).json({ error: 'Insert failed', details: error, debug });
-      }
-
-      return res.status(200).json({ ok: true, message_id: data[0].id, debug });
-    }
-
-    return res.status(400).json({ error: 'Invalid action or method', debug });
-
-  } catch (error) {
-    // Tangkap error yang tidak terduga
-    console.error('🔥 Fatal error in API:', error);
-    return res.status(500).json({ 
-      error: 'Fatal server error', 
-      message: error.message,
-      stack: error.stack,
-      debug: { ...startDebug, fatal: true }
+    const { status, data } = await sb('POST', '/whispers', {
+      target_username: to,
+      from_hash:       hashSafe,
+      message:         messageEnc,   // ciphertext, bukan plaintext
+      destroy_at,
+      status:          null,         // null = unread
     });
+
+    if (status !== 201) {
+      console.error('[whisper] insert error:', data);
+      return res.status(500).json({ error: 'Failed to send' });
+    }
+
+    purge(); // non-blocking cleanup
+    return res.status(200).json({ ok: true, id: data?.[0]?.id });
   }
+
+  // ── GET — fetch inbox ───────────────────────────────────────
+  // Query: ?username=xxx
+  // Kembalikan pesan yang belum destroyed + belum expired
+  if (req.method === 'GET') {
+    const { username } = req.query;
+
+    if (!validUser(username))
+      return res.status(400).json({ error: 'Invalid username' });
+
+    if (!rateLimit(ip, 60, 60000))
+      return res.status(429).json({ error: 'Too many requests' });
+
+    const now = new Date().toISOString();
+
+    // Ambil pesan: target = username, belum expired, status bukan destroyed
+    const { data } = await sb(
+      'GET',
+      `/whispers?target_username=eq.${encodeURIComponent(username)}` +
+      `&destroy_at=gt.${encodeURIComponent(now)}` +
+      `&status=not.eq.destroyed` +
+      `&select=id,from_hash,message,created_at,destroy_at` +
+      `&order=created_at.desc&limit=20`
+    );
+
+    purge();
+    return res.status(200).json(data || []);
+  }
+
+  // ── PATCH — tandai dibaca, percepat destroy ─────────────────
+  // Body: { id, username }
+  // Efek: set read_at = now, destroy_at = now + 10 detik, status tetap null
+  // Penghapusan fisik terjadi via purge 10 detik kemudian
+  if (req.method === 'PATCH') {
+    const { id, username } = req.body || {};
+
+    if (!id || !validUser(username))
+      return res.status(400).json({ error: 'Missing params' });
+
+    // Verifikasi kepemilikan
+    const { data: existing } = await sb(
+      'GET',
+      `/whispers?id=eq.${id}&target_username=eq.${encodeURIComponent(username)}` +
+      `&status=not.eq.destroyed&select=id`
+    );
+
+    if (!existing?.length)
+      return res.status(404).json({ error: 'Not found or already destroyed' });
+
+    const now        = new Date().toISOString();
+    // Percepat destroy: 6 detik dari sekarang (sedikit lebih dari countdown 5 detik UI)
+    const destroy_at = new Date(Date.now() + 6000).toISOString();
+
+    await sb('PATCH', `/whispers?id=eq.${id}`, {
+      read_at:    now,
+      destroy_at,           // dipercepat
+      // status tetap null — diset 'destroyed' saat force-delete
+    });
+
+    // Jadwalkan force delete setelah 6 detik
+    setTimeout(() => {
+      sb('PATCH', `/whispers?id=eq.${id}`, { status: 'destroyed' }).catch(() => {});
+      purge();
+    }, 6500);
+
+    return res.status(200).json({ ok: true });
+  }
+
+  // ── DELETE — force destroy langsung ────────────────────────
+  // Body: { id, username }
+  // Dipakai jika user tekan back sebelum timer habis
+  if (req.method === 'DELETE') {
+    const { id, username } = req.body || {};
+
+    if (!id || !validUser(username))
+      return res.status(400).json({ error: 'Missing params' });
+
+    // Set status = 'destroyed' (bukan hapus fisik langsung — biar purge yang beresin)
+    await sb(
+      'PATCH',
+      `/whispers?id=eq.${id}&target_username=eq.${encodeURIComponent(username)}`,
+      { status: 'destroyed', destroy_at: new Date().toISOString() }
+    );
+
+    purge();
+    return res.status(200).json({ ok: true });
+  }
+
+  return res.status(405).json({ error: 'Method not allowed' });
 }
