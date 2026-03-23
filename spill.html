@@ -639,7 +639,7 @@ window.addEventListener('load',async()=>{
         const to=(toEl.value||'').trim().replace('@','').toLowerCase();
         const msg=(msgEl.value||'').trim();
         if(!to||!msg){toast('Isi semua field');return;}
-        if(!/^[a-z0-9_]{2,24}$/.test(to)){toast('Username tidak valid');return;}
+        if(!/^[a-z0-9_.]{2,24}$/.test(to)){toast('Username tidak valid');return;}
         const btn=$('whisperSend'),orig=btn.textContent;
         btn.textContent='ENCRYPTING...';btn.disabled=true;
         try{
