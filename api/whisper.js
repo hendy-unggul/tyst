@@ -52,7 +52,8 @@ function purge() {
 }
 
 // ── Validasi username ─────────────────────────────────────────
-const validUser = s => typeof s === 'string' && /^[a-z0-9_]{2,24}$/.test(s);
+// Izinkan titik (.) karena username di profiles pakai format: nama.nama
+const validUser = s => typeof s === 'string' && /^[a-z0-9_.]{2,24}$/.test(s);
 
 // ═══════════════════════════════════════════════════════════
 export default async function handler(req, res) {
