@@ -14,8 +14,6 @@
         }
         body{background:var(--bg);color:var(--tx);font-family:var(--font-body);height:100vh;display:flex;flex-direction:column}
         .app{max-width:500px;margin:0 auto;width:100%;height:100vh;display:flex;flex-direction:column;background:var(--bg);border-left:2px solid var(--bd);border-right:2px solid var(--bd);position:relative;overflow:hidden}
-
-        /* HEADER */
         .header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:2px solid var(--bd);background:var(--sf);position:relative;z-index:10}
         .logo{font-family:var(--font-display);font-size:34px}
         .logo .x{color:var(--ap);display:inline-block;animation:spin 4s infinite}
@@ -26,10 +24,7 @@
         .settings-dropdown{position:absolute;top:60px;right:18px;background:var(--sf);border:2px solid var(--bd);box-shadow:6px 6px 0 #000;z-index:200;min-width:180px;display:none}
         .settings-dropdown.show{display:block}
         .dropdown-item{padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--bd)}
-
         .scroll{flex:1;overflow-y:auto;padding-bottom:70px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
-
-        /* RADAR */
         .radar-sect{background:var(--sf);border-bottom:2px solid var(--bd)}
         .radar-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
         .radar-label{font-family:var(--font-mono);font-size:10px;color:var(--as)}
@@ -46,8 +41,6 @@
         .radar-dots{position:absolute;inset:0;z-index:5}
         .radar-dot{position:absolute;width:6px;height:6px;transform:translate(-50%,-50%) rotate(45deg);background:var(--as);opacity:.3}
         .radar-dot.active{opacity:1;transform:translate(-50%,-50%) rotate(45deg) scale(2.5)}
-
-        /* CHAT */
         .radar-chat-container{position:absolute;inset:0;background:rgba(0,0,0,0.97);z-index:100;display:none;flex-direction:column;justify-content:flex-end;padding:48px 12px 78px;overflow-y:auto;gap:4px}
         .radar-chat-container.show{display:flex}
         .message{max-width:85%;padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.45;word-wrap:break-word;margin-bottom:2px;flex-shrink:0}
@@ -60,22 +53,16 @@
         .typing-bubble span:nth-child(2){animation-delay:.2s}
         .typing-bubble span:nth-child(3){animation-delay:.4s}
         @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
-
-        /* CHAT HEADER */
         .radar-chat-header{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,0.97);border-bottom:1px solid var(--bd2);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;z-index:102}
         .chat-vibe-label{font-family:var(--font-mono);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700}
         .chat-vibe-label.hot_take{background:var(--ap);color:#fff}
         .chat-vibe-label.soft_talk{background:var(--as);color:#000}
         .chat-stranger-label{font-family:var(--font-mono);font-size:13px;color:var(--tx);font-weight:bold}
         .radar-chat-close{background:0 0;border:1px solid var(--bd2);color:var(--txs);padding:4px 10px;cursor:pointer;font-size:12px;border-radius:4px}
-
-        /* CHAT INPUT */
         .radar-chat-input-wrapper{position:absolute;bottom:8px;left:8px;right:8px;display:none;gap:6px;padding:6px;background:rgba(20,20,20,0.97);border:2px solid var(--bd2);border-radius:30px;z-index:102}
         .radar-chat-input-wrapper.show{display:flex}
         .radar-chat-input{flex:1;padding:10px 16px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);border-radius:30px;font-size:14px;outline:none}
         .radar-chat-send{width:44px;height:44px;background:var(--ap);border:2px solid #000;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0}
-
-        /* SCANNING */
         .radar-scanning-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.93);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;color:var(--as);font-family:var(--font-mono);gap:0}
         .radar-scanning-overlay.show{display:flex}
         .scan-vibe{font-size:11px;font-weight:700;letter-spacing:2px;padding:4px 14px;border-radius:20px;margin-bottom:14px}
@@ -91,8 +78,6 @@
         .scan-dots span:nth-child(2){animation-delay:.2s}
         .scan-dots span:nth-child(3){animation-delay:.4s}
         .scan-cancel{margin-top:14px;background:0 0;border:1px solid var(--bd2);color:var(--txs);padding:8px 22px;cursor:pointer;font-family:var(--font-mono);font-size:11px;border-radius:4px}
-
-        /* INVITATION POPUP */
         .invite-popup{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
         .invite-popup.show{display:flex}
         .invite-box{background:var(--sf);border:3px solid var(--as);padding:30px 24px;max-width:300px;width:100%;box-shadow:10px 10px 0 #000;text-align:center}
@@ -105,8 +90,6 @@
         .invite-btn{flex:1;padding:14px 8px;border:2px solid #000;font-size:13px;font-weight:bold;cursor:pointer;letter-spacing:1px;font-family:var(--font-mono)}
         .invite-btn.accept{background:var(--as);color:#000}
         .invite-btn.decline{background:0 0;border-color:var(--bd2);color:var(--txs)}
-
-        /* CTA */
         .radar-ctas{padding:16px 18px 18px;display:flex;flex-direction:column;gap:10px}
         .gender-row{display:flex;gap:10px}
         .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:5px}
@@ -115,9 +98,8 @@
         .btn-hot{background:linear-gradient(145deg,var(--ap),#ff6b8b);color:#fff}
         .btn-soft{background:linear-gradient(145deg,var(--as),#4d7aff);color:#000}
         .gender-icon{font-size:34px}
-        .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;color:var(--txs)}
-
-        /* SPILLS */
+        .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--txs)}
+        .btn-whisper-badge{background:var(--spill);color:#fff;font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:10px;display:none}
         .spills-sect{padding:18px}
         .sect-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
         .spill-card{background:var(--sf);border:2px solid var(--bd2);margin-bottom:20px;padding:16px;box-shadow:4px 4px 0 #000}
@@ -133,8 +115,6 @@
         .react-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:var(--bg);border:2px solid var(--bd2);color:var(--txs);cursor:pointer;font-family:var(--font-mono);font-size:14px}
         .react-count{font-size:11px;font-weight:700}
         .empty-state{text-align:center;padding:40px;color:var(--txs);font-family:var(--font-mono);font-size:14px;border:2px dashed var(--bd2)}
-
-        /* NAV */
         .bnav{background:#050505;border-top:2px solid var(--bd);padding:8px 16px 12px;width:100%;max-width:500px;z-index:50}
         .bnav-c{display:flex;justify-content:space-around;align-items:flex-end;gap:4px}
         .ni{font-family:var(--font-mono);text-decoration:none;display:flex;flex-direction:column;align-items:center;padding:8px 0 4px;flex:1;color:var(--txs);gap:4px}
@@ -146,18 +126,55 @@
         .ni[href="cocomeo.html"]{color:var(--cocomeo)}
         .ni.act{color:var(--tx);transform:translateY(-4px)}
         .ni.act .nico{transform:scale(1.2)}
-
-        /* MISC */
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none;font-size:13px;white-space:nowrap}
         .toast.show{display:block}
+        /* WHISPER COMPOSE */
         .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center}
         .whisper-overlay.show{display:flex}
-        .whisper-box{background:var(--sf);border:3px solid var(--as);padding:25px;text-align:center;box-shadow:12px 12px 0 #000;max-width:350px;width:90%}
-        .whisper-input{width:100%;padding:15px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);margin:15px 0;font-size:14px}
+        .whisper-box{background:var(--sf);border:2px solid var(--as);padding:24px;box-shadow:8px 8px 0 #000;max-width:350px;width:90%}
+        .whisper-box-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px;margin-bottom:14px}
+        .whisper-input{width:100%;padding:13px;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);margin-bottom:10px;font-size:13px;font-family:var(--font-mono);resize:none;outline:none}
+        .whisper-input:focus{border-color:var(--as)}
+        .whisper-input::placeholder{color:var(--bd2)}
+        .whisper-ttl{font-family:var(--font-mono);font-size:9px;color:var(--txs);text-align:right;margin:-6px 0 12px;letter-spacing:.05em}
         .whisper-actions{display:flex;gap:10px}
-        .whisper-btn{flex:1;padding:12px;border:2px solid #000;cursor:pointer;font-size:14px}
-        .whisper-btn.send{background:var(--as);color:#000}
-        .whisper-btn.cancel{background:0 0;color:var(--txs)}
+        .whisper-btn{flex:1;padding:12px;border:2px solid #000;cursor:pointer;font-size:13px;font-family:var(--font-mono)}
+        .whisper-btn.send{background:var(--as);color:#000;font-weight:700}
+        .whisper-btn.cancel{background:0 0;border-color:var(--bd2);color:var(--txs)}
+        /* WHISPER INBOX (dalam radar) */
+        .w-inbox{position:absolute;inset:0;z-index:110;background:rgba(0,0,0,.97);display:none;flex-direction:column}
+        .w-inbox.show{display:flex}
+        .w-inbox-hdr{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,.98);border-bottom:1px solid var(--bd2);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;z-index:112}
+        .w-inbox-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px}
+        .w-inbox-close{background:0 0;border:1px solid var(--bd2);color:var(--txs);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;font-family:var(--font-mono)}
+        .w-list{flex:1;overflow-y:auto;padding:46px 0 6px;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
+        .w-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--txs);font-family:var(--font-mono);font-size:11px;letter-spacing:1px}
+        .w-empty-g{font-size:26px;opacity:.25}
+        .w-row{border-bottom:1px solid var(--bd);padding:11px 14px;cursor:pointer;transition:background .1s;position:relative}
+        .w-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--as);opacity:0;transition:opacity .15s}
+        .w-row:hover{background:rgba(0,229,255,.03)}
+        .w-row:hover::before{opacity:1}
+        .w-row-meta{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
+        .w-row-from{font-family:var(--font-mono);font-size:11px;color:var(--as)}
+        .w-row-ttl{font-family:var(--font-mono);font-size:10px;color:var(--spill)}
+        .w-row-prev{font-size:11px;color:var(--txs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        /* WHISPER READ (dalam radar) */
+        .w-read{position:absolute;inset:0;z-index:120;background:rgba(0,0,0,.98);display:none;flex-direction:column}
+        .w-read.show{display:flex}
+        .w-read-hdr{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,.98);border-bottom:1px solid var(--bd2);padding:10px 14px;display:flex;align-items:center;gap:10px;z-index:122}
+        .w-back{background:0 0;border:1px solid var(--bd2);color:var(--txs);padding:3px 8px;cursor:pointer;font-size:11px;border-radius:3px;font-family:var(--font-mono)}
+        .w-read-from{font-family:var(--font-mono);font-size:11px;color:var(--as);flex:1}
+        .w-read-count{font-size:22px;font-weight:bold;color:var(--spill);font-family:var(--font-display);line-height:1}
+        .w-read-body{flex:1;padding:54px 16px 16px;font-size:14px;line-height:1.75;color:#fff;overflow-y:auto}
+        .w-read-foot{border-top:1px solid var(--bd);padding:9px 14px;display:flex;justify-content:space-between;flex-shrink:0}
+        .w-read-foot span{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--txs);text-transform:uppercase}
+        @keyframes w-burn{0%{opacity:1;transform:translateY(0)}50%{opacity:.5;transform:translateY(-10px);filter:brightness(1.8)}100%{opacity:0;transform:translateY(-30px);filter:brightness(3)}}
+        .w-burning{animation:w-burn .7s ease-in forwards}
+        /* WHISPER TRIGGER */
+        .w-trigger{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.75);border:1px solid var(--bd2);color:var(--as);font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 10px;cursor:pointer;border-radius:3px;z-index:20;display:flex;align-items:center;gap:5px;transition:border-color .15s}
+        .w-trigger:hover{border-color:var(--as)}
+        .w-dot{width:6px;height:6px;border-radius:50%;background:var(--spill);display:none;flex-shrink:0}
+        .w-dot.show{display:block}
     </style>
 </head>
 <body>
@@ -188,7 +205,6 @@
                         <canvas class="radar-canvas" id="radarCanvas"></canvas>
                         <div class="radar-dots" id="radarDots"></div>
 
-                        <!-- SCANNING OVERLAY -->
                         <div class="radar-scanning-overlay" id="scanOverlay">
                             <div class="scan-vibe" id="scanVibeBadge">HOT TAKE</div>
                             <div class="scan-title">MENCARI STRANGER</div>
@@ -199,7 +215,6 @@
                             <button class="scan-cancel" id="scanCancel">BATAL</button>
                         </div>
 
-                        <!-- CHAT -->
                         <div class="radar-chat-container" id="radarChat">
                             <div class="radar-chat-header">
                                 <div style="display:flex;align-items:center;gap:10px">
@@ -213,10 +228,41 @@
                             </div>
                         </div>
                         <div class="radar-chat-input-wrapper" id="chatInputWrap">
-                            <input type="text" class="radar-chat-input" id="chatInput"
-                                   placeholder="Ketik pesan..." maxlength="500" autocomplete="off">
+                            <input type="text" class="radar-chat-input" id="chatInput" placeholder="Ketik pesan..." maxlength="500" autocomplete="off">
                             <button class="radar-chat-send" id="chatSend">➤</button>
                         </div>
+
+                        <!-- WHISPER TRIGGER BUTTON -->
+                        <button class="w-trigger" id="wTrigger">
+                            ✦ WHISPER
+                            <span class="w-dot" id="wDot"></span>
+                        </button>
+
+                        <!-- WHISPER INBOX LAYER -->
+                        <div class="w-inbox" id="wInbox">
+                            <div class="w-inbox-hdr">
+                                <span class="w-inbox-title">✦ WHISPER INBOX</span>
+                                <button class="w-inbox-close" id="wInboxClose">✕</button>
+                            </div>
+                            <div class="w-list" id="wList">
+                                <div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>
+                            </div>
+                        </div>
+
+                        <!-- WHISPER READ LAYER -->
+                        <div class="w-read" id="wRead">
+                            <div class="w-read-hdr">
+                                <button class="w-back" id="wBack">←</button>
+                                <span class="w-read-from" id="wReadFrom">anonymous</span>
+                                <span class="w-read-count" id="wReadCount">5</span>
+                            </div>
+                            <div class="w-read-body" id="wReadBody"></div>
+                            <div class="w-read-foot">
+                                <span>pesan ini akan musnah</span>
+                                <span>no record kept</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -230,7 +276,10 @@
                         <span class="gender-icon">💬</span><span>SOFT TALK</span>
                     </button>
                 </div>
-                <button class="btn-whisper" id="whisperBtn">✦ WHISPERER <span>NEW</span></button>
+                <button class="btn-whisper" id="whisperBtn">
+                    <span>✦ WHISPERER</span>
+                    <span class="btn-whisper-badge" id="whisperBadge">● BARU</span>
+                </button>
             </div>
         </div>
 
@@ -253,7 +302,6 @@
     </nav>
 </div>
 
-<!-- INVITATION POPUP — hanya tampil vibe, tanpa nama siapapun -->
 <div class="invite-popup" id="invitePopup">
     <div class="invite-box">
         <div class="invite-vibe-badge" id="inviteVibeBadge">🔥 HOT TAKE</div>
@@ -266,504 +314,347 @@
     </div>
 </div>
 
-<!-- WHISPER -->
+<!-- WHISPER COMPOSE OVERLAY -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-box">
-        <div style="font-family:var(--font-mono);margin-bottom:10px">✦ WHISPERER</div>
-        <input type="text" class="whisper-input" id="whisperTarget" placeholder="@username">
-        <textarea class="whisper-input" id="whisperMessage" placeholder="Tulis pesan rahasia..." rows="3"></textarea>
+        <div class="whisper-box-title">✦ WHISPERER</div>
+        <input type="text" class="whisper-input" id="whisperTarget" placeholder="@username penerima" autocomplete="off" autocorrect="off" autocapitalize="off">
+        <textarea class="whisper-input" id="whisperMessage" placeholder="Tulis pesan rahasia..." rows="4" maxlength="500"></textarea>
+        <div class="whisper-ttl">⏳ musnah 5 detik setelah dibaca · max 24 jam</div>
         <div class="whisper-actions">
             <button class="whisper-btn cancel" id="whisperCancel">BATAL</button>
             <button class="whisper-btn send" id="whisperSend">KIRIM</button>
         </div>
     </div>
 </div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 (function(){
 'use strict';
 
-// ── CONFIG ────────────────────────────────────────────────────
-const SUPA_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
-const BID_TIMEOUT_MS  = 15000;
-const HEARTBEAT_MS    = 10000;
-const POLL_MATCH_MS   = 2000;
-const POLL_INV_MS     = 2000;
-const POLL_MSG_MS     = 1500;
+const SUPA_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=2000,POLL_MSG_MS=1500,POLL_WH_MS=10000;
+const AI={hot_take:['agak.koplak','chili.padi','sejuta.badai','satria.bajahitam'],soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']};
 
-// AI persona: cowok untuk hot_take, cewek untuk soft_talk
-// Nama TIDAK PERNAH ditampilkan ke UI
-const AI = {
-    hot_take:  ['agak.koplak','chili.padi','sejuta.badai','satria.bajahitam'],
-    soft_talk: ['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']
-};
-
-// ── AUTH ──────────────────────────────────────────────────────
 const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
 if(localStorage.getItem(K.l)!=='true'){window.location.href='index.html';return;}
-const ME   = localStorage.getItem(K.u);
-const UID  = localStorage.getItem(K.i);
-const SID  = 'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+const ME=localStorage.getItem(K.u);
+const UID=localStorage.getItem(K.i);
+const SID='sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
 
-// ── UTILS ─────────────────────────────────────────────────────
 const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const toast=(msg,dur=3000)=>{const o=$('toast');if(!o)return;o.textContent=msg;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),dur);};
-const api=async(path,body)=>{
-    const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-    return r.json();
-};
-const sbGet=async path=>{
-    const r=await fetch(`${SUPA_URL}/rest/v1${path}`,{headers:{apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`}});
-    const t=await r.text(); return t?JSON.parse(t):null;
-};
+const api=async(path,body)=>{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json();};
+const sbGet=async path=>{const r=await fetch(`${SUPA_URL}/rest/v1${path}`,{headers:{apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`}});const t=await r.text();return t?JSON.parse(t):null;};
 
-// ── STATE ─────────────────────────────────────────────────────
 const S={IDLE:'idle',BIDDING:'bidding',CHAT_REAL:'chat_real',CHAT_AI:'chat_ai'};
-let state=S.IDLE, vibe=null, roomId=null, aiChar=null;
-let chatHist=[], lastMsgTs=null;
+let state=S.IDLE,vibe=null,roomId=null,aiChar=null;
+let chatHist=[],lastMsgTs=null;
 let tBid=null,tHeart=null,tPollMatch=null,tPollMsg=null,tPollInv=null,tScan=null,tInvPop=null;
 let pendingInv=null;
 
-// ── LIFECYCLE ─────────────────────────────────────────────────
-async function init(){
-    $('userNameDisplay').textContent='@'+ME;
-    initRadar(); loadSpills(); startBrewInterval();
-    // Register online — username disimpan di server, tidak di-expose ke user lain
-    await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
-    startHeartbeat();
-    loadCount();
-    setInterval(loadCount,15000);
-    // Poll invitation setiap 2 detik
-    tPollInv=setInterval(pollInvitation,POLL_INV_MS);
-}
+// ════════════════════════════════════════
+//  WHISPER MODULE
+// ════════════════════════════════════════
+const WH=(()=>{
+    const toB64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+    const fromB64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
 
-function startHeartbeat(){
-    if(tHeart)clearInterval(tHeart);
-    tHeart=setInterval(()=>api('/api/invite',{action:'heartbeat',userId:UID,username:ME}),HEARTBEAT_MS);
-}
-
-// ── BID (klik HOT TAKE / SOFT TALK) ──────────────────────────
-async function startBid(v){
-    if(state!==S.IDLE)return;
-    state=S.BIDDING; vibe=v;
-    $('btnHot').disabled=true; $('btnSoft').disabled=true;
-    showScan(true,v);
-    startCountdown(BID_TIMEOUT_MS/1000);
-
-    try{
-        const r=await api('/api/invite',{action:'bid',userId:UID,username:ME,sessionId:SID,vibe:v});
-
-        if(r.action==='matched'){
-            // Langsung match dari waiting_room (concurrent bidding)
-            clearBidTimers();
-            enterChatReal(r.room_id,v);
-            return;
-        }
-        if(r.action==='already_waiting'){
-            toast('Sedang dalam antrian...');
-            enterIdle(); return;
-        }
-        if(r.action==='waiting'){
-            const n=r.invites_sent||0;
-            $('scanSub').textContent = n>0
-                ? `Invitation terkirim ke ${n} stranger...`
-                : 'Tidak ada stranger online, menyiapkan AI...';
-            if(n===0){
-                // Tidak ada user online sama sekali → langsung AI
-                setTimeout(()=>fallbackAI(),1500);
-                return;
-            }
-        }
-    }catch(e){
-        console.warn('Bid error:',e);
-        setTimeout(()=>fallbackAI(),1500);
-        return;
+    async function sha256hex(str){
+        const buf=new TextEncoder().encode(str);
+        const hash=await crypto.subtle.digest('SHA-256',buf);
+        return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
     }
 
-    // Poll apakah ada yang accept
+    async function deriveKey(username){
+        const raw=new TextEncoder().encode(username+':whisper_key_v2');
+        const base=await crypto.subtle.importKey('raw',raw,'PBKDF2',false,['deriveKey']);
+        return crypto.subtle.deriveKey(
+            {name:'PBKDF2',salt:new TextEncoder().encode('jejak_whisper_v2'),iterations:100000,hash:'SHA-256'},
+            base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']
+        );
+    }
+
+    async function encrypt(plain,key){
+        const iv=crypto.getRandomValues(new Uint8Array(12));
+        const enc=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain));
+        return toB64(iv)+':'+toB64(enc);
+    }
+
+    async function decrypt(enc,key){
+        try{
+            const[ivB64,ctB64]=enc.split(':');
+            const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},key,fromB64(ctB64));
+            return new TextDecoder().decode(dec);
+        }catch{return '[tidak bisa didekripsi]';}
+    }
+
+    let msgs=[],readId=null,dTimer=null,pollTimer=null;
+
+    function setDot(show){
+        const d=$('wDot'),b=$('whisperBadge');
+        if(d)d.classList.toggle('show',show);
+        if(b)b.style.display=show?'':'none';
+    }
+
+    async function fetchInbox(){
+        try{
+            const r=await fetch('/api/whisper?username='+encodeURIComponent(ME));
+            if(!r.ok)return;
+            const raw=await r.json();
+            if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}
+            const key=await deriveKey(ME);
+            const now=Date.now();
+            msgs=await Promise.all(raw.map(async m=>{
+                const exp=new Date(m.destroy_at).getTime();
+                const rem=exp-now;
+                const h=Math.floor(rem/3600000);
+                const mn=Math.floor((rem%3600000)/60000);
+                const body=await decrypt(m.message,key);
+                return{id:m.id,from:m.from_hash?'~'+m.from_hash.slice(0,8):'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
+            }));
+            renderList();
+            setDot(msgs.length>0);
+        }catch(e){console.warn('[WH]',e);}
+    }
+
+    function renderList(){
+        const el=$('wList');if(!el)return;
+        if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}
+        el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');
+    }
+
+    async function openMsg(id){
+        const m=msgs.find(x=>x.id===id);if(!m)return;
+        readId=id;
+        $('wReadFrom').textContent='from: '+m.from;
+        $('wReadBody').textContent=m.body;
+        $('wReadCount').textContent='5';
+        $('wReadCount').style.color='var(--spill)';
+        $('wRead').classList.add('show');
+        fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});
+        startDestruct(id);
+    }
+
+    function startDestruct(id){
+        clearInterval(dTimer);let n=5;
+        dTimer=setInterval(()=>{
+            n--;
+            const el=$('wReadCount');if(!el){clearInterval(dTimer);return;}
+            el.textContent=n;
+            if(n<=2)el.style.color='#ff3b6f';
+            if(n<=0){clearInterval(dTimer);burnMsg(id);}
+        },1000);
+    }
+
+    function burnMsg(id){
+        const body=$('wReadBody');
+        if(body)body.classList.add('w-burning');
+        msgs=msgs.filter(m=>m.id!==id);
+        fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});
+        setTimeout(()=>{
+            $('wRead').classList.remove('show');
+            if(body){body.classList.remove('w-burning');body.textContent='';}
+            $('wReadCount').style.color='var(--spill)';
+            $('wInbox').classList.add('show');
+            renderList();setDot(msgs.length>0);
+        },750);
+    }
+
+    function closeRead(){
+        clearInterval(dTimer);
+        if(readId){if(msgs.find(m=>m.id===readId))burnMsg(readId);readId=null;}
+        $('wRead').classList.remove('show');
+    }
+
+    async function sendMsg(toUsername,plaintext){
+        const key=await deriveKey(toUsername);
+        const messageEnc=await encrypt(plaintext.trim(),key);
+        const fromHash=await sha256hex(ME+':whisper_sender_v2');
+        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,fromHash,messageEnc})});
+        return r.ok;
+    }
+
+    function startPolling(){fetchInbox();clearInterval(pollTimer);pollTimer=setInterval(fetchInbox,POLL_WH_MS);}
+
+    return{open:openMsg,closeRead,sendMsg,startPolling,fetchInbox};
+})();
+
+window.WH=WH;
+
+// ════════════════════════════════════════
+//  APP CORE
+// ════════════════════════════════════════
+async function init(){
+    $('userNameDisplay').textContent='@'+ME;
+    initRadar();loadSpills();startBrewInterval();
+    await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
+    startHeartbeat();loadCount();
+    setInterval(loadCount,15000);
+    tPollInv=setInterval(pollInvitation,POLL_INV_MS);
+    WH.startPolling();
+}
+
+function startHeartbeat(){if(tHeart)clearInterval(tHeart);tHeart=setInterval(()=>api('/api/invite',{action:'heartbeat',userId:UID,username:ME}),HEARTBEAT_MS);}
+
+async function startBid(v){
+    if(state!==S.IDLE)return;
+    state=S.BIDDING;vibe=v;
+    $('btnHot').disabled=true;$('btnSoft').disabled=true;
+    showScan(true,v);startCountdown(BID_TIMEOUT_MS/1000);
+    try{
+        const r=await api('/api/invite',{action:'bid',userId:UID,username:ME,sessionId:SID,vibe:v});
+        if(r.action==='matched'){clearBidTimers();enterChatReal(r.room_id,v);return;}
+        if(r.action==='already_waiting'){toast('Sedang dalam antrian...');enterIdle();return;}
+        if(r.action==='waiting'){
+            const n=r.invites_sent||0;
+            $('scanSub').textContent=n>0?`Invitation terkirim ke ${n} stranger...`:'Tidak ada stranger online, menyiapkan AI...';
+            if(n===0){setTimeout(()=>fallbackAI(),1500);return;}
+        }
+    }catch(e){console.warn('Bid:',e);setTimeout(()=>fallbackAI(),1500);return;}
     tPollMatch=setInterval(pollMatch,POLL_MATCH_MS);
-    // Timeout → AI
     tBid=setTimeout(()=>{if(state===S.BIDDING)fallbackAI();},BID_TIMEOUT_MS);
 }
 
-// ── POLL MATCH (inviter side) ─────────────────────────────────
 async function pollMatch(){
     if(state!==S.BIDDING)return;
-    try{
-        const r=await fetch(`/api/invite?userId=${UID}&role=inviter`);
-        const d=await r.json();
-        if(d.matched){
-            clearBidTimers();
-            enterChatReal(d.room_id,d.vibe||vibe);
-        }else if(d.all_expired){
-            clearBidTimers();
-            fallbackAI();
-        }
-    }catch(e){}
+    try{const r=await fetch(`/api/invite?userId=${UID}&role=inviter`);const d=await r.json();if(d.matched){clearBidTimers();enterChatReal(d.room_id,d.vibe||vibe);}else if(d.all_expired){clearBidTimers();fallbackAI();}}catch(e){}
 }
 
-// ── POLL INVITATION (invitee side) ────────────────────────────
 async function pollInvitation(){
     if(state!==S.IDLE)return;
     if($('invitePopup').classList.contains('show'))return;
-    try{
-        const r=await fetch(`/api/invite?userId=${UID}&role=invitee`);
-        const d=await r.json();
-        if(d.hasInvitation){
-            pendingInv=d.invitation;
-            showInvitePopup(d.invitation);
-        }
-    }catch(e){}
+    try{const r=await fetch(`/api/invite?userId=${UID}&role=invitee`);const d=await r.json();if(d.hasInvitation){pendingInv=d.invitation;showInvitePopup(d.invitation);}}catch(e){}
 }
 
-// ── INVITATION POPUP ──────────────────────────────────────────
-// PRIVACY: hanya tampil vibe, tanpa nama/identitas inviter
 function showInvitePopup(inv){
     const badge=$('inviteVibeBadge');
-    badge.textContent = inv.vibe==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';
-    badge.className   = 'invite-vibe-badge '+inv.vibe;
+    badge.textContent=inv.vibe==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';
+    badge.className='invite-vibe-badge '+inv.vibe;
     $('invitePopup').classList.add('show');
-
     const exp=new Date(inv.expires_at).getTime();
     if(tInvPop)clearInterval(tInvPop);
-    tInvPop=setInterval(()=>{
-        const left=Math.max(0,Math.ceil((exp-Date.now())/1000));
-        $('inviteCountdown').textContent=left;
-        if(left<=0){clearInterval(tInvPop);hidePopup();toast('Invitation expired');}
-    },400);
+    tInvPop=setInterval(()=>{const left=Math.max(0,Math.ceil((exp-Date.now())/1000));$('inviteCountdown').textContent=left;if(left<=0){clearInterval(tInvPop);hidePopup();toast('Invitation expired');}},400);
 }
 
-function hidePopup(){
-    $('invitePopup').classList.remove('show');
-    if(tInvPop){clearInterval(tInvPop);tInvPop=null;}
-    pendingInv=null;
-}
+function hidePopup(){$('invitePopup').classList.remove('show');if(tInvPop){clearInterval(tInvPop);tInvPop=null;}pendingInv=null;}
 
 async function acceptInv(){
     if(!pendingInv)return;
-    const inv=pendingInv; hidePopup();
-    try{
-        const r=await api('/api/invite',{action:'accept',userId:UID,username:ME,invitationId:inv.id});
-        if(r.success){
-            enterChatReal(r.room_id,r.vibe||inv.vibe);
-        }else{
-            toast(r.reason==='inviter_no_longer_waiting'?'⚡ Sudah diambil stranger lain!':'Invitation expired');
-        }
-    }catch(e){toast('Gagal connect');}
+    const inv=pendingInv;hidePopup();
+    try{const r=await api('/api/invite',{action:'accept',userId:UID,username:ME,invitationId:inv.id});if(r.success)enterChatReal(r.room_id,r.vibe||inv.vibe);else toast(r.reason==='inviter_no_longer_waiting'?'⚡ Sudah diambil stranger lain!':'Invitation expired');}catch(e){toast('Gagal connect');}
 }
 
-// ── ENTER REAL CHAT ───────────────────────────────────────────
-function enterChatReal(rId,v){
-    state=S.CHAT_REAL; roomId=rId; vibe=v;
-    chatHist=[]; lastMsgTs=new Date().toISOString();
-    openChatUI(v,false);
-    addSys('🔗 Terhubung dengan stranger');
-    tPollMsg=setInterval(pollMsg,POLL_MSG_MS);
-    loadCount();
-}
+function enterChatReal(rId,v){state=S.CHAT_REAL;roomId=rId;vibe=v;chatHist=[];lastMsgTs=new Date().toISOString();openChatUI(v);addSys('🔗 Terhubung dengan stranger');tPollMsg=setInterval(pollMsg,POLL_MSG_MS);loadCount();}
 
-// ── FALLBACK AI ───────────────────────────────────────────────
 function fallbackAI(){
     if(state===S.CHAT_REAL||state===S.CHAT_AI)return;
-    state=S.CHAT_AI;
-    clearBidTimers();
-    showScan(false);
-    // Expire invitations dari user ini
-    fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({userId:UID})}).catch(()=>{});
-    // Pilih AI persona (tersembunyi dari UI)
-    const pool=AI[vibe]||AI.soft_talk;
-    aiChar=pool[Math.floor(Math.random()*pool.length)];
-    roomId=null; chatHist=[];
-    openChatUI(vibe,true);
-    setTimeout(()=>sendAI('',true),600);
+    state=S.CHAT_AI;clearBidTimers();showScan(false);
+    fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})}).catch(()=>{});
+    const pool=AI[vibe]||AI.soft_talk;aiChar=pool[Math.floor(Math.random()*pool.length)];
+    roomId=null;chatHist=[];openChatUI(vibe);setTimeout(()=>sendAI('',true),600);
 }
 
-// ── IDLE ──────────────────────────────────────────────────────
 function enterIdle(){
-    clearAllTimers();
-    state=S.IDLE; vibe=null; roomId=null; aiChar=null; chatHist=[];
-    $('btnHot').disabled=false; $('btnSoft').disabled=false;
-    closeChatUI(); showScan(false); hidePopup();
-    loadCount();
+    clearAllTimers();state=S.IDLE;vibe=null;roomId=null;aiChar=null;chatHist=[];
+    $('btnHot').disabled=false;$('btnSoft').disabled=false;
+    closeChatUI();showScan(false);hidePopup();loadCount();
 }
 
-// ── MESSAGES (REAL) ───────────────────────────────────────────
 async function pollMsg(){
     if(state!==S.CHAT_REAL||!roomId)return;
-    try{
-        const since=lastMsgTs||new Date(Date.now()-5000).toISOString();
-        const r=await fetch(`/api/messages?roomId=${roomId}&since=${encodeURIComponent(since)}`);
-        const msgs=await r.json();
-        if(!Array.isArray(msgs)||!msgs.length)return;
-        for(const m of msgs){
-            if(m.sender_id!==UID)addMsg('stranger',m.content);
-            if(!lastMsgTs||m.created_at>lastMsgTs)lastMsgTs=m.created_at;
-        }
-    }catch(e){}
+    try{const since=lastMsgTs||new Date(Date.now()-5000).toISOString();const r=await fetch(`/api/messages?roomId=${roomId}&since=${encodeURIComponent(since)}`);const msgs=await r.json();if(!Array.isArray(msgs)||!msgs.length)return;for(const m of msgs){if(m.sender_id!==UID)addMsg('stranger',m.content);if(!lastMsgTs||m.created_at>lastMsgTs)lastMsgTs=m.created_at;}}catch(e){}
 }
 
 async function sendReal(content){
-    if(!roomId||!content.trim())return;
-    addMsg('user',content);
-    try{
-        const r=await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({roomId,senderId:UID,senderName:ME,content:content.trim()})});
-        if(!r.ok){
-            const e=await r.json();
-            if(e.error==='Room not found or ended'){addSys('⚠️ Stranger meninggalkan chat');setTimeout(enterIdle,2000);}
-        }
-    }catch(e){toast('Gagal kirim pesan');}
+    if(!roomId||!content.trim())return;addMsg('user',content);
+    try{const r=await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roomId,senderId:UID,senderName:ME,content:content.trim()})});if(!r.ok){const e=await r.json();if(e.error==='Room not found or ended'){addSys('⚠️ Stranger meninggalkan chat');setTimeout(enterIdle,2000);}}}catch(e){toast('Gagal kirim pesan');}
 }
 
-// ── AI CHAT ───────────────────────────────────────────────────
 async function sendAI(msg,first=false){
-    if(state!==S.CHAT_AI)return;
-    showTyping(true);
-    try{
-        if(!first&&msg)chatHist.push({role:'user',content:msg});
-        const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({message:first?'hai':msg,characterName:aiChar,lastMessages:chatHist.slice(-8)})});
-        const d=await r.json();
-        showTyping(false);
-        if(d.reply){
-            const delay=Math.max(500,Math.min(d.reply.length*30,2500));
-            setTimeout(()=>{addMsg('stranger',d.reply);chatHist.push({role:'assistant',content:d.reply});},delay);
-        }
-    }catch(e){showTyping(false);addMsg('stranger','😅');}
+    if(state!==S.CHAT_AI)return;showTyping(true);
+    try{if(!first&&msg)chatHist.push({role:'user',content:msg});const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:first?'hai':msg,characterName:aiChar,lastMessages:chatHist.slice(-8)})});const d=await r.json();showTyping(false);if(d.reply){const delay=Math.max(500,Math.min(d.reply.length*30,2500));setTimeout(()=>{addMsg('stranger',d.reply);chatHist.push({role:'assistant',content:d.reply});},delay);}}catch(e){showTyping(false);addMsg('stranger','😅');}
 }
 
-// ── CHAT UI ───────────────────────────────────────────────────
-function openChatUI(v,isAI){
-    // PRIVACY: selalu tampil "STRANGER", tidak pernah nama
-    const badge=$('chatVibeBadge');
-    badge.textContent = v==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';
-    badge.className   = 'chat-vibe-label '+(v||'hot_take');
-    $('radarChat').classList.add('show');
-    $('chatInputWrap').classList.add('show');
-    $('radarCont').classList.add('chat-mode');
-    $('chatInput').focus();
-}
-function closeChatUI(){
-    const c=$('radarChat'),h=c.querySelector('.radar-chat-header'),t=$('typingBubble');
-    c.innerHTML='';c.appendChild(h);c.appendChild(t);
-    c.classList.remove('show');
-    $('chatInputWrap').classList.remove('show');
-    $('radarCont').classList.remove('chat-mode');
-}
-function addMsg(who,text){
-    const c=$('radarChat'),t=$('typingBubble');
-    const m=document.createElement('div');m.className='message '+who;m.textContent=text;
-    c.insertBefore(m,t);c.scrollTop=c.scrollHeight;
-}
-function addSys(text){
-    const c=$('radarChat'),t=$('typingBubble');
-    const m=document.createElement('div');m.className='message system';m.textContent=text;
-    c.insertBefore(m,t);c.scrollTop=c.scrollHeight;
-}
-function showTyping(on){
-    const t=$('typingBubble');
-    if(on)t.classList.add('show');else t.classList.remove('show');
-    $('radarChat').scrollTop=$('radarChat').scrollHeight;
-}
+function openChatUI(v){const badge=$('chatVibeBadge');badge.textContent=v==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';badge.className='chat-vibe-label '+(v||'hot_take');$('radarChat').classList.add('show');$('chatInputWrap').classList.add('show');$('radarCont').classList.add('chat-mode');$('chatInput').focus();}
+function closeChatUI(){const c=$('radarChat'),h=c.querySelector('.radar-chat-header'),t=$('typingBubble');c.innerHTML='';c.appendChild(h);c.appendChild(t);c.classList.remove('show');$('chatInputWrap').classList.remove('show');$('radarCont').classList.remove('chat-mode');}
+function addMsg(who,text){const c=$('radarChat'),t=$('typingBubble');const m=document.createElement('div');m.className='message '+who;m.textContent=text;c.insertBefore(m,t);c.scrollTop=c.scrollHeight;}
+function addSys(text){const c=$('radarChat'),t=$('typingBubble');const m=document.createElement('div');m.className='message system';m.textContent=text;c.insertBefore(m,t);c.scrollTop=c.scrollHeight;}
+function showTyping(on){const t=$('typingBubble');if(on)t.classList.add('show');else t.classList.remove('show');$('radarChat').scrollTop=$('radarChat').scrollHeight;}
 
-// ── SCAN UI ───────────────────────────────────────────────────
-function showScan(on,v){
-    const o=$('scanOverlay');
-    if(on){
-        const b=$('scanVibeBadge');
-        b.textContent=v==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';
-        b.className='scan-vibe '+(v||'hot_take');
-        o.classList.add('show');
-    }else{
-        o.classList.remove('show');
-        if(tScan){clearInterval(tScan);tScan=null;}
-    }
-}
-function startCountdown(sec){
-    let left=sec;
-    $('scanTimer').textContent=sec;$('scanBar').style.width='0%';
-    if(tScan)clearInterval(tScan);
-    tScan=setInterval(()=>{
-        left--;
-        $('scanTimer').textContent=Math.max(0,left);
-        $('scanBar').style.width=((sec-left)/sec*100).toFixed(1)+'%';
-        if(left<=5&&left>0)$('scanSub').textContent='Hampir habis, menyiapkan AI...';
-        if(left<=0)clearInterval(tScan);
-    },1000);
-}
+function showScan(on,v){const o=$('scanOverlay');if(on){const b=$('scanVibeBadge');b.textContent=v==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';b.className='scan-vibe '+(v||'hot_take');o.classList.add('show');}else{o.classList.remove('show');if(tScan){clearInterval(tScan);tScan=null;}}}
+function startCountdown(sec){let left=sec;$('scanTimer').textContent=sec;$('scanBar').style.width='0%';if(tScan)clearInterval(tScan);tScan=setInterval(()=>{left--;$('scanTimer').textContent=Math.max(0,left);$('scanBar').style.width=((sec-left)/sec*100).toFixed(1)+'%';if(left<=5&&left>0)$('scanSub').textContent='Hampir habis, menyiapkan AI...';if(left<=0)clearInterval(tScan);},1000);}
+function clearBidTimers(){if(tBid){clearTimeout(tBid);tBid=null;}if(tPollMatch){clearInterval(tPollMatch);tPollMatch=null;}if(tScan){clearInterval(tScan);tScan=null;}showScan(false);}
+function clearAllTimers(){clearBidTimers();if(tHeart){clearInterval(tHeart);tHeart=null;}if(tPollMsg){clearInterval(tPollMsg);tPollMsg=null;}if(tPollInv){clearInterval(tPollInv);tPollInv=null;}if(tInvPop){clearInterval(tInvPop);tInvPop=null;}}
 
-// ── TIMERS ────────────────────────────────────────────────────
-function clearBidTimers(){
-    if(tBid){clearTimeout(tBid);tBid=null;}
-    if(tPollMatch){clearInterval(tPollMatch);tPollMatch=null;}
-    if(tScan){clearInterval(tScan);tScan=null;}
-    showScan(false);
-}
-function clearAllTimers(){
-    clearBidTimers();
-    if(tHeart){clearInterval(tHeart);tHeart=null;}
-    if(tPollMsg){clearInterval(tPollMsg);tPollMsg=null;}
-    if(tPollInv){clearInterval(tPollInv);tPollInv=null;}
-    if(tInvPop){clearInterval(tInvPop);tInvPop=null;}
-}
+async function loadCount(){try{const r=await fetch(`/api/invite?userId=${UID}&role=count`);const d=await r.json();const el=$('onlineCount');if(el)el.textContent=(d.count||0)+' ONLINE';}catch(e){}}
 
-// ── ONLINE COUNT ──────────────────────────────────────────────
-async function loadCount(){
-    try{
-        const r=await fetch(`/api/invite?userId=${UID}&role=count`);
-        const d=await r.json();
-        const el=$('onlineCount');
-        if(el)el.textContent=(d.count||0)+' ONLINE';
-    }catch(e){}
-}
-
-// ── SPILLS ────────────────────────────────────────────────────
-// ── SPILL BREW TRIGGER (7 menit) ────────────────────────────
-const BREW_INTERVAL_MS = 7 * 60 * 1000; // 7 menit
-const BREW_KEY = 'spill_last_brew';
-
-async function maybeBrewSpill(){
-    const last = parseInt(localStorage.getItem(BREW_KEY)||'0');
-    const now  = Date.now();
-    if(now - last < BREW_INTERVAL_MS) return false; // belum 7 menit
-    localStorage.setItem(BREW_KEY, now.toString());
-    try{
-        await fetch('/api/brew',{method:'POST',headers:{'Content-Type':'application/json'}});
-        return true; // brew berhasil
-    }catch(e){
-        console.warn('[Brew] trigger failed:', e.message);
-        localStorage.setItem(BREW_KEY, '0'); // reset agar bisa retry
-        return false;
-    }
-}
-
-// Auto-brew setiap 7 menit + reload feed setelah brew
-function startBrewInterval(){
-    // Langsung coba brew saat pertama buka (jika sudah > 7 menit)
-    maybeBrewSpill().then(brewed=>{
-        if(brewed) setTimeout(loadSpills, 3000);
-    });
-    // Lalu set interval untuk brew berikutnya
-    setInterval(async()=>{
-        const brewed = await maybeBrewSpill();
-        if(brewed){
-            setTimeout(loadSpills, 3000); // reload feed 3 detik setelah brew
-        }
-    }, BREW_INTERVAL_MS);
-}
-
-async function loadSpills(){
-    $('spillsList').innerHTML='<div class="empty-state">🍃 MEMUAT SPILL...</div>';
-    // Trigger brew jika sudah > 7 menit (non-blocking)
-    maybeBrewSpill();
-    try{
-        // Ambil semua spill dari entries (user + AI sudah mix di DB)
-        const data = await sbGet('/entries?select=*&order=created_at.desc&limit=50');
-        const all  = (data||[]).map(x=>({
-            author:    x.username||'anon',
-            mood:      x.mood||'chaotic',
-            content:   x.content||'...',
-            reactions: x.reactions||{skull:0,cry:0,fire:0,upside:0},
-            created_at: x.created_at,
-            is_ai:     x.is_ai||false
-        }));
-        renderSpills(all);
-    }catch(e){$('spillsList').innerHTML='<div class="empty-state">🍃 Gagal memuat spill</div>';}
-}
-function renderSpills(all){
-    const c=$('spillsList'),meta=$('feedMeta');
-    if(!all.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}
-    c.innerHTML=all.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${s.author}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${s.content}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="rs(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');
-    meta.textContent=all.length+' spill';
-}
+const BREW_INTERVAL_MS=7*60*1000,BREW_KEY='spill_last_brew';
+async function maybeBrewSpill(){const last=parseInt(localStorage.getItem(BREW_KEY)||'0');if(Date.now()-last<BREW_INTERVAL_MS)return false;localStorage.setItem(BREW_KEY,Date.now().toString());try{await fetch('/api/brew',{method:'POST',headers:{'Content-Type':'application/json'}});return true;}catch(e){localStorage.setItem(BREW_KEY,'0');return false;}}
+function startBrewInterval(){maybeBrewSpill().then(b=>{if(b)setTimeout(loadSpills,3000);});setInterval(async()=>{if(await maybeBrewSpill())setTimeout(loadSpills,3000);},BREW_INTERVAL_MS);}
+async function loadSpills(){$('spillsList').innerHTML='<div class="empty-state">🍃 MEMUAT SPILL...</div>';maybeBrewSpill();try{const data=await sbGet('/entries?select=*&order=created_at.desc&limit=50');const all=(data||[]).map(x=>({author:x.username||'anon',mood:x.mood||'chaotic',content:x.content||'...',reactions:x.reactions||{skull:0,cry:0,fire:0,upside:0}}));renderSpills(all);}catch(e){$('spillsList').innerHTML='<div class="empty-state">🍃 Gagal memuat spill</div>';}}
+function renderSpills(all){const c=$('spillsList'),meta=$('feedMeta');if(!all.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}c.innerHTML=all.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${esc(s.author)}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${esc(s.content)}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="rs(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');meta.textContent=all.length+' spill';}
 window.rs=(i,t)=>toast('➕ '+t);
 
-// ── RADAR ─────────────────────────────────────────────────────
 let dots=[],nAngle=0,nSpin=0,phase=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,gm=new Map(),raf,rint;
-function initRadar(){
-    const cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;
-    const rsz=()=>{const r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};
-    rsz();window.addEventListener('resize',rsz);
-    spawnDots();
-    if(rint)clearInterval(rint);
-    rint=setInterval(()=>{dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);
-    nAngle=Math.random()*Math.PI*2;trail.fill(nAngle);radarLoop(cv);
-}
+function initRadar(){const cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;const rsz=()=>{const r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};rsz();window.addEventListener('resize',rsz);spawnDots();if(rint)clearInterval(rint);rint=setInterval(()=>{dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);nAngle=Math.random()*Math.PI*2;trail.fill(nAngle);radarLoop(cv);}
 function spawnDots(){const c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];for(let i=0;i<8;i++){const a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2;const el=document.createElement('div');el.className='radar-dot';el.style.left=x+'%';el.style.top=y+'%';c.appendChild(el);dots.push({el,x,y,vx:0,vy:0,id:i});}}
 function radarLoop(cv){const ctx=cv.getContext('2d');function draw(){const w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(cx,cy)*.88;if(!w||!h){raf=requestAnimationFrame(draw);return;}phase+=.007;nSpin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phase)*.35)-nSpin)*.028;nAngle=(nAngle+nSpin)%(Math.PI*2);trail[ptr]=nAngle;ptr=(ptr+1)%120;ctx.fillStyle='rgba(2,10,2,.18)';ctx.fillRect(0,0,w,h);for(let i=0;i<119;i++){const a=Math.pow(1-i/120,2.2)*.12;if(a<.002)break;const s=nAngle-(i+1)*nSpin,e=nAngle-i*nSpin;ctx.save();ctx.translate(cx,cy);ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));ctx.closePath();ctx.fillStyle=`rgba(0,229,255,${a})`;ctx.fill();ctx.restore();}ctx.save();ctx.translate(cx,cy);ctx.rotate(nAngle);ctx.shadowColor='rgba(0,229,255,.95)';ctx.shadowBlur=12;const g=ctx.createLinearGradient(0,0,R,0);g.addColorStop(0,'rgba(0,229,255,1)');g.addColorStop(.8,'rgba(0,229,255,.4)');g.addColorStop(1,'rgba(0,229,255,0)');ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(R,0);ctx.strokeStyle=g;ctx.lineWidth=2;ctx.stroke();ctx.shadowBlur=20;ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();ctx.restore();dots.forEach((d,i)=>{const px=d.x/100*w,py=d.y/100*h,da=((Math.atan2(py-cy,px-cx))%(Math.PI*2)+Math.PI*2)%(Math.PI*2);const diff=(nAngle-da+Math.PI*2)%(Math.PI*2);const age=gm.get(i)??999;if(diff<.18&&age>30){gm.set(i,0);if(d.el){d.el.classList.add('active');setTimeout(()=>d.el?.classList.remove('active'),800);}}else gm.set(i,age+1);if(age<55){const t=age/55,ga=(1-t)*(1-t)*.9;if(ga<.01)return;const gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}});raf=requestAnimationFrame(draw);}draw();}
 
-// ── CLEANUP ───────────────────────────────────────────────────
-async function cleanup(){
-    clearAllTimers();
-    const body={userId:UID};
-    if(roomId)body.roomId=roomId;
-    try{await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true});}catch(e){}
-}
+async function cleanup(){clearAllTimers();const body={userId:UID};if(roomId)body.roomId=roomId;try{await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true});}catch(e){}}
 window.addEventListener('beforeunload',cleanup);
 
-// ── EVENT LISTENERS ───────────────────────────────────────────
 window.addEventListener('load',async()=>{
     await init();
 
-    // Settings
     const sb=$('settingsBtn'),sd=$('settingsDropdown');
     sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};
     document.addEventListener('click',e=>{if(!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});
     $('logoutBtn').onclick=async()=>{await cleanup();localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);};
 
-    // Vibe buttons
-    $('btnHot').onclick  = ()=>{if(state===S.IDLE)startBid('hot_take');};
-    $('btnSoft').onclick = ()=>{if(state===S.IDLE)startBid('soft_talk');};
+    $('btnHot').onclick=()=>{if(state===S.IDLE)startBid('hot_take');};
+    $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');};
 
-    // Cancel bid
-    $('scanCancel').onclick=async()=>{
-        if(state===S.BIDDING){
-            clearBidTimers();
-            await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});
-            enterIdle();toast('Pencarian dibatalkan');
-        }
-    };
+    $('scanCancel').onclick=async()=>{if(state===S.BIDDING){clearBidTimers();await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});enterIdle();toast('Pencarian dibatalkan');}};
 
-    // Invitation popup
-    $('btnAccept').onclick  = acceptInv;
-    $('btnDecline').onclick = async()=>{
-        if(pendingInv)await api('/api/invite',{action:'decline',userId:UID,username:ME,invitationId:pendingInv.id});
-        hidePopup();
-    };
+    $('btnAccept').onclick=acceptInv;
+    $('btnDecline').onclick=async()=>{if(pendingInv)await api('/api/invite',{action:'decline',userId:UID,username:ME,invitationId:pendingInv.id});hidePopup();};
 
-    // Chat send
-    const send=async()=>{
-        const inp=$('chatInput'),msg=inp.value.trim();
-        if(!msg)return;inp.value='';
-        if(state===S.CHAT_REAL)await sendReal(msg);
-        else if(state===S.CHAT_AI){addMsg('user',msg);await sendAI(msg,false);}
-    };
-    $('chatSend').onclick=send;
-    $('chatInput').onkeypress=e=>{if(e.key==='Enter')send();};
+    const chatSend=async()=>{const inp=$('chatInput'),msg=inp.value.trim();if(!msg)return;inp.value='';if(state===S.CHAT_REAL)await sendReal(msg);else if(state===S.CHAT_AI){addMsg('user',msg);await sendAI(msg,false);}};
+    $('chatSend').onclick=chatSend;
+    $('chatInput').onkeypress=e=>{if(e.key==='Enter')chatSend();};
 
-    // End chat
-    $('chatClose').onclick=async()=>{
-        if(state===S.CHAT_REAL){
-            addSys('🔴 Kamu mengakhiri chat');
-            await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});
-        }
-        setTimeout(enterIdle,500);
-    };
+    $('chatClose').onclick=async()=>{if(state===S.CHAT_REAL){addSys('🔴 Kamu mengakhiri chat');await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});}setTimeout(enterIdle,500);};
 
-    // Whisper
+    // ── WHISPER events ──────────────────────
     $('whisperBtn').onclick=()=>$('whisperOverlay').classList.add('show');
-    $('whisperCancel').onclick=()=>$('whisperOverlay').classList.remove('show');
+    $('whisperCancel').onclick=()=>{$('whisperOverlay').classList.remove('show');$('whisperTarget').value='';$('whisperMessage').value='';};
+
     $('whisperSend').onclick=async()=>{
-        const to=$('whisperTarget').value.trim().replace('@',''),msg=$('whisperMessage').value.trim();
+        const toEl=$('whisperTarget'),msgEl=$('whisperMessage');
+        const to=(toEl.value||'').trim().replace('@','').toLowerCase();
+        const msg=(msgEl.value||'').trim();
         if(!to||!msg){toast('Isi semua field');return;}
-        $('whisperOverlay').classList.remove('show');
-        try{await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({from:ME,to,message:msg})});toast('✉️ Whisper terkirim');}
-        catch(e){toast('Gagal mengirim');}
+        if(!/^[a-z0-9_]{2,24}$/.test(to)){toast('Username tidak valid');return;}
+        const btn=$('whisperSend'),orig=btn.textContent;
+        btn.textContent='ENCRYPTING...';btn.disabled=true;
+        try{
+            const ok=await WH.sendMsg(to,msg);
+            if(ok){$('whisperOverlay').classList.remove('show');toEl.value='';msgEl.value='';toast('✦ whisper terkirim — musnah dalam 24h');}
+            else toast('Gagal — cek username penerima');
+        }catch(e){toast('Error enkripsi');}
+        finally{btn.textContent=orig;btn.disabled=false;}
     };
+
+    $('wTrigger').onclick=()=>{WH.fetchInbox();$('wInbox').classList.add('show');};
+    $('wInboxClose').onclick=()=>$('wInbox').classList.remove('show');
+    $('wBack').onclick=()=>{WH.closeRead();$('wInbox').classList.add('show');};
 });
+
 })();
 </script>
 </body>
