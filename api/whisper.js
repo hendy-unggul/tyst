@@ -118,12 +118,13 @@ export default async function handler(req, res) {
 
     const now = new Date().toISOString();
 
-    // Ambil pesan: target = username, belum expired, status bukan destroyed
+    // Ambil pesan: target = username, belum expired, status IS NULL
+    // NULL = unread/baru. not.eq.destroyed tidak menangkap NULL di PostgREST
     const { data } = await sb(
       'GET',
       `/whispers?target_username=eq.${encodeURIComponent(username)}` +
       `&destroy_at=gt.${encodeURIComponent(now)}` +
-      `&status=not.eq.destroyed` +
+      `&status=is.null` +
       `&select=id,from_hash,message,created_at,destroy_at` +
       `&order=created_at.desc&limit=20`
     );
@@ -146,7 +147,7 @@ export default async function handler(req, res) {
     const { data: existing } = await sb(
       'GET',
       `/whispers?id=eq.${id}&target_username=eq.${encodeURIComponent(username)}` +
-      `&status=not.eq.destroyed&select=id`
+      `&status=is.null&select=id`
     );
 
     if (!existing?.length)
