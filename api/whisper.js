@@ -1,11 +1,14 @@
 // api/whisper.js
-// Vercel Serverless Function
-// Skema aktual: id, target_username, from_hash, message,
-//               created_at, read_at, destroy_at, status
+// Vercel Serverless Function — Security Layer 1
+//
+// PERUBAHAN LAPISAN 1:
+//   - IP address TIDAK PERNAH dibaca, disimpan, atau dilog
+//   - Rate limit berbasis token bucket per-endpoint (no IP tracking)
+//   - device_fp tidak diproses di endpoint ini
 //
 // ENV di Vercel:
-//   SUPABASE_URL          = https://xxxx.supabase.co
-//   SUPABASE_SERVICE_KEY  = service_role key (bukan anon)
+//   SUPABASE_URL         = https://xxxx.supabase.co
+//   SUPABASE_SERVICE_KEY = service_role key (bukan anon)
 
 const SUPA_URL = process.env.SUPABASE_URL;
 const SUPA_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -15,10 +18,10 @@ async function sb(method, path, body) {
   const opts = {
     method,
     headers: {
-      apikey:          SUPA_KEY,
-      Authorization:   `Bearer ${SUPA_KEY}`,
-      'Content-Type':  'application/json',
-      Prefer:          method === 'POST' ? 'return=representation' : 'return=minimal',
+      apikey:         SUPA_KEY,
+      Authorization:  `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer:         method === 'POST' ? 'return=representation' : 'return=minimal',
     },
   };
   if (body !== undefined) opts.body = JSON.stringify(body);
@@ -34,25 +37,32 @@ function cors(res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 }
 
-// ── Rate limit (in-memory, per Vercel instance) ───────────────
-const _rl = new Map();
-function rateLimit(ip, max = 20, windowMs = 60000) {
-  const now   = Date.now();
-  const entry = _rl.get(ip) || { n: 0, reset: now + windowMs };
-  if (now > entry.reset) { entry.n = 0; entry.reset = now + windowMs; }
-  entry.n++;
-  _rl.set(ip, entry);
-  return entry.n <= max;
+// ── Rate limit berbasis waktu — TANPA IP ──────────────────────
+// Menggunakan sliding window per endpoint per Vercel instance.
+// Tidak ada identifier personal yang disimpan — hanya counter global.
+// Cukup untuk mencegah abuse massal tanpa tracking siapapun.
+const _rl = { post: [], get: [] };
+const LIMITS = { post: { max: 30, windowMs: 60000 }, get: { max: 120, windowMs: 60000 } };
+
+function rateLimit(endpoint) {
+  const now    = Date.now();
+  const cfg    = LIMITS[endpoint] || LIMITS.get;
+  const window = cfg.windowMs;
+  // Hapus entry lama di luar window
+  _rl[endpoint] = (_rl[endpoint] || []).filter(t => now - t < window);
+  if (_rl[endpoint].length >= cfg.max) return false;
+  _rl[endpoint].push(now);
+  return true;
 }
 
-// ── Purge expired + destroyed (non-blocking) ─────────────────
+// ── Purge expired + destroyed (non-blocking) ──────────────────
 function purge() {
   sb('DELETE', `/whispers?destroy_at=lt.${new Date().toISOString()}`).catch(() => {});
   sb('DELETE', `/whispers?status=eq.destroyed`).catch(() => {});
 }
 
 // ── Validasi username ─────────────────────────────────────────
-// Izinkan titik (.) karena username di profiles pakai format: nama.nama
+// Format nama.nama diizinkan sesuai skema profiles
 const validUser = s => typeof s === 'string' && /^[a-z0-9_.]{2,24}$/.test(s);
 
 // ═══════════════════════════════════════════════════════════
@@ -60,15 +70,9 @@ export default async function handler(req, res) {
   cors(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const ip = (req.headers['x-forwarded-for'] || 'unknown').split(',')[0].trim();
-
   // ── POST — kirim whisper ────────────────────────────────────
-  // Body: { to, fromHash, messageEnc }
-  //   to          = username penerima
-  //   fromHash    = sha256(sender_username) — dihitung di browser
-  //   messageEnc  = "iv_b64:ciphertext_b64" — dienkripsi di browser
   if (req.method === 'POST') {
-    if (!rateLimit(ip, 15, 60000))
+    if (!rateLimit('post'))
       return res.status(429).json({ error: 'Too many requests' });
 
     const { to, fromHash, messageEnc } = req.body || {};
@@ -79,20 +83,18 @@ export default async function handler(req, res) {
     if (!messageEnc || typeof messageEnc !== 'string' || messageEnc.length > 8000)
       return res.status(400).json({ error: 'Invalid message' });
 
-    // fromHash opsional tapi harus string hex 64 char jika ada
     const hashSafe = (typeof fromHash === 'string' && /^[a-f0-9]{64}$/.test(fromHash))
       ? fromHash
       : null;
 
-    const now        = new Date();
-    const destroy_at = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
+    const destroy_at = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
     const { status, data } = await sb('POST', '/whispers', {
       target_username: to,
       from_hash:       hashSafe,
-      message:         messageEnc,   // ciphertext, bukan plaintext
+      message:         messageEnc,
       destroy_at,
-      status:          null,         // null = unread
+      status:          null,
     });
 
     if (status !== 201) {
@@ -100,26 +102,22 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Failed to send' });
     }
 
-    purge(); // non-blocking cleanup
+    purge();
     return res.status(200).json({ ok: true, id: data?.[0]?.id });
   }
 
   // ── GET — fetch inbox ───────────────────────────────────────
-  // Query: ?username=xxx
-  // Kembalikan pesan yang belum destroyed + belum expired
   if (req.method === 'GET') {
     const { username } = req.query;
 
     if (!validUser(username))
       return res.status(400).json({ error: 'Invalid username' });
 
-    if (!rateLimit(ip, 60, 60000))
+    if (!rateLimit('get'))
       return res.status(429).json({ error: 'Too many requests' });
 
     const now = new Date().toISOString();
 
-    // Ambil pesan: target = username, belum expired, status IS NULL
-    // NULL = unread/baru. not.eq.destroyed tidak menangkap NULL di PostgREST
     const { data } = await sb(
       'GET',
       `/whispers?target_username=eq.${encodeURIComponent(username)}` +
@@ -134,16 +132,12 @@ export default async function handler(req, res) {
   }
 
   // ── PATCH — tandai dibaca, percepat destroy ─────────────────
-  // Body: { id, username }
-  // Efek: set read_at = now, destroy_at = now + 10 detik, status tetap null
-  // Penghapusan fisik terjadi via purge 10 detik kemudian
   if (req.method === 'PATCH') {
     const { id, username } = req.body || {};
 
     if (!id || !validUser(username))
       return res.status(400).json({ error: 'Missing params' });
 
-    // Verifikasi kepemilikan
     const { data: existing } = await sb(
       'GET',
       `/whispers?id=eq.${id}&target_username=eq.${encodeURIComponent(username)}` +
@@ -154,16 +148,10 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Not found or already destroyed' });
 
     const now        = new Date().toISOString();
-    // Percepat destroy: 6 detik dari sekarang (sedikit lebih dari countdown 5 detik UI)
     const destroy_at = new Date(Date.now() + 6000).toISOString();
 
-    await sb('PATCH', `/whispers?id=eq.${id}`, {
-      read_at:    now,
-      destroy_at,           // dipercepat
-      // status tetap null — diset 'destroyed' saat force-delete
-    });
+    await sb('PATCH', `/whispers?id=eq.${id}`, { read_at: now, destroy_at });
 
-    // Jadwalkan force delete setelah 6 detik
     setTimeout(() => {
       sb('PATCH', `/whispers?id=eq.${id}`, { status: 'destroyed' }).catch(() => {});
       purge();
@@ -172,16 +160,13 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  // ── DELETE — force destroy langsung ────────────────────────
-  // Body: { id, username }
-  // Dipakai jika user tekan back sebelum timer habis
+  // ── DELETE — force destroy ──────────────────────────────────
   if (req.method === 'DELETE') {
     const { id, username } = req.body || {};
 
     if (!id || !validUser(username))
       return res.status(400).json({ error: 'Missing params' });
 
-    // Set status = 'destroyed' (bukan hapus fisik langsung — biar purge yang beresin)
     await sb(
       'PATCH',
       `/whispers?id=eq.${id}&target_username=eq.${encodeURIComponent(username)}`,
