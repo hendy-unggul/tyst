@@ -35,12 +35,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 .logo-tagline{font-family:'DM Mono',monospace;font-size:11px;color:var(--txs);letter-spacing:2px;text-transform:uppercase;margin-top:10px;display:flex;align-items:center;gap:10px}
 .logo-tagline::after{content:'';flex:1;height:1px;background:var(--bd2)}
 .online-pill{position:absolute;top:20px;right:24px;font-family:'DM Mono',monospace;font-size:9px;color:#000;background:var(--aq);padding:4px 10px;border:2px solid #000;box-shadow:2px 2px 0 #000;letter-spacing:.5px;text-transform:uppercase}
-.config-warning{margin-top:12px;background:rgba(255,45,85,.1);border:2px solid var(--ap);padding:20px 24px;display:none;animation:pulse-border 2s ease-in-out infinite}
-.config-warning.show{display:block}
-@keyframes pulse-border{0%,100%{border-color:var(--ap)}50%{border-color:var(--gold)}}
-.config-warning-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--ap);letter-spacing:2px;margin-bottom:12px}
-.config-warning-text{font-family:'DM Mono',monospace;font-size:11px;color:var(--tx);line-height:1.8;letter-spacing:.3px}
-.config-warning-text b{color:var(--ap);font-weight:700}
 .marketing-box{margin-top:12px;background:var(--sf);border:2px solid var(--bd2);border-left:4px solid var(--as);padding:20px 24px;box-shadow:4px 4px 0 #000}
 .marketing-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .marketing-hdr-icon{width:10px;height:10px;background:var(--as);transform:rotate(45deg);flex-shrink:0}
@@ -105,63 +99,358 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 <div class="phone-shell"><div class="container">
 <div class="accent-bar"></div>
 <div class="logo-zone">
-<span class="logo-corner-tr"></span><span class="logo-corner-bl"></span><span class="online-pill" id="onlinePill">21 ONLINE</span>
-<div class="logo-eyebrow">zero-knowledge platform</div>
-<span class="logo-big">JE<span class="x">✕</span>AK</span>
-<div class="logo-tagline">your space · your rules</div>
+  <span class="logo-corner-tr"></span><span class="logo-corner-bl"></span>
+  <span class="online-pill" id="onlinePill">— ONLINE</span>
+  <div class="logo-eyebrow">zero-knowledge platform</div>
+  <span class="logo-big">JE<span class="x">✕</span>AK</span>
+  <div class="logo-tagline">your space · your rules</div>
 </div>
-<div class="config-warning" id="config-warning">
-<div class="config-warning-title">⚠️ KONFIGURASI DIPERLUKAN</div>
-<div class="config-warning-text"><b>SUPABASE_URL</b> dan <b>SUPABASE_KEY</b> belum diisi!<br><br>Edit file ini (line ~100-101) dan isi kredensial Supabase kamu.<br>Dapatkan dari: <b>Supabase Dashboard → Settings → API</b></div>
-</div>
+
 <div class="marketing-box">
-<div class="marketing-hdr"><div class="marketing-hdr-icon"></div><span class="marketing-hdr-title">TRUE PRIVACY & ANONYMITY</span></div>
-<div class="marketing-grid">
-<div class="marketing-item"><div class="icon">❌</div><div class="content"><div class="title">TIDAK ADA</div><div class="desc">Email, phone, recovery questions — <b>platform ga tau siapa lu</b></div></div></div>
-<div class="marketing-item"><div class="icon">✅</div><div class="content"><div class="title">HANYA ADA</div><div class="desc">Username + PIN + Device — <b>benar-benar anonymous</b></div></div></div>
-<div class="marketing-item"><div class="icon">🔒</div><div class="content"><div class="title">YOUR KEYS, YOUR ACCOUNT</div><div class="desc">Platform <b>TIDAK BISA</b> recover account — <b>TIDAK TAHU</b> siapa kamu</div></div></div>
+  <div class="marketing-hdr"><div class="marketing-hdr-icon"></div><span class="marketing-hdr-title">TRUE PRIVACY & ANONYMITY</span></div>
+  <div class="marketing-grid">
+    <div class="marketing-item"><div class="icon">❌</div><div class="content"><div class="title">TIDAK ADA</div><div class="desc">Email, phone, recovery questions — <b>platform ga tau siapa lu</b></div></div></div>
+    <div class="marketing-item"><div class="icon">✅</div><div class="content"><div class="title">HANYA ADA</div><div class="desc">Username + PIN + Device — <b>benar-benar anonymous</b></div></div></div>
+    <div class="marketing-item"><div class="icon">🔒</div><div class="content"><div class="title">YOUR KEYS, YOUR ACCOUNT</div><div class="desc">Platform <b>TIDAK BISA</b> recover account — PIN hanya di device kamu</div></div></div>
+  </div>
 </div>
-</div>
+
 <div class="auth-box">
-<span class="ab-corner-tr"></span><span class="ab-corner-bl"></span>
-<form id="register-form" style="display:none">
-<div class="input-hdr"><div class="input-title">BUAT AKUN</div><div class="input-hint">username format: <b>kata.kata</b></div></div>
-<div class="form-group"><input type="text" id="reg-username" class="lowercase" placeholder="over.thinker" autocomplete="off" maxlength="30" spellcheck="false"><div class="feedback" id="reg-username-fb"></div></div>
-<div class="input-hint" style="margin-bottom:8px">buat PIN 6 digit</div>
-<div class="form-group"><input type="text" id="reg-pin" class="pin-input" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric" pattern="[0-9]*"><div class="feedback" id="reg-pin-fb"></div></div>
-<div class="input-hint" style="margin-bottom:8px">konfirmasi PIN</div>
-<div class="form-group"><input type="text" id="reg-pin-confirm" class="pin-input" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric" pattern="[0-9]*"><div class="feedback" id="reg-pin-confirm-fb"></div></div>
-<div class="disclaimer-small"><div class="disclaimer-small-text"><b>⚠️ PENTING:</b> PIN hilang = akun hilang <b>PERMANENT</b>. No recovery, no reset. Kamu <b>100% bertanggung jawab</b>. Simpan PIN di tempat aman!</div></div>
-<div class="agreement"><input type="checkbox" id="agree-checkbox"><label for="agree-checkbox">Saya paham dan <b>terima tanggung jawab penuh</b> atas akun ini</label></div>
-<button type="submit" class="btn" id="register-btn" disabled>DAFTAR →</button>
-<div class="mode-toggle"><button type="button" class="mode-toggle-btn" id="to-login">Sudah punya akun? Masuk</button></div>
-</form>
-<form id="login-form">
-<div class="input-hdr"><div class="input-title">MASUK</div><div class="input-hint">username + PIN kamu</div></div>
-<div class="form-group"><input type="text" id="login-username" class="lowercase" placeholder="over.thinker" autocomplete="off" maxlength="30" spellcheck="false"><div class="feedback" id="login-username-fb"></div></div>
-<div class="input-hint" style="margin-bottom:8px">PIN 6 digit</div>
-<div class="form-group"><input type="text" id="login-pin" class="pin-input" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric" pattern="[0-9]*"><div class="feedback" id="login-pin-fb"></div></div>
-<button type="submit" class="btn" id="login-btn" disabled>MASUK →</button>
-<div class="mode-toggle"><button type="button" class="mode-toggle-btn" id="to-register">Belum punya akun? Daftar</button></div>
-<div class="disclaimer-small" style="margin-top:16px"><div class="disclaimer-small-text">Lupa PIN? <b>Ga bisa recovery</b> — harus buat akun baru (username berbeda)</div></div>
-</form>
+  <span class="ab-corner-tr"></span><span class="ab-corner-bl"></span>
+
+  <!-- REGISTER FORM -->
+  <form id="register-form" style="display:none">
+    <div class="input-hdr"><div class="input-title">BUAT AKUN</div><div class="input-hint">username format: <b>kata.kata</b></div></div>
+    <div class="form-group">
+      <input type="text" id="reg-username" class="lowercase" placeholder="over.thinker" autocomplete="off" maxlength="30" spellcheck="false">
+      <div class="feedback" id="reg-username-fb"></div>
+    </div>
+    <div class="input-hint" style="margin-bottom:8px">buat PIN 6 digit</div>
+    <div class="form-group">
+      <input type="text" id="reg-pin" class="pin-input" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+      <div class="feedback" id="reg-pin-fb"></div>
+    </div>
+    <div class="input-hint" style="margin-bottom:8px">konfirmasi PIN</div>
+    <div class="form-group">
+      <input type="text" id="reg-pin-confirm" class="pin-input" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+      <div class="feedback" id="reg-pin-confirm-fb"></div>
+    </div>
+    <div class="disclaimer-small"><div class="disclaimer-small-text"><b>⚠️ PENTING:</b> PIN hilang = akun hilang <b>PERMANENT</b>. No recovery, no reset. Kamu <b>100% bertanggung jawab</b>. Simpan PIN di tempat aman!</div></div>
+    <div class="agreement">
+      <input type="checkbox" id="agree-checkbox">
+      <label for="agree-checkbox">Saya paham dan <b>terima tanggung jawab penuh</b> atas akun ini</label>
+    </div>
+    <button type="submit" class="btn" id="register-btn" disabled>DAFTAR →</button>
+    <div class="mode-toggle"><button type="button" class="mode-toggle-btn" id="to-login">Sudah punya akun? Masuk</button></div>
+  </form>
+
+  <!-- LOGIN FORM -->
+  <form id="login-form">
+    <div class="input-hdr"><div class="input-title">MASUK</div><div class="input-hint">username + PIN kamu</div></div>
+    <div class="form-group">
+      <input type="text" id="login-username" class="lowercase" placeholder="over.thinker" autocomplete="off" maxlength="30" spellcheck="false">
+      <div class="feedback" id="login-username-fb"></div>
+    </div>
+    <div class="input-hint" style="margin-bottom:8px">PIN 6 digit</div>
+    <div class="form-group">
+      <input type="text" id="login-pin" class="pin-input" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+      <div class="feedback" id="login-pin-fb"></div>
+    </div>
+    <button type="submit" class="btn" id="login-btn" disabled>MASUK →</button>
+    <div class="mode-toggle"><button type="button" class="mode-toggle-btn" id="to-register">Belum punya akun? Daftar</button></div>
+    <div class="disclaimer-small" style="margin-top:16px"><div class="disclaimer-small-text">Lupa PIN? <b>Ga bisa recovery</b> — harus buat akun baru (username berbeda)</div></div>
+  </form>
 </div>
+
 <div class="footer">
-<div class="footer-left"><span class="footer-dot"></span>soul by itsALrUdio</div>
-<div class="footer-right">v3.0-mvp · 2025</div>
+  <div class="footer-left"><span class="footer-dot"></span>soul by itsALrUdio</div>
+  <div class="footer-right">v3.1-secure · 2025</div>
 </div>
 </div></div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const JEJAK={SUPABASE_URL:'https://fuovfrdicdhnlymnacpz.supabase.co',SUPABASE_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',SK:{username:'jejak_username',uid:'jejak_uid',loggedIn:'jejak_logged_in'}};
-let db=null;
-const SK=JEJAK.SK,$=(id)=>document.getElementById(id),log=(ctx,err)=>{console.error(`[JEJAK] ${ctx}:`,err);err&&typeof err==='object'&&console.error('Details:',{message:err.message,code:err.code,details:err.details,hint:err.hint,stack:err.stack})},hashPIN=async pin=>{try{const data=new TextEncoder().encode(pin+'jejak_salt_2025_v3'),buf=await crypto.subtle.digest('SHA-256',data);return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')}catch(e){log('hashPIN',e);throw new Error('Gagal hash PIN')}},UN_PAT=/^[a-z][a-z0-9]*\.[a-z][a-z0-9]*$/,setFb=(id,type,msg)=>{const el=$(id);if(!el)return;if(!type||!msg){el.className='feedback';el.textContent='';return}el.className=`feedback show ${type}`;el.textContent=msg},validateUsername=v=>{if(!v||!v.trim())return{ok:false,msg:'username ga boleh kosong'};v=v.trim().toLowerCase();if(v.length>30)return{ok:false,msg:'maksimal 30 karakter'};if(v.includes(' '))return{ok:false,msg:'pake titik, bukan spasi'};if(!v.includes('.'))return{ok:false,msg:'harus dua kata pisah titik'};if((v.match(/\./g)||[]).length>1)return{ok:false,msg:'cuma boleh satu titik'};if(!UN_PAT.test(v))return{ok:false,msg:'cuma huruf kecil a-z, angka, dan satu titik'};const parts=v.split('.');if(parts.length!==2)return{ok:false,msg:'format harus kata.kata'};if(parts[0].length<2||parts[1].length<2)return{ok:false,msg:'minimal 2 huruf per kata'};return{ok:true,value:v}},validatePIN=pin=>{if(!/^\d{6}$/.test(pin))return{ok:false,msg:'PIN harus 6 digit angka'};if(/(\d)\1{5}/.test(pin))return{ok:false,msg:'PIN terlalu lemah (semua digit sama)'};if(pin==='123456'||pin==='654321')return{ok:false,msg:'PIN terlalu lemah (sequential)'};if(pin==='000000'||pin==='999999')return{ok:false,msg:'PIN terlalu lemah'};return{ok:true}},initDb=()=>{console.log('[JEJAK] Initializing database...');if(!JEJAK.SUPABASE_URL||JEJAK.SUPABASE_URL.includes('YOUR_PROJECT_ID')){console.error('[JEJAK] ⚠️ SUPABASE_URL belum diisi!');$('config-warning').classList.add('show');return false}if(!JEJAK.SUPABASE_KEY||JEJAK.SUPABASE_KEY.includes('YOUR_ANON')){console.error('[JEJAK] ⚠️ SUPABASE_KEY belum diisi!');$('config-warning').classList.add('show');return false}if(!window.supabase?.createClient){console.error('[JEJAK] Supabase SDK not loaded');return false}try{console.log('[JEJAK] Creating Supabase client...');db=window.supabase.createClient(JEJAK.SUPABASE_URL,JEJAK.SUPABASE_KEY);console.log('[JEJAK] ✓ DB initialized successfully!');return true}catch(e){log('DB Init',e);return false}},setupInput=(id,onChange)=>{const el=$(id);if(!el)return;el.addEventListener('input',e=>{const v=e.target.value,fmt=v.toLowerCase().replace(/\s+/g,'.').replace(/[^a-z0-9.]/g,'').replace(/\.{2,}/g,'.');if(fmt!==v){const p=e.target.selectionStart;e.target.value=fmt;try{e.target.setSelectionRange(p,p)}catch(_){}}onChange&&onChange()})},setupPinInput=(id,onChange)=>{const el=$(id);if(!el)return;el.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);onChange&&onChange()})},updateRegBtn=()=>{const valid=validateUsername($('reg-username').value).ok,pinOk=$('reg-pin').value.length===6,pinMatch=$('reg-pin').value===$('reg-pin-confirm').value,agreed=$('agree-checkbox').checked;$('register-btn').disabled=!(valid&&pinOk&&pinMatch&&agreed)},updateLoginBtn=()=>{const unOk=validateUsername($('login-username').value).ok,pinOk=$('login-pin').value.length===6;$('login-btn').disabled=!(unOk&&pinOk)};
-$('register-form').addEventListener('submit',async e=>{e.preventDefault();console.log('[JEJAK] Register form submitted');const username=$('reg-username').value,pin=$('reg-pin').value,pinConfirm=$('reg-pin-confirm').value,agreed=$('agree-checkbox').checked;setFb('reg-username-fb','','');setFb('reg-pin-fb','','');setFb('reg-pin-confirm-fb','','');const unValid=validateUsername(username);if(!unValid.ok){setFb('reg-username-fb','error',unValid.msg);return}const pinValid=validatePIN(pin);if(!pinValid.ok){setFb('reg-pin-fb','error',pinValid.msg);return}if(pin!==pinConfirm){setFb('reg-pin-confirm-fb','error','PIN ga cocok');return}if(!agreed){alert('⚠️ Lu harus terima tanggung jawab dulu!');return}const btn=$('register-btn');btn.disabled=true;btn.textContent='PROSES...';try{if(!db)throw new Error('Database ga terhubung');console.log('[JEJAK] Hashing PIN...');const pinHash=await hashPIN(pin);console.log('[JEJAK] Inserting to database...');const{data,error}=await db.from('profiles').insert({username:unValid.value,pin_hash:pinHash}).select('id, username');if(error){log('Register Insert',error);if(error.code==='23505')throw new Error('Username udah dipake — coba yang lain');let errMsg=error.message||'Unknown error';if(error.details)errMsg+=' | Details: '+error.details;if(error.hint)errMsg+=' | Hint: '+error.hint;throw new Error(errMsg)}console.log('[JEJAK] Register success!',data);if(!data||!data[0])throw new Error('Ga ada data returned — cek RLS policy di Supabase');localStorage.setItem(SK.username,data[0].username);localStorage.setItem(SK.uid,data[0].id);localStorage.setItem(SK.loggedIn,'true');setFb('reg-pin-confirm-fb','success','🎉 Akun berhasil dibuat!');setTimeout(()=>{alert(`✅ Akun dibuat!\n\nUsername: ${data[0].username}\n\n⚠️ SIMPAN PIN LU!`);window.location.href='spill.html'},1000)}catch(err){log('Register',err);setFb('reg-username-fb','error',err.message||'Gagal buat akun');btn.disabled=false;btn.textContent='DAFTAR →'}});
-$('login-form').addEventListener('submit',async e=>{e.preventDefault();console.log('[JEJAK] Login form submitted');const username=$('login-username').value,pin=$('login-pin').value;setFb('login-username-fb','','');setFb('login-pin-fb','','');const unValid=validateUsername(username);if(!unValid.ok){setFb('login-username-fb','error',unValid.msg);return}const pinValid=validatePIN(pin);if(!pinValid.ok){setFb('login-pin-fb','error',pinValid.msg);return}const btn=$('login-btn');btn.disabled=true;btn.textContent='VERIFIKASI...';try{if(!db)throw new Error('Database ga terhubung');console.log('[JEJAK] Hashing PIN for login...');const pinHash=await hashPIN(pin);console.log('[JEJAK] Querying database...');const{data,error}=await db.from('profiles').select('id, username, pin_hash').eq('username',unValid.value).eq('pin_hash',pinHash).single();if(error){log('Login Query',error);throw new Error('Username atau PIN salah')}console.log('[JEJAK] Login query result:',data);if(!data)throw new Error('Username atau PIN salah');localStorage.setItem(SK.username,data.username);localStorage.setItem(SK.uid,data.id);localStorage.setItem(SK.loggedIn,'true');setFb('login-pin-fb','success','✓ Login berhasil!');console.log('[JEJAK] Login success! Redirecting...');setTimeout(()=>window.location.href='spill.html',700)}catch(err){log('Login',err);setFb('login-pin-fb','error',err.message||'Login gagal');btn.disabled=false;btn.textContent='MASUK →'}});
-$('to-register').addEventListener('click',()=>{$('login-form').style.display='none';$('register-form').style.display='block';$('reg-username').focus()});
-$('to-login').addEventListener('click',()=>{$('register-form').style.display='none';$('login-form').style.display='block';$('login-username').focus()});
-setupInput('reg-username',updateRegBtn);setupPinInput('reg-pin',updateRegBtn);setupPinInput('reg-pin-confirm',updateRegBtn);$('agree-checkbox').addEventListener('change',updateRegBtn);setupInput('login-username',updateLoginBtn);setupPinInput('login-pin',updateLoginBtn);
-document.addEventListener('DOMContentLoaded',()=>{console.log('[JEJAK] v3.0-mvp — Zero-Knowledge Auth');console.log('[JEJAK] Timestamp:',new Date().toISOString());const dbOk=initDb();if(!dbOk)console.warn('[JEJAK] ⚠️ Database initialization failed');const loggedIn=localStorage.getItem(SK.loggedIn)==='true';if(loggedIn&&dbOk){console.log('[JEJAK] User already logged in, redirecting...');window.location.href='spill.html';return}setInterval(()=>{const el=$('onlinePill');if(el)el.textContent=(Math.floor(Math.random()*25)+18)+' ONLINE'},30000);console.log('[JEJAK] Initialization complete. Ready for user input.')});
+// ══════════════════════════════════════════════════════════════
+//  JEJAK AUTH v3.1 — Security Layer 1
+//
+//  PERUBAHAN DARI v3.0:
+//  - pin_hash TIDAK LAGI dikirim atau disimpan ke Supabase
+//  - Verifikasi PIN murni di browser via localStorage
+//  - Server hanya menyimpan: id, username, created_at, updated_at
+//  - Supabase dipakai hanya untuk: cek username unik + ambil id
+//  - Tidak ada credential sensitif yang meninggalkan browser
+// ══════════════════════════════════════════════════════════════
+
+const SUPA_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+const SK = { username:'jejak_username', uid:'jejak_uid', loggedIn:'jejak_logged_in', auth:'jejak_auth_v1' };
+
+let db = null;
+const $ = id => document.getElementById(id);
+
+// ── Crypto helpers ────────────────────────────────────────────
+// Hash PIN + username + device fingerprint → disimpan lokal saja
+async function hashLocal(pin, username, fp) {
+  const raw = pin + ':' + username + ':' + fp + ':jejak_local_v1';
+  const buf = new TextEncoder().encode(raw);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Device fingerprint — hanya untuk memperkuat hash lokal
+// Tidak dikirim ke server
+async function getDeviceFP() {
+  const parts = [];
+  try {
+    const c = document.createElement('canvas');
+    c.width = 200; c.height = 50;
+    const ctx = c.getContext('2d');
+    ctx.textBaseline = 'top';
+    ctx.font = '14px Syne';
+    ctx.fillStyle = '#ff2d55';
+    ctx.fillText('jejak_fp_v1', 2, 4);
+    parts.push(c.toDataURL());
+  } catch(e) { parts.push('nc'); }
+  parts.push(navigator.userAgent);
+  parts.push(screen.width + 'x' + screen.height + 'x' + screen.colorDepth);
+  parts.push(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  parts.push(navigator.language);
+  const buf = new TextEncoder().encode(parts.join('||'));
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── Validasi ──────────────────────────────────────────────────
+const UN_PAT = /^[a-z][a-z0-9]*\.[a-z][a-z0-9]*$/;
+const setFb = (id, type, msg) => {
+  const el = $(id); if (!el) return;
+  if (!type || !msg) { el.className = 'feedback'; el.textContent = ''; return; }
+  el.className = `feedback show ${type}`; el.textContent = msg;
+};
+const validateUsername = v => {
+  if (!v || !v.trim()) return { ok:false, msg:'username ga boleh kosong' };
+  v = v.trim().toLowerCase();
+  if (v.length > 30) return { ok:false, msg:'maksimal 30 karakter' };
+  if (!v.includes('.')) return { ok:false, msg:'harus dua kata pisah titik' };
+  if ((v.match(/\./g)||[]).length > 1) return { ok:false, msg:'cuma boleh satu titik' };
+  if (!UN_PAT.test(v)) return { ok:false, msg:'cuma huruf kecil a-z, angka, dan satu titik' };
+  const parts = v.split('.');
+  if (parts[0].length < 2 || parts[1].length < 2) return { ok:false, msg:'minimal 2 huruf per kata' };
+  return { ok:true, value:v };
+};
+const validatePIN = pin => {
+  if (!/^\d{6}$/.test(pin)) return { ok:false, msg:'PIN harus 6 digit angka' };
+  if (/(\d)\1{5}/.test(pin)) return { ok:false, msg:'PIN terlalu lemah (semua digit sama)' };
+  if (pin==='123456'||pin==='654321') return { ok:false, msg:'PIN terlalu lemah (sequential)' };
+  if (pin==='000000'||pin==='999999') return { ok:false, msg:'PIN terlalu lemah' };
+  return { ok:true };
+};
+
+// ── Init Supabase (hanya untuk username lookup) ───────────────
+const initDb = () => {
+  try {
+    db = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    return true;
+  } catch(e) { console.error('[JEJAK] DB init:', e); return false; }
+};
+
+// ── Input setup ───────────────────────────────────────────────
+const setupInput = (id, fn) => {
+  const el = $(id); if (!el) return;
+  el.addEventListener('input', e => {
+    const v = e.target.value;
+    const fmt = v.toLowerCase().replace(/\s+/g,'.').replace(/[^a-z0-9.]/g,'').replace(/\.{2,}/g,'.');
+    if (fmt !== v) { const p = e.target.selectionStart; e.target.value = fmt; try { e.target.setSelectionRange(p,p); } catch(_){} }
+    fn && fn();
+  });
+};
+const setupPin = (id, fn) => {
+  const el = $(id); if (!el) return;
+  el.addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g,'').slice(0,6); fn && fn(); });
+};
+const updateRegBtn = () => {
+  const valid = validateUsername($('reg-username').value).ok;
+  const pinOk = $('reg-pin').value.length === 6;
+  const pinMatch = $('reg-pin').value === $('reg-pin-confirm').value;
+  const agreed = $('agree-checkbox').checked;
+  $('register-btn').disabled = !(valid && pinOk && pinMatch && agreed);
+};
+const updateLoginBtn = () => {
+  const unOk = validateUsername($('login-username').value).ok;
+  const pinOk = $('login-pin').value.length === 6;
+  $('login-btn').disabled = !(unOk && pinOk);
+};
+
+// ══════════════════════════════════════════════════════════════
+//  REGISTER
+//  1. Cek username unik di Supabase (hanya baca username, tidak tulis pin)
+//  2. Insert ke profiles: hanya username (tanpa pin_hash)
+//  3. Simpan auth lokal: hash(pin + username + deviceFP) di localStorage
+// ══════════════════════════════════════════════════════════════
+$('register-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const username  = $('reg-username').value;
+  const pin       = $('reg-pin').value;
+  const pinConfirm= $('reg-pin-confirm').value;
+  const agreed    = $('agree-checkbox').checked;
+
+  setFb('reg-username-fb','','');
+  setFb('reg-pin-fb','','');
+  setFb('reg-pin-confirm-fb','','');
+
+  const unValid = validateUsername(username);
+  if (!unValid.ok) { setFb('reg-username-fb','error',unValid.msg); return; }
+  const pinValid = validatePIN(pin);
+  if (!pinValid.ok) { setFb('reg-pin-fb','error',pinValid.msg); return; }
+  if (pin !== pinConfirm) { setFb('reg-pin-confirm-fb','error','PIN ga cocok'); return; }
+  if (!agreed) { alert('⚠️ Lu harus terima tanggung jawab dulu!'); return; }
+
+  const btn = $('register-btn');
+  btn.disabled = true; btn.textContent = 'PROSES...';
+
+  try {
+    if (!db) throw new Error('Database ga terhubung');
+
+    // Insert ke Supabase — hanya username, TANPA pin_hash
+    const { data, error } = await db
+      .from('profiles')
+      .insert({ username: unValid.value })
+      .select('id, username');
+
+    if (error) {
+      if (error.code === '23505') throw new Error('Username udah dipake — coba yang lain');
+      throw new Error(error.message || 'Gagal buat akun');
+    }
+    if (!data || !data[0]) throw new Error('Tidak ada data returned — cek RLS policy');
+
+    // Hash PIN + username + device fingerprint — simpan lokal saja
+    const fp      = await getDeviceFP();
+    const authHash= await hashLocal(pin, unValid.value, fp);
+
+    // Simpan semua di localStorage — tidak ada yang ke server
+    localStorage.setItem(SK.username, data[0].username);
+    localStorage.setItem(SK.uid,      data[0].id);
+    localStorage.setItem(SK.loggedIn, 'true');
+    localStorage.setItem(SK.auth,     authHash);
+
+    setFb('reg-pin-confirm-fb','success','🎉 Akun berhasil dibuat!');
+    setTimeout(() => {
+      alert(`✅ Akun dibuat!\n\nUsername: ${data[0].username}\n\n⚠️ SIMPAN PIN LU!\nPIN hanya ada di device ini — tidak bisa dipulihkan.`);
+      window.location.href = 'spill.html';
+    }, 1000);
+
+  } catch(err) {
+    console.error('[JEJAK] Register:', err);
+    setFb('reg-username-fb','error', err.message || 'Gagal buat akun');
+    btn.disabled = false; btn.textContent = 'DAFTAR →';
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+//  LOGIN
+//  1. Ambil id dari Supabase berdasarkan username (tanpa pin)
+//  2. Hitung hash(pin + username + deviceFP) di browser
+//  3. Cocokkan dengan hash yang tersimpan di localStorage
+//  Supabase tidak pernah tahu PIN — verifikasi 100% di browser
+// ══════════════════════════════════════════════════════════════
+$('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const username = $('login-username').value;
+  const pin      = $('login-pin').value;
+
+  setFb('login-username-fb','','');
+  setFb('login-pin-fb','','');
+
+  const unValid = validateUsername(username);
+  if (!unValid.ok) { setFb('login-username-fb','error',unValid.msg); return; }
+  const pinValid = validatePIN(pin);
+  if (!pinValid.ok) { setFb('login-pin-fb','error',pinValid.msg); return; }
+
+  const btn = $('login-btn');
+  btn.disabled = true; btn.textContent = 'VERIFIKASI...';
+
+  try {
+    if (!db) throw new Error('Database ga terhubung');
+
+    // Ambil id dari Supabase — hanya untuk dapat UUID, tidak ada pin check
+    const { data, error } = await db
+      .from('profiles')
+      .select('id, username')
+      .eq('username', unValid.value)
+      .single();
+
+    if (error || !data) throw new Error('Username tidak ditemukan');
+
+    // Verifikasi PIN di browser — hitung ulang hash dan cocokkan
+    const fp       = await getDeviceFP();
+    const authHash = await hashLocal(pin, unValid.value, fp);
+    const stored   = localStorage.getItem(SK.auth);
+
+    if (!stored) {
+      // User pertama kali login di device ini (misal ganti browser)
+      // Tidak bisa verifikasi PIN karena hash tidak ada — harus register ulang
+      throw new Error('Akun ini tidak terdaftar di device ini — PIN tidak bisa diverifikasi');
+    }
+
+    if (authHash !== stored) {
+      throw new Error('PIN salah');
+    }
+
+    // Login berhasil
+    localStorage.setItem(SK.username, data.username);
+    localStorage.setItem(SK.uid,      data.id);
+    localStorage.setItem(SK.loggedIn, 'true');
+
+    setFb('login-pin-fb','success','✓ Login berhasil!');
+    setTimeout(() => window.location.href = 'spill.html', 700);
+
+  } catch(err) {
+    console.error('[JEJAK] Login:', err);
+    setFb('login-pin-fb','error', err.message || 'Login gagal');
+    btn.disabled = false; btn.textContent = 'MASUK →';
+  }
+});
+
+// ── Nav ───────────────────────────────────────────────────────
+$('to-register').addEventListener('click', () => {
+  $('login-form').style.display = 'none';
+  $('register-form').style.display = 'block';
+  $('reg-username').focus();
+});
+$('to-login').addEventListener('click', () => {
+  $('register-form').style.display = 'none';
+  $('login-form').style.display = 'block';
+  $('login-username').focus();
+});
+
+setupInput('reg-username', updateRegBtn);
+setupPin('reg-pin', updateRegBtn);
+setupPin('reg-pin-confirm', updateRegBtn);
+$('agree-checkbox').addEventListener('change', updateRegBtn);
+setupInput('login-username', updateLoginBtn);
+setupPin('login-pin', updateLoginBtn);
+
+// ── Init ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('[JEJAK] v3.1-secure — Zero-Knowledge Auth');
+  console.log('[JEJAK] PIN verification: browser-only, never sent to server');
+  initDb();
+
+  // Redirect jika sudah login
+  if (localStorage.getItem(SK.loggedIn) === 'true') {
+    window.location.href = 'spill.html';
+    return;
+  }
+
+  // Online count (simulasi — tidak tracking user)
+  const pill = $('onlinePill');
+  if (pill) {
+    pill.textContent = (Math.floor(Math.random()*25)+18) + ' ONLINE';
+    setInterval(() => {
+      if (pill) pill.textContent = (Math.floor(Math.random()*25)+18) + ' ONLINE';
+    }, 30000);
+  }
+});
 </script>
 </body>
 </html>
