@@ -24,6 +24,14 @@
         .settings-dropdown{position:absolute;top:60px;right:18px;background:var(--sf);border:2px solid var(--bd);box-shadow:6px 6px 0 #000;z-index:200;min-width:180px;display:none}
         .settings-dropdown.show{display:block}
         .dropdown-item{padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--bd)}
+        .login-btn-cta{font-family:var(--font-mono);font-size:11px;background:var(--ap);color:#fff;border:2px solid #000;padding:5px 14px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;box-shadow:2px 2px 0 #000;transition:transform .08s,box-shadow .08s;text-decoration:none;display:inline-flex;align-items:center}
+        .login-btn-cta:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #000}
+        .guest-lock-overlay{position:absolute;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+        .guest-lock-title{font-family:var(--font-mono);font-size:11px;color:var(--txs);letter-spacing:.08em;text-align:center;line-height:1.6}
+        .guest-lock-cta{font-family:var(--font-mono);font-size:12px;background:var(--ap);color:#fff;border:2px solid #000;padding:10px 24px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;box-shadow:3px 3px 0 #000}
+        .guest-banner{background:rgba(255,59,111,.07);border-bottom:1px solid rgba(255,59,111,.3);padding:7px 18px;font-family:var(--font-mono);font-size:10px;color:var(--txs);display:flex;justify-content:space-between;align-items:center;letter-spacing:.04em;flex-shrink:0}
+        .guest-banner b{color:var(--ap)}
+        .guest-btn-lock{pointer-events:none;opacity:.35}
         .scroll{flex:1;overflow-y:auto;padding-bottom:70px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
         .radar-sect{background:var(--sf);border-bottom:2px solid var(--bd)}
         .radar-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
@@ -181,15 +189,16 @@
 <div class="app">
     <div class="header">
         <div class="logo">SP<span class="x">✕</span>LL</div>
-        <div class="user-section">
-            <span class="user-badge" id="userNameDisplay">@loading...</span>
-            <button class="settings-btn" id="settingsBtn">⋮</button>
-        </div>
-        <div class="settings-dropdown" id="settingsDropdown">
-            <div class="dropdown-item" id="logoutBtn">🚪 Logout</div>
+        <div class="user-section" id="userSection">
+            <!-- diisi JS berdasarkan mode guest/login -->
         </div>
     </div>
 
+    <!-- Guest banner — hanya muncul jika tidak login -->
+    <div class="guest-banner" id="guestBanner" style="display:none">
+        <span>mode <b>guest</b> — spill feed bisa dibaca, fitur interaktif perlu login</span>
+        <a href="index.html" class="login-btn-cta">LOGIN →</a>
+    </div>
     <div class="scroll">
         <div class="radar-sect">
             <div class="radar-header">
@@ -340,10 +349,10 @@ const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=200
 const AI={hot_take:['agak.koplak','chili.padi','sejuta.badai','satria.bajahitam'],soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']};
 
 const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
-if(localStorage.getItem(K.l)!=='true'){window.location.href='index.html';return;}
-const ME=localStorage.getItem(K.u);
-const UID=localStorage.getItem(K.i);
-const SID='sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+const IS_GUEST = localStorage.getItem(K.l) !== 'true';
+const ME  = IS_GUEST ? null : localStorage.getItem(K.u);
+const UID = IS_GUEST ? null : localStorage.getItem(K.i);
+const SID = IS_GUEST ? null : 'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -489,14 +498,56 @@ window.WH=WH;
 // ════════════════════════════════════════
 //  APP CORE
 // ════════════════════════════════════════
+// ── Guest/Login UI setup ─────────────────────────────────────
+function setupGuestUI(){
+    // Header user section
+    const sec=$('userSection');
+    if(IS_GUEST){
+        sec.innerHTML='<a href="index.html" class="login-btn-cta">LOGIN →</a>';
+        // Guest banner
+        const banner=$('guestBanner');
+        if(banner) banner.style.display='flex';
+        // Lock interactive radar elements
+        ['btnHot','btnSoft','whisperBtn'].forEach(id=>{
+            const el=$(id); if(el){ el.classList.add('guest-btn-lock'); el.title='Login untuk menggunakan fitur ini'; }
+        });
+        // Lock whisper trigger
+        const wt=$('wTrigger'); if(wt){ wt.classList.add('guest-btn-lock'); }
+        // Overlay on radar
+        const radarCont=$('radarCont');
+        if(radarCont){
+            const ov=document.createElement('div');
+            ov.className='guest-lock-overlay';
+            ov.id='guestRadarLock';
+            ov.innerHTML='<div class="guest-lock-title">vibe radar · whisper<br>perlu login untuk menggunakan</div><button class="guest-lock-cta" onclick="location.href=\'index.html\'">LOGIN / DAFTAR →</button>';
+            radarCont.appendChild(ov);
+        }
+    } else {
+        sec.innerHTML=`<span class="user-badge" id="userNameDisplay">@${ME}</span><button class="settings-btn" id="settingsBtn">⋮</button><div class="settings-dropdown" id="settingsDropdown"><div class="dropdown-item" id="logoutBtn">🚪 Logout</div></div>`;
+        // Bind settings after injecting HTML
+        const sb=$('settingsBtn'),sd=$('settingsDropdown');
+        if(sb&&sd){
+            sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};
+            document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});
+        }
+        const lb=$('logoutBtn');
+        if(lb) lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);};
+    }
+}
+
 async function init(){
-    $('userNameDisplay').textContent='@'+ME;
+    setupGuestUI();
     initRadar();loadSpills();startBrewInterval();
-    await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
-    startHeartbeat();loadCount();
-    setInterval(loadCount,15000);
-    tPollInv=setInterval(pollInvitation,POLL_INV_MS);
-    WH.startPolling();
+    if(!IS_GUEST){
+        await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
+        startHeartbeat();loadCount();
+        setInterval(loadCount,15000);
+        tPollInv=setInterval(pollInvitation,POLL_INV_MS);
+        WH.startPolling();
+    }else{
+        loadCount();
+        setInterval(loadCount,15000);
+    }
 }
 
 function startHeartbeat(){if(tHeart)clearInterval(tHeart);tHeart=setInterval(()=>api('/api/invite',{action:'heartbeat',userId:UID,username:ME}),HEARTBEAT_MS);}
@@ -611,13 +662,9 @@ window.addEventListener('beforeunload',cleanup);
 window.addEventListener('load',async()=>{
     await init();
 
-    const sb=$('settingsBtn'),sd=$('settingsDropdown');
-    sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};
-    document.addEventListener('click',e=>{if(!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});
-    $('logoutBtn').onclick=async()=>{await cleanup();localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);};
+    // Settings/logout binding handled in setupGuestUI()
 
-    $('btnHot').onclick=()=>{if(state===S.IDLE)startBid('hot_take');};
-    $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');};
+    if(!IS_GUEST){ $('btnHot').onclick=()=>{if(state===S.IDLE)startBid('hot_take');}; $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');}; }
 
     $('scanCancel').onclick=async()=>{if(state===S.BIDDING){clearBidTimers();await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});enterIdle();toast('Pencarian dibatalkan');}};
 
@@ -631,7 +678,7 @@ window.addEventListener('load',async()=>{
     $('chatClose').onclick=async()=>{if(state===S.CHAT_REAL){addSys('🔴 Kamu mengakhiri chat');await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});}setTimeout(enterIdle,500);};
 
     // ── WHISPER events ──────────────────────
-    $('whisperBtn').onclick=()=>$('whisperOverlay').classList.add('show');
+    if(!IS_GUEST) $('whisperBtn').onclick=()=>$('whisperOverlay').classList.add('show');
     $('whisperCancel').onclick=()=>{$('whisperOverlay').classList.remove('show');$('whisperTarget').value='';$('whisperMessage').value='';};
 
     $('whisperSend').onclick=async()=>{
