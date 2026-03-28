@@ -168,7 +168,6 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;bac
 </div>
 </div></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ══════════════════════════════════════════════════════════════
 //  JEJAK AUTH v3.1 — Security Layer 1
@@ -185,7 +184,6 @@ const SUPA_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
 const SK = { username:'jejak_username', uid:'jejak_uid', loggedIn:'jejak_logged_in', auth:'jejak_auth_v1' };
 
-let db = null;
 const $ = id => document.getElementById(id);
 
 // ── Crypto helpers ────────────────────────────────────────────
@@ -246,13 +244,31 @@ const validatePIN = pin => {
   return { ok:true };
 };
 
-// ── Init Supabase (hanya untuk username lookup) ───────────────
-const initDb = () => {
-  try {
-    db = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-    return true;
-  } catch(e) { console.error('[JEJAK] DB init:', e); return false; }
+// ── Supabase REST helper — tanpa SDK, tanpa auth lock ────────
+// Hanya untuk: cek username unik + ambil UUID
+// Tidak menggunakan supabase-js SDK sama sekali — tidak ada GoTrue, tidak ada lock
+const sbRest = async (method, path, body) => {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal',
+    },
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(SUPA_URL + '/rest/v1' + path, opts);
+  const text = await r.text();
+  const data = text ? JSON.parse(text) : null;
+  if (!r.ok) {
+    const err = new Error((data && (data.message || data.error)) || 'Request failed');
+    err.code = data && data.code;
+    throw err;
+  }
+  return data;
 };
+const initDb = () => true; // tidak perlu init — pakai fetch langsung
 
 // ── Input setup ───────────────────────────────────────────────
 const setupInput = (id, fn) => {
@@ -312,14 +328,15 @@ $('register-form').addEventListener('submit', async e => {
     if (!db) throw new Error('Database ga terhubung');
 
     // Insert ke Supabase — hanya username, TANPA pin_hash
-    const { data, error } = await db
-      .from('profiles')
-      .insert({ username: unValid.value })
-      .select('id, username');
-
-    if (error) {
-      if (error.code === '23505') throw new Error('Username udah dipake — coba yang lain');
-      throw new Error(error.message || 'Gagal buat akun');
+    // Pakai fetch langsung, tanpa SDK (tidak ada GoTrue auth lock)
+    let data;
+    try {
+      const result = await sbRest('POST', '/profiles?select=id,username', { username: unValid.value });
+      data = Array.isArray(result) ? result : [result];
+    } catch(e) {
+      if (e.code === '23505' || (e.message && e.message.includes('duplicate')))
+        throw new Error('Username udah dipake — coba yang lain');
+      throw new Error(e.message || 'Gagal buat akun');
     }
     if (!data || !data[0]) throw new Error('Tidak ada data returned — cek RLS policy');
 
@@ -373,13 +390,13 @@ $('login-form').addEventListener('submit', async e => {
     if (!db) throw new Error('Database ga terhubung');
 
     // Ambil id dari Supabase — hanya untuk dapat UUID, tidak ada pin check
-    const { data, error } = await db
-      .from('profiles')
-      .select('id, username')
-      .eq('username', unValid.value)
-      .single();
-
-    if (error || !data) throw new Error('Username tidak ditemukan');
+    // Pakai fetch langsung, tanpa SDK
+    let data;
+    try {
+      const result = await sbRest('GET', '/profiles?username=eq.' + encodeURIComponent(unValid.value) + '&select=id,username&limit=1', null);
+      data = Array.isArray(result) ? result[0] : result;
+    } catch(e) { throw new Error('Username tidak ditemukan'); }
+    if (!data) throw new Error('Username tidak ditemukan');
 
     // Verifikasi PIN di browser — hitung ulang hash dan cocokkan
     const fp       = await getDeviceFP();
@@ -434,8 +451,6 @@ setupPin('login-pin', updateLoginBtn);
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[JEJAK] v3.1-secure — Zero-Knowledge Auth');
   console.log('[JEJAK] PIN verification: browser-only, never sent to server');
-  initDb();
-
   // Redirect jika sudah login
   if (localStorage.getItem(SK.loggedIn) === 'true') {
     window.location.href = '/';
