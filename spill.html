@@ -197,7 +197,7 @@
     <!-- Guest banner — hanya muncul jika tidak login -->
     <div class="guest-banner" id="guestBanner" style="display:none">
         <span>mode <b>guest</b> — spill feed bisa dibaca, fitur interaktif perlu login</span>
-        <a href="index.html" class="login-btn-cta">LOGIN →</a>
+        <a href="/login" class="login-btn-cta">LOGIN →</a>
     </div>
     <div class="scroll">
         <div class="radar-sect">
@@ -503,7 +503,7 @@ function setupGuestUI(){
     // Header user section
     const sec=$('userSection');
     if(IS_GUEST){
-        sec.innerHTML='<a href="index.html" class="login-btn-cta">LOGIN →</a>';
+        sec.innerHTML='<a href="/login" class="login-btn-cta">LOGIN →</a>';
         // Guest banner
         const banner=$('guestBanner');
         if(banner) banner.style.display='flex';
@@ -519,7 +519,7 @@ function setupGuestUI(){
             const ov=document.createElement('div');
             ov.className='guest-lock-overlay';
             ov.id='guestRadarLock';
-            ov.innerHTML='<div class="guest-lock-title">vibe radar · whisper<br>perlu login untuk menggunakan</div><button class="guest-lock-cta" onclick="location.href=\'index.html\'">LOGIN / DAFTAR →</button>';
+            ov.innerHTML='<div class="guest-lock-title">vibe radar · whisper<br>perlu login untuk menggunakan</div><button class="guest-lock-cta" onclick="location.href=\'/login\'">LOGIN / DAFTAR →</button>';
             radarCont.appendChild(ov);
         }
     } else {
@@ -531,7 +531,7 @@ function setupGuestUI(){
             document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});
         }
         const lb=$('logoutBtn');
-        if(lb) lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='index.html',1000);};
+        if(lb) lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='/login',1000);};
     }
 }
 
