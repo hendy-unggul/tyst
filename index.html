@@ -336,7 +336,7 @@ $('register-form').addEventListener('submit', async e => {
     setFb('reg-pin-confirm-fb','success','🎉 Akun berhasil dibuat!');
     setTimeout(() => {
       alert(`✅ Akun dibuat!\n\nUsername: ${data[0].username}\n\n⚠️ SIMPAN PIN LU!\nPIN hanya ada di device ini — tidak bisa dipulihkan.`);
-      window.location.href = 'spill.html';
+      window.location.href = '/';
     }, 1000);
 
   } catch(err) {
@@ -402,7 +402,7 @@ $('login-form').addEventListener('submit', async e => {
     localStorage.setItem(SK.loggedIn, 'true');
 
     setFb('login-pin-fb','success','✓ Login berhasil!');
-    setTimeout(() => window.location.href = 'spill.html', 700);
+    setTimeout(() => window.location.href = '/', 700);
 
   } catch(err) {
     console.error('[JEJAK] Login:', err);
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Redirect jika sudah login
   if (localStorage.getItem(SK.loggedIn) === 'true') {
-    window.location.href = 'spill.html';
+    window.location.href = '/';
     return;
   }
 
