@@ -26,12 +26,7 @@
         .dropdown-item{padding:12px 16px;font-family:var(--font-mono);font-size:12px;color:var(--tx);cursor:pointer;border-bottom:1px solid var(--bd)}
         .login-btn-cta{font-family:var(--font-mono);font-size:11px;background:var(--ap);color:#fff;border:2px solid #000;padding:5px 14px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;box-shadow:2px 2px 0 #000;transition:transform .08s,box-shadow .08s;text-decoration:none;display:inline-flex;align-items:center}
         .login-btn-cta:hover{transform:translate(-1px,-1px);box-shadow:3px 3px 0 #000}
-        .guest-lock-overlay{position:absolute;inset:0;background:rgba(0,0,0,.85);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-        .guest-lock-title{font-family:var(--font-mono);font-size:11px;color:var(--txs);letter-spacing:.08em;text-align:center;line-height:1.6}
-        .guest-lock-cta{font-family:var(--font-mono);font-size:12px;background:var(--ap);color:#fff;border:2px solid #000;padding:10px 24px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;box-shadow:3px 3px 0 #000}
-        .guest-banner{background:rgba(255,59,111,.07);border-bottom:1px solid rgba(255,59,111,.3);padding:7px 18px;font-family:var(--font-mono);font-size:10px;color:var(--txs);display:flex;justify-content:space-between;align-items:center;letter-spacing:.04em;flex-shrink:0}
         .guest-banner b{color:var(--ap)}
-        .guest-btn-lock{pointer-events:none;opacity:.35}
         .scroll{flex:1;overflow-y:auto;padding-bottom:70px;scrollbar-width:thin;scrollbar-color:var(--bd2) var(--bg)}
         .radar-sect{background:var(--sf);border-bottom:2px solid var(--bd)}
         .radar-header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
@@ -184,33 +179,34 @@
         .w-dot{width:6px;height:6px;border-radius:50%;background:var(--spill);display:none;flex-shrink:0}
         .w-dot.show{display:block}
 
-        /* ── LOGIN MODAL ── */
-        .login-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
-        .login-modal-bg.show{display:flex}
-        .login-modal{background:var(--sf);border:2px solid var(--bd2);padding:28px 24px;width:100%;max-width:380px;position:relative;box-shadow:8px 8px 0 #000}
-        .login-modal::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--as);border-left:2px solid var(--as)}
-        .login-modal::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--ap);border-right:2px solid var(--ap)}
-        .lm-close{position:absolute;top:12px;right:12px;background:0 0;border:1px solid var(--bd2);color:var(--txs);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
-        .lm-title{font-family:var(--font-display);font-size:22px;letter-spacing:2px;color:var(--tx);margin-bottom:4px}
-        .lm-hint{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:.5px;margin-bottom:16px}
-        .lm-input{width:100%;background:var(--bg);border:2px solid var(--bd2);padding:13px 16px;color:var(--tx);font-family:var(--font-mono);font-size:14px;outline:none;margin-bottom:10px;box-shadow:2px 2px 0 #000;letter-spacing:.06em}
+        /* ── Login Modal ── */
+        .login-btn-cta{font-family:var(--font-mono);font-size:11px;background:var(--ap);color:#fff;border:2px solid #000;padding:5px 14px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;box-shadow:2px 2px 0 #000}
+        .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+        .lm-bg.show{display:flex}
+        .lm-box{background:var(--sf);border:2px solid var(--bd2);padding:28px 24px;width:100%;max-width:360px;position:relative;box-shadow:8px 8px 0 #000}
+        .lm-box::before{content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--as);border-left:2px solid var(--as)}
+        .lm-box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--ap);border-right:2px solid var(--ap)}
+        .lm-close{position:absolute;top:10px;right:10px;background:0 0;border:1px solid var(--bd2);color:var(--txs);width:24px;height:24px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;line-height:1}
+        .lm-title{font-family:var(--font-display);font-size:20px;letter-spacing:2px;color:var(--tx);margin-bottom:14px}
+        .lm-label{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:.5px;margin-bottom:5px}
+        .lm-input{width:100%;background:var(--bg);border:2px solid var(--bd2);padding:12px 14px;color:var(--tx);font-family:var(--font-mono);font-size:14px;outline:none;margin-bottom:12px;letter-spacing:.06em}
         .lm-input:focus{border-color:var(--ap)}
         .lm-input::placeholder{color:var(--txm)}
         .lm-pin{text-align:center;letter-spacing:.8em;font-size:20px;font-weight:700;-webkit-text-security:disc}
-        .lm-pin::placeholder{letter-spacing:.4em;-webkit-text-security:none}
-        .lm-btn{width:100%;background:var(--ap);color:#fff;border:2px solid #000;padding:14px;font-family:var(--font-display);font-size:20px;letter-spacing:2px;cursor:pointer;box-shadow:4px 4px 0 #000;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:10px}
+        .lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:14px}
+        .lm-btn{width:100%;background:var(--ap);color:#fff;border:2px solid #000;padding:13px;font-family:var(--font-display);font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:4px 4px 0 #000;margin-top:2px}
         .lm-btn:disabled{opacity:.35;cursor:not-allowed}
-        .lm-fb{font-family:var(--font-mono);font-size:11px;padding:8px 12px;border:1px solid;margin-top:8px;display:none}
+        .lm-fb{font-family:var(--font-mono);font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:8px;display:none;line-height:1.5}
         .lm-fb.show{display:block}
-        .lm-fb.error{border-color:var(--ap);color:var(--ap);background:rgba(255,45,85,.08)}
-        .lm-fb.success{border-color:var(--aq);color:var(--aq);background:rgba(191,255,0,.06)}
-        .lm-toggle{text-align:center;margin-top:10px;font-family:var(--font-mono);font-size:10px;color:var(--txs)}
-        .lm-toggle button{background:0 0;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:var(--font-mono);font-size:10px}
-        .lm-disclaimer{font-family:var(--font-mono);font-size:9px;color:var(--txm);margin-top:12px;padding:8px 10px;border:1px solid var(--ap);line-height:1.6}
-        .lm-disclaimer b{color:var(--ap)}
-        .lm-agree{display:flex;align-items:flex-start;gap:10px;margin-top:10px}
-        .lm-agree input{margin-top:2px;width:16px;height:16px;accent-color:var(--ap);flex-shrink:0}
-        .lm-agree label{font-family:var(--font-mono);font-size:10px;color:var(--tx);line-height:1.6;cursor:pointer}
+        .lm-fb.e{border-color:var(--ap);color:var(--ap);background:rgba(255,45,85,.08)}
+        .lm-fb.s{border-color:var(--aq);color:var(--aq);background:rgba(191,255,0,.06)}
+        .lm-sw{text-align:center;margin-top:10px;font-family:var(--font-mono);font-size:10px;color:var(--txs)}
+        .lm-sw button{background:0 0;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:var(--font-mono);font-size:10px}
+        .lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
+        .lm-agree input{margin-top:2px;width:15px;height:15px;flex-shrink:0;accent-color:var(--ap)}
+        .lm-agree label{font-family:var(--font-mono);font-size:10px;color:var(--tx);line-height:1.5;cursor:pointer}
+        .lm-note{font-family:var(--font-mono);font-size:9px;color:var(--txm);padding:8px;border:1px solid var(--ap);margin-top:10px;line-height:1.6}
+        .lm-note b{color:var(--ap)}
     </style>
 </head>
 <body>
@@ -222,7 +218,11 @@
         </div>
     </div>
 
-    <!-- guest banner removed -->
+    <!-- Guest banner — hanya muncul jika tidak login -->
+    <div class="guest-banner" id="guestBanner" style="display:none">
+        <span>mode <b>guest</b> — spill feed bisa dibaca, fitur interaktif perlu login</span>
+        <a href="/login.html" class="login-btn-cta">LOGIN →</a>
+    </div>
     <div class="scroll">
         <div class="radar-sect">
             <div class="radar-header">
@@ -522,40 +522,32 @@ window.WH=WH;
 // ════════════════════════════════════════
 //  APP CORE
 // ════════════════════════════════════════
-// ── Guest/Login UI setup ─────────────────────────────────────
+// ── Guest/Login UI setup — MINIMAL, tidak menyentuh radar ────
 function setupGuestUI(){
-    // Header user section
     const sec=$('userSection');
+    if(!sec) return;
     if(IS_GUEST){
-        sec.innerHTML='<a href="#" onclick="goLogin();return false;" class="login-btn-cta">LOGIN →</a>';
-        // Guest banner
-        const banner=$('guestBanner');
-        if(banner) banner.style.display='flex';
-        // Lock interactive radar elements
+        // Hanya update header — 1 tombol LOGIN saja
+        sec.innerHTML='<button class="login-btn-cta" onclick="openLoginModal()">LOGIN →</button>';
+        // Disable CTA interaktif — hanya visual, tidak block radar
         ['btnHot','btnSoft','whisperBtn'].forEach(id=>{
-            const el=$(id); if(el){ el.classList.add('guest-btn-lock'); el.title='Login untuk menggunakan fitur ini'; }
+            const el=$(id);
+            if(el){ el.disabled=true; el.style.opacity='.45'; el.title='Login untuk menggunakan'; }
         });
-        // Lock whisper trigger
-        const wt=$('wTrigger'); if(wt){ wt.classList.add('guest-btn-lock'); }
-        // Overlay on radar
-        const radarCont=$('radarCont');
-        if(radarCont){
-            const ov=document.createElement('div');
-            ov.className='guest-lock-overlay';
-            ov.id='guestRadarLock';
-            ov.innerHTML='<div class="guest-lock-title" style="font-size:12px;color:var(--txs);font-family:var(--font-mono);text-align:center;letter-spacing:.06em;line-height:1.8">vibe radar &amp; whisper<br>tersedia setelah login</div>';
-            radarCont.appendChild(ov);
-        }
     } else {
-        sec.innerHTML=`<span class="user-badge" id="userNameDisplay">@${ME}</span><button class="settings-btn" id="settingsBtn">⋮</button><div class="settings-dropdown" id="settingsDropdown"><div class="dropdown-item" id="logoutBtn">🚪 Logout</div></div>`;
-        // Bind settings after injecting HTML
+        // Mode login normal — rebuild header
+        sec.innerHTML=`<span class="user-badge">@${ME}</span><button class="settings-btn" id="settingsBtn">⋮</button>`;
+        const dd=document.createElement('div');
+        dd.className='settings-dropdown';dd.id='settingsDropdown';
+        dd.innerHTML='<div class="dropdown-item" id="logoutBtn">🚪 Logout</div>';
+        sec.parentNode.appendChild(dd);
         const sb=$('settingsBtn'),sd=$('settingsDropdown');
         if(sb&&sd){
             sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};
             document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});
         }
         const lb=$('logoutBtn');
-        if(lb) lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>window.location.href='#' onclick='goLogin();return false;',1000);};
+        if(lb) lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);toast('👋 Sampai jumpa!');setTimeout(()=>{localStorage.removeItem('jejak_logged_in');window.location.reload();},1000);};
     }
 }
 
@@ -728,220 +720,168 @@ window.addEventListener('load',async()=>{
 
 })();
 
-// ── goLogin — buka modal login (tidak perlu redirect ke file terpisah) ──
-function goLogin() {
-  const bg = document.getElementById('loginModalBg');
-  if (bg) { bg.classList.add('show'); document.getElementById('lmLoginUser').focus(); }
+
+// ════════════════════════════════════════════════════
+//  LOGIN MODAL — standalone, tidak bergantung pada apapun
+// ════════════════════════════════════════════════════
+const LM={
+  SUPA_URL:'https://fuovfrdicdhnlymnacpz.supabase.co',
+  SUPA_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
+  SK:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
+
+  async sbGet(path){
+    const r=await fetch(this.SUPA_URL+'/rest/v1'+path,{headers:{apikey:this.SUPA_KEY,Authorization:'Bearer '+this.SUPA_KEY}});
+    const t=await r.text();return t?JSON.parse(t):[];
+  },
+  async sbPost(path,body){
+    const r=await fetch(this.SUPA_URL+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SUPA_KEY,Authorization:'Bearer '+this.SUPA_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});
+    const t=await r.text();const d=t?JSON.parse(t):null;
+    if(!r.ok){const e=new Error((d&&(d.message||d.code))||'failed');e.code=d&&d.code;throw e;}
+    return d;
+  },
+  async hash(str){
+    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  },
+  async fp(){
+    const p=[];
+    try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.fillText('fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}
+    p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);
+    return this.hash(p.join('|'));
+  },
+  async authHash(pin,user){return this.hash(pin+':'+user+':'+(await this.fp())+':jejak_local_v1');},
+  validU(v){
+    v=(v||'').trim().toLowerCase();
+    if(!v||!v.includes('.')||v.split('.').length!==2)return null;
+    if(!/^[a-z][a-z0-9]*\.[a-z][a-z0-9]*$/.test(v))return null;
+    const p=v.split('.');if(p[0].length<2||p[1].length<2)return null;
+    return v;
+  },
+  validP(p){return /^\d{6}$/.test(p)&&!/(\d){5}/.test(p)&&!['123456','654321','000000','999999'].includes(p);}
+};
+
+function openLoginModal(){document.getElementById('lmBg').classList.add('show');document.getElementById('lmU').focus();}
+function closeLM(){document.getElementById('lmBg').classList.remove('show');}
+function lmSwitch(to){
+  document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none';
+  document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none';
+  if(to==='login')document.getElementById('lmU').focus();
+  else document.getElementById('lmRU').focus();
 }
-function closeLoginModal() {
-  const bg = document.getElementById('loginModalBg');
-  if (bg) bg.classList.remove('show');
-  setLmFb('lmLoginFb','','');
-  setLmFb('lmRegFb','','');
-}
-function lmShowReg() {
-  document.getElementById('lmLogin').style.display='none';
-  document.getElementById('lmReg').style.display='block';
-  document.getElementById('lmRegUser').focus();
-}
-function lmShowLogin() {
-  document.getElementById('lmReg').style.display='none';
-  document.getElementById('lmLogin').style.display='block';
-  document.getElementById('lmLoginUser').focus();
-}
-function setLmFb(id,type,msg){
+function lmFb(id,type,msg){
   const el=document.getElementById(id);if(!el)return;
   if(!type){el.className='lm-fb';el.textContent='';return;}
   el.className='lm-fb show '+type;el.textContent=msg;
 }
-
-// ── Validasi (shared dengan modal) ───────────────────────────────
-const LM_UN_PAT=/^[a-z][a-z0-9]*\.[a-z][a-z0-9]*$/;
-function lmValidUser(v){
-  v=(v||'').trim().toLowerCase();
-  if(!v)return{ok:false,msg:'username kosong'};
-  if(!v.includes('.'))return{ok:false,msg:'format: kata.kata'};
-  if((v.match(/\./g)||[]).length>1)return{ok:false,msg:'satu titik saja'};
-  if(!LM_UN_PAT.test(v))return{ok:false,msg:'huruf kecil, angka, satu titik'};
-  const p=v.split('.');
-  if(p[0].length<2||p[1].length<2)return{ok:false,msg:'min 2 huruf per kata'};
-  return{ok:true,value:v};
+function lmChk(){
+  const ok=LM.validU(document.getElementById('lmRU').value)
+    &&LM.validP(document.getElementById('lmRP').value)
+    &&document.getElementById('lmRP').value===document.getElementById('lmRP2').value
+    &&document.getElementById('lmAg').checked;
+  document.getElementById('lmBtnR').disabled=!ok;
 }
-function lmValidPin(pin){
-  if(!/^\d{6}$/.test(pin))return{ok:false,msg:'harus 6 digit'};
-  if(/(\d)\1{5}/.test(pin))return{ok:false,msg:'PIN terlalu lemah'};
-  if(['123456','654321','000000','999999'].includes(pin))return{ok:false,msg:'PIN terlalu mudah'};
-  return{ok:true};
+function lmChkL(){
+  const ok=LM.validU(document.getElementById('lmU').value)&&LM.validP(document.getElementById('lmP').value);
+  document.getElementById('lmBtnL').disabled=!ok;
 }
 
-// ── Update button states ──────────────────────────────────────────
-function updateLmLoginBtn(){
-  const ok=lmValidUser(document.getElementById('lmLoginUser').value).ok
-    &&document.getElementById('lmLoginPin').value.length===6;
-  document.getElementById('lmLoginBtn').disabled=!ok;
-}
-function updateLmRegBtn(){
-  const ok=lmValidUser(document.getElementById('lmRegUser').value).ok
-    &&document.getElementById('lmRegPin').value.length===6
-    &&document.getElementById('lmRegPin').value===document.getElementById('lmRegPin2').value
-    &&document.getElementById('lmAgree').checked;
-  document.getElementById('lmRegBtn').disabled=!ok;
-}
-
-// ── Supabase REST (modal) ─────────────────────────────────────────
-const LM_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
-const LM_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
-async function lmSbGet(path){
-  const r=await fetch(LM_URL+'/rest/v1'+path,{headers:{apikey:LM_KEY,Authorization:'Bearer '+LM_KEY}});
-  const t=await r.text();return t?JSON.parse(t):[];
-}
-async function lmSbPost(path,body){
-  const r=await fetch(LM_URL+'/rest/v1'+path,{method:'POST',headers:{apikey:LM_KEY,Authorization:'Bearer '+LM_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});
-  const t=await r.text();const d=t?JSON.parse(t):null;
-  if(!r.ok){const e=new Error((d&&(d.message||d.code))||'failed');e.code=d&&d.code;throw e;}
-  return d;
-}
-async function lmHash(str){
-  const buf=new TextEncoder().encode(str);
-  const h=await crypto.subtle.digest('SHA-256',buf);
-  return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-async function lmDeviceFP(){
-  const p=[];
-  try{const cv=document.createElement('canvas');cv.width=200;cv.height=50;const ctx=cv.getContext('2d');ctx.font='14px sans-serif';ctx.fillStyle='#ff2d55';ctx.fillText('jejak_fp',2,20);p.push(cv.toDataURL());}catch(e){p.push('nc');}
-  p.push(navigator.userAgent,screen.width+'x'+screen.height,Intl.DateTimeFormat().resolvedOptions().timeZone,navigator.language);
-  return lmHash(p.join('||'));
-}
-async function lmAuthHash(pin,username){
-  const fp=await lmDeviceFP();
-  return lmHash(pin+':'+username+':'+fp+':jejak_local_v1');
-}
-const LM_SK={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'};
-
-// ── MODAL LOGIN ────────────────────────────────────────────────────
-async function doModalLogin(){
-  const username=document.getElementById('lmLoginUser').value;
-  const pin=document.getElementById('lmLoginPin').value;
-  setLmFb('lmLoginFb','','');
-  const unV=lmValidUser(username);
-  if(!unV.ok){setLmFb('lmLoginFb','error',unV.msg);return;}
-  const pinV=lmValidPin(pin);
-  if(!pinV.ok){setLmFb('lmLoginFb','error',pinV.msg);return;}
-  const btn=document.getElementById('lmLoginBtn');
-  btn.disabled=true;btn.textContent='VERIFIKASI...';
+async function lmDoLogin(){
+  const u=LM.validU(document.getElementById('lmU').value);
+  const p=document.getElementById('lmP').value;
+  lmFb('lmFbL','','');
+  if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
+  if(!LM.validP(p)){lmFb('lmFbL','e','PIN: 6 digit, tidak terlalu mudah');return;}
+  const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='...';
   try{
-    const data=await lmSbGet('/profiles?username=eq.'+encodeURIComponent(unV.value)+'&select=id,username&limit=1');
-    const user=Array.isArray(data)?data[0]:data;
+    const data=await LM.sbGet('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');
+    const user=Array.isArray(data)?data[0]:null;
     if(!user)throw new Error('Username tidak ditemukan');
-    const stored=localStorage.getItem(LM_SK.a);
+    const stored=localStorage.getItem(LM.SK.a);
     if(!stored)throw new Error('Akun belum terdaftar di device ini');
-    const hash=await lmAuthHash(pin,unV.value);
-    if(hash!==stored)throw new Error('PIN salah');
-    localStorage.setItem(LM_SK.u,user.username);
-    localStorage.setItem(LM_SK.i,user.id);
-    localStorage.setItem(LM_SK.l,'true');
-    setLmFb('lmLoginFb','success','✓ Login berhasil!');
-    setTimeout(()=>window.location.reload(),700);
-  }catch(err){
-    setLmFb('lmLoginFb','error',err.message||'Login gagal');
-    btn.disabled=false;btn.textContent='MASUK →';
-  }
+    if(await LM.authHash(p,u)!==stored)throw new Error('PIN salah');
+    localStorage.setItem(LM.SK.u,user.username);
+    localStorage.setItem(LM.SK.i,user.id);
+    localStorage.setItem(LM.SK.l,'true');
+    lmFb('lmFbL','s','✓ Login berhasil!');
+    setTimeout(()=>window.location.reload(),600);
+  }catch(err){lmFb('lmFbL','e',err.message||'Gagal');btn.disabled=false;btn.textContent='MASUK →';}
 }
 
-// ── MODAL REGISTER ─────────────────────────────────────────────────
-async function doModalRegister(){
-  const username=document.getElementById('lmRegUser').value;
-  const pin=document.getElementById('lmRegPin').value;
-  const pin2=document.getElementById('lmRegPin2').value;
-  setLmFb('lmRegFb','','');
-  const unV=lmValidUser(username);
-  if(!unV.ok){setLmFb('lmRegFb','error',unV.msg);return;}
-  const pinV=lmValidPin(pin);
-  if(!pinV.ok){setLmFb('lmRegFb','error',pinV.msg);return;}
-  if(pin!==pin2){setLmFb('lmRegFb','error','PIN tidak cocok');return;}
-  const btn=document.getElementById('lmRegBtn');
-  btn.disabled=true;btn.textContent='PROSES...';
+async function lmDoReg(){
+  const u=LM.validU(document.getElementById('lmRU').value);
+  const p=document.getElementById('lmRP').value;
+  lmFb('lmFbR','','');
+  if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;}
+  if(!LM.validP(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;}
+  const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent='...';
   try{
-    const data=await lmSbPost('/profiles?select=id,username',{username:unV.value});
+    const data=await LM.sbPost('/profiles?select=id,username',{username:u});
     const user=Array.isArray(data)?data[0]:data;
     if(!user||!user.id)throw new Error('Tidak ada data returned');
-    const hash=await lmAuthHash(pin,unV.value);
-    localStorage.setItem(LM_SK.u,user.username);
-    localStorage.setItem(LM_SK.i,user.id);
-    localStorage.setItem(LM_SK.l,'true');
-    localStorage.setItem(LM_SK.a,hash);
-    setLmFb('lmRegFb','success','🎉 Akun dibuat!');
-    setTimeout(()=>{
-      alert('✅ Akun dibuat!\n\nUsername: '+user.username+'\n\n⚠️ SIMPAN PIN — tidak bisa dipulihkan!');
-      window.location.reload();
-    },800);
+    const h=await LM.authHash(p,u);
+    localStorage.setItem(LM.SK.u,user.username);
+    localStorage.setItem(LM.SK.i,user.id);
+    localStorage.setItem(LM.SK.l,'true');
+    localStorage.setItem(LM.SK.a,h);
+    lmFb('lmFbR','s','🎉 Akun dibuat!');
+    setTimeout(()=>{alert('✅ Akun: '+user.username+'\n⚠️ SIMPAN PIN!');window.location.reload();},800);
   }catch(err){
-    const msg=(err.code==='23505'||(err.message||'').includes('duplicate'))?'Username sudah dipakai':(err.message||'Gagal');
-    setLmFb('lmRegFb','error',msg);
-    btn.disabled=false;btn.textContent='DAFTAR →';
+    const m=(err.code==='23505'||(err.message||'').includes('duplicate'))?'Username sudah dipakai':(err.message||'Gagal');
+    lmFb('lmFbR','e',m);btn.disabled=false;btn.textContent='DAFTAR →';
   }
 }
 
-// ── Wire input events untuk modal ────────────────────────────────
-document.addEventListener('DOMContentLoaded',()=>{
-  const lmLoginUser=document.getElementById('lmLoginUser');
-  const lmLoginPin=document.getElementById('lmLoginPin');
-  const lmRegUser=document.getElementById('lmRegUser');
-  const lmRegPin=document.getElementById('lmRegPin');
-  const lmRegPin2=document.getElementById('lmRegPin2');
-  if(lmLoginUser){
-    lmLoginUser.addEventListener('input',e=>{
-      let v=e.target.value.toLowerCase().replace(/[^a-z0-9.]/g,'').replace(/\.{2,}/g,'.');
-      if(v!==e.target.value)e.target.value=v;
-      updateLmLoginBtn();
-    });
-  }
-  if(lmLoginPin)lmLoginPin.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);updateLmLoginBtn();});
-  if(lmRegUser){
-    lmRegUser.addEventListener('input',e=>{
-      let v=e.target.value.toLowerCase().replace(/[^a-z0-9.]/g,'').replace(/\.{2,}/g,'.');
-      if(v!==e.target.value)e.target.value=v;
-      updateLmRegBtn();
-    });
-  }
-  if(lmRegPin)lmRegPin.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);updateLmRegBtn();});
-  if(lmRegPin2)lmRegPin2.addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);updateLmRegBtn();});
+// Wire inputs
+['lmU','lmP'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('input',()=>{
+    if(id==='lmU'){let v=el.value.toLowerCase().replace(/[^a-z0-9.]/g,'').replace(/\.{2,}/g,'.');if(v!==el.value)el.value=v;}
+    else el.value=el.value.replace(/\D/g,'').slice(0,6);
+    lmChkL();
+  });
 });
-
+['lmRU','lmRP','lmRP2'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('input',()=>{
+    if(id==='lmRU'){let v=el.value.toLowerCase().replace(/[^a-z0-9.]/g,'').replace(/\.{2,}/g,'.');if(v!==el.value)el.value=v;}
+    else el.value=el.value.replace(/\D/g,'').slice(0,6);
+    lmChk();
+  });
+});
 </script>
 
-<!-- ════ LOGIN MODAL ════ -->
-<div class="login-modal-bg" id="loginModalBg" onclick="if(event.target===this)closeLoginModal()">
-  <div class="login-modal">
-    <button class="lm-close" onclick="closeLoginModal()">✕</button>
+<!-- LOGIN MODAL -->
+<div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
+  <div class="lm-box">
+    <button class="lm-close" onclick="closeLM()">✕</button>
 
-    <!-- LOGIN PANEL -->
-    <div id="lmLogin">
+    <div id="lmPanelLogin">
       <div class="lm-title">MASUK</div>
-      <div class="lm-hint">username + PIN kamu</div>
-      <input type="text" class="lm-input" id="lmLoginUser" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
-      <input type="text" class="lm-input lm-pin" id="lmLoginPin" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
-      <div class="lm-fb" id="lmLoginFb"></div>
-      <button class="lm-btn" id="lmLoginBtn" disabled onclick="doModalLogin()">MASUK →</button>
-      <div class="lm-toggle"><button onclick="lmShowReg()">Belum punya akun? Daftar</button></div>
-      <div class="lm-disclaimer">Lupa PIN? <b>Tidak bisa recovery</b> — buat akun baru.</div>
+      <div class="lm-label">username</div>
+      <input class="lm-input" id="lmU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+      <div class="lm-label">PIN 6 digit</div>
+      <input class="lm-input lm-pin" id="lmP" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+      <div class="lm-fb" id="lmFbL"></div>
+      <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()">MASUK →</button>
+      <div class="lm-sw"><button onclick="lmSwitch('reg')">Belum punya akun? Daftar</button></div>
     </div>
 
-    <!-- REGISTER PANEL -->
-    <div id="lmReg" style="display:none">
+    <div id="lmPanelReg" style="display:none">
       <div class="lm-title">DAFTAR</div>
-      <div class="lm-hint">format username: <span style="color:var(--as)">kata.kata</span></div>
-      <input type="text" class="lm-input" id="lmRegUser" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
-      <input type="text" class="lm-input lm-pin" id="lmRegPin" placeholder="PIN 6 digit" autocomplete="off" maxlength="6" inputmode="numeric">
-      <input type="text" class="lm-input lm-pin" id="lmRegPin2" placeholder="Konfirmasi PIN" autocomplete="off" maxlength="6" inputmode="numeric">
-      <div class="lm-fb" id="lmRegFb"></div>
-      <div class="lm-disclaimer"><b>⚠️ PIN hilang = akun hilang PERMANENT.</b> No recovery. Simpan PIN!</div>
+      <div class="lm-label">username <span style="color:var(--as)">kata.kata</span></div>
+      <input class="lm-input" id="lmRU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+      <div class="lm-label">PIN 6 digit</div>
+      <input class="lm-input lm-pin" id="lmRP" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+      <div class="lm-label">konfirmasi PIN</div>
+      <input class="lm-input lm-pin" id="lmRP2" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+      <div class="lm-fb" id="lmFbR"></div>
       <div class="lm-agree">
-        <input type="checkbox" id="lmAgree" onchange="updateLmRegBtn()">
-        <label for="lmAgree">Saya paham dan terima <b>tanggung jawab penuh</b></label>
+        <input type="checkbox" id="lmAg" onchange="lmChk()">
+        <label for="lmAg">Saya paham PIN hilang = akun hilang <b style="color:var(--ap)">PERMANENT</b></label>
       </div>
-      <button class="lm-btn" id="lmRegBtn" disabled onclick="doModalRegister()" style="margin-top:10px">DAFTAR →</button>
-      <div class="lm-toggle"><button onclick="lmShowLogin()">Sudah punya akun? Masuk</button></div>
+      <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:6px">DAFTAR →</button>
+      <div class="lm-sw"><button onclick="lmSwitch('login')">Sudah punya akun? Masuk</button></div>
+      <div class="lm-note"><b>⚠️</b> PIN tidak bisa dipulihkan. Simpan di tempat aman!</div>
     </div>
   </div>
 </div>
