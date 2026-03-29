@@ -757,7 +757,7 @@ const LM={
     const p=v.split('.');if(p[0].length<2||p[1].length<2)return null;
     return v;
   },
-  validP(p){return /^\d{6}$/.test(p)&&!/(\d){5}/.test(p)&&!['123456','654321','000000','999999'].includes(p);}
+  validP(p){return /^\d{6}$/.test(p)&&!/(\d){5}/.test(p)&&!['123456','654321','000000','999999'].includes(p);}
 };
 
 function openLoginModal(){document.getElementById('lmBg').classList.add('show');document.getElementById('lmU').focus();}
@@ -885,5 +885,210 @@ async function lmDoReg(){
     </div>
   </div>
 </div>
+
+<script>
+// LOGIN MODAL — standalone, tidak bergantung pada apapun di luar ini
+const LM = {
+  SU: 'https://fuovfrdicdhnlymnacpz.supabase.co',
+  SK_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
+  LS: {u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
+
+  async get(path) {
+    const r = await fetch(this.SU+'/rest/v1'+path, {
+      headers: {apikey:this.SK_KEY, Authorization:'Bearer '+this.SK_KEY}
+    });
+    const t = await r.text();
+    return t ? JSON.parse(t) : [];
+  },
+
+  async post(path, body) {
+    const r = await fetch(this.SU+'/rest/v1'+path, {
+      method: 'POST',
+      headers: {
+        apikey: this.SK_KEY,
+        Authorization: 'Bearer '+this.SK_KEY,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(body)
+    });
+    const t = await r.text();
+    const d = t ? JSON.parse(t) : null;
+    if (!r.ok) {
+      const e = new Error((d && (d.message || d.code)) || 'Request failed');
+      e.code = d && d.code;
+      throw e;
+    }
+    return d;
+  },
+
+  async sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  },
+
+  async deviceFP() {
+    const p = [];
+    try {
+      const cv = document.createElement('canvas');
+      cv.width = 100; cv.height = 30;
+      const ctx = cv.getContext('2d');
+      ctx.font = '12px sans-serif';
+      ctx.fillText('jejak_fp', 2, 15);
+      p.push(cv.toDataURL());
+    } catch(e) { p.push('nc'); }
+    p.push(navigator.userAgent, screen.width+'x'+screen.height, navigator.language);
+    return this.sha256(p.join('|'));
+  },
+
+  async authHash(pin, username) {
+    const fp = await this.deviceFP();
+    return this.sha256(pin + ':' + username + ':' + fp + ':jejak_local_v1');
+  },
+
+  validUsername(v) {
+    v = (v || '').trim().toLowerCase();
+    if (!v || !v.includes('.')) return null;
+    const parts = v.split('.');
+    if (parts.length !== 2) return null;
+    if (parts[0].length < 2 || parts[1].length < 2) return null;
+    if (!/^[a-z][a-z0-9]*$/.test(parts[0]) || !/^[a-z][a-z0-9]*$/.test(parts[1])) return null;
+    return v;
+  },
+
+  validPin(p) {
+    if (!/^\d{6}$/.test(p)) return false;
+    // cek semua digit sama
+    if (p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5]) return false;
+    if (p==='123456'||p==='654321'||p==='000000'||p==='999999') return false;
+    return true;
+  }
+};
+
+function openLoginModal() {
+  document.getElementById('lmBg').classList.add('show');
+  setTimeout(()=>document.getElementById('lmU').focus(), 100);
+}
+function closeLM() {
+  document.getElementById('lmBg').classList.remove('show');
+}
+function lmSwitch(to) {
+  document.getElementById('lmPanelLogin').style.display = to==='login' ? '' : 'none';
+  document.getElementById('lmPanelReg').style.display  = to==='reg'   ? '' : 'none';
+  setTimeout(()=>{
+    document.getElementById(to==='login' ? 'lmU' : 'lmRU').focus();
+  }, 100);
+}
+function lmFb(id, type, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (!type) { el.className = 'lm-fb'; el.textContent = ''; return; }
+  el.className = 'lm-fb show ' + type;
+  el.textContent = msg;
+}
+function lmUpdateLogin() {
+  const ok = LM.validUsername(document.getElementById('lmU').value)
+    && LM.validPin(document.getElementById('lmP').value);
+  document.getElementById('lmBtnL').disabled = !ok;
+}
+function lmUpdateReg() {
+  const pin  = document.getElementById('lmRP').value;
+  const pin2 = document.getElementById('lmRP2').value;
+  const ok = LM.validUsername(document.getElementById('lmRU').value)
+    && LM.validPin(pin)
+    && pin === pin2
+    && document.getElementById('lmAg').checked;
+  document.getElementById('lmBtnR').disabled = !ok;
+}
+
+async function lmDoLogin() {
+  const u = LM.validUsername(document.getElementById('lmU').value);
+  const p = document.getElementById('lmP').value;
+  lmFb('lmFbL', '', '');
+  if (!u) { lmFb('lmFbL','e','Format username: kata.kata'); return; }
+  if (!LM.validPin(p)) { lmFb('lmFbL','e','PIN: 6 digit angka'); return; }
+  const btn = document.getElementById('lmBtnL');
+  btn.disabled = true; btn.textContent = 'VERIFIKASI...';
+  try {
+    const data = await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');
+    const user = Array.isArray(data) ? data[0] : null;
+    if (!user) throw new Error('Username tidak ditemukan');
+    const stored = localStorage.getItem(LM.LS.a);
+    if (!stored) throw new Error('Akun belum terdaftar di device ini — daftar ulang');
+    const hash = await LM.authHash(p, u);
+    if (hash !== stored) throw new Error('PIN salah');
+    localStorage.setItem(LM.LS.u, user.username);
+    localStorage.setItem(LM.LS.i, user.id);
+    localStorage.setItem(LM.LS.l, 'true');
+    lmFb('lmFbL', 's', '✓ Login berhasil!');
+    setTimeout(() => window.location.reload(), 700);
+  } catch(err) {
+    lmFb('lmFbL', 'e', err.message || 'Login gagal');
+    btn.disabled = false; btn.textContent = 'MASUK \u2192';
+  }
+}
+
+async function lmDoReg() {
+  const u  = LM.validUsername(document.getElementById('lmRU').value);
+  const p  = document.getElementById('lmRP').value;
+  const p2 = document.getElementById('lmRP2').value;
+  lmFb('lmRegFb', '', '');
+  if (!u) { lmFb('lmRegFb','e','Format username: kata.kata'); return; }
+  if (!LM.validPin(p)) { lmFb('lmRegFb','e','PIN terlalu lemah'); return; }
+  if (p !== p2) { lmFb('lmRegFb','e','PIN tidak cocok'); return; }
+  const btn = document.getElementById('lmBtnR');
+  btn.disabled = true; btn.textContent = 'PROSES...';
+  try {
+    const data = await LM.post('/profiles?select=id,username', {username: u});
+    const user = Array.isArray(data) ? data[0] : data;
+    if (!user || !user.id) throw new Error('Tidak ada data returned');
+    const hash = await LM.authHash(p, u);
+    localStorage.setItem(LM.LS.u, user.username);
+    localStorage.setItem(LM.LS.i, user.id);
+    localStorage.setItem(LM.LS.l, 'true');
+    localStorage.setItem(LM.LS.a, hash);
+    lmFb('lmRegFb', 's', 'Akun dibuat!');
+    setTimeout(() => {
+      alert('Akun dibuat!\n\nUsername: ' + user.username + '\n\nSIMPAN PIN — tidak bisa dipulihkan!');
+      window.location.reload();
+    }, 800);
+  } catch(err) {
+    const isDupe = err.code==='23505' || (err.message||'').toLowerCase().includes('duplicate');
+    lmFb('lmRegFb', 'e', isDupe ? 'Username sudah dipakai' : (err.message || 'Gagal'));
+    btn.disabled = false; btn.textContent = 'DAFTAR \u2192';
+  }
+}
+
+// Wire input events
+(function wireModalInputs() {
+  function toUsername(el) {
+    el.addEventListener('input', function() {
+      let v = this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');
+      // max 1 dot
+      const dotIdx = v.indexOf('.');
+      if (dotIdx !== -1) v = v.slice(0,dotIdx+1) + v.slice(dotIdx+1).replace(/\./g,'');
+      if (v !== this.value) this.value = v;
+    });
+  }
+  function toPin(el) {
+    el.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g,'').slice(0,6);
+    });
+  }
+  function wire(id, fn, updateFn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    fn(el);
+    el.addEventListener('input', updateFn);
+  }
+  wire('lmU',   toUsername, lmUpdateLogin);
+  wire('lmP',   toPin,      lmUpdateLogin);
+  wire('lmRU',  toUsername, lmUpdateReg);
+  wire('lmRP',  toPin,      lmUpdateReg);
+  wire('lmRP2', toPin,      lmUpdateReg);
+  const ag = document.getElementById('lmAg');
+  if (ag) ag.addEventListener('change', lmUpdateReg);
+})();
+</script>
 </body>
 </html>
