@@ -21,7 +21,6 @@
             overflow: hidden;
             height: 100%;
         }
-        /* ─── BOOK ─── */
         #book {
             position: fixed;
             top: 0;
@@ -44,7 +43,6 @@
             user-select: none;
             scrollbar-width: thin;
         }
-        /* ─── BOTTOM NAV ─── */
         #botnav {
             position: fixed;
             bottom: 0;
@@ -91,7 +89,6 @@
         .bn.act { color: #F5C518; }
         .bn.act::before { width: 50%; }
         .bn-icon { font-size: 16px; line-height: 1; }
-        /* ─── INDICATOR ─── */
         #ind {
             position: fixed;
             right: 10px;
@@ -111,7 +108,6 @@
             cursor: pointer;
         }
         .id-dot.a { width: 4px; height: 14px; background: #E8200A; }
-        /* ─── SWIPE HINT ─── */
         #hint {
             position: fixed;
             bottom: 70px;
@@ -160,7 +156,7 @@
         .mani-question p { font-family:'Special Elite',cursive; font-size:clamp(10px,2vw,12px); color:rgba(255,255,255,.55); line-height:1.55; font-style:italic; }
         .mani-question em { display:block; margin-top:6px; font-family:'Barlow Condensed',sans-serif; font-size:clamp(8px,1.8vw,10px); font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#E8200A; font-style:normal; }
 
-        /* ========== STYLE ART (dari template baru) ========== */
+        /* ========== STYLE ART ========== */
         .art-section {
             margin: 0;
             border: 1px solid rgba(255,255,255,0.08);
@@ -223,7 +219,8 @@
             margin: 1rem 0;
             font-style: italic;
         }
-        /* ========== REPORTASE GRID (dari template baru) ========== */
+
+        /* ========== REPORTASE GRID ========== */
         .reportase-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -245,8 +242,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            color: rgba(232,32,10,0.5);
+            overflow: hidden;
+        }
+        .reportase-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
         .reportase-content {
             padding: 1.2rem;
@@ -281,6 +283,7 @@
             padding-top: 0.5rem;
             margin-top: auto;
         }
+
         /* ========== AKSI SECTION ========== */
         .aksi-page {
             background: #0F0E0C;
@@ -336,6 +339,7 @@
             background: #1AFF5E;
             color: #0A0806;
         }
+
         /* ========== MANIFESTO ========== */
         .manifesto-page {
             background: #0A0806;
@@ -363,6 +367,7 @@
             color: rgba(255,255,255,0.3);
             width: 100%;
         }
+
         @media (max-width: 700px) {
             .reportase-grid { grid-template-columns: 1fr; }
             .art-visual { flex: 0 0 45%; }
@@ -371,7 +376,7 @@
 </head>
 <body>
 <div id="book">
-    <!-- PAGE 0: COVER (GLITCH ORIGINAL) -->
+    <!-- PAGE 0: COVER -->
     <div class="pg" id="p0">
         <div class="p1-smear"></div>
         <div class="p1-smear2"></div>
@@ -389,52 +394,49 @@
             </div>
             <div class="p1-bottom">
                 <div>
-                    <div class="p1-barcode">
-                        <span style="width:1px;height:28px;"></span><span style="width:2px;height:28px;"></span><span style="width:1px;height:22px;"></span><span style="width:3px;height:28px;"></span><span style="width:1px;height:18px;"></span><span style="width:2px;height:28px;"></span><span style="width:1px;height:28px;"></span><span style="width:1px;height:22px;"></span><span style="width:3px;height:28px;"></span><span style="width:1px;height:18px;"></span><span style="width:2px;height:28px;"></span><span style="width:1px;height:28px;"></span>
-                    </div>
+                    <div class="p1-barcode"><span style="width:1px;height:28px;"></span><span style="width:2px;height:28px;"></span><span style="width:1px;height:22px;"></span><span style="width:3px;height:28px;"></span><span style="width:1px;height:18px;"></span><span style="width:2px;height:28px;"></span><span style="width:1px;height:28px;"></span><span style="width:1px;height:22px;"></span><span style="width:3px;height:28px;"></span><span style="width:1px;height:18px;"></span><span style="width:2px;height:28px;"></span><span style="width:1px;height:28px;"></span></div>
                     <div class="p1-barcode-num">GLITCH-001-2026</div>
                 </div>
                 <div class="p1-stamp"><span>SYSTEM</span><span>ERROR</span></div>
             </div>
         </div>
         <div class="mani-ribbon">
-            <div class="mani-ribbon-inner">
-                FOMOSAPIENS · Terhubung di layar, sendiri di dunia nyata &nbsp;·&nbsp; Generasi BANI: Brittle · Anxious · Non-linear · Incomprehensible &nbsp;·&nbsp; Sticker adalah opus magnum &nbsp;·&nbsp; Dari tangan, untuk tangan &nbsp;·&nbsp;
-            </div>
+            <div class="mani-ribbon-inner">FOMOSAPIENS · Terhubung di layar, sendiri di dunia nyata &nbsp;·&nbsp; Generasi BANI: Brittle · Anxious · Non-linear · Incomprehensible &nbsp;·&nbsp; Sticker adalah opus magnum &nbsp;·&nbsp; Dari tangan, untuk tangan &nbsp;·&nbsp;</div>
         </div>
     </div>
 
-    <!-- PAGE 1: ART (dari template baru) -->
+    <!-- PAGE 1: ART (glitch-hero.jpg) -->
     <div class="pg">
         <div class="art-section">
             <div class="art-visual">
-                <img src="https://raw.githubusercontent.com/hendy-unggul/jejak/main/2026-03-25-3901-fomosapiens.jpg" 
-                     alt="FOMOSAPIENS — Tidak Ada Sinyal"
-                     onerror="this.src='https://placehold.co/1200x675/1A1815/E8200A?text=GLITCH+ART:+TIDAK+ADA+SINYAL'">
+                <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/glitch-hero.jpg" 
+                     alt="GLITCH ART — Algoritma, Identitas, Wajah Dikapitalisasi Data"
+                     onerror="this.src='https://placehold.co/1200x675/1A1815/E8200A?text=GLITCH+ART:+ALGORITMA+MEMBENTUK+WAJAH'">
                 <div class="glitch-overlay"></div>
             </div>
             <div class="art-caption">
-                <div class="art-title">FOMOSAPIENS!</div>
-                <div class="art-sub">TIDAK ADA SINYAL · SELF FOUND</div>
+                <div class="art-title">ALGORITMA MEMBENTUK WAJAH</div>
+                <div class="art-sub">IDENTITAS DIKAPITALISASI DATA</div>
                 <div class="art-text">
-                    <p>“TIDAK ADA SINYAL” — bukan sekadar pesan error di layar, tapi status eksistensial generasi yang paling terhubung tapi paling kesepian.</p>
-                    <div class="quote">
-                        “Sinyal hilang, aku ditemukan.”
-                    </div>
-                    <p>Karya ini adalah glitch yang disengaja: saat koneksi digital putus, koneksi dengan diri sendiri justru menyala. Di era FOMOSAPIENS, keheningan adalah perlawanan. Tubuh di ruang fisik, jiwa yang dulu melayang, kini kembali ke tanah.</p>
-                    <div class="meta-info" style="margin-top: 1rem; font-size:0.6rem; color:rgba(255,255,255,0.3);">
-                        📍 Jakarta · 2026 · 🎨 Mixed media + glitch manual · 🖌️ Tim FOMOSAPIENS
-                    </div>
+                    <p>“Kamu yang mana?” — pertanyaan yang tak lagi bisa dijawab dengan satu foto. Algoritma telah membentuk identitas, memilah, mengkategorikan, lalu menjualnya kembali sebagai preferensi.</p>
+                    <div class="quote">Wajah dikapitalisasi data. Algoritma, identitas. Kamu yang mana?</div>
+                    <p>Hero visual ini adalah glitch yang disengaja: sebuah kritik atas bagaimana sistem digital membentuk persepsi diri. Di era FOMOSAPIENS, menanyakan “kamu yang mana” bukan sekadar filosofis — tapi perlawanan untuk kembali memiliki kendali atas identitas kita sendiri.</p>
+                    <div class="meta-info" style="margin-top: 1rem; font-size:0.6rem; color:rgba(255,255,255,0.3);">📍 Jakarta · 2026 · 🎨 Kolase digital + glitch manual · 🖌️ Tim FOMOSAPIENS</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- PAGE 2: REPORTASE (dari template baru) -->
+    <!-- PAGE 2: REPORTASE (3 kartu) -->
     <div class="pg">
         <div class="reportase-grid">
+            <!-- Reportase 1: reportase1.png -->
             <div class="reportase-card">
-                <div class="reportase-visual">📱❓</div>
+                <div class="reportase-visual">
+                    <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/reportase1.png" 
+                         alt="Reportase 1 — Paradox Digital, 40% Meningkat"
+                         onerror="this.src='https://placehold.co/400x300/1A1815/E8200A?text=REPORTASE+1:+PARADOKS+DIGITAL'">
+                </div>
                 <div class="reportase-content">
                     <div class="reportase-category">#FOMOSAPIENS · NASIONAL</div>
                     <div class="reportase-title">7,5 Jam Sehari, Tapi Tetap Sepi</div>
@@ -444,8 +446,13 @@
                     <div class="reportase-meta">Wawancara: 4 remaja · Data: Populix · Jakarta, Maret 2026</div>
                 </div>
             </div>
+            <!-- Reportase 2: reportase2.png -->
             <div class="reportase-card">
-                <div class="reportase-visual">🧠📉</div>
+                <div class="reportase-visual">
+                    <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/reportase2.png" 
+                         alt="Reportase 2 — Validation Trap, Anxiety Increase"
+                         onerror="this.src='https://placehold.co/400x300/1A1815/E8200A?text=REPORTASE+2:+VALIDATION+TRAP'">
+                </div>
                 <div class="reportase-content">
                     <div class="reportase-category">KESEHATAN MENTAL · NASIONAL</div>
                     <div class="reportase-title">Like Tidak Menyembuhkan Luka</div>
@@ -455,8 +462,11 @@
                     <div class="reportase-meta">Wawancara: 3 konselor · Data: Kemenkes 2026 · Mei 2026</div>
                 </div>
             </div>
+            <!-- Reportase 3: local pride (placeholder tanpa gambar) -->
             <div class="reportase-card">
-                <div class="reportase-visual">🌾🤝</div>
+                <div class="reportase-visual" style="background: #1C1A17; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                    🌾🤝
+                </div>
                 <div class="reportase-content">
                     <div class="reportase-category">LOCAL PRIDE · JAWA BARAT</div>
                     <div class="reportase-title">Warung Kopi Tanpa Wi-Fi: Ruang Nyata di Era Maya</div>
@@ -469,7 +479,7 @@
         </div>
     </div>
 
-    <!-- PAGE 3: AKSI (dari sebelumnya) -->
+    <!-- PAGE 3: AKSI -->
     <div class="pg">
         <div class="aksi-page">
             <div class="aksi-title">✊ AKSI · GERAKAN DIAM-DIAM</div>
@@ -508,11 +518,8 @@
     </div>
 </div>
 
-<!-- SIDE INDICATOR -->
 <div id="ind"></div>
-<!-- SWIPE HINT -->
 <div id="hint">Geser <span class="ha">→</span></div>
-<!-- BOTTOM NAV -->
 <nav id="botnav">
     <a class="bn act" href="#"><div class="bn-icon">⚡</div><span>Glitch</span></a>
 </nav>
