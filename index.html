@@ -179,34 +179,35 @@
         .w-dot{width:6px;height:6px;border-radius:50%;background:var(--spill);display:none;flex-shrink:0}
         .w-dot.show{display:block}
 
-        /* ── Login Modal ── */
-        .login-btn-cta{font-family:var(--font-mono);font-size:11px;background:var(--ap);color:#fff;border:2px solid #000;padding:5px 14px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;box-shadow:2px 2px 0 #000}
-        .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+        /* ── Login Modal — simpel, no header ── */
+        .login-btn-cta{font-family:var(--font-mono);font-size:11px;background:var(--ap);color:#fff;border:2px solid #000;padding:5px 14px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;box-shadow:2px 2px 0 #000;transition:transform .08s}
+        .login-btn-cta:hover{transform:translate(-1px,-1px)}
+        .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
         .lm-bg.show{display:flex}
-        .lm-box{background:var(--sf);border:2px solid var(--bd2);padding:28px 24px;width:100%;max-width:360px;position:relative;box-shadow:8px 8px 0 #000}
-        .lm-box::before{content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--as);border-left:2px solid var(--as)}
-        .lm-box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--ap);border-right:2px solid var(--ap)}
-        .lm-close{position:absolute;top:10px;right:10px;background:0 0;border:1px solid var(--bd2);color:var(--txs);width:24px;height:24px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;line-height:1}
-        .lm-title{font-family:var(--font-display);font-size:20px;letter-spacing:2px;color:var(--tx);margin-bottom:14px}
+        .lm-box{background:var(--sf);border:1px solid var(--bd2);padding:28px 24px;width:100%;max-width:340px;position:relative}
+        .lm-close{position:absolute;top:10px;right:10px;background:0 0;border:1px solid var(--bd2);color:var(--txs);width:26px;height:26px;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center}
+        .lm-close:hover{border-color:var(--ap);color:var(--ap)}
+        .lm-title{font-family:var(--font-display);font-size:22px;letter-spacing:3px;color:var(--tx);margin-bottom:18px}
         .lm-label{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:.5px;margin-bottom:5px}
-        .lm-input{width:100%;background:var(--bg);border:2px solid var(--bd2);padding:12px 14px;color:var(--tx);font-family:var(--font-mono);font-size:14px;outline:none;margin-bottom:12px;letter-spacing:.06em}
+        .lm-input{width:100%;background:var(--bg);border:2px solid var(--bd2);padding:12px 14px;color:var(--tx);font-family:var(--font-mono);font-size:14px;outline:none;margin-bottom:12px;letter-spacing:.06em;transition:border-color .15s}
         .lm-input:focus{border-color:var(--ap)}
         .lm-input::placeholder{color:var(--txm)}
         .lm-pin{text-align:center;letter-spacing:.8em;font-size:20px;font-weight:700;-webkit-text-security:disc}
-        .lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:14px}
-        .lm-btn{width:100%;background:var(--ap);color:#fff;border:2px solid #000;padding:13px;font-family:var(--font-display);font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:4px 4px 0 #000;margin-top:2px}
-        .lm-btn:disabled{opacity:.35;cursor:not-allowed}
-        .lm-fb{font-family:var(--font-mono);font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:8px;display:none;line-height:1.5}
+        .lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:13px}
+        .lm-btn{width:100%;background:var(--ap);color:#fff;border:2px solid #000;padding:14px;font-family:var(--font-display);font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:4px 4px 0 #000;margin-top:2px;transition:transform .08s,box-shadow .08s}
+        .lm-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #000}
+        .lm-btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #000}
+        .lm-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 #000}
+        .lm-fb{font-family:var(--font-mono);font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:10px;display:none;line-height:1.5}
         .lm-fb.show{display:block}
         .lm-fb.e{border-color:var(--ap);color:var(--ap);background:rgba(255,45,85,.08)}
         .lm-fb.s{border-color:var(--aq);color:var(--aq);background:rgba(191,255,0,.06)}
-        .lm-sw{text-align:center;margin-top:10px;font-family:var(--font-mono);font-size:10px;color:var(--txs)}
-        .lm-sw button{background:0 0;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:var(--font-mono);font-size:10px}
+        .lm-sw{text-align:center;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--txs)}
+        .lm-sw button{background:0 0;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:var(--font-mono);font-size:10px;letter-spacing:.3px}
         .lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
         .lm-agree input{margin-top:2px;width:15px;height:15px;flex-shrink:0;accent-color:var(--ap)}
-        .lm-agree label{font-family:var(--font-mono);font-size:10px;color:var(--tx);line-height:1.5;cursor:pointer}
-        .lm-note{font-family:var(--font-mono);font-size:9px;color:var(--txm);padding:8px;border:1px solid var(--ap);margin-top:10px;line-height:1.6}
-        .lm-note b{color:var(--ap)}
+        .lm-agree label{font-family:var(--font-mono);font-size:10px;color:var(--txs);line-height:1.5;cursor:pointer}
+        .lm-note{font-family:var(--font-mono);font-size:9px;color:var(--txm);padding:8px 10px;border-left:2px solid var(--ap);margin-top:10px;line-height:1.6}
     </style>
 </head>
 <body>
@@ -720,134 +721,6 @@ window.addEventListener('load',async()=>{
 
 })();
 
-
-// ════════════════════════════════════════════════════
-//  LOGIN MODAL — standalone, tidak bergantung pada apapun
-// ════════════════════════════════════════════════════
-const LM={
-  SUPA_URL:'https://fuovfrdicdhnlymnacpz.supabase.co',
-  SUPA_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
-  SK:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
-
-  async sbGet(path){
-    const r=await fetch(this.SUPA_URL+'/rest/v1'+path,{headers:{apikey:this.SUPA_KEY,Authorization:'Bearer '+this.SUPA_KEY}});
-    const t=await r.text();return t?JSON.parse(t):[];
-  },
-  async sbPost(path,body){
-    const r=await fetch(this.SUPA_URL+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SUPA_KEY,Authorization:'Bearer '+this.SUPA_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});
-    const t=await r.text();const d=t?JSON.parse(t):null;
-    if(!r.ok){const e=new Error((d&&(d.message||d.code))||'failed');e.code=d&&d.code;throw e;}
-    return d;
-  },
-  async hash(str){
-    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
-  },
-  async fp(){
-    const p=[];
-    try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.fillText('fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}
-    p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);
-    return this.hash(p.join('|'));
-  },
-  async authHash(pin,user){return this.hash(pin+':'+user+':'+(await this.fp())+':jejak_local_v1');},
-  validU(v){
-    v=(v||'').trim().toLowerCase();
-    if(!v||!v.includes('.')||v.split('.').length!==2)return null;
-    if(!/^[a-z][a-z0-9]*\.[a-z][a-z0-9]*$/.test(v))return null;
-    const p=v.split('.');if(p[0].length<2||p[1].length<2)return null;
-    return v;
-  },
-  validP(p){return /^\d{6}$/.test(p)&&!/(\d){5}/.test(p)&&!['123456','654321','000000','999999'].includes(p);}
-};
-
-function openLoginModal(){document.getElementById('lmBg').classList.add('show');document.getElementById('lmU').focus();}
-function closeLM(){document.getElementById('lmBg').classList.remove('show');}
-function lmSwitch(to){
-  document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none';
-  document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none';
-  if(to==='login')document.getElementById('lmU').focus();
-  else document.getElementById('lmRU').focus();
-}
-function lmFb(id,type,msg){
-  const el=document.getElementById(id);if(!el)return;
-  if(!type){el.className='lm-fb';el.textContent='';return;}
-  el.className='lm-fb show '+type;el.textContent=msg;
-}
-function lmChk(){
-  const ok=LM.validU(document.getElementById('lmRU').value)
-    &&LM.validP(document.getElementById('lmRP').value)
-    &&document.getElementById('lmRP').value===document.getElementById('lmRP2').value
-    &&document.getElementById('lmAg').checked;
-  document.getElementById('lmBtnR').disabled=!ok;
-}
-function lmChkL(){
-  const ok=LM.validU(document.getElementById('lmU').value)&&LM.validP(document.getElementById('lmP').value);
-  document.getElementById('lmBtnL').disabled=!ok;
-}
-
-async function lmDoLogin(){
-  const u=LM.validU(document.getElementById('lmU').value);
-  const p=document.getElementById('lmP').value;
-  lmFb('lmFbL','','');
-  if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
-  if(!LM.validP(p)){lmFb('lmFbL','e','PIN: 6 digit, tidak terlalu mudah');return;}
-  const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='...';
-  try{
-    const data=await LM.sbGet('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');
-    const user=Array.isArray(data)?data[0]:null;
-    if(!user)throw new Error('Username tidak ditemukan');
-    const stored=localStorage.getItem(LM.SK.a);
-    if(!stored)throw new Error('Akun belum terdaftar di device ini');
-    if(await LM.authHash(p,u)!==stored)throw new Error('PIN salah');
-    localStorage.setItem(LM.SK.u,user.username);
-    localStorage.setItem(LM.SK.i,user.id);
-    localStorage.setItem(LM.SK.l,'true');
-    lmFb('lmFbL','s','✓ Login berhasil!');
-    setTimeout(()=>window.location.reload(),600);
-  }catch(err){lmFb('lmFbL','e',err.message||'Gagal');btn.disabled=false;btn.textContent='MASUK →';}
-}
-
-async function lmDoReg(){
-  const u=LM.validU(document.getElementById('lmRU').value);
-  const p=document.getElementById('lmRP').value;
-  lmFb('lmFbR','','');
-  if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;}
-  if(!LM.validP(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;}
-  const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent='...';
-  try{
-    const data=await LM.sbPost('/profiles?select=id,username',{username:u});
-    const user=Array.isArray(data)?data[0]:data;
-    if(!user||!user.id)throw new Error('Tidak ada data returned');
-    const h=await LM.authHash(p,u);
-    localStorage.setItem(LM.SK.u,user.username);
-    localStorage.setItem(LM.SK.i,user.id);
-    localStorage.setItem(LM.SK.l,'true');
-    localStorage.setItem(LM.SK.a,h);
-    lmFb('lmFbR','s','🎉 Akun dibuat!');
-    setTimeout(()=>{alert('✅ Akun: '+user.username+'\n⚠️ SIMPAN PIN!');window.location.reload();},800);
-  }catch(err){
-    const m=(err.code==='23505'||(err.message||'').includes('duplicate'))?'Username sudah dipakai':(err.message||'Gagal');
-    lmFb('lmFbR','e',m);btn.disabled=false;btn.textContent='DAFTAR →';
-  }
-}
-
-// Wire inputs
-['lmU','lmP'].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el) el.addEventListener('input',()=>{
-    if(id==='lmU'){let v=el.value.toLowerCase().replace(/[^a-z0-9.]/g,'').replace(/\.{2,}/g,'.');if(v!==el.value)el.value=v;}
-    else el.value=el.value.replace(/\D/g,'').slice(0,6);
-    lmChkL();
-  });
-});
-['lmRU','lmRP','lmRP2'].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el) el.addEventListener('input',()=>{
-    if(id==='lmRU'){let v=el.value.toLowerCase().replace(/[^a-z0-9.]/g,'').replace(/\.{2,}/g,'.');if(v!==el.value)el.value=v;}
-    else el.value=el.value.replace(/\D/g,'').slice(0,6);
-    lmChk();
-  });
-});
 </script>
 
 <!-- LOGIN MODAL -->
@@ -860,7 +733,7 @@ async function lmDoReg(){
       <div class="lm-label">username</div>
       <input class="lm-input" id="lmU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
       <div class="lm-label">PIN 6 digit</div>
-      <input class="lm-input lm-pin" id="lmP" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+      <input class="lm-input lm-pin" id="lmP" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
       <div class="lm-fb" id="lmFbL"></div>
       <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()">MASUK →</button>
       <div class="lm-sw"><button onclick="lmSwitch('reg')">Belum punya akun? Daftar</button></div>
@@ -868,20 +741,19 @@ async function lmDoReg(){
 
     <div id="lmPanelReg" style="display:none">
       <div class="lm-title">DAFTAR</div>
-      <div class="lm-label">username <span style="color:var(--as)">kata.kata</span></div>
+      <div class="lm-label">username — format <span style="color:var(--as);font-family:var(--font-mono)">kata.kata</span></div>
       <input class="lm-input" id="lmRU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
       <div class="lm-label">PIN 6 digit</div>
-      <input class="lm-input lm-pin" id="lmRP" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+      <input class="lm-input lm-pin" id="lmRP" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
       <div class="lm-label">konfirmasi PIN</div>
-      <input class="lm-input lm-pin" id="lmRP2" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+      <input class="lm-input lm-pin" id="lmRP2" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
       <div class="lm-fb" id="lmFbR"></div>
       <div class="lm-agree">
-        <input type="checkbox" id="lmAg" onchange="lmChk()">
-        <label for="lmAg">Saya paham PIN hilang = akun hilang <b style="color:var(--ap)">PERMANENT</b></label>
+        <input type="checkbox" id="lmAg" onchange="lmUpdateReg()">
+        <label for="lmAg">PIN hilang = akun hilang <b style="color:var(--ap)">PERMANENT</b> — no recovery</label>
       </div>
-      <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:6px">DAFTAR →</button>
+      <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px">DAFTAR →</button>
       <div class="lm-sw"><button onclick="lmSwitch('login')">Sudah punya akun? Masuk</button></div>
-      <div class="lm-note"><b>⚠️</b> PIN tidak bisa dipulihkan. Simpan di tempat aman!</div>
     </div>
   </div>
 </div>
