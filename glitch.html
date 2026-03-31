@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GLITCH ZINE — FOMOSAPIENS</title>
+    <title>GLITCH ZINE — FOMOSAPIENS | AKSI · Kompetisi Zine · Squat Zine</title>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Space+Mono:wght@400;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
         * {
@@ -16,8 +16,6 @@
             background: #0A0806;
             font-family: 'Space Mono', monospace;
             color: #F0EBE0;
-            padding: 0;
-            margin: 0;
             overflow: hidden;
             height: 100%;
         }
@@ -130,7 +128,7 @@
         .ha { font-size: 14px; animation: harrow .8s ease-in-out infinite; }
         @keyframes harrow { 0%,100%{transform:translateX(0)} 50%{transform:translateX(4px)} }
 
-        /* COVER */
+        /* COVER style */
         .p1-smear { position: absolute; top:28%; left:-10%; right:-10%; height:48%; background:#A80E00; opacity:.55; transform:rotate(-2deg); filter:blur(3px); z-index:1; }
         .p1-smear2 { position: absolute; top:34%; left:-5%; right:-5%; height:36%; background:#6B0000; opacity:.35; transform:rotate(1deg); filter:blur(5px); z-index:1; }
         .scanlines { position: absolute; inset:0; pointer-events:none; z-index:18; background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.1) 3px,rgba(0,0,0,.1) 4px); }
@@ -284,56 +282,86 @@
             margin-top: auto;
         }
 
-        /* AKSI SECTION dengan sticker.png */
+        /* AKSI SECTION — hanya bagian yang dimodifikasi */
         .aksi-page {
             background: #0F0E0C;
-            padding: 2rem;
+            padding: 2rem 1.5rem;
             overflow-y: auto;
             height: 100%;
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
-        .aksi-title {
-            font-family: 'Anton', sans-serif;
-            font-size: 2.2rem;
+        /* Ikon tangan mengepal AKSI tetap dipertahankan */
+        .aksi-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
             color: #1AFF5E;
-            text-align: center;
-            margin-bottom: 1rem;
         }
-        .aksi-sub {
+        .hook-container {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto 1.8rem;
             text-align: center;
-            font-family: 'IBM Plex Serif', serif;
-            font-style: italic;
+            border-left: 3px solid #E8200A;
+            border-right: 3px solid #FFE600;
+            background: rgba(0,0,0,0.5);
+            padding: 1.2rem;
+            backdrop-filter: blur(2px);
+        }
+        .hook-pasal {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
             color: #FFE600;
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .hook-quote {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(1rem, 4vw, 1.4rem);
+            line-height: 1.3;
+            color: #F0EBE0;
+        }
+        .hook-kritik {
+            font-family: 'IBM Plex Serif', serif;
+            font-size: 0.85rem;
+            font-style: italic;
+            color: #E8200A;
+            margin: 0.8rem 0;
         }
         .sticker-hero {
-            max-width: 500px;
+            max-width: 550px;
+            width: 100%;
             margin: 1rem auto;
             border: 2px dashed #1AFF5E;
-            padding: 0.5rem;
             background: #1C1A17;
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem;
         }
         .sticker-hero img {
             width: 100%;
             height: auto;
             display: block;
+            object-fit: contain;
         }
-        .sticker-pack {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
+        .aksi-manifesto {
+            max-width: 700px;
+            width: 100%;
+            margin: 1.8rem auto;
+            text-align: left;
         }
-        .sticker {
-            background: #F0EBE0;
-            color: #0A0806;
-            padding: 0.8rem 1.2rem;
-            font-family: 'Anton', sans-serif;
-            font-size: 1rem;
-            transform: rotate(var(--rot,0deg));
-            box-shadow: 4px 4px 0 #1AFF5E;
+        .kompetisi-announce {
+            background: rgba(232,32,10,0.1);
+            border-left: 4px solid #E8200A;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+        }
+        .squat-challenge {
+            background: rgba(255,230,0,0.05);
+            border: 1px solid #FFE600;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
             text-align: center;
         }
         .aksi-button {
@@ -341,15 +369,27 @@
             border: 2px solid #1AFF5E;
             color: #1AFF5E;
             font-family: 'Anton', sans-serif;
-            font-size: 1.2rem;
-            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            padding: 0.7rem 1.8rem;
             cursor: pointer;
-            margin-top: 2rem;
+            margin-top: 1rem;
             align-self: center;
+            transition: 0.2s;
         }
         .aksi-button:hover {
             background: #1AFF5E;
             color: #0A0806;
+        }
+        .patching-note {
+            max-width: 700px;
+            width: 100%;
+            margin: 1.2rem auto;
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            color: #FFE600;
+            border-top: 1px solid rgba(255,230,0,0.3);
+            padding-top: 1rem;
         }
 
         /* MANIFESTO */
@@ -383,12 +423,13 @@
         @media (max-width: 700px) {
             .reportase-grid { grid-template-columns: 1fr; }
             .art-visual { flex: 0 0 45%; }
+            .aksi-page { padding: 1rem; }
         }
     </style>
 </head>
 <body>
 <div id="book">
-    <!-- COVER (tidak berubah) -->
+    <!-- COVER -->
     <div class="pg" id="p0">
         <div class="p1-smear"></div>
         <div class="p1-smear2"></div>
@@ -417,11 +458,11 @@
         </div>
     </div>
 
-    <!-- ART (glitch-hero.jpg dari Supabase) -->
+    <!-- ART -->
     <div class="pg">
         <div class="art-section">
             <div class="art-visual">
-                <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/glitch-hero.jpg"
+                <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/glitch-hero.jpg?v=5"
                      alt="GLITCH ART — Algoritma, Identitas, Wajah Dikapitalisasi Data"
                      onerror="this.src='https://placehold.co/1200x675/1A1815/E8200A?text=GLITCH+ART:+ALGORITMA+MEMBENTUK+WAJAH'">
                 <div class="glitch-overlay"></div>
@@ -439,117 +480,115 @@
         </div>
     </div>
 
-    <!-- REPORTASE (reportase1.png dan reportase2.png dari Supabase) -->
+    <!-- REPORTASE -->
     <div class="pg">
         <div class="reportase-grid">
             <div class="reportase-card">
                 <div class="reportase-visual">
-                    <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/reportase1.png"
-                         alt="Reportase 1 — Paradox Digital, 40% Meningkat"
+                    <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/reportase1.png?v=5"
+                         alt="Reportase 1 — Paradox Digital"
                          onerror="this.src='https://placehold.co/400x300/1A1815/E8200A?text=REPORTASE+1:+PARADOKS+DIGITAL'">
                 </div>
                 <div class="reportase-content">
                     <div class="reportase-category">#FOMOSAPIENS · NASIONAL</div>
                     <div class="reportase-title">7,5 Jam Sehari, Tapi Tetap Sepi</div>
-                    <div class="reportase-excerpt">
-                        Riset Populix 2026: rata-rata remaja Indonesia menghabiskan 7,5 jam di depan layar. Ironisnya, 1 dari 3 mengaku merasa kesepian meski selalu "terhubung". Psikolog menyebutnya paradox digital: koneksi palsu menggantikan kedekatan nyata.
-                    </div>
-                    <div class="reportase-meta">Wawancara: 4 remaja · Data: Populix · Jakarta, Maret 2026</div>
+                    <div class="reportase-excerpt">Riset Populix 2026: rata-rata remaja Indonesia menghabiskan 7,5 jam di depan layar. 1 dari 3 mengaku kesepian. Psikolog menyebutnya paradox digital: koneksi palsu menggantikan kedekatan nyata.</div>
+                    <div class="reportase-meta">Jakarta · Maret 2026</div>
                 </div>
             </div>
             <div class="reportase-card">
                 <div class="reportase-visual">
-                    <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/reportase2.png"
-                         alt="Reportase 2 — Validation Trap, Anxiety Increase"
+                    <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/reportase2.png?v=5"
+                         alt="Reportase 2 — Validation Trap"
                          onerror="this.src='https://placehold.co/400x300/1A1815/E8200A?text=REPORTASE+2:+VALIDATION+TRAP'">
                 </div>
                 <div class="reportase-content">
                     <div class="reportase-category">KESEHATAN MENTAL · NASIONAL</div>
                     <div class="reportase-title">Like Tidak Menyembuhkan Luka</div>
-                    <div class="reportase-excerpt">
-                        "Semakin banyak like, semakin cemas jika tidak mendapatkannya." Fenomena ini disebut validation trap. Konselor sekolah di 5 kota melaporkan kenaikan 40% siswa yang mengalami kecemasan karena tekanan media sosial. Sementara itu, interaksi tatap muka justru menurun drastis.
-                    </div>
-                    <div class="reportase-meta">Wawancara: 3 konselor · Data: Kemenkes 2026 · Mei 2026</div>
+                    <div class="reportase-excerpt">Validation trap: semakin banyak like, semakin cemas jika tidak mendapatkannya. Kenaikan 40% siswa dengan kecemasan akibat tekanan medsos. Interaksi tatap muka menurun drastis.</div>
+                    <div class="reportase-meta">Kemenkes 2026 · Mei 2026</div>
                 </div>
             </div>
             <div class="reportase-card">
-                <div class="reportase-visual" style="background: #1C1A17; display: flex; align-items: center; justify-content: center;">
-                    🌾🤝
-                </div>
+                <div class="reportase-visual" style="background: #1C1A17; align-items: center; justify-content: center;">🌾🤝</div>
                 <div class="reportase-content">
                     <div class="reportase-category">LOCAL PRIDE · JAWA BARAT</div>
                     <div class="reportase-title">Warung Kopi Tanpa Wi-Fi: Ruang Nyata di Era Maya</div>
-                    <div class="reportase-excerpt">
-                        Di tengah gempuran kafe kekinian dengan Wi-Fi supercepat, sekelompok anak muda di Bandung membuka "Warung Kopi Kolektif" yang sengaja tidak menyediakan internet. Pengunjung justru datang untuk ngobrol, main catur, dan berbagi cerita. "Kami ingin membangun kembali koneksi yang nyata," kata pendirinya, Andi (24). Warung ini kini menjadi model bagi komunitas serupa di 5 kota.
-                    </div>
-                    <div class="reportase-meta">📍 Bandung · Wawancara: Andi & 6 pengunjung · April 2026</div>
+                    <div class="reportase-excerpt">Bandung: sekelompok anak muda membuka “Warung Kopi Kolektif” tanpa internet. Pengunjung datang untuk ngobrol, main catur, berbagi cerita. Koneksi nyata menggantikan notifikasi.</div>
+                    <div class="reportase-meta">📍 Bandung · April 2026</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ========== AKSI — DARI STICKER KE GERAKAN ========== -->
-<div class="aksi-page">
-    <div class="aksi-title">✊ AKSI · LEPASKAN DIRI DARI ALGORITMA</div>
-    <div class="aksi-sub">Kami membaca sticker. Kami ubah jadi gerakan.</div>
+    <!-- AKSI — sesuai revisi tanpa menghilangkan ikon tangan dan tanpa menghapus elemen lain yang tidak diminta -->
+    <div class="pg">
+        <div class="aksi-page">
+            <!-- Ikon tangan mengepal AKSI (dipertahankan) -->
+            <div class="aksi-icon">✊</div>
+            <!-- Judul AKSI dihapus sesuai permintaan (tidak ada "LEPASKAN DIRI...") -->
+            <!-- Subjudul juga dihapus -->
 
-    <!-- visual sticker utama -->
-    <div class="sticker-hero">
-        <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/sticker.png"
-             alt="Sticker Pack FOMOSAPIENS — validation trap, algoritma, dopamine whore, blood harvest"
-             onerror="this.src='https://placehold.co/800x800/1A1815/1AFF5E?text=STICKER+PACK'">
-    </div>
+            <!-- hook konstitusi (tanpa kalimat anonimitas) -->
+            <div class="hook-container">
+                <div class="hook-pasal">UUD 1945 · PASAL 28</div>
+                <div class="hook-quote">“Kemerdekaan berserikat, berkumpul, mengeluarkan pikiran, dan berkomunikasi dijamin oleh negara.”</div>
+                <div class="hook-kritik">Di era digital, komunikasi tanpa anonimitas adalah kemerdekaan under surveilance, stickermu adalah artefak pikiranmu yang tidak bisa dimanipulasi dan dihapus oleh algoritma.</div>
+            </div>
 
-    <!-- RAJUTAN STICKER MENJADI NARASI AKSI -->
-    <div class="aksi-manifesto" style="margin: 2rem 0; text-align: left; max-width: 700px; margin-left: auto; margin-right: auto;">
-        <p style="font-family: 'IBM Plex Serif'; font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.5rem;">
-            <strong>validation trap</strong> — kamu dikurung oleh like, notifikasi, dan suara asing.  
-            <strong>algoritma 95%</strong> — nyaris seluruh gerakmu sudah diprediksi, dikendalikan.  
-            <strong>dopamine whore</strong> — tubuhmu jadi mesin pencari kepuasan instan.  
-            <strong>blood harvest · human livestock</strong> — datamu adalah ladang panen, kamu dianggap ternak digital.
-        </p>
-        <p style="font-family: 'IBM Plex Serif'; font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.5rem;">
-            Tapi di sini, <strong>FOMOSAPIENS</strong> bukan korban. Kami adalah <strong>glitch</strong> yang tidak bisa diprediksi.  
-            <strong>paradox digital</strong> adalah belenggu yang kami bongkar lewat aksi diam-diam, lewat stiker yang ditempel, lewat laporan yang tidak bisa dihapus algoritma.
-        </p>
-        <div style="background: rgba(26,255,94,0.1); padding: 1.2rem; border-left: 4px solid #1AFF5E; margin: 1.5rem 0;">
-            <p style="font-family: 'Space Mono'; font-size: 0.75rem; letter-spacing: 0.1em;">
-                ✧ <strong>Reportase Khusus ✧</strong><br>
-                Kami mengajak kamu untuk membuat reportase tentang "Blood Harvest Digital" di lingkunganmu.  
-                Hitung berapa jam data pribadimu tersedot. Catat berapa kali kamu dipaksa menekan "allow".  
-                Kirim laporanmu → nanti kami terbitkan sebagai zine perlawanan.
-            </p>
+            <!-- sticker utama -->
+            <div class="sticker-hero">
+                <img src="https://fuovfrdicdhnlymnacpz.supabase.co/storage/v1/object/public/glitch-assets/zine001/sticker.png?v=5"
+                     alt="Sticker Pack FOMOSAPIENS"
+                     onerror="this.src='https://placehold.co/800x800/1A1815/1AFF5E?text=STICKER+PACK'">
+            </div>
+
+            <!-- narasi baru (hanya satu paragraf) -->
+            <div class="aksi-manifesto">
+                <p style="font-family: 'IBM Plex Serif'; font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.2rem;">
+                    FOMOSAPIENS bukan korban. Kami adalah <strong>glitch</strong> yang tidak bisa diprediksi — untuk melawan dengan membangun kesadaran, keluar dari paradox digital, dan merebut kembali ruang nyata dari algoritma yang membelenggu.
+                </p>
+            </div>
+
+            <!-- pengumuman kompetisi desain Glitch (menggantikan reportase khusus) -->
+            <div class="kompetisi-announce">
+                <div style="font-family: 'Anton', sans-serif; font-size: 1.2rem; color: #FFE600; margin-bottom: 0.5rem;">
+                    ⚡ KOMPETISI DESAIN GLITCH ⚡
+                </div>
+                <div style="font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; margin-bottom: 0.8rem;">
+                    ANTAR SMA & KAMPUS SE-INDONESIA · EDISI PERTAMA
+                </div>
+                <p style="font-family: 'IBM Plex Serif'; font-size: 0.8rem; line-height: 1.5;">
+                    Segera! Gelombang pendaftaran dibuka bulan depan. Buat zine digital dengan 3 subtema (ART · REPORTASE · AKSI), menangkan total hadiah Rp15 juta + magang di biro iklan kelas dunia. 
+                    Nantikan detail lengkap di <strong>glitch.space</strong> dan jejak.space.
+                </p>
+            </div>
+
+            <!-- Tantangan SQUAT ZINE (menggantikan #BongkarAlgoritma) -->
+            <div class="squat-challenge">
+                <div style="font-family: 'Anton', sans-serif; font-size: 1.3rem; color: #1AFF5E; margin-bottom: 0.5rem;">
+                    ✦ SIAPKAN SQUAT ZINE SEKOLAHMU ✦
+                </div>
+                <p style="font-family: 'IBM Plex Serif'; font-size: 0.8rem; line-height: 1.5; margin-bottom: 1rem;">
+                    Ajak teman-temanmu (tim 5 orang) untuk membuat zine diam-diam. Kumpulkan reportase lokal, goreskan art perlawanan, dan rumuskan aksi nyata.  
+                    Karya terbaik akan kami cetak sebagai stiker A5 dan masuk ke Galeri Nasional Indonesia.
+                </p>
+                <p style="font-family: 'Space Mono'; font-size: 0.7rem; color: #FFE600;">
+                    Tantangan: Sebelum kompetisi resmi dimulai, buat satu edisi zine dari sekolahmu.  
+                    Kirimkan ke <strong>squat@glitch.space</strong> — 10 tim terpilih mendapat bimbingan kurator nasional.
+                </p>
+            </div>
+
+            <!-- tombol aksi & patching (dipertahankan) -->
+            <button class="aksi-button" onclick="alert('Pendaftaran kompetisi dan pemesanan stiker/patch akan dibuka pekan depan. Pantau glitch.space')">
+                🛒 PESAN STIKER · IKUT KOMPETISI
+            </button>
+            <div class="patching-note">
+                ✦ DESAIN INI JUGA TERSEDIA DALAM BENTUK <strong>PATCHING BORDIR</strong> ✦<br>
+                Tempel di jaket, tas, topi — pernyataan diam-diam melawan algoritma.
+            </div>
         </div>
     </div>
-
-    <!-- STICKER PACK — elemen sticker.png dipecah jadi stiker yang bisa ditempel -->
-    <div class="sticker-pack" style="margin: 2rem 0;">
-        <div class="sticker" style="--rot:-1deg">VALIDATION TRAP</div>
-        <div class="sticker" style="--rot:1deg">ALGORITMA 95%</div>
-        <div class="sticker" style="--rot:-0.5deg">DOPAMINE WHORE</div>
-        <div class="sticker" style="--rot:0.8deg">BLOOD HARVEST</div>
-        <div class="sticker" style="--rot:-0.2deg">HUMAN LIVESTOCK</div>
-        <div class="sticker" style="--rot:1.2deg">PARADOX DIGITAL</div>
-        <div class="sticker" style="--rot:-0.7deg">FOMOSAPIENS</div>
-    </div>
-
-    <!-- TANTANGAN KONKRET -->
-    <div style="max-width: 700px; margin: 0 auto; text-align: center;">
-        <div style="background: rgba(0,0,0,0.4); padding: 1.5rem; margin-bottom: 2rem;">
-            <p style="font-family: 'Anton'; font-size: 1.4rem; color: #FFE600;">#BONGKARALGORITMA</p>
-            <p style="font-family: 'IBM Plex Serif'; font-size: 0.85rem; line-height: 1.6;">
-                Tantangan 7 hari: matikan rekomendasi personalisasi. Gunakan mesin pencari alternatif.  
-                Catat perbedaan cara kamu melihat dunia. Bagikan temuanmu dengan stiker #BongkarAlgoritma.
-            </p>
-        </div>
-        <button class="aksi-button" onclick="alert('Stiker pack bisa kamu pesan sekarang. 90% untuk kreator.')">
-            🛒 AMBIL STIKER · IKUT GERAKAN
-        </button>
-        <p style="font-size:0.6rem; margin-top:1rem; color:rgba(255,255,255,0.2);">
-            Setiap stiker adalah bukti: kamu bukan human livestock.
-        </p>
-    </div>
-</div>
 
     <!-- MANIFESTO PENUTUP -->
     <div class="pg">
@@ -579,7 +618,6 @@ const N = 5;
 const BOOK = document.getElementById('book');
 let cur = 0, sx = 0, sy = 0, drag = false, mv = false;
 
-// indicator
 const ind = document.getElementById('ind');
 for (let i = 0; i < N; i++) {
     const d = document.createElement('div');
@@ -597,58 +635,14 @@ function ui() {
         d.className = 'id-dot' + (i === cur ? ' a' : '');
     });
 }
-// touch swipe
-BOOK.addEventListener('touchstart', e => {
-    sx = e.touches[0].clientX;
-    sy = e.touches[0].clientY;
-    drag = true;
-    mv = false;
-    BOOK.style.transition = 'none';
-}, { passive: true });
-BOOK.addEventListener('touchmove', e => {
-    if (!drag) return;
-    const dx = e.touches[0].clientX - sx;
-    const dy = e.touches[0].clientY - sy;
-    if (!mv && Math.abs(dy) > Math.abs(dx)) { drag = false; return; }
-    mv = true;
-    BOOK.style.transform = `translateX(${-cur * window.innerWidth + dx}px)`;
-}, { passive: true });
-BOOK.addEventListener('touchend', e => {
-    if (!drag || !mv) return;
-    drag = false;
-    BOOK.style.transition = '';
-    const dx = e.changedTouches[0].clientX - sx;
-    if (dx < -50 && cur < N - 1) cur++;
-    else if (dx > 50 && cur > 0) cur--;
-    BOOK.style.transform = `translateX(-${cur * 100}vw)`;
-    ui();
-});
-// mouse drag
-BOOK.addEventListener('mousedown', e => {
-    sx = e.clientX;
-    drag = true;
-    mv = false;
-    BOOK.style.transition = 'none';
-});
-window.addEventListener('mousemove', e => {
-    if (!drag) return;
-    mv = true;
-    BOOK.style.transform = `translateX(${-cur * window.innerWidth + e.clientX - sx}px)`;
-});
-window.addEventListener('mouseup', e => {
-    if (!drag) return;
-    drag = false;
-    BOOK.style.transition = '';
-    const dx = e.clientX - sx;
-    if (dx < -60 && cur < N - 1) cur++;
-    else if (dx > 60 && cur > 0) cur--;
-    BOOK.style.transform = `translateX(-${cur * 100}vw)`;
-    ui();
-});
-window.addEventListener('keydown', e => {
-    if (e.key === 'ArrowRight' && cur < N - 1) goTo(cur + 1);
-    if (e.key === 'ArrowLeft' && cur > 0) goTo(cur - 1);
-});
+// touch & mouse events (dipertahankan)
+BOOK.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; drag = true; mv = false; BOOK.style.transition = 'none'; }, { passive: true });
+BOOK.addEventListener('touchmove', e => { if (!drag) return; const dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy; if (!mv && Math.abs(dy) > Math.abs(dx)) { drag = false; return; } mv = true; BOOK.style.transform = `translateX(${-cur * window.innerWidth + dx}px)`; }, { passive: true });
+BOOK.addEventListener('touchend', e => { if (!drag || !mv) return; drag = false; BOOK.style.transition = ''; const dx = e.changedTouches[0].clientX - sx; if (dx < -50 && cur < N - 1) cur++; else if (dx > 50 && cur > 0) cur--; BOOK.style.transform = `translateX(-${cur * 100}vw)`; ui(); });
+BOOK.addEventListener('mousedown', e => { sx = e.clientX; drag = true; mv = false; BOOK.style.transition = 'none'; });
+window.addEventListener('mousemove', e => { if (!drag) return; mv = true; BOOK.style.transform = `translateX(${-cur * window.innerWidth + e.clientX - sx}px)`; });
+window.addEventListener('mouseup', e => { if (!drag) return; drag = false; BOOK.style.transition = ''; const dx = e.clientX - sx; if (dx < -60 && cur < N - 1) cur++; else if (dx > 60 && cur > 0) cur--; BOOK.style.transform = `translateX(-${cur * 100}vw)`; ui(); });
+window.addEventListener('keydown', e => { if (e.key === 'ArrowRight' && cur < N - 1) goTo(cur + 1); if (e.key === 'ArrowLeft' && cur > 0) goTo(cur - 1); });
 ui();
 </script>
 </body>
