@@ -49,6 +49,15 @@
         .message{max-width:85%;padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.45;word-wrap:break-word;margin-bottom:2px;flex-shrink:0}
         .message.user{align-self:flex-end;background:var(--as);color:#000;border-bottom-right-radius:4px}
         .message.stranger{align-self:flex-start;background:var(--sf);color:var(--tx);border:1px solid var(--bd2);border-bottom-left-radius:4px}
+        .message.ai-msg{align-self:flex-start;background:#1a0a2e;color:var(--tx);border:1px solid #7b2fff55;border-bottom-left-radius:4px}
+        .msg-sender{font-family:var(--font-mono);font-size:10px;margin-bottom:4px;opacity:.75}
+        .msg-sender.is-user{color:#000;text-align:right}
+        .msg-sender.is-stranger{color:var(--as)}
+        .msg-sender.is-ai{color:#b47fff}
+        .msg-wrapper{display:flex;flex-direction:column;max-width:85%;flex-shrink:0}
+        .msg-wrapper.user{align-self:flex-end;align-items:flex-end}
+        .msg-wrapper.stranger{align-self:flex-start;align-items:flex-start}
+        .msg-wrapper.ai-msg{align-self:flex-start;align-items:flex-start}
         .message.system{align-self:center;background:rgba(255,255,255,0.07);color:var(--txs);font-family:var(--font-mono);font-size:10px;padding:5px 12px;border-radius:20px;margin:6px 0;text-align:center}
         .typing-bubble{align-self:flex-start;background:var(--sf);border:1px solid var(--bd2);padding:10px 14px;border-radius:16px;border-bottom-left-radius:4px;display:none;gap:4px;align-items:center;flex-shrink:0}
         .typing-bubble.show{display:flex}
@@ -435,6 +444,7 @@ const sbGet=async path=>{const r=await fetch(`${SUPA_URL}/rest/v1${path}`,{heade
 const S={IDLE:'idle',BIDDING:'bidding',CHAT_REAL:'chat_real',CHAT_AI:'chat_ai'};
 let state=S.IDLE,vibe=null,roomId=null,aiChar=null;
 let chatHist=[],lastMsgTs=null;
+let isInsomnia=false; // true kalau sesi ini adalah Insomnia (group+nama)
 let tBid=null,tHeart=null,tPollMatch=null,tPollMsg=null,tPollInv=null,tScan=null,tInvPop=null;
 let pendingInv=null;
 
@@ -557,11 +567,30 @@ async function acceptInv(){
     try{const r=await api('/api/invite',{action:'accept',userId:UID,username:ME,invitationId:inv.id});if(r.success)enterChatReal(r.room_id,r.vibe||inv.vibe);else toast(r.reason==='inviter_no_longer_waiting'?'⚡ Sudah diambil stranger lain!':'Invitation expired');}catch(e){toast('Gagal connect');}
 }
 
-function enterChatReal(rId,v){state=S.CHAT_REAL;roomId=rId;vibe=v;chatHist=[];lastMsgTs=new Date().toISOString();openChatUI(v);addSys('🔗 Terhubung dengan stranger');tPollMsg=setInterval(pollMsg,POLL_MSG_MS);loadCount();}
+function enterChatReal(rId,v){
+    state=S.CHAT_REAL;roomId=rId;vibe=v;chatHist=[];
+    isInsomnia=(v==='hot_take');
+    lastMsgTs=new Date().toISOString();
+    openChatUI(v);
+    if(isInsomnia){
+        addSys('🌙 Masuk room Insomnia');
+        // Seed AI personas — server yang handle, fire and forget
+        fetch('/api/insomnia-seed',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({action:'seed',roomId:rId})
+        }).catch(()=>{});
+    }else{
+        addSys('🔗 Terhubung dengan stranger');
+    }
+    tPollMsg=setInterval(pollMsg,POLL_MSG_MS);
+    loadCount();
+}
 
 function fallbackAI(){
     if(state===S.CHAT_REAL||state===S.CHAT_AI)return;
     state=S.CHAT_AI;clearBidTimers();showScan(false);
+    isInsomnia=(vibe==='hot_take');
     fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})}).catch(()=>{});
     const pool=AI[vibe]||AI.soft_talk;
     aiChar=pool[Math.floor(Math.random()*pool.length)];
@@ -570,25 +599,52 @@ function fallbackAI(){
 
 function enterIdle(){
     clearAllTimers();state=S.IDLE;vibe=null;roomId=null;aiChar=null;chatHist=[];
+    isInsomnia=false;
     $('btnHot').disabled=false;$('btnSoft').disabled=false;
-    // Restore insomnia button state setelah idle
     updateInsomniaButton();
     closeChatUI();showScan(false);hidePopup();loadCount();
 }
 
 async function pollMsg(){
     if(state!==S.CHAT_REAL||!roomId)return;
-    try{const since=lastMsgTs||new Date(Date.now()-5000).toISOString();const r=await fetch(`/api/messages?roomId=${roomId}&since=${encodeURIComponent(since)}`);const msgs=await r.json();if(!Array.isArray(msgs)||!msgs.length)return;for(const m of msgs){if(m.sender_id!==UID)addMsg('stranger',m.content);if(!lastMsgTs||m.created_at>lastMsgTs)lastMsgTs=m.created_at;}}catch(e){}
+    try{
+        const since=lastMsgTs||new Date(Date.now()-5000).toISOString();
+        const r=await fetch(`/api/messages?roomId=${roomId}&since=${encodeURIComponent(since)}`);
+        const msgs=await r.json();
+        if(!Array.isArray(msgs)||!msgs.length)return;
+        for(const m of msgs){
+            if(m.sender_id!==UID){
+                const isAiMsg=(m.type==='ai')||(m.sender_id&&String(m.sender_id).startsWith('ai_'));
+                addMsg(isAiMsg?'ai-msg':'stranger', m.content, isInsomnia?(m.sender_name||''):null);
+            }
+            if(!lastMsgTs||m.created_at>lastMsgTs)lastMsgTs=m.created_at;
+        }
+    }catch(e){}
 }
 
 async function sendReal(content){
-    if(!roomId||!content.trim())return;addMsg('user',content);
+    if(!roomId||!content.trim())return;
+    // Insomnia: tampilkan nama, Soft Talk: anonim
+    addMsg('user',content,isInsomnia?ME:null);
     try{const r=await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roomId,senderId:UID,senderName:ME,content:content.trim()})});if(!r.ok){const e=await r.json();if(e.error==='Room not found or ended'){addSys('⚠️ Stranger meninggalkan chat');setTimeout(enterIdle,2000);}}}catch(e){toast('Gagal kirim pesan');}
 }
 
 async function sendAI(msg,first=false){
     if(state!==S.CHAT_AI)return;showTyping(true);
-    try{if(!first&&msg)chatHist.push({role:'user',content:msg});const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:first?'hai':msg,characterName:aiChar,lastMessages:chatHist.slice(-8)})});const d=await r.json();showTyping(false);if(d.reply){const delay=Math.max(500,Math.min(d.reply.length*30,2500));setTimeout(()=>{addMsg('stranger',d.reply);chatHist.push({role:'assistant',content:d.reply});},delay);}}catch(e){showTyping(false);addMsg('stranger','😅');}
+    try{
+        if(!first&&msg)chatHist.push({role:'user',content:msg});
+        const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:first?'hai':msg,characterName:aiChar,lastMessages:chatHist.slice(-8)})});
+        const d=await r.json();
+        showTyping(false);
+        if(d.reply){
+            const delay=Math.max(500,Math.min(d.reply.length*30,2500));
+            setTimeout(()=>{
+                // Insomnia: tampilkan nama persona AI, Soft Talk: anonim
+                addMsg('ai-msg', d.reply, isInsomnia?aiChar:null);
+                chatHist.push({role:'assistant',content:d.reply});
+            },delay);
+        }
+    }catch(e){showTyping(false);addMsg('ai-msg','😅',isInsomnia?aiChar:null);}
 }
 
 function openChatUI(v){
@@ -601,7 +657,30 @@ function openChatUI(v){
     $('chatInput').focus();
 }
 function closeChatUI(){const c=$('radarChat'),h=c.querySelector('.radar-chat-header'),t=$('typingBubble');c.innerHTML='';c.appendChild(h);c.appendChild(t);c.classList.remove('show');$('chatInputWrap').classList.remove('show');$('radarCont').classList.remove('chat-mode');}
-function addMsg(who,text){const c=$('radarChat'),t=$('typingBubble');const m=document.createElement('div');m.className='message '+who;m.textContent=text;c.insertBefore(m,t);c.scrollTop=c.scrollHeight;}
+function addMsg(who,text,senderName=null){
+    const c=$('radarChat'),t=$('typingBubble');
+    // Kalau ada nama → pakai wrapper
+    if(senderName){
+        const wrap=document.createElement('div');
+        wrap.className='msg-wrapper '+who;
+        const nameEl=document.createElement('div');
+        const nameClass=who==='user'?'is-user':who==='ai-msg'?'is-ai':'is-stranger';
+        nameEl.className='msg-sender '+nameClass;
+        nameEl.textContent=(who==='user'?'@'+ME:'@'+senderName);
+        const bubble=document.createElement('div');
+        bubble.className='message '+who;
+        bubble.textContent=text;
+        wrap.appendChild(nameEl);
+        wrap.appendChild(bubble);
+        c.insertBefore(wrap,t);
+    }else{
+        const m=document.createElement('div');
+        m.className='message '+who;
+        m.textContent=text;
+        c.insertBefore(m,t);
+    }
+    c.scrollTop=c.scrollHeight;
+}
 function addSys(text){const c=$('radarChat'),t=$('typingBubble');const m=document.createElement('div');m.className='message system';m.textContent=text;c.insertBefore(m,t);c.scrollTop=c.scrollHeight;}
 function showTyping(on){const t=$('typingBubble');if(on)t.classList.add('show');else t.classList.remove('show');$('radarChat').scrollTop=$('radarChat').scrollHeight;}
 
@@ -655,8 +734,17 @@ window.addEventListener('load',async()=>{
     $('btnAccept').onclick=acceptInv;
     $('btnDecline').onclick=async()=>{if(pendingInv)await api('/api/invite',{action:'decline',userId:UID,username:ME,invitationId:pendingInv.id});hidePopup();};
 
-    const chatSend=async()=>{const inp=$('chatInput'),msg=inp.value.trim();if(!msg)return;inp.value='';if(state===S.CHAT_REAL)await sendReal(msg);else if(state===S.CHAT_AI){addMsg('user',msg);await sendAI(msg,false);}};
-    $('chatSend').onclick=chatSend;
+    const chatSend=async()=>{
+        const inp=$('chatInput'),msg=inp.value.trim();
+        if(!msg)return;
+        inp.value='';
+        if(state===S.CHAT_REAL) await sendReal(msg);
+        else if(state===S.CHAT_AI){
+            // Insomnia: tampilkan nama, Soft Talk: anonim
+            addMsg('user',msg,isInsomnia?ME:null);
+            await sendAI(msg,false);
+        }
+    };    $('chatSend').onclick=chatSend;
     $('chatInput').onkeypress=e=>{if(e.key==='Enter')chatSend();};
 
     $('chatClose').onclick=async()=>{
