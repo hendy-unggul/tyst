@@ -58,7 +58,7 @@
         @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
         .radar-chat-header{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,0.97);border-bottom:1px solid var(--bd2);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;z-index:102}
         .chat-vibe-label{font-family:var(--font-mono);font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700}
-        .chat-vibe-label.hot_take{background:var(--ap);color:#fff}
+        .chat-vibe-label.hot_take{background:#7b2fff;color:#fff}
         .chat-vibe-label.soft_talk{background:var(--as);color:#000}
         .chat-stranger-label{font-family:var(--font-mono);font-size:13px;color:var(--tx);font-weight:bold}
         .radar-chat-close{background:0 0;border:1px solid var(--bd2);color:var(--txs);padding:4px 10px;cursor:pointer;font-size:12px;border-radius:4px}
@@ -69,7 +69,7 @@
         .radar-scanning-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.93);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;color:var(--as);font-family:var(--font-mono);gap:0}
         .radar-scanning-overlay.show{display:flex}
         .scan-vibe{font-size:11px;font-weight:700;letter-spacing:2px;padding:4px 14px;border-radius:20px;margin-bottom:14px}
-        .scan-vibe.hot_take{background:var(--ap);color:#fff}
+        .scan-vibe.hot_take{background:#7b2fff;color:#fff}
         .scan-vibe.soft_talk{background:var(--as);color:#000}
         .scan-title{font-size:14px;font-weight:bold;margin-bottom:6px}
         .scan-sub{font-size:10px;color:var(--txs);margin-bottom:18px;text-align:center;padding:0 24px}
@@ -85,7 +85,7 @@
         .invite-popup.show{display:flex}
         .invite-box{background:var(--sf);border:3px solid var(--as);padding:30px 24px;max-width:300px;width:100%;box-shadow:10px 10px 0 #000;text-align:center}
         .invite-vibe-badge{display:inline-block;padding:6px 18px;font-size:13px;font-weight:700;letter-spacing:2px;margin-bottom:14px}
-        .invite-vibe-badge.hot_take{background:var(--ap);color:#fff}
+        .invite-vibe-badge.hot_take{background:#7b2fff;color:#fff}
         .invite-vibe-badge.soft_talk{background:var(--as);color:#000}
         .invite-text{font-size:13px;color:var(--txs);margin-bottom:18px;line-height:1.6}
         .invite-countdown{font-family:var(--font-display);font-size:36px;color:var(--ap);font-weight:bold;margin-bottom:18px;line-height:1}
@@ -98,7 +98,9 @@
         .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:5px}
         .btn-gender:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #000}
         .btn-gender:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:5px 5px 0 #000}
-        .btn-hot{background:linear-gradient(145deg,var(--ap),#ff6b8b);color:#fff}
+        /* INSOMNIA button styles */
+        .btn-hot{background:linear-gradient(145deg,#1a0533,#3d0f6e);color:#fff;border-color:#7b2fff}
+        .btn-hot.inactive{background:linear-gradient(145deg,#111,#1a1a2e);color:#444;border-color:#222}
         .btn-soft{background:linear-gradient(145deg,var(--as),#4d7aff);color:#000}
         .gender-icon{font-size:34px}
         .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--txs)}
@@ -131,7 +133,6 @@
         .ni.act .nico{transform:scale(1.2)}
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none;font-size:13px;white-space:nowrap}
         .toast.show{display:block}
-        /* WHISPER COMPOSE */
         .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center}
         .whisper-overlay.show{display:flex}
         .whisper-box{background:var(--sf);border:2px solid var(--as);padding:24px;box-shadow:8px 8px 0 #000;max-width:350px;width:90%}
@@ -144,7 +145,6 @@
         .whisper-btn{flex:1;padding:12px;border:2px solid #000;cursor:pointer;font-size:13px;font-family:var(--font-mono)}
         .whisper-btn.send{background:var(--as);color:#000;font-weight:700}
         .whisper-btn.cancel{background:0 0;border-color:var(--bd2);color:var(--txs)}
-        /* WHISPER INBOX (dalam radar) */
         .w-inbox{position:absolute;inset:0;z-index:110;background:rgba(0,0,0,.97);display:none;flex-direction:column}
         .w-inbox.show{display:flex}
         .w-inbox-hdr{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,.98);border-bottom:1px solid var(--bd2);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;z-index:112}
@@ -161,7 +161,6 @@
         .w-row-from{font-family:var(--font-mono);font-size:11px;color:var(--as)}
         .w-row-ttl{font-family:var(--font-mono);font-size:10px;color:var(--spill)}
         .w-row-prev{font-size:11px;color:var(--txs);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        /* WHISPER READ (dalam radar) */
         .w-read{position:absolute;inset:0;z-index:120;background:rgba(0,0,0,.98);display:none;flex-direction:column}
         .w-read.show{display:flex}
         .w-read-hdr{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,.98);border-bottom:1px solid var(--bd2);padding:10px 14px;display:flex;align-items:center;gap:10px;z-index:122}
@@ -173,13 +172,10 @@
         .w-read-foot span{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;color:var(--txs);text-transform:uppercase}
         @keyframes w-burn{0%{opacity:1;transform:translateY(0)}50%{opacity:.5;transform:translateY(-10px);filter:brightness(1.8)}100%{opacity:0;transform:translateY(-30px);filter:brightness(3)}}
         .w-burning{animation:w-burn .7s ease-in forwards}
-        /* WHISPER TRIGGER */
         .w-trigger{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.75);border:1px solid var(--bd2);color:var(--as);font-family:var(--font-mono);font-size:10px;letter-spacing:1px;padding:5px 10px;cursor:pointer;border-radius:3px;z-index:20;display:flex;align-items:center;gap:5px;transition:border-color .15s}
         .w-trigger:hover{border-color:var(--as)}
         .w-dot{width:6px;height:6px;border-radius:50%;background:var(--spill);display:none;flex-shrink:0}
         .w-dot.show{display:block}
-
-        /* ── Login Modal — simpel, no header ── */
         .login-btn-cta{font-family:var(--font-mono);font-size:11px;background:var(--ap);color:#fff;border:2px solid #000;padding:5px 14px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;box-shadow:2px 2px 0 #000;transition:transform .08s}
         .login-btn-cta:hover{transform:translate(-1px,-1px)}
         .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
@@ -214,12 +210,8 @@
 <div class="app">
     <div class="header">
         <div class="logo">SP<span class="x">✕</span>LL</div>
-        <div class="user-section" id="userSection">
-            <!-- diisi JS berdasarkan mode guest/login -->
-        </div>
+        <div class="user-section" id="userSection"></div>
     </div>
-
-    <!-- Guest banner — hanya muncul jika tidak login -->
     <div class="guest-banner" id="guestBanner" style="display:none">
         <span>mode <b>guest</b> — spill feed bisa dibaca, fitur interaktif perlu login</span>
         <a href="/login.html" class="login-btn-cta">LOGIN →</a>
@@ -240,7 +232,7 @@
                         <div class="radar-dots" id="radarDots"></div>
 
                         <div class="radar-scanning-overlay" id="scanOverlay">
-                            <div class="scan-vibe" id="scanVibeBadge">HOT TAKE</div>
+                            <div class="scan-vibe" id="scanVibeBadge">INSOMNIA</div>
                             <div class="scan-title">MENCARI STRANGER</div>
                             <div class="scan-sub" id="scanSub">Mengirim invitation...</div>
                             <div class="scan-timer" id="scanTimer">15</div>
@@ -252,8 +244,8 @@
                         <div class="radar-chat-container" id="radarChat">
                             <div class="radar-chat-header">
                                 <div style="display:flex;align-items:center;gap:10px">
-                                    <span class="chat-stranger-label">STRANGER</span>
-                                    <span class="chat-vibe-label" id="chatVibeBadge">HOT TAKE</span>
+                                    <span class="chat-stranger-label" id="chatStrangerLabel">STRANGER</span>
+                                    <span class="chat-vibe-label" id="chatVibeBadge">INSOMNIA</span>
                                 </div>
                                 <button class="radar-chat-close" id="chatClose">✕ END</button>
                             </div>
@@ -266,13 +258,11 @@
                             <button class="radar-chat-send" id="chatSend">➤</button>
                         </div>
 
-                        <!-- WHISPER TRIGGER BUTTON -->
                         <button class="w-trigger" id="wTrigger">
                             ✦ WHISPER
                             <span class="w-dot" id="wDot"></span>
                         </button>
 
-                        <!-- WHISPER INBOX LAYER -->
                         <div class="w-inbox" id="wInbox">
                             <div class="w-inbox-hdr">
                                 <span class="w-inbox-title">✦ WHISPER INBOX</span>
@@ -283,7 +273,6 @@
                             </div>
                         </div>
 
-                        <!-- WHISPER READ LAYER -->
                         <div class="w-read" id="wRead">
                             <div class="w-read-hdr">
                                 <button class="w-back" id="wBack">←</button>
@@ -296,15 +285,17 @@
                                 <span>no record kept</span>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
 
             <div class="radar-ctas">
                 <div class="gender-row">
+                    <!-- INSOMNIA button -->
                     <button class="btn-gender btn-hot" id="btnHot">
-                        <span class="gender-icon">🔥</span><span>HOT TAKE</span>
+                        <span class="gender-icon" id="insomniaIcon">🌙</span>
+                        <span>INSOMNIA</span>
+                        <span id="insomniaStatus" style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;opacity:.7"></span>
                     </button>
                     <button class="btn-gender btn-soft" id="btnSoft">
                         <span class="gender-icon">💬</span><span>SOFT TALK</span>
@@ -338,7 +329,7 @@
 
 <div class="invite-popup" id="invitePopup">
     <div class="invite-box">
-        <div class="invite-vibe-badge" id="inviteVibeBadge">🔥 HOT TAKE</div>
+        <div class="invite-vibe-badge" id="inviteVibeBadge">🌙 INSOMNIA</div>
         <div class="invite-text">Ada stranger yang ingin<br>ngobrol sama kamu.<br>Mau terima?</div>
         <div class="invite-countdown" id="inviteCountdown">15</div>
         <div class="invite-actions">
@@ -348,7 +339,6 @@
     </div>
 </div>
 
-<!-- WHISPER COMPOSE OVERLAY -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-box">
         <div class="whisper-box-title">✦ WHISPERER</div>
@@ -371,13 +361,70 @@
 const SUPA_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
 const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=2000,POLL_MSG_MS=1500,POLL_WH_MS=10000;
-const AI={hot_take:['agak.koplak','chili.padi','sejuta.badai','satria.bajahitam'],soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']};
+
+// ── INSOMNIA config ───────────────────────────────────────────
+const INSOMNIA_OPEN_HOUR  = 22;
+const INSOMNIA_CLOSE_HOUR = 4;
+const INSOMNIA_TZ_OFFSET  = 7; // WIB UTC+7
+const INSOMNIA_AI_FULL    = ['agak.koplak','chili.padi','satria.bajahitam','sejuta.badai','pretty.sad','move.on'];
+const INSOMNIA_LS_KEY     = 'insomnia_personas_v1';
+const INSOMNIA_LS_DATE    = 'insomnia_personas_date';
+
+function getWIBHour(){
+    const now=new Date();
+    const wib=new Date(now.getTime()+now.getTimezoneOffset()*60000+INSOMNIA_TZ_OFFSET*3600000);
+    return wib.getHours();
+}
+function getWIBSessionDate(){
+    const now=new Date();
+    const wib=new Date(now.getTime()+now.getTimezoneOffset()*60000+INSOMNIA_TZ_OFFSET*3600000);
+    if(wib.getHours()<INSOMNIA_CLOSE_HOUR) wib.setDate(wib.getDate()-1);
+    return wib.toISOString().slice(0,10);
+}
+function isInsomniaActive(){
+    const h=getWIBHour();
+    return h>=INSOMNIA_OPEN_HOUR||h<INSOMNIA_CLOSE_HOUR;
+}
+function getInsomniaPersonas(){
+    const today=getWIBSessionDate();
+    const savedDate=localStorage.getItem(INSOMNIA_LS_DATE);
+    const saved=localStorage.getItem(INSOMNIA_LS_KEY);
+    if(savedDate===today&&saved){try{return JSON.parse(saved);}catch(e){}}
+    const shuffled=[...INSOMNIA_AI_FULL].sort(()=>Math.random()-.5);
+    const personas=shuffled.slice(0,3);
+    localStorage.setItem(INSOMNIA_LS_KEY,JSON.stringify(personas));
+    localStorage.setItem(INSOMNIA_LS_DATE,today);
+    return personas;
+}
+function updateInsomniaButton(){
+    const btn=document.getElementById('btnHot');
+    const status=document.getElementById('insomniaStatus');
+    const icon=document.getElementById('insomniaIcon');
+    if(!btn||!status)return;
+    if(isInsomniaActive()){
+        btn.classList.remove('inactive');
+        if(!IS_GUEST)btn.disabled=false;
+        status.textContent='LIVE';
+        if(icon)icon.textContent='🌙';
+    }else{
+        btn.classList.add('inactive');
+        btn.disabled=true;
+        status.textContent='22.00';
+        if(icon)icon.textContent='😴';
+    }
+}
+
+// AI pool: Insomnia pakai persona malam, Soft Talk tidak berubah
+const AI={
+    get hot_take(){return getInsomniaPersonas();},
+    soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']
+};
 
 const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
-const IS_GUEST = localStorage.getItem(K.l) !== 'true';
-const ME  = IS_GUEST ? null : localStorage.getItem(K.u);
-const UID = IS_GUEST ? null : localStorage.getItem(K.i);
-const SID = IS_GUEST ? null : 'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+const IS_GUEST=localStorage.getItem(K.l)!=='true';
+const ME=IS_GUEST?null:localStorage.getItem(K.u);
+const UID=IS_GUEST?null:localStorage.getItem(K.i);
+const SID=IS_GUEST?null:'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -392,151 +439,42 @@ let tBid=null,tHeart=null,tPollMatch=null,tPollMsg=null,tPollInv=null,tScan=null
 let pendingInv=null;
 
 // ════════════════════════════════════════
-//  WHISPER MODULE
+//  WHISPER MODULE — tidak berubah
 // ════════════════════════════════════════
 const WH=(()=>{
     const toB64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
     const fromB64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-
-    async function sha256hex(str){
-        const buf=new TextEncoder().encode(str);
-        const hash=await crypto.subtle.digest('SHA-256',buf);
-        return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-    }
-
-    async function deriveKey(username){
-        const raw=new TextEncoder().encode(username+':whisper_key_v2');
-        const base=await crypto.subtle.importKey('raw',raw,'PBKDF2',false,['deriveKey']);
-        return crypto.subtle.deriveKey(
-            {name:'PBKDF2',salt:new TextEncoder().encode('jejak_whisper_v2'),iterations:100000,hash:'SHA-256'},
-            base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']
-        );
-    }
-
-    async function encrypt(plain,key){
-        const iv=crypto.getRandomValues(new Uint8Array(12));
-        const enc=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain));
-        return toB64(iv)+':'+toB64(enc);
-    }
-
-    async function decrypt(enc,key){
-        try{
-            const[ivB64,ctB64]=enc.split(':');
-            const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},key,fromB64(ctB64));
-            return new TextDecoder().decode(dec);
-        }catch{return '[tidak bisa didekripsi]';}
-    }
-
+    async function sha256hex(str){const buf=new TextEncoder().encode(str);const hash=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+    async function deriveKey(username){const raw=new TextEncoder().encode(username+':whisper_key_v2');const base=await crypto.subtle.importKey('raw',raw,'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode('jejak_whisper_v2'),iterations:100000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+    async function encrypt(plain,key){const iv=crypto.getRandomValues(new Uint8Array(12));const enc=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain));return toB64(iv)+':'+toB64(enc);}
+    async function decrypt(enc,key){try{const[ivB64,ctB64]=enc.split(':');const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},key,fromB64(ctB64));return new TextDecoder().decode(dec);}catch{return '[tidak bisa didekripsi]';}}
     let msgs=[],readId=null,dTimer=null,pollTimer=null;
-
-    function setDot(show){
-        const d=$('wDot'),b=$('whisperBadge');
-        if(d)d.classList.toggle('show',show);
-        if(b)b.style.display=show?'':'none';
-    }
-
-    async function fetchInbox(){
-        try{
-            const r=await fetch('/api/whisper?username='+encodeURIComponent(ME));
-            if(!r.ok)return;
-            const raw=await r.json();
-            if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}
-            const key=await deriveKey(ME);
-            const now=Date.now();
-            msgs=await Promise.all(raw.map(async m=>{
-                const exp=new Date(m.destroy_at).getTime();
-                const rem=exp-now;
-                const h=Math.floor(rem/3600000);
-                const mn=Math.floor((rem%3600000)/60000);
-                const body=await decrypt(m.message,key);
-                return{id:m.id,from:m.from_hash?'~'+m.from_hash.slice(0,8):'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
-            }));
-            renderList();
-            setDot(msgs.length>0);
-        }catch(e){console.warn('[WH]',e);}
-    }
-
-    function renderList(){
-        const el=$('wList');if(!el)return;
-        if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}
-        el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');
-    }
-
-    async function openMsg(id){
-        const m=msgs.find(x=>x.id===id);if(!m)return;
-        readId=id;
-        $('wReadFrom').textContent='from: '+m.from;
-        $('wReadBody').textContent=m.body;
-        $('wReadCount').textContent='5';
-        $('wReadCount').style.color='var(--spill)';
-        $('wRead').classList.add('show');
-        fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});
-        startDestruct(id);
-    }
-
-    function startDestruct(id){
-        clearInterval(dTimer);let n=5;
-        dTimer=setInterval(()=>{
-            n--;
-            const el=$('wReadCount');if(!el){clearInterval(dTimer);return;}
-            el.textContent=n;
-            if(n<=2)el.style.color='#ff3b6f';
-            if(n<=0){clearInterval(dTimer);burnMsg(id);}
-        },1000);
-    }
-
-    function burnMsg(id){
-        const body=$('wReadBody');
-        if(body)body.classList.add('w-burning');
-        msgs=msgs.filter(m=>m.id!==id);
-        fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});
-        setTimeout(()=>{
-            $('wRead').classList.remove('show');
-            if(body){body.classList.remove('w-burning');body.textContent='';}
-            $('wReadCount').style.color='var(--spill)';
-            $('wInbox').classList.add('show');
-            renderList();setDot(msgs.length>0);
-        },750);
-    }
-
-    function closeRead(){
-        clearInterval(dTimer);
-        if(readId){if(msgs.find(m=>m.id===readId))burnMsg(readId);readId=null;}
-        $('wRead').classList.remove('show');
-    }
-
-    async function sendMsg(toUsername,plaintext){
-        const key=await deriveKey(toUsername);
-        const messageEnc=await encrypt(plaintext.trim(),key);
-        const fromHash=await sha256hex(ME+':whisper_sender_v2');
-        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,fromHash,messageEnc})});
-        return r.ok;
-    }
-
+    function setDot(show){const d=$('wDot'),b=$('whisperBadge');if(d)d.classList.toggle('show',show);if(b)b.style.display=show?'':'none';}
+    async function fetchInbox(){try{const r=await fetch('/api/whisper?username='+encodeURIComponent(ME));if(!r.ok)return;const raw=await r.json();if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}const key=await deriveKey(ME);const now=Date.now();msgs=await Promise.all(raw.map(async m=>{const exp=new Date(m.destroy_at).getTime();const rem=exp-now;const h=Math.floor(rem/3600000);const mn=Math.floor((rem%3600000)/60000);const body=await decrypt(m.message,key);return{id:m.id,from:m.from_hash?'~'+m.from_hash.slice(0,8):'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};}));renderList();setDot(msgs.length>0);}catch(e){console.warn('[WH]',e);}}
+    function renderList(){const el=$('wList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');}
+    async function openMsg(id){const m=msgs.find(x=>x.id===id);if(!m)return;readId=id;$('wReadFrom').textContent='from: '+m.from;$('wReadBody').textContent=m.body;$('wReadCount').textContent='5';$('wReadCount').style.color='var(--spill)';$('wRead').classList.add('show');fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});startDestruct(id);}
+    function startDestruct(id){clearInterval(dTimer);let n=5;dTimer=setInterval(()=>{n--;const el=$('wReadCount');if(!el){clearInterval(dTimer);return;}el.textContent=n;if(n<=2)el.style.color='#ff3b6f';if(n<=0){clearInterval(dTimer);burnMsg(id);}},1000);}
+    function burnMsg(id){const body=$('wReadBody');if(body)body.classList.add('w-burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('wRead').classList.remove('show');if(body){body.classList.remove('w-burning');body.textContent='';}$('wReadCount').style.color='var(--spill)';$('wInbox').classList.add('show');renderList();setDot(msgs.length>0);},750);}
+    function closeRead(){clearInterval(dTimer);if(readId){if(msgs.find(m=>m.id===readId))burnMsg(readId);readId=null;}$('wRead').classList.remove('show');}
+    async function sendMsg(toUsername,plaintext){const key=await deriveKey(toUsername);const messageEnc=await encrypt(plaintext.trim(),key);const fromHash=await sha256hex(ME+':whisper_sender_v2');const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,fromHash,messageEnc})});return r.ok;}
     function startPolling(){fetchInbox();clearInterval(pollTimer);pollTimer=setInterval(fetchInbox,POLL_WH_MS);}
-
     return{open:openMsg,closeRead,sendMsg,startPolling,fetchInbox};
 })();
-
 window.WH=WH;
 
 // ════════════════════════════════════════
 //  APP CORE
 // ════════════════════════════════════════
-// ── Guest/Login UI setup — MINIMAL, tidak menyentuh radar ────
 function setupGuestUI(){
     const sec=$('userSection');
-    if(!sec) return;
+    if(!sec)return;
     if(IS_GUEST){
-        // Hanya update header — 1 tombol LOGIN saja
         sec.innerHTML='<button class="login-btn-cta" onclick="openLoginModal()">LOGIN →</button>';
-        // Disable CTA interaktif — hanya visual, tidak block radar
         ['btnHot','btnSoft','whisperBtn'].forEach(id=>{
             const el=$(id);
-            if(el){ el.disabled=true; el.style.opacity='.45'; el.title='Login untuk menggunakan'; }
+            if(el){el.disabled=true;el.style.opacity='.45';el.title='Login untuk menggunakan';}
         });
-    } else {
-        // Mode login normal — rebuild header
+    }else{
         sec.innerHTML=`<span class="user-badge">@${ME}</span><button class="settings-btn" id="settingsBtn">⋮</button>`;
         const dd=document.createElement('div');
         dd.className='settings-dropdown';dd.id='settingsDropdown';
@@ -548,12 +486,14 @@ function setupGuestUI(){
             document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});
         }
         const lb=$('logoutBtn');
-        if(lb) lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);localStorage.removeItem('jejak_auth_v1');toast('👋 Sampai jumpa!');setTimeout(()=>window.location.replace('/index.html'),1000);};
+        if(lb)lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);localStorage.removeItem('jejak_auth_v1');toast('👋 Sampai jumpa!');setTimeout(()=>window.location.replace('/index.html'),1000);};
     }
 }
 
 async function init(){
     setupGuestUI();
+    updateInsomniaButton();
+    setInterval(updateInsomniaButton,60000);
     initRadar();loadSpills();startBrewInterval();
     if(!IS_GUEST){
         await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
@@ -601,7 +541,7 @@ async function pollInvitation(){
 
 function showInvitePopup(inv){
     const badge=$('inviteVibeBadge');
-    badge.textContent=inv.vibe==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';
+    badge.textContent=inv.vibe==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';
     badge.className='invite-vibe-badge '+inv.vibe;
     $('invitePopup').classList.add('show');
     const exp=new Date(inv.expires_at).getTime();
@@ -623,13 +563,16 @@ function fallbackAI(){
     if(state===S.CHAT_REAL||state===S.CHAT_AI)return;
     state=S.CHAT_AI;clearBidTimers();showScan(false);
     fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})}).catch(()=>{});
-    const pool=AI[vibe]||AI.soft_talk;aiChar=pool[Math.floor(Math.random()*pool.length)];
+    const pool=AI[vibe]||AI.soft_talk;
+    aiChar=pool[Math.floor(Math.random()*pool.length)];
     roomId=null;chatHist=[];openChatUI(vibe);setTimeout(()=>sendAI('',true),600);
 }
 
 function enterIdle(){
     clearAllTimers();state=S.IDLE;vibe=null;roomId=null;aiChar=null;chatHist=[];
     $('btnHot').disabled=false;$('btnSoft').disabled=false;
+    // Restore insomnia button state setelah idle
+    updateInsomniaButton();
     closeChatUI();showScan(false);hidePopup();loadCount();
 }
 
@@ -648,13 +591,32 @@ async function sendAI(msg,first=false){
     try{if(!first&&msg)chatHist.push({role:'user',content:msg});const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:first?'hai':msg,characterName:aiChar,lastMessages:chatHist.slice(-8)})});const d=await r.json();showTyping(false);if(d.reply){const delay=Math.max(500,Math.min(d.reply.length*30,2500));setTimeout(()=>{addMsg('stranger',d.reply);chatHist.push({role:'assistant',content:d.reply});},delay);}}catch(e){showTyping(false);addMsg('stranger','😅');}
 }
 
-function openChatUI(v){const badge=$('chatVibeBadge');badge.textContent=v==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';badge.className='chat-vibe-label '+(v||'hot_take');$('radarChat').classList.add('show');$('chatInputWrap').classList.add('show');$('radarCont').classList.add('chat-mode');$('chatInput').focus();}
+function openChatUI(v){
+    const badge=$('chatVibeBadge');
+    badge.textContent=v==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';
+    badge.className='chat-vibe-label '+(v||'hot_take');
+    $('radarChat').classList.add('show');
+    $('chatInputWrap').classList.add('show');
+    $('radarCont').classList.add('chat-mode');
+    $('chatInput').focus();
+}
 function closeChatUI(){const c=$('radarChat'),h=c.querySelector('.radar-chat-header'),t=$('typingBubble');c.innerHTML='';c.appendChild(h);c.appendChild(t);c.classList.remove('show');$('chatInputWrap').classList.remove('show');$('radarCont').classList.remove('chat-mode');}
 function addMsg(who,text){const c=$('radarChat'),t=$('typingBubble');const m=document.createElement('div');m.className='message '+who;m.textContent=text;c.insertBefore(m,t);c.scrollTop=c.scrollHeight;}
 function addSys(text){const c=$('radarChat'),t=$('typingBubble');const m=document.createElement('div');m.className='message system';m.textContent=text;c.insertBefore(m,t);c.scrollTop=c.scrollHeight;}
 function showTyping(on){const t=$('typingBubble');if(on)t.classList.add('show');else t.classList.remove('show');$('radarChat').scrollTop=$('radarChat').scrollHeight;}
 
-function showScan(on,v){const o=$('scanOverlay');if(on){const b=$('scanVibeBadge');b.textContent=v==='hot_take'?'🔥 HOT TAKE':'💬 SOFT TALK';b.className='scan-vibe '+(v||'hot_take');o.classList.add('show');}else{o.classList.remove('show');if(tScan){clearInterval(tScan);tScan=null;}}}
+function showScan(on,v){
+    const o=$('scanOverlay');
+    if(on){
+        const b=$('scanVibeBadge');
+        b.textContent=v==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';
+        b.className='scan-vibe '+(v||'hot_take');
+        o.classList.add('show');
+    }else{
+        o.classList.remove('show');
+        if(tScan){clearInterval(tScan);tScan=null;}
+    }
+}
 function startCountdown(sec){let left=sec;$('scanTimer').textContent=sec;$('scanBar').style.width='0%';if(tScan)clearInterval(tScan);tScan=setInterval(()=>{left--;$('scanTimer').textContent=Math.max(0,left);$('scanBar').style.width=((sec-left)/sec*100).toFixed(1)+'%';if(left<=5&&left>0)$('scanSub').textContent='Hampir habis, menyiapkan AI...';if(left<=0)clearInterval(tScan);},1000);}
 function clearBidTimers(){if(tBid){clearTimeout(tBid);tBid=null;}if(tPollMatch){clearInterval(tPollMatch);tPollMatch=null;}if(tScan){clearInterval(tScan);tScan=null;}showScan(false);}
 function clearAllTimers(){clearBidTimers();if(tHeart){clearInterval(tHeart);tHeart=null;}if(tPollMsg){clearInterval(tPollMsg);tPollMsg=null;}if(tPollInv){clearInterval(tPollInv);tPollInv=null;}if(tInvPop){clearInterval(tInvPop);tInvPop=null;}}
@@ -679,9 +641,14 @@ window.addEventListener('beforeunload',cleanup);
 window.addEventListener('load',async()=>{
     await init();
 
-    // Settings/logout binding handled in setupGuestUI()
-
-    if(!IS_GUEST){ $('btnHot').onclick=()=>{if(state===S.IDLE)startBid('hot_take');}; $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');}; }
+    if(!IS_GUEST){
+        $('btnHot').onclick=()=>{
+            if(state!==S.IDLE)return;
+            if(!isInsomniaActive()){toast('🌙 Insomnia buka jam 22.00 WIB');return;}
+            startBid('hot_take');
+        };
+        $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');};
+    }
 
     $('scanCancel').onclick=async()=>{if(state===S.BIDDING){clearBidTimers();await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});enterIdle();toast('Pencarian dibatalkan');}};
 
@@ -692,10 +659,15 @@ window.addEventListener('load',async()=>{
     $('chatSend').onclick=chatSend;
     $('chatInput').onkeypress=e=>{if(e.key==='Enter')chatSend();};
 
-    $('chatClose').onclick=async()=>{if(state===S.CHAT_REAL){addSys('🔴 Kamu mengakhiri chat');await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});}setTimeout(enterIdle,500);};
+    $('chatClose').onclick=async()=>{
+        if(state===S.CHAT_REAL){
+            addSys('🔴 Kamu mengakhiri chat');
+            await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});
+        }
+        setTimeout(enterIdle,500);
+    };
 
-    // ── WHISPER events ──────────────────────
-    if(!IS_GUEST) $('whisperBtn').onclick=()=>$('whisperOverlay').classList.add('show');
+    if(!IS_GUEST)$('whisperBtn').onclick=()=>$('whisperOverlay').classList.add('show');
     $('whisperCancel').onclick=()=>{$('whisperOverlay').classList.remove('show');$('whisperTarget').value='';$('whisperMessage').value='';};
 
     $('whisperSend').onclick=async()=>{
@@ -706,11 +678,8 @@ window.addEventListener('load',async()=>{
         if(!/^[a-z0-9_.]{2,24}$/.test(to)){toast('Username tidak valid');return;}
         const btn=$('whisperSend'),orig=btn.textContent;
         btn.textContent='ENCRYPTING...';btn.disabled=true;
-        try{
-            const ok=await WH.sendMsg(to,msg);
-            if(ok){$('whisperOverlay').classList.remove('show');toEl.value='';msgEl.value='';toast('✦ whisper terkirim — musnah dalam 24h');}
-            else toast('Gagal — cek username penerima');
-        }catch(e){toast('Error enkripsi');}
+        try{const ok=await WH.sendMsg(to,msg);if(ok){$('whisperOverlay').classList.remove('show');toEl.value='';msgEl.value='';toast('✦ whisper terkirim — musnah dalam 24h');}else toast('Gagal — cek username penerima');}
+        catch(e){toast('Error enkripsi');}
         finally{btn.textContent=orig;btn.disabled=false;}
     };
 
@@ -720,14 +689,12 @@ window.addEventListener('load',async()=>{
 });
 
 })();
-
 </script>
 
 <!-- LOGIN MODAL -->
 <div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
   <div class="lm-box">
     <button class="lm-close" onclick="closeLM()">✕</button>
-
     <div id="lmPanelLogin">
       <div class="lm-title">MASUK</div>
       <div class="lm-label">username</div>
@@ -738,7 +705,6 @@ window.addEventListener('load',async()=>{
       <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()">MASUK →</button>
       <div class="lm-sw"><button onclick="lmSwitch('reg')">Belum punya akun? Daftar</button></div>
     </div>
-
     <div id="lmPanelReg" style="display:none">
       <div class="lm-title">DAFTAR</div>
       <div class="lm-label">username — format <span style="color:var(--as);font-family:var(--font-mono)">kata.kata</span></div>
@@ -759,207 +725,89 @@ window.addEventListener('load',async()=>{
 </div>
 
 <script>
-// LOGIN MODAL — standalone, tidak bergantung pada apapun di luar ini
-const LM = {
-  SU: 'https://fuovfrdicdhnlymnacpz.supabase.co',
-  SK_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
-  LS: {u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
-
-  async get(path) {
-    const r = await fetch(this.SU+'/rest/v1'+path, {
-      headers: {apikey:this.SK_KEY, Authorization:'Bearer '+this.SK_KEY}
-    });
-    const t = await r.text();
-    return t ? JSON.parse(t) : [];
-  },
-
-  async post(path, body) {
-    const r = await fetch(this.SU+'/rest/v1'+path, {
-      method: 'POST',
-      headers: {
-        apikey: this.SK_KEY,
-        Authorization: 'Bearer '+this.SK_KEY,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation'
-      },
-      body: JSON.stringify(body)
-    });
-    const t = await r.text();
-    const d = t ? JSON.parse(t) : null;
-    if (!r.ok) {
-      const e = new Error((d && (d.message || d.code)) || 'Request failed');
-      e.code = d && d.code;
-      throw e;
-    }
-    return d;
-  },
-
-  async sha256(str) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-  },
-
-  async deviceFP() {
-    const p = [];
-    try {
-      const cv = document.createElement('canvas');
-      cv.width = 100; cv.height = 30;
-      const ctx = cv.getContext('2d');
-      ctx.font = '12px sans-serif';
-      ctx.fillText('jejak_fp', 2, 15);
-      p.push(cv.toDataURL());
-    } catch(e) { p.push('nc'); }
-    p.push(navigator.userAgent, screen.width+'x'+screen.height, navigator.language);
-    return this.sha256(p.join('|'));
-  },
-
-  async authHash(pin, username) {
-    const fp = await this.deviceFP();
-    return this.sha256(pin + ':' + username + ':' + fp + ':jejak_local_v1');
-  },
-
-  validUsername(v) {
-    v = (v || '').trim().toLowerCase();
-    if (!v || !v.includes('.')) return null;
-    const parts = v.split('.');
-    if (parts.length !== 2) return null;
-    if (parts[0].length < 2 || parts[1].length < 2) return null;
-    if (!/^[a-z][a-z0-9]*$/.test(parts[0]) || !/^[a-z][a-z0-9]*$/.test(parts[1])) return null;
-    return v;
-  },
-
-  validPin(p) {
-    if (!/^\d{6}$/.test(p)) return false;
-    // cek semua digit sama
-    if (p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5]) return false;
-    if (p==='123456'||p==='654321'||p==='000000'||p==='999999') return false;
-    return true;
-  }
+const LM={
+  SU:'https://fuovfrdicdhnlymnacpz.supabase.co',
+  SK_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
+  LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
+  async get(path){const r=await fetch(this.SU+'/rest/v1'+path,{headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY}});const t=await r.text();return t?JSON.parse(t):[];},
+  async post(path,body){const r=await fetch(this.SU+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
+  async sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
+  async deviceFP(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('jejak_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
+  async authHash(pin,username){const fp=await this.deviceFP();return this.sha256(pin+':'+username+':'+fp+':jejak_local_v1');},
+  validUsername(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const parts=v.split('.');if(parts.length!==2)return null;if(parts[0].length<2||parts[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(parts[0])||!/^[a-z][a-z0-9]*$/.test(parts[1]))return null;return v;},
+  validPin(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(p==='123456'||p==='654321'||p==='000000'||p==='999999')return false;return true;}
 };
 
-function openLoginModal() {
-  document.getElementById('lmBg').classList.add('show');
-  setTimeout(()=>document.getElementById('lmU').focus(), 100);
-}
-function closeLM() {
-  document.getElementById('lmBg').classList.remove('show');
-}
-function lmSwitch(to) {
-  document.getElementById('lmPanelLogin').style.display = to==='login' ? '' : 'none';
-  document.getElementById('lmPanelReg').style.display  = to==='reg'   ? '' : 'none';
-  setTimeout(()=>{
-    document.getElementById(to==='login' ? 'lmU' : 'lmRU').focus();
-  }, 100);
-}
-function lmFb(id, type, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (!type) { el.className = 'lm-fb'; el.textContent = ''; return; }
-  el.className = 'lm-fb show ' + type;
-  el.textContent = msg;
-}
-function lmUpdateLogin() {
-  const ok = LM.validUsername(document.getElementById('lmU').value)
-    && LM.validPin(document.getElementById('lmP').value);
-  document.getElementById('lmBtnL').disabled = !ok;
-}
-function lmUpdateReg() {
-  const pin  = document.getElementById('lmRP').value;
-  const pin2 = document.getElementById('lmRP2').value;
-  const ok = LM.validUsername(document.getElementById('lmRU').value)
-    && LM.validPin(pin)
-    && pin === pin2
-    && document.getElementById('lmAg').checked;
-  document.getElementById('lmBtnR').disabled = !ok;
+function openLoginModal(){document.getElementById('lmBg').classList.add('show');setTimeout(()=>document.getElementById('lmU').focus(),100);}
+function closeLM(){document.getElementById('lmBg').classList.remove('show');}
+function lmSwitch(to){document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none';document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none';setTimeout(()=>{document.getElementById(to==='login'?'lmU':'lmRU').focus();},100);}
+function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
+function lmUpdateLogin(){const ok=LM.validUsername(document.getElementById('lmU').value)&&LM.validPin(document.getElementById('lmP').value);document.getElementById('lmBtnL').disabled=!ok;}
+function lmUpdateReg(){const pin=document.getElementById('lmRP').value;const pin2=document.getElementById('lmRP2').value;const ok=LM.validUsername(document.getElementById('lmRU').value)&&LM.validPin(pin)&&pin===pin2&&document.getElementById('lmAg').checked;document.getElementById('lmBtnR').disabled=!ok;}
+
+async function lmDoLogin(){
+  const u=LM.validUsername(document.getElementById('lmU').value);
+  const p=document.getElementById('lmP').value;
+  lmFb('lmFbL','','');
+  if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
+  if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}
+  const btn=document.getElementById('lmBtnL');
+  btn.disabled=true;btn.textContent='VERIFIKASI...';
+  try{
+    const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');
+    const user=Array.isArray(data)?data[0]:null;
+    if(!user)throw new Error('Username tidak ditemukan');
+    const stored=localStorage.getItem(LM.LS.a);
+    if(!stored)throw new Error('Akun belum terdaftar di device ini — daftar ulang');
+    const hash=await LM.authHash(p,u);
+    if(hash!==stored)throw new Error('PIN salah');
+    localStorage.setItem(LM.LS.u,user.username);
+    localStorage.setItem(LM.LS.i,user.id);
+    localStorage.setItem(LM.LS.l,'true');
+    lmFb('lmFbL','s','✓ Login berhasil!');
+    setTimeout(()=>window.location.reload(),700);
+  }catch(err){lmFb('lmFbL','e',err.message||'Login gagal');btn.disabled=false;btn.textContent='MASUK \u2192';}
 }
 
-async function lmDoLogin() {
-  const u = LM.validUsername(document.getElementById('lmU').value);
-  const p = document.getElementById('lmP').value;
-  lmFb('lmFbL', '', '');
-  if (!u) { lmFb('lmFbL','e','Format username: kata.kata'); return; }
-  if (!LM.validPin(p)) { lmFb('lmFbL','e','PIN: 6 digit angka'); return; }
-  const btn = document.getElementById('lmBtnL');
-  btn.disabled = true; btn.textContent = 'VERIFIKASI...';
-  try {
-    const data = await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');
-    const user = Array.isArray(data) ? data[0] : null;
-    if (!user) throw new Error('Username tidak ditemukan');
-    const stored = localStorage.getItem(LM.LS.a);
-    if (!stored) throw new Error('Akun belum terdaftar di device ini — daftar ulang');
-    const hash = await LM.authHash(p, u);
-    if (hash !== stored) throw new Error('PIN salah');
-    localStorage.setItem(LM.LS.u, user.username);
-    localStorage.setItem(LM.LS.i, user.id);
-    localStorage.setItem(LM.LS.l, 'true');
-    lmFb('lmFbL', 's', '✓ Login berhasil!');
-    setTimeout(() => window.location.reload(), 700);
-  } catch(err) {
-    lmFb('lmFbL', 'e', err.message || 'Login gagal');
-    btn.disabled = false; btn.textContent = 'MASUK \u2192';
+async function lmDoReg(){
+  const u=LM.validUsername(document.getElementById('lmRU').value);
+  const p=document.getElementById('lmRP').value;
+  const p2=document.getElementById('lmRP2').value;
+  lmFb('lmFbR','','');
+  if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;}
+  if(!LM.validPin(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;}
+  if(p!==p2){lmFb('lmFbR','e','PIN tidak cocok');return;}
+  const btn=document.getElementById('lmBtnR');
+  btn.disabled=true;btn.textContent='PROSES...';
+  try{
+    const data=await LM.post('/profiles?select=id,username',{username:u});
+    const user=Array.isArray(data)?data[0]:data;
+    if(!user||!user.id)throw new Error('Tidak ada data returned');
+    const hash=await LM.authHash(p,u);
+    localStorage.setItem(LM.LS.u,user.username);
+    localStorage.setItem(LM.LS.i,user.id);
+    localStorage.setItem(LM.LS.l,'true');
+    localStorage.setItem(LM.LS.a,hash);
+    lmFb('lmFbR','s','Akun dibuat!');
+    setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800);
+  }catch(err){
+    const isDupe=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');
+    lmFb('lmFbR','e',isDupe?'Username sudah dipakai':(err.message||'Gagal'));
+    btn.disabled=false;btn.textContent='DAFTAR \u2192';
   }
 }
 
-async function lmDoReg() {
-  const u  = LM.validUsername(document.getElementById('lmRU').value);
-  const p  = document.getElementById('lmRP').value;
-  const p2 = document.getElementById('lmRP2').value;
-  lmFb('lmRegFb', '', '');
-  if (!u) { lmFb('lmRegFb','e','Format username: kata.kata'); return; }
-  if (!LM.validPin(p)) { lmFb('lmRegFb','e','PIN terlalu lemah'); return; }
-  if (p !== p2) { lmFb('lmRegFb','e','PIN tidak cocok'); return; }
-  const btn = document.getElementById('lmBtnR');
-  btn.disabled = true; btn.textContent = 'PROSES...';
-  try {
-    const data = await LM.post('/profiles?select=id,username', {username: u});
-    const user = Array.isArray(data) ? data[0] : data;
-    if (!user || !user.id) throw new Error('Tidak ada data returned');
-    const hash = await LM.authHash(p, u);
-    localStorage.setItem(LM.LS.u, user.username);
-    localStorage.setItem(LM.LS.i, user.id);
-    localStorage.setItem(LM.LS.l, 'true');
-    localStorage.setItem(LM.LS.a, hash);
-    lmFb('lmRegFb', 's', 'Akun dibuat!');
-    setTimeout(() => {
-      alert('Akun dibuat!\n\nUsername: ' + user.username + '\n\nSIMPAN PIN — tidak bisa dipulihkan!');
-      window.location.reload();
-    }, 800);
-  } catch(err) {
-    const isDupe = err.code==='23505' || (err.message||'').toLowerCase().includes('duplicate');
-    lmFb('lmRegFb', 'e', isDupe ? 'Username sudah dipakai' : (err.message || 'Gagal'));
-    btn.disabled = false; btn.textContent = 'DAFTAR \u2192';
-  }
-}
-
-// Wire input events
-(function wireModalInputs() {
-  function toUsername(el) {
-    el.addEventListener('input', function() {
-      let v = this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');
-      // max 1 dot
-      const dotIdx = v.indexOf('.');
-      if (dotIdx !== -1) v = v.slice(0,dotIdx+1) + v.slice(dotIdx+1).replace(/\./g,'');
-      if (v !== this.value) this.value = v;
-    });
-  }
-  function toPin(el) {
-    el.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g,'').slice(0,6);
-    });
-  }
-  function wire(id, fn, updateFn) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    fn(el);
-    el.addEventListener('input', updateFn);
-  }
-  wire('lmU',   toUsername, lmUpdateLogin);
-  wire('lmP',   toPin,      lmUpdateLogin);
-  wire('lmRU',  toUsername, lmUpdateReg);
-  wire('lmRP',  toPin,      lmUpdateReg);
-  wire('lmRP2', toPin,      lmUpdateReg);
-  const ag = document.getElementById('lmAg');
-  if (ag) ag.addEventListener('change', lmUpdateReg);
+(function wireModalInputs(){
+  function toUsername(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const dotIdx=v.indexOf('.');if(dotIdx!==-1)v=v.slice(0,dotIdx+1)+v.slice(dotIdx+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
+  function toPin(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
+  function wire(id,fn,updateFn){const el=document.getElementById(id);if(!el)return;fn(el);el.addEventListener('input',updateFn);}
+  wire('lmU',toUsername,lmUpdateLogin);
+  wire('lmP',toPin,lmUpdateLogin);
+  wire('lmRU',toUsername,lmUpdateReg);
+  wire('lmRP',toPin,lmUpdateReg);
+  wire('lmRP2',toPin,lmUpdateReg);
+  const ag=document.getElementById('lmAg');
+  if(ag)ag.addEventListener('change',lmUpdateReg);
 })();
 </script>
 </body>
