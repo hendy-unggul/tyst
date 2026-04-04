@@ -8,7 +8,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <style>
+    /* ========== SEMUA STYLE SAMA PERSIS SEPERTI VERSI SEBELUMNYA ========== */
     :root {
       --bg: #0a0a0a;
       --surface: #111;
@@ -696,7 +701,7 @@
     </div>
   </div>
 
-  <!-- QUESTION SECTION (sama seperti sebelumnya) -->
+  <!-- QUESTION SECTION -->
   <div class="section" id="question-section">
     <div class="dimension-header">
       <div class="dimension-label" id="dim-label">Dimensi</div>
@@ -734,6 +739,11 @@
 </div>
 
 <script>
+  // ==================== SUPABASE INIT ====================
+  const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   // ==================== DATA KLUB ====================
   var klubData = {
     'U15': ['Persija Jakarta U15', 'Villa U15', 'Bintang Timur U15', 'Arsenal Academy U15'],
@@ -822,13 +832,12 @@
   var currentQ = 0;
   var answers = {};
   var timerInterval;
+  var testStartTime = null;   // untuk menghitung durasi
 
   // ==================== AMBIL USERNAME DARI LOCALSTORAGE ====================
   function loadUsername() {
-    // Asumsikan username disimpan setelah login dari halaman utama
     var storedUsername = localStorage.getItem('jejak_username') || sessionStorage.getItem('cocomeo_username');
     if (!storedUsername) {
-      // Jika belum login, beri opsi input username sederhana (opsional)
       storedUsername = prompt("Masukkan username Anda (harus sudah terdaftar di komunitas):", "atlet_example");
       if (storedUsername) {
         sessionStorage.setItem('cocomeo_username', storedUsername);
@@ -840,11 +849,26 @@
     document.getElementById('usernameDisplay').innerText = displayName;
     var avatarLetter = storedUsername.charAt(0).toUpperCase();
     document.getElementById('userAvatar').innerText = avatarLetter;
+    return storedUsername;
   }
 
-  // ==================== START TEST DENGAN VALIDASI DATA IDENTITAS ====================
+  // ==================== AMBIL USER ID DARI SUPABASE (opsional, bisa pakai dummy) ====================
+  async function getUserId(username) {
+    // Coba cari di tabel profiles berdasarkan username
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', username)
+      .maybeSingle();
+    if (error || !data) {
+      console.warn('User tidak ditemukan di Supabase, gunakan dummy user_id');
+      return '00000000-0000-0000-0000-000000000000';
+    }
+    return data.id;
+  }
+
+  // ==================== START TEST ====================
   function startTest() {
-    // Validasi semua field termasuk nama lengkap dan nomor identitas anak
     var requiredFields = ['namaLengkap', 'nikAnak', 'liga', 'klub', 'posisi', 'tinggi'];
     var labels = {
       namaLengkap: 'Nama Lengkap',
@@ -864,24 +888,26 @@
       }
     }
     
-    // Validasi sederhana NIK (minimal 10 digit)
     var nik = document.getElementById('nikAnak').value.replace(/\s/g, '');
     if (nik.length < 10) {
       alert('Nomor Kartu Identitas Anak tidak valid (minimal 10 digit). Harap masukkan Akta Kelahiran/KIA/KK.');
       return;
     }
     
-    // Simpan data identitas ke sessionStorage untuk kepentingan audit (opsional)
+    // Simpan identitas ke sessionStorage (untuk sementara)
     var identitas = {
       namaLengkap: document.getElementById('namaLengkap').value,
       nikAnak: nik,
       liga: document.getElementById('liga').value,
       klub: document.getElementById('klub').value,
       posisi: document.getElementById('posisi').value,
-      tinggi: document.getElementById('tinggi').value,
+      tinggi: parseInt(document.getElementById('tinggi').value),
+      username: loadUsername(),
       timestamp: new Date().toISOString()
     };
     sessionStorage.setItem('psikometrik_identitas', JSON.stringify(identitas));
+    
+    testStartTime = Date.now();
     
     document.getElementById('biodata-section').classList.remove('active');
     document.getElementById('progress-container').classList.add('active');
@@ -981,13 +1007,59 @@
     document.getElementById('progress-text').textContent = (currentQ + 1) + '/' + questions.length + ' SELESAI';
   }
 
+  // ==================== SIMPAN KE SUPABASE ====================
+  async function saveToSupabase(scores, answersRaw) {
+    const identitas = JSON.parse(sessionStorage.getItem('psikometrik_identitas') || '{}');
+    const username = identitas.username || loadUsername();
+    const userId = await getUserId(username);
+    const durasi = testStartTime ? Math.floor((Date.now() - testStartTime) / 1000) : null;
+    
+    const data = {
+      user_id: userId,
+      username: username,
+      nama_lengkap: identitas.namaLengkap,
+      nik_anak: identitas.nikAnak,
+      liga: identitas.liga,
+      klub: identitas.klub,
+      posisi: identitas.posisi,
+      tinggi_cm: identitas.tinggi,
+      openness_percent: scores.O,
+      conscientiousness_percent: scores.C,
+      extraversion_percent: scores.E,
+      agreeableness_percent: scores.A,
+      emotional_stability_percent: scores.N,
+      answers_json: answersRaw,
+      durasi_detik: durasi,
+      tanggal_test: new Date().toISOString()
+    };
+    
+    const { error } = await supabase.from('psikometrik_sessions').insert([data]);
+    if (error) {
+      console.error('Gagal menyimpan ke Supabase:', error);
+      alert('⚠️ Data tes gagal disimpan. Silakan coba lagi atau hubungi admin.');
+    } else {
+      console.log('Data tes berhasil disimpan');
+      alert('✅ Data tes berhasil disimpan!');
+    }
+  }
+
   function finishTest() {
     clearInterval(timerInterval);
+    
+    var scores = calculateScores();
+    var answersRaw = {};
+    for (var i = 0; i < questions.length; i++) {
+      var q = questions[i];
+      answersRaw[q.id] = answers[q.id];
+    }
+    
+    // Simpan ke Supabase (async)
+    saveToSupabase(scores, answersRaw);
+    
     document.getElementById('question-section').classList.remove('active');
     document.getElementById('progress-container').classList.remove('active');
     document.getElementById('result-section').classList.add('active');
     
-    var scores = calculateScores();
     renderResults(scores);
   }
 
