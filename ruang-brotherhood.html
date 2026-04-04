@@ -1,728 +1,474 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="brutalgenz">
+<html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>Brotherhood — Jejalah Negeri</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    :root {
-      --bg: #0A0A0A;
-      --surface: #141414;
-      --surface-elevated: #1E1E1E;
-      --border: #2A2A2A;
-      --border-light: #3A3A3A;
-      --text: #FFFFFF;
-      --text-secondary: #888888;
-      --text-muted: #555555;
-      --accent-primary: #FF3B30;
-      --accent-secondary: #00E5FF;
-      --accent-tertiary: #FF006E;
-      --accent-motor: #FF6B00;
-      --radius: 0px;
-      --space-xs: 4px;
-      --space-sm: 8px;
-      --space-md: 16px;
-      --space-lg: 24px;
-      --space-xl: 32px;
-      --font-mono: 'JetBrains Mono', monospace;
-      --font-display: 'Space Grotesk', sans-serif;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 14px;
+      background: #0A0A0A;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
       line-height: 1.5;
-      min-height: 100vh;
-      padding-bottom: 80px;
+      overflow-x: hidden;
     }
-    .wrapper {
-      max-width: 500px;
+    /* wrapper lebar penuh dengan max-width konten */
+    .container {
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 var(--space-md) var(--space-xl);
+      padding: 0 24px;
     }
-    /* Header */
-    .hero {
-      padding: var(--space-lg) 0 var(--space-md);
-      border-bottom: 2px solid var(--border);
-      margin-bottom: var(--space-lg);
+    /* header */
+    .hero-gallery {
+      position: relative;
+      height: 70vh;
+      min-height: 400px;
+      background: linear-gradient(135deg, #0A0A0A, #1A1A1A);
+      overflow: hidden;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 48px;
     }
-    .badge {
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--accent-motor);
-      background: rgba(255, 107, 0, 0.15);
-      display: inline-block;
-      padding: 4px 12px;
-      margin-bottom: var(--space-sm);
-      border-left: 3px solid var(--accent-motor);
+    .hero-slider {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
     }
-    h1 {
-      font-family: var(--font-display);
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      margin-bottom: var(--space-sm);
+    .slide {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease;
     }
-    h1 span { color: var(--accent-motor); }
-    .sub {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-    /* Tombol */
-    .btn-brutal {
-      background: var(--accent-motor);
-      color: #000;
-      border: 2px solid #000;
-      padding: 12px 24px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      cursor: pointer;
-      box-shadow: 3px 3px 0 #000;
-      transition: 0.1s;
-      display: inline-block;
+    .slide.active { opacity: 1; }
+    .hero-overlay {
+      position: relative;
+      z-index: 2;
+      background: linear-gradient(0deg, rgba(0,0,0,0.8), transparent);
+      width: 100%;
+      padding: 48px 24px;
       text-align: center;
     }
-    .btn-brutal:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 #000; }
-    .btn-secondary {
-      background: var(--surface-elevated);
-      color: var(--text);
-      border-color: var(--border);
-      box-shadow: 3px 3px 0 var(--border);
-    }
-    /* Tab navigasi atas */
-    .tabs-nav {
-      display: flex;
-      gap: 4px;
-      margin-bottom: var(--space-lg);
-      border-bottom: 2px solid var(--border);
-      overflow-x: auto;
-      white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-    }
-    .tab-btn {
-      padding: 10px 16px;
-      font-size: 12px;
-      font-weight: 700;
+    .hero-title {
+      font-family: 'Space Grotesk', monospace;
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: 0.1s;
-      font-family: var(--font-mono);
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
     }
-    .tab-btn.active {
-      color: var(--accent-secondary);
-      border-bottom-color: var(--accent-secondary);
+    .hero-title span { color: #FF6B00; }
+    .hero-sub {
+      font-size: 16px;
+      color: #CCC;
+      margin-top: 12px;
     }
-    .tab-content { display: none; animation: fade 0.2s ease; }
-    .tab-content.active { display: block; }
-    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-    /* Klub Grid */
+    /* section umum */
+    .section {
+      margin-bottom: 64px;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #2A2A2A;
+      padding-bottom: 12px;
+    }
+    .section-title {
+      font-size: 28px;
+      font-weight: 800;
+      font-family: 'Space Grotesk', monospace;
+      letter-spacing: -0.5px;
+    }
+    .section-link {
+      color: #FF6B00;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    /* klub grid */
     .clubs-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-md);
-      margin-bottom: var(--space-xl);
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 24px;
     }
     .club-card {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      padding: var(--space-md);
+      background: #141414;
+      border: 1px solid #2A2A2A;
+      border-radius: 16px;
+      padding: 20px 12px;
+      text-align: center;
       cursor: pointer;
-      transition: 0.1s;
+      transition: transform 0.2s, border-color 0.2s;
     }
-    .club-card:hover { border-color: var(--accent-motor); transform: translateY(-2px); }
-    .club-logo { font-size: 40px; margin-bottom: var(--space-sm); }
-    .club-name { font-weight: 800; font-size: 16px; margin-bottom: 4px; }
-    .club-location { font-size: 11px; color: var(--text-secondary); }
-    /* Detail Klub */
-    .club-detail-header {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      padding: var(--space-md);
-      margin-bottom: var(--space-md);
+    .club-card:hover {
+      transform: translateY(-6px);
+      border-color: #FF6B00;
+    }
+    .club-logo {
+      width: 80px;
+      height: 80px;
+      background: #2A2A2A;
+      border-radius: 50%;
       display: flex;
-      gap: var(--space-md);
       align-items: center;
-      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0 auto 12px;
+      font-size: 40px;
+      border: 2px solid #FF6B00;
     }
-    .club-detail-logo { font-size: 64px; }
-    .club-detail-info { flex: 1; }
-    .club-detail-name { font-size: 24px; font-weight: 800; }
-    .club-detail-meta { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
-    .admin-badge { background: var(--accent-tertiary); color: #000; padding: 2px 8px; font-size: 10px; display: inline-block; margin-left: 8px; }
-    /* Forum FIFO */
-    .forum-messages {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      height: 400px;
-      overflow-y: auto;
-      padding: var(--space-md);
-      margin-bottom: var(--space-md);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .club-name {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 4px;
     }
-    .message {
-      background: var(--surface-elevated);
-      padding: 10px 12px;
-      border-left: 3px solid var(--accent-secondary);
-      font-size: 13px;
+    .club-location {
+      font-size: 12px;
+      color: #888;
     }
-    .message-user { font-weight: 700; color: var(--accent-secondary); margin-right: 8px; }
-    .message-time { font-size: 10px; color: var(--text-muted); float: right; }
-    .message-text { word-break: break-word; margin-top: 4px; }
-    .forum-input {
-      display: flex;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-md);
-    }
-    .forum-input input {
-      flex: 1;
-      background: var(--surface-elevated);
-      border: 2px solid var(--border);
-      padding: 12px;
-      color: var(--text);
-      font-family: var(--font-mono);
-    }
-    .emoji-picker {
-      display: flex;
-      gap: 8px;
-      margin-bottom: var(--space-sm);
-      flex-wrap: wrap;
-    }
-    .emoji-btn {
-      background: var(--surface-elevated);
-      border: 1px solid var(--border);
-      padding: 6px 12px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-    /* Galeri */
-    .gallery-grid {
+    /* jalur touring & kuliner grid */
+    .routes-grid, .culinary-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-md);
-      margin-bottom: var(--space-lg);
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
     }
-    .gallery-item {
-      background: var(--surface);
-      border: 2px solid var(--border);
+    .route-card, .culinary-card {
+      background: #141414;
+      border: 1px solid #2A2A2A;
+      border-radius: 16px;
       overflow: hidden;
+      transition: transform 0.2s;
     }
-    .gallery-media {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      background: var(--surface-elevated);
+    .route-card:hover, .culinary-card:hover { transform: translateY(-4px); }
+    .route-image, .culinary-image {
+      height: 160px;
+      background: #2A2A2A;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 48px;
     }
-    .gallery-caption {
-      padding: var(--space-sm);
-      font-size: 12px;
-      border-top: 1px solid var(--border);
+    .route-info, .culinary-info {
+      padding: 16px;
     }
-    .gallery-reactions {
-      display: flex;
-      gap: 8px;
-      padding: var(--space-xs) var(--space-sm);
-      border-top: 1px solid var(--border);
-      font-size: 12px;
+    .route-name, .culinary-name {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 4px;
     }
-    .reaction-btn {
+    .route-meta, .culinary-meta {
+      font-size: 12px;
+      color: #FF6B00;
+      margin-bottom: 8px;
+    }
+    .route-desc, .culinary-desc {
+      font-size: 13px;
+      color: #AAA;
+    }
+    /* tombol */
+    .btn-brutal {
+      background: #FF6B00;
+      color: #000;
+      border: none;
+      padding: 12px 24px;
+      font-weight: 700;
+      border-radius: 40px;
       cursor: pointer;
-      padding: 2px 6px;
-      background: var(--surface-elevated);
-      border-radius: 20px;
+      transition: 0.2s;
+      font-family: inherit;
     }
-    .post-gallery-form {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      padding: var(--space-md);
-      margin-bottom: var(--space-lg);
-    }
-    .post-gallery-form textarea {
-      width: 100%;
-      background: var(--surface-elevated);
-      border: 2px solid var(--border);
-      padding: 12px;
-      color: var(--text);
-      font-family: var(--font-mono);
-      resize: vertical;
-      margin-bottom: var(--space-sm);
-    }
-    /* Leaflet map */
-    .map-container {
-      height: 300px;
-      background: var(--surface);
-      border: 2px solid var(--border);
-      margin-bottom: var(--space-md);
-    }
-    .route-item, .culinary-item {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      padding: var(--space-md);
-      margin-bottom: var(--space-sm);
-    }
-    /* Anggota & Mute */
-    .member-list {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-sm);
-    }
-    .member-row {
-      background: var(--surface);
-      border: 2px solid var(--border);
-      padding: var(--space-sm) var(--space-md);
-      display: flex;
-      justify-content: space-between;
+    .btn-brutal:hover { background: #FF8C33; transform: scale(0.98); }
+    /* modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 1000;
       align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    .mute-btn {
+    .modal-content {
+      background: #141414;
+      border: 1px solid #2A2A2A;
+      border-radius: 24px;
+      max-width: 500px;
+      width: 100%;
+      padding: 32px;
+    }
+    /* detail club (sementara sederhana, bisa pakai modal atau halaman baru) */
+    .club-detail {
+      position: fixed;
+      inset: 0;
+      background: #0A0A0A;
+      z-index: 1100;
+      overflow-y: auto;
+      display: none;
+      padding: 24px;
+    }
+    .club-detail.active { display: block; }
+    .back-btn {
       background: none;
-      border: 1px solid var(--border);
-      padding: 4px 12px;
+      border: none;
+      color: #FF6B00;
+      font-size: 16px;
       cursor: pointer;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    .mute-btn.active { background: var(--accent-primary); color: #fff; border-color: #000; }
-    .back-link {
-      display: inline-block;
-      margin-bottom: var(--space-md);
-      color: var(--accent-secondary);
-      cursor: pointer;
+      margin-bottom: 24px;
     }
     /* responsive */
-    @media (max-width: 480px) {
-      .clubs-grid { grid-template-columns: 1fr; }
-      .gallery-grid { grid-template-columns: 1fr; }
+    @media (max-width: 768px) {
+      .hero-title { font-size: 32px; }
+      .clubs-grid { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
 </head>
 <body>
-<div class="wrapper">
-  <div id="listView">
-    <div class="hero">
-      <div class="badge">#Brotherhood</div>
-      <h1>Jejalah <span>Negeri</span></h1>
-      <div class="sub">Komunitas motor • jalur wisata • galeri touring • kuliner nusantara</div>
+  <div class="hero-gallery" id="heroGallery">
+    <div class="hero-slider" id="heroSlider"></div>
+    <div class="hero-overlay">
+      <div class="hero-title">Jejalah <span>Negeri</span></div>
+      <div class="hero-sub">Komunitas motor • touring • kuliner nusantara</div>
     </div>
-    <button class="btn-brutal" id="openRegisterClub" style="margin-bottom: var(--space-lg);">✦ DAFTARKAN KLUB ✦</button>
-    <div class="tabs-nav">
-      <button class="tab-btn active" data-tab="daftar">Daftar Klub</button>
-      <button class="tab-btn" data-tab="peta">Peta Wisata</button>
-    </div>
-    <div id="tab-daftar" class="tab-content active">
+  </div>
+
+  <div class="container">
+    <!-- Daftar Klub -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🏍️ Klub Motor</h2>
+        <button class="section-link" id="openRegClubBtn">+ Daftarkan Klub</button>
+      </div>
       <div class="clubs-grid" id="clubsGrid"></div>
     </div>
-    <div id="tab-peta" class="tab-content">
-      <div class="map-container" id="leafletMap"></div>
-      <div id="routesList"></div>
-      <div id="culinaryList"></div>
-    </div>
-  </div>
 
-  <div id="detailView" style="display:none;">
-    <div class="back-link" id="backToList">← Kembali ke Daftar Klub</div>
-    <div id="clubDetailContainer"></div>
-    <div class="tabs-nav" id="detailTabs">
-      <button class="tab-btn active" data-detail-tab="forum">Forum</button>
-      <button class="tab-btn" data-detail-tab="gallery">Galeri</button>
-      <button class="tab-btn" data-detail-tab="routes">Jalur Wisata</button>
-      <button class="tab-btn" data-detail-tab="culinary">Kuliner</button>
-      <button class="tab-btn" data-detail-tab="members">Anggota</button>
-    </div>
-    <div id="detailForum" class="detail-tab-content active"></div>
-    <div id="detailGallery" class="detail-tab-content"></div>
-    <div id="detailRoutes" class="detail-tab-content"></div>
-    <div id="detailCulinary" class="detail-tab-content"></div>
-    <div id="detailMembers" class="detail-tab-content"></div>
-  </div>
-</div>
-
-<!-- Modal Daftar Klub -->
-<div id="registerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:2000; align-items:center; justify-content:center; padding:20px;">
-  <div style="background:var(--surface); border:2px solid var(--border); max-width:400px; width:100%; padding:24px;">
-    <h3 style="margin-bottom:16px;">Daftarkan Klub Motor</h3>
-    <input type="text" id="regClubName" placeholder="Nama Klub" style="width:100%; margin-bottom:12px; padding:12px; background:var(--surface-elevated); border:2px solid var(--border); color:white;">
-    <input type="text" id="regAddress" placeholder="Alamat Sekretariat" style="width:100%; margin-bottom:12px; padding:12px; background:var(--surface-elevated); border:2px solid var(--border); color:white;">
-    <input type="text" id="regChairman" placeholder="Nama Ketua" style="width:100%; margin-bottom:12px; padding:12px; background:var(--surface-elevated); border:2px solid var(--border); color:white;">
-    <input type="text" id="regContact" placeholder="Nomor Kontak (WA/Telepon)" style="width:100%; margin-bottom:12px; padding:12px; background:var(--surface-elevated); border:2px solid var(--border); color:white;">
-    <button id="submitRegister" class="btn-brutal" style="width:100%;">DAFTARKAN</button>
-    <button id="closeModal" style="margin-top:12px; width:100%; background:none; border:1px solid var(--border); padding:8px; color:white;">Batal</button>
-  </div>
-</div>
-
-<script>
-  // ==================== DATA MOCK (localStorage) ====================
-  let clubs = []; // klub yang sudah claim
-  let clubRegistrations = []; // pending registrasi
-  let currentUser = "user_" + Math.random().toString(36).substr(2, 6); // simulasi user login
-  let currentClubId = null;
-
-  // Load data dari localStorage
-  function loadData() {
-    const storedClubs = localStorage.getItem('brotherhood_clubs');
-    if(storedClubs) clubs = JSON.parse(storedClubs);
-    else {
-      clubs = [];
-    }
-    const storedReg = localStorage.getItem('brotherhood_registrations');
-    if(storedReg) clubRegistrations = JSON.parse(storedReg);
-    else {
-      // contoh registrasi dummy untuk demo
-      clubRegistrations = [];
-    }
-    // jika belum ada klub, buat contoh klub yang sudah claim
-    if(clubs.length === 0) {
-      clubs.push({
-        id: "club1",
-        name: "Garuda Roadster",
-        logo: "🏍️",
-        address: "Jl. Merdeka No.10, Jakarta",
-        chairman: "Andi Wijaya",
-        contact: "08123456789",
-        lat: -6.2, lng: 106.816,
-        adminId: "admin1",
-        members: ["admin1", "user_abc", "user_def", "user_ghi"],
-        muted: {}, // { userId: [mutedUserId] }
-        messages: [
-          { id: Date.now(), user: "admin1", text: "Selamat datang di Garuda Roadster!", time: new Date().toISOString(), emoji: "" }
-        ],
-        gallery: [
-          { id: "g1", user: "admin1", mediaType: "photo", mediaUrl: "🏍️", caption: "Touring ke Pangandaran", reactions: { "👍": 2, "❤️": 1 }, narasi: "Perjalanan seru!" }
-        ],
-        routes: [
-          { id: "r1", name: "Puncak Pass", start: "Jakarta", end: "Puncak", distance: 80, difficulty: "medium", lat: -6.7, lng: 107.0 }
-        ],
-        culinary: [
-          { id: "c1", name: "Sate Klathak", location: "Bantul", maps: "", rating: 4.5 }
-        ]
-      });
-    }
-    saveToLocal();
-  }
-  function saveToLocal() {
-    localStorage.setItem('brotherhood_clubs', JSON.stringify(clubs));
-    localStorage.setItem('brotherhood_registrations', JSON.stringify(clubRegistrations));
-  }
-
-  // Render daftar klub
-  function renderClubs() {
-    const grid = document.getElementById('clubsGrid');
-    if(!grid) return;
-    grid.innerHTML = clubs.map(club => `
-      <div class="club-card" onclick="openClubDetail('${club.id}')">
-        <div class="club-logo">${club.logo || '🏍️'}</div>
-        <div class="club-name">${escapeHtml(club.name)}</div>
-        <div class="club-location">${escapeHtml(club.address.split(',')[0])}</div>
+    <!-- Jalur Touring Terbaik -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🗺️ Jalur Touring Terbaik</h2>
+        <a href="#" class="section-link">Lihat semua →</a>
       </div>
-    `).join('');
-  }
+      <div class="routes-grid" id="routesGrid"></div>
+    </div>
 
-  // Buka detail klub
-  window.openClubDetail = (clubId) => {
-    currentClubId = clubId;
-    const club = clubs.find(c => c.id === clubId);
-    if(!club) return;
-    document.getElementById('listView').style.display = 'none';
-    document.getElementById('detailView').style.display = 'block';
-    renderClubDetail(club);
-    // aktifkan tab forum
-    switchDetailTab('forum');
-  };
+    <!-- Kuliner Nusantara -->
+    <div class="section">
+      <div class="section-header">
+        <h2 class="section-title">🍜 Kuliner Nusantara</h2>
+        <a href="#" class="section-link">Jelajahi →</a>
+      </div>
+      <div class="culinary-grid" id="culinaryGrid"></div>
+    </div>
+  </div>
 
-  function renderClubDetail(club) {
-    const container = document.getElementById('clubDetailContainer');
-    const isAdmin = (club.adminId === currentUser);
-    container.innerHTML = `
-      <div class="club-detail-header">
-        <div class="club-detail-logo">${club.logo || '🏍️'}</div>
-        <div class="club-detail-info">
-          <div class="club-detail-name">${escapeHtml(club.name)} ${isAdmin ? '<span class="admin-badge">ADMIN</span>' : ''}</div>
-          <div class="club-detail-meta">📌 ${escapeHtml(club.address)} | 👑 ${escapeHtml(club.chairman)} | 📞 ${escapeHtml(club.contact)}</div>
+  <!-- Modal Daftar Klub -->
+  <div id="registerModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 20px;">Daftarkan Klub Motor</h3>
+      <input type="text" id="regClubName" placeholder="Nama Klub" style="width:100%; margin-bottom:12px; padding:12px; background:#1E1E1E; border:1px solid #333; color:white; border-radius:8px;">
+      <input type="text" id="regAddress" placeholder="Alamat Sekretariat" style="width:100%; margin-bottom:12px; padding:12px; background:#1E1E1E; border:1px solid #333; color:white; border-radius:8px;">
+      <input type="text" id="regChairman" placeholder="Nama Ketua" style="width:100%; margin-bottom:12px; padding:12px; background:#1E1E1E; border:1px solid #333; color:white; border-radius:8px;">
+      <input type="text" id="regContact" placeholder="Nomor Kontak" style="width:100%; margin-bottom:20px; padding:12px; background:#1E1E1E; border:1px solid #333; color:white; border-radius:8px;">
+      <button id="submitRegister" class="btn-brutal" style="width:100%;">DAFTARKAN</button>
+      <button id="closeModal" style="margin-top:12px; width:100%; background:none; border:1px solid #333; padding:10px; border-radius:8px; color:white;">Batal</button>
+    </div>
+  </div>
+
+  <!-- Detail Club (halaman sementara) -->
+  <div id="clubDetail" class="club-detail">
+    <button class="back-btn" id="closeDetail">← Kembali</button>
+    <div id="clubDetailContent"></div>
+  </div>
+
+  <script>
+    // Supabase
+    const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Simulasi user (ganti dengan auth nanti)
+    let currentUser = localStorage.getItem('brotherhood_user') || 'guest_' + Math.random().toString(36).substr(2, 6);
+    localStorage.setItem('brotherhood_user', currentUser);
+
+    // Hero gallery (mockup foto touring)
+    const galleryImages = [
+      'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200',
+      'https://images.unsplash.com/photo-1566478989037-eec170495d9e?w=1200',
+      'https://images.unsplash.com/photo-1522770179533-24471fcdba45?w=1200',
+      'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=1200'
+    ];
+    let currentSlide = 0;
+    function initHeroSlider() {
+      const slider = document.getElementById('heroSlider');
+      slider.innerHTML = galleryImages.map((img, idx) => `<div class="slide ${idx === 0 ? 'active' : ''}" style="background-image: url('${img}');"></div>`).join('');
+      setInterval(() => {
+        const slides = document.querySelectorAll('.slide');
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+      }, 5000);
+    }
+    initHeroSlider();
+
+    // Load data
+    async function loadClubs() {
+      const { data, error } = await supabase.from('clubs').select('*').order('created_at', { ascending: false });
+      if (error) return;
+      const grid = document.getElementById('clubsGrid');
+      grid.innerHTML = data.map(club => `
+        <div class="club-card" onclick="openClub('${club.id}')">
+          <div class="club-logo">🏍️</div>
+          <div class="club-name">${escapeHtml(club.name)}</div>
+          <div class="club-location">${escapeHtml(club.secretariat_address.split(',')[0])}</div>
         </div>
-      </div>
-    `;
-    // Render forum
-    renderForum(club);
-    renderGallery(club);
-    renderRoutes(club);
-    renderCulinary(club);
-    renderMembers(club);
-  }
+      `).join('');
+    }
 
-  // FORUM FIFO 30
-  function renderForum(club) {
-    const container = document.getElementById('detailForum');
-    const messages = club.messages || [];
-    // FIFO: hanya tampilkan 30 terbaru
-    const displayMsgs = messages.slice(-30).reverse();
-    container.innerHTML = `
-      <div class="forum-messages" id="forumMessages">
-        ${displayMsgs.map(m => `
-          <div class="message">
-            <span class="message-user">${escapeHtml(m.user)}</span>
-            <span class="message-time">${new Date(m.time).toLocaleTimeString()}</span>
-            <div class="message-text">${escapeHtml(m.text)} ${m.emoji ? m.emoji : ''}</div>
+    async function loadRoutes() {
+      const { data, error } = await supabase.from('touring_routes').select('*').limit(6);
+      if (error) return;
+      const grid = document.getElementById('routesGrid');
+      grid.innerHTML = (data || []).map(route => `
+        <div class="route-card">
+          <div class="route-image">🏔️</div>
+          <div class="route-info">
+            <div class="route-name">${escapeHtml(route.name)}</div>
+            <div class="route-meta">${route.distance_km || '?'} km • ${route.difficulty || 'Medium'}</div>
+            <div class="route-desc">${escapeHtml(route.start_point || '')} → ${escapeHtml(route.end_point || '')}</div>
           </div>
-        `).join('')}
-      </div>
-      <div class="emoji-picker" id="emojiPicker">
-        <span class="emoji-btn" data-emoji="👍">👍</span>
-        <span class="emoji-btn" data-emoji="❤️">❤️</span>
-        <span class="emoji-btn" data-emoji="😂">😂</span>
-        <span class="emoji-btn" data-emoji="😎">😎</span>
-        <span class="emoji-btn" data-emoji="🏍️">🏍️</span>
-        <span class="emoji-btn" data-emoji="🔥">🔥</span>
-      </div>
-      <div class="forum-input">
-        <input type="text" id="forumInput" placeholder="Tulis pesan...">
-        <button class="btn-brutal" id="sendMessageBtn" style="padding:12px 20px;">Kirim</button>
-      </div>
-    `;
-    const sendBtn = document.getElementById('sendMessageBtn');
-    const input = document.getElementById('forumInput');
-    let selectedEmoji = '';
-    document.querySelectorAll('.emoji-btn').forEach(btn => {
-      btn.onclick = () => { selectedEmoji = btn.dataset.emoji; input.value += selectedEmoji; };
-    });
-    sendBtn.onclick = () => {
-      const text = input.value.trim();
-      if(!text) return;
-      const newMsg = {
-        id: Date.now(),
-        user: currentUser,
-        text: text,
-        time: new Date().toISOString(),
-        emoji: selectedEmoji
-      };
-      club.messages.push(newMsg);
-      if(club.messages.length > 30) club.messages.shift();
-      saveToLocal();
-      renderForum(club);
-      input.value = '';
-      selectedEmoji = '';
-    };
-  }
-
-  // GALERI dengan narasi & reaksi emoji
-  function renderGallery(club) {
-    const container = document.getElementById('detailGallery');
-    const gallery = club.gallery || [];
-    container.innerHTML = `
-      <div class="post-gallery-form">
-        <textarea id="galleryCaption" placeholder="Narasi (maks 280 karakter)" maxlength="280"></textarea>
-        <div class="emoji-picker" id="galleryEmojiPicker">
-          <span class="emoji-btn" data-emoji="👍">👍</span>
-          <span class="emoji-btn" data-emoji="❤️">❤️</span>
-          <span class="emoji-btn" data-emoji="🏍️">🏍️</span>
-          <span class="emoji-btn" data-emoji="📸">📸</span>
         </div>
-        <button class="btn-brutal" id="postGalleryBtn" style="margin-top:8px;">+ Posting Foto/Video</button>
-      </div>
-      <div class="gallery-grid" id="galleryGrid">
-        ${gallery.map(item => `
-          <div class="gallery-item">
-            <div class="gallery-media">${item.mediaUrl || '📷'}</div>
-            <div class="gallery-caption"><strong>${escapeHtml(item.user)}</strong>: ${escapeHtml(item.narasi || '')}</div>
-            <div class="gallery-reactions">
-              ${Object.entries(item.reactions || {}).map(([emoji, count]) => `<span class="reaction-btn" data-id="${item.id}" data-emoji="${emoji}">${emoji} ${count}</span>`).join('')}
-              <span class="reaction-btn add-reaction" data-id="${item.id}">➕</span>
+      `).join('');
+    }
+
+    async function loadCulinary() {
+      const { data, error } = await supabase.from('culinary_spots').select('*').limit(6);
+      if (error) return;
+      const grid = document.getElementById('culinaryGrid');
+      grid.innerHTML = (data || []).map(c => `
+        <div class="culinary-card">
+          <div class="culinary-image">🍲</div>
+          <div class="culinary-info">
+            <div class="culinary-name">${escapeHtml(c.name)}</div>
+            <div class="culinary-meta">⭐ ${c.rating_avg || 0}/5</div>
+            <div class="culinary-desc">${escapeHtml(c.location)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Buka detail klub (halaman sederhana)
+    window.openClub = async (clubId) => {
+      const { data: club, error } = await supabase.from('clubs').select('*').eq('id', clubId).single();
+      if (error) return;
+      const detailDiv = document.getElementById('clubDetailContent');
+      detailDiv.innerHTML = `
+        <div style="background:#141414; border-radius:24px; padding:24px;">
+          <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
+            <div style="width:100px; height:100px; background:#2A2A2A; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:48px;">🏍️</div>
+            <div>
+              <h2>${escapeHtml(club.name)}</h2>
+              <p>📍 ${escapeHtml(club.secretariat_address)}</p>
+              <p>👑 ${escapeHtml(club.chairman_name)}</p>
+              <p>📞 ${escapeHtml(club.contact_number)}</p>
             </div>
           </div>
-        `).join('')}
-      </div>
-    `;
-    document.getElementById('postGalleryBtn').onclick = () => {
-      const narasi = document.getElementById('galleryCaption').value.trim();
-      if(!narasi) { alert('Tulis narasi dulu'); return; }
-      const newItem = {
-        id: Date.now(),
-        user: currentUser,
-        mediaType: 'photo',
-        mediaUrl: '🏍️📸',
-        narasi: narasi,
-        reactions: { "👍": 0, "❤️": 0 }
-      };
-      club.gallery.push(newItem);
-      saveToLocal();
-      renderGallery(club);
-    };
-    // reaksi
-    document.querySelectorAll('.reaction-btn.add-reaction').forEach(btn => {
-      btn.onclick = (e) => {
-        const id = btn.dataset.id;
-        const item = club.gallery.find(i => i.id == id);
-        if(item) {
-          let emoji = prompt("Masukkan emoji (contoh: 👍, ❤️, 😂):", "👍");
-          if(emoji) {
-            if(!item.reactions[emoji]) item.reactions[emoji] = 0;
-            item.reactions[emoji]++;
-            saveToLocal();
-            renderGallery(club);
-          }
-        }
-      };
-    });
-  }
-
-  function renderRoutes(club) {
-    const container = document.getElementById('detailRoutes');
-    const routes = club.routes || [];
-    container.innerHTML = `<div class="map-container" id="routeMap"></div>` + routes.map(r => `
-      <div class="route-item">
-        <strong>${escapeHtml(r.name)}</strong><br>
-        ${r.start} → ${r.end} (${r.distance}km) • ${r.difficulty}
-      </div>
-    `).join('');
-    setTimeout(() => {
-      const map = L.map('routeMap').setView([club.lat || -6.2, club.lng || 106.816], 10);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>' }).addTo(map);
-      routes.forEach(r => { if(r.lat && r.lng) L.marker([r.lat, r.lng]).addTo(map).bindPopup(r.name); });
-    }, 100);
-  }
-
-  function renderCulinary(club) {
-    const container = document.getElementById('detailCulinary');
-    const culinary = club.culinary || [];
-    container.innerHTML = culinary.map(c => `
-      <div class="culinary-item">
-        <strong>🍽️ ${escapeHtml(c.name)}</strong><br>
-        📍 ${escapeHtml(c.location)}<br>
-        ⭐ ${c.rating}/5
-      </div>
-    `).join('');
-  }
-
-  function renderMembers(club) {
-    const container = document.getElementById('detailMembers');
-    const members = club.members || [];
-    const mutedList = club.muted?.[currentUser] || [];
-    container.innerHTML = `
-      <div class="member-list">
-        ${members.map(m => `
-          <div class="member-row">
-            <span>${escapeHtml(m)} ${m === club.adminId ? '(Admin)' : ''}</span>
-            ${m !== currentUser ? `<button class="mute-btn ${mutedList.includes(m) ? 'active' : ''}" data-user="${m}">${mutedList.includes(m) ? 'Unmute' : 'Mute'}</button>` : ''}
+          <hr style="margin:20px 0; border-color:#333;">
+          <h3>Forum Komunitas</h3>
+          <div id="forumMessages" style="height:300px; overflow-y:auto; background:#1E1E1E; border-radius:12px; padding:12px; margin-top:12px;"></div>
+          <div style="display:flex; gap:8px; margin-top:12px;">
+            <input type="text" id="forumInput" placeholder="Tulis pesan..." style="flex:1; background:#2A2A2A; border:none; padding:12px; border-radius:24px; color:white;">
+            <button id="sendForumBtn" class="btn-brutal" style="padding:12px 20px;">Kirim</button>
           </div>
-        `).join('')}
-      </div>
-    `;
-    document.querySelectorAll('.mute-btn').forEach(btn => {
-      btn.onclick = () => {
-        const targetUser = btn.dataset.user;
-        if(!club.muted[currentUser]) club.muted[currentUser] = [];
-        const idx = club.muted[currentUser].indexOf(targetUser);
-        if(idx === -1) club.muted[currentUser].push(targetUser);
-        else club.muted[currentUser].splice(idx,1);
-        saveToLocal();
-        renderMembers(club);
-        renderForum(club); // refresh forum untuk filter mute
+        </div>
+      `;
+      document.getElementById('clubDetail').classList.add('active');
+      loadForumMessages(clubId);
+      subscribeForum(clubId);
+    };
+
+    async function loadForumMessages(clubId) {
+      const { data, error } = await supabase
+        .from('club_forum_messages')
+        .select('*')
+        .eq('club_id', clubId)
+        .order('created_at', { ascending: false })
+        .limit(30);
+      if (error) return;
+      const container = document.getElementById('forumMessages');
+      container.innerHTML = (data || []).reverse().map(m => `
+        <div style="margin-bottom:12px; padding:8px; background:#2A2A2A; border-radius:12px;">
+          <strong>${escapeHtml(m.username)}</strong> <span style="font-size:11px; color:#888;">${new Date(m.created_at).toLocaleTimeString()}</span>
+          <div>${escapeHtml(m.message)} ${m.emoji || ''}</div>
+        </div>
+      `).join('');
+      const sendBtn = document.getElementById('sendForumBtn');
+      const input = document.getElementById('forumInput');
+      sendBtn.onclick = async () => {
+        const text = input.value.trim();
+        if (!text) return;
+        await supabase.from('club_forum_messages').insert({
+          club_id: clubId,
+          user_id: currentUser,
+          username: currentUser.substring(0,10),
+          message: text
+        });
+        input.value = '';
+        loadForumMessages(clubId);
       };
-    });
-  }
-
-  function switchDetailTab(tab) {
-    document.querySelectorAll('.detail-tab-content').forEach(t => t.classList.remove('active'));
-    document.getElementById(`detail${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
-    document.querySelectorAll('[data-detail-tab]').forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`[data-detail-tab="${tab}"]`).classList.add('active');
-  }
-
-  // Registrasi klub
-  function openRegisterModal() {
-    const modal = document.getElementById('registerModal');
-    modal.style.display = 'flex';
-  }
-  document.getElementById('openRegisterClub').onclick = openRegisterModal;
-  document.getElementById('closeModal').onclick = () => document.getElementById('registerModal').style.display = 'none';
-  document.getElementById('submitRegister').onclick = () => {
-    const name = document.getElementById('regClubName').value.trim();
-    const addr = document.getElementById('regAddress').value.trim();
-    const chairman = document.getElementById('regChairman').value.trim();
-    const contact = document.getElementById('regContact').value.trim();
-    if(!name || !addr || !chairman || !contact) { alert('Semua field wajib diisi'); return; }
-    const newReg = {
-      id: 'reg_'+Date.now(),
-      name, address: addr, chairman, contact,
-      registeredBy: currentUser,
-      registeredAt: new Date().toISOString(),
-      members: [currentUser],
-      status: 'pending'
-    };
-    clubRegistrations.push(newReg);
-    saveToLocal();
-    alert('Pendaftaran klub berhasil! Anda harus mengumpulkan 25 anggota dalam 7 hari untuk mengklaim halaman klub.');
-    document.getElementById('registerModal').style.display = 'none';
-    // reset form
-    document.getElementById('regClubName').value = '';
-    document.getElementById('regAddress').value = '';
-    document.getElementById('regChairman').value = '';
-    document.getElementById('regContact').value = '';
-  };
-
-  // Peta Leaflet global
-  let globalMap;
-  function initGlobalMap() {
-    const container = document.getElementById('leafletMap');
-    if(container && !globalMap) {
-      globalMap = L.map('leafletMap').setView([-2.5, 118], 5);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>' }).addTo(globalMap);
-      // tambahkan marker dari klub dan rute
-      clubs.forEach(club => {
-        if(club.lat && club.lng) L.marker([club.lat, club.lng]).addTo(globalMap).bindPopup(club.name);
-        club.routes?.forEach(r => { if(r.lat && r.lng) L.marker([r.lat, r.lng]).addTo(globalMap).bindPopup(r.name); });
-      });
     }
-  }
 
-  // Tab navigasi list
-  document.querySelectorAll('[data-tab]').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
-      if(btn.dataset.tab === 'peta') initGlobalMap();
+    let forumSub = null;
+    function subscribeForum(clubId) {
+      if (forumSub) supabase.removeChannel(forumSub);
+      forumSub = supabase
+        .channel('forum-channel')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'club_forum_messages', filter: `club_id=eq.${clubId}` }, () => {
+          loadForumMessages(clubId);
+        })
+        .subscribe();
+    }
+
+    document.getElementById('closeDetail').onclick = () => {
+      document.getElementById('clubDetail').classList.remove('active');
+      if (forumSub) supabase.removeChannel(forumSub);
     };
-  });
-  document.querySelectorAll('[data-detail-tab]').forEach(btn => {
-    btn.onclick = () => switchDetailTab(btn.dataset.detailTab);
-  });
-  document.getElementById('backToList').onclick = () => {
-    document.getElementById('listView').style.display = 'block';
-    document.getElementById('detailView').style.display = 'none';
-    currentClubId = null;
-    renderClubs();
-  };
 
-  function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    // Registrasi klub
+    document.getElementById('openRegClubBtn').onclick = () => document.getElementById('registerModal').style.display = 'flex';
+    document.getElementById('closeModal').onclick = () => document.getElementById('registerModal').style.display = 'none';
+    document.getElementById('submitRegister').onclick = async () => {
+      const name = document.getElementById('regClubName').value.trim();
+      const addr = document.getElementById('regAddress').value.trim();
+      const chairman = document.getElementById('regChairman').value.trim();
+      const contact = document.getElementById('regContact').value.trim();
+      if (!name || !addr || !chairman || !contact) return alert('Isi semua field');
+      const { error } = await supabase.from('club_registrations').insert({
+        club_name: name,
+        secretariat_address: addr,
+        chairman_name: chairman,
+        contact_number: contact,
+        registered_by: currentUser
+      });
+      if (error) alert('Gagal: ' + error.message);
+      else alert('Pendaftaran berhasil! Butuh 25 anggota dalam 7 hari untuk aktivasi.');
+      document.getElementById('registerModal').style.display = 'none';
+    };
 
-  loadData();
-  renderClubs();
-  initGlobalMap();
-</script>
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+    loadClubs();
+    loadRoutes();
+    loadCulinary();
+  </script>
 </body>
 </html>
