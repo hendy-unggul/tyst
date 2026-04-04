@@ -107,7 +107,6 @@
         .btn-gender{flex:1;padding:18px 8px;border:2px solid #000;font-family:var(--font-display);font-size:16px;letter-spacing:2px;cursor:pointer;box-shadow:5px 5px 0 #000;display:flex;flex-direction:column;align-items:center;gap:5px}
         .btn-gender:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #000}
         .btn-gender:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:5px 5px 0 #000}
-        /* INSOMNIA button styles */
         .btn-hot{background:linear-gradient(145deg,#1a0533,#3d0f6e);color:#fff;border-color:#7b2fff}
         .btn-hot.inactive{background:linear-gradient(145deg,#111,#1a1a2e);color:#444;border-color:#222}
         .btn-soft{background:linear-gradient(145deg,var(--as),#4d7aff);color:#000}
@@ -129,17 +128,20 @@
         .react-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:var(--bg);border:2px solid var(--bd2);color:var(--txs);cursor:pointer;font-family:var(--font-mono);font-size:14px}
         .react-count{font-size:11px;font-weight:700}
         .empty-state{text-align:center;padding:40px;color:var(--txs);font-family:var(--font-mono);font-size:14px;border:2px dashed var(--bd2)}
+        
+        /* ========== BOTTOM NAVIGATION (DIPERBAIKI) ========== */
         .bnav{background:#050505;border-top:2px solid var(--bd);padding:8px 16px 12px;width:100%;max-width:500px;z-index:50}
         .bnav-c{display:flex;justify-content:space-around;align-items:flex-end;gap:4px}
-        .ni{font-family:var(--font-mono);text-decoration:none;display:flex;flex-direction:column;align-items:center;padding:8px 0 4px;flex:1;color:var(--txs);gap:4px}
-        .nico{font-size:24px;font-weight:bold;line-height:1}
+        .ni{font-family:var(--font-mono);text-decoration:none;display:flex;flex-direction:column;align-items:center;padding:8px 0 4px;flex:1;color:var(--txs);gap:4px;transition:color 0.1s, transform 0.1s}
+        .nico{font-size:24px;font-weight:bold;line-height:1;transition:transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);display:inline-block}
         .ni span:last-child{font-size:10px;text-transform:uppercase}
-        .ni[href="spill.html"]{color:var(--spill)}
-        .ni[href="jejak.html"]{color:var(--jejak)}
-        .ni[href="glitch.html"]{color:var(--glitch)}
-        .ni[href="cocomeo.html"]{color:var(--cocomeo)}
-        .ni.act{color:var(--tx);transform:translateY(-4px)}
-        .ni.act .nico{transform:scale(1.2)}
+        /* AKTIF: WARNA FUCHSIA (SEPERTI X) + IKON MEMBESAR */
+        .ni.act{color:var(--spill) !important;transform:translateY(-4px)}
+        .ni.act .nico{transform:scale(1.2);color:var(--spill)}
+        /* HOVER TIDAK MERUSAK */
+        .ni:hover:not(.act){color:var(--tx)}
+        .ni:hover:not(.act) .nico{transform:scale(1.05);color:var(--tx)}
+        
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none;font-size:13px;white-space:nowrap}
         .toast.show{display:block}
         .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center}
@@ -185,8 +187,6 @@
         .w-trigger:hover{border-color:var(--as)}
         .w-dot{width:6px;height:6px;border-radius:50%;background:var(--spill);display:none;flex-shrink:0}
         .w-dot.show{display:block}
-        .login-btn-cta{font-family:var(--font-mono);font-size:11px;background:var(--ap);color:#fff;border:2px solid #000;padding:5px 14px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;box-shadow:2px 2px 0 #000;transition:transform .08s}
-        .login-btn-cta:hover{transform:translate(-1px,-1px)}
         .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
         .lm-bg.show{display:flex}
         .lm-box{background:var(--sf);border:1px solid var(--bd2);padding:28px 24px;width:100%;max-width:340px;position:relative}
@@ -300,7 +300,6 @@
 
             <div class="radar-ctas">
                 <div class="gender-row">
-                    <!-- INSOMNIA button -->
                     <button class="btn-gender btn-hot" id="btnHot">
                         <span class="gender-icon" id="insomniaIcon">🌙</span>
                         <span>INSOMNIA</span>
@@ -371,63 +370,18 @@ const SUPA_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
 const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=2000,POLL_MSG_MS=1500,POLL_WH_MS=10000;
 
-// ── INSOMNIA config ───────────────────────────────────────────
-const INSOMNIA_OPEN_HOUR  = 22;
-const INSOMNIA_CLOSE_HOUR = 4;
-const INSOMNIA_TZ_OFFSET  = 7; // WIB UTC+7
-const INSOMNIA_AI_FULL    = ['agak.koplak','chili.padi','satria.bajahitam','sejuta.badai','pretty.sad','move.on'];
-const INSOMNIA_LS_KEY     = 'insomnia_personas_v1';
-const INSOMNIA_LS_DATE    = 'insomnia_personas_date';
+// INSOMNIA config
+const INSOMNIA_OPEN_HOUR=22, INSOMNIA_CLOSE_HOUR=4, INSOMNIA_TZ_OFFSET=7;
+const INSOMNIA_AI_FULL=['agak.koplak','chili.padi','satria.bajahitam','sejuta.badai','pretty.sad','move.on'];
+const INSOMNIA_LS_KEY='insomnia_personas_v1', INSOMNIA_LS_DATE='insomnia_personas_date';
 
-function getWIBHour(){
-    const now=new Date();
-    const wib=new Date(now.getTime()+now.getTimezoneOffset()*60000+INSOMNIA_TZ_OFFSET*3600000);
-    return wib.getHours();
-}
-function getWIBSessionDate(){
-    const now=new Date();
-    const wib=new Date(now.getTime()+now.getTimezoneOffset()*60000+INSOMNIA_TZ_OFFSET*3600000);
-    if(wib.getHours()<INSOMNIA_CLOSE_HOUR) wib.setDate(wib.getDate()-1);
-    return wib.toISOString().slice(0,10);
-}
-function isInsomniaActive(){
-    const h=getWIBHour();
-    return h>=INSOMNIA_OPEN_HOUR||h<INSOMNIA_CLOSE_HOUR;
-}
-function getInsomniaPersonas(){
-    const today=getWIBSessionDate();
-    const savedDate=localStorage.getItem(INSOMNIA_LS_DATE);
-    const saved=localStorage.getItem(INSOMNIA_LS_KEY);
-    if(savedDate===today&&saved){try{return JSON.parse(saved);}catch(e){}}
-    const shuffled=[...INSOMNIA_AI_FULL].sort(()=>Math.random()-.5);
-    const personas=shuffled.slice(0,3);
-    localStorage.setItem(INSOMNIA_LS_KEY,JSON.stringify(personas));
-    localStorage.setItem(INSOMNIA_LS_DATE,today);
-    return personas;
-}
-function updateInsomniaButton(){
-    const btn=document.getElementById('btnHot');
-    const status=document.getElementById('insomniaStatus');
-    const icon=document.getElementById('insomniaIcon');
-    if(!btn||!status)return;
-    if(isInsomniaActive()){
-        btn.classList.remove('inactive');
-        if(!IS_GUEST)btn.disabled=false;
-        status.textContent='LIVE';
-        if(icon)icon.textContent='🌙';
-    }else{
-        btn.classList.add('inactive');
-        btn.disabled=true;
-        status.textContent='22.00';
-        if(icon)icon.textContent='😴';
-    }
-}
+function getWIBHour(){ const now=new Date(); const wib=new Date(now.getTime()+now.getTimezoneOffset()*60000+INSOMNIA_TZ_OFFSET*3600000); return wib.getHours(); }
+function getWIBSessionDate(){ const now=new Date(); const wib=new Date(now.getTime()+now.getTimezoneOffset()*60000+INSOMNIA_TZ_OFFSET*3600000); if(wib.getHours()<INSOMNIA_CLOSE_HOUR) wib.setDate(wib.getDate()-1); return wib.toISOString().slice(0,10); }
+function isInsomniaActive(){ const h=getWIBHour(); return h>=INSOMNIA_OPEN_HOUR||h<INSOMNIA_CLOSE_HOUR; }
+function getInsomniaPersonas(){ const today=getWIBSessionDate(); const savedDate=localStorage.getItem(INSOMNIA_LS_DATE); const saved=localStorage.getItem(INSOMNIA_LS_KEY); if(savedDate===today&&saved){ try{return JSON.parse(saved);}catch(e){} } const shuffled=[...INSOMNIA_AI_FULL].sort(()=>Math.random()-.5); const personas=shuffled.slice(0,3); localStorage.setItem(INSOMNIA_LS_KEY,JSON.stringify(personas)); localStorage.setItem(INSOMNIA_LS_DATE,today); return personas; }
+function updateInsomniaButton(){ const btn=document.getElementById('btnHot'); const status=document.getElementById('insomniaStatus'); const icon=document.getElementById('insomniaIcon'); if(!btn||!status)return; if(isInsomniaActive()){ btn.classList.remove('inactive'); if(!IS_GUEST)btn.disabled=false; status.textContent='LIVE'; if(icon)icon.textContent='🌙'; }else{ btn.classList.add('inactive'); btn.disabled=true; status.textContent='22.00'; if(icon)icon.textContent='😴'; } }
 
-// AI pool: Insomnia pakai persona malam, Soft Talk tidak berubah
-const AI={
-    get hot_take(){return getInsomniaPersonas();},
-    soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']
-};
+const AI={ get hot_take(){return getInsomniaPersonas();}, soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on'] };
 
 const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
 const IS_GUEST=localStorage.getItem(K.l)!=='true';
@@ -444,342 +398,59 @@ const sbGet=async path=>{const r=await fetch(`${SUPA_URL}/rest/v1${path}`,{heade
 const S={IDLE:'idle',BIDDING:'bidding',CHAT_REAL:'chat_real',CHAT_AI:'chat_ai'};
 let state=S.IDLE,vibe=null,roomId=null,aiChar=null;
 let chatHist=[],lastMsgTs=null;
-let isInsomnia=false; // true kalau sesi ini adalah Insomnia (group+nama)
+let isInsomnia=false;
 let tBid=null,tHeart=null,tPollMatch=null,tPollMsg=null,tPollInv=null,tScan=null,tInvPop=null;
 let pendingInv=null;
 
-// ════════════════════════════════════════
-//  WHISPER MODULE — tidak berubah
-// ════════════════════════════════════════
-const WH=(()=>{
-    const toB64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
-    const fromB64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-    async function sha256hex(str){const buf=new TextEncoder().encode(str);const hash=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-    async function deriveKey(username){const raw=new TextEncoder().encode(username+':whisper_key_v2');const base=await crypto.subtle.importKey('raw',raw,'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode('jejak_whisper_v2'),iterations:100000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
-    async function encrypt(plain,key){const iv=crypto.getRandomValues(new Uint8Array(12));const enc=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain));return toB64(iv)+':'+toB64(enc);}
-    async function decrypt(enc,key){try{const[ivB64,ctB64]=enc.split(':');const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},key,fromB64(ctB64));return new TextDecoder().decode(dec);}catch{return '[tidak bisa didekripsi]';}}
-    let msgs=[],readId=null,dTimer=null,pollTimer=null;
-    function setDot(show){const d=$('wDot'),b=$('whisperBadge');if(d)d.classList.toggle('show',show);if(b)b.style.display=show?'':'none';}
-    async function fetchInbox(){try{const r=await fetch('/api/whisper?username='+encodeURIComponent(ME));if(!r.ok)return;const raw=await r.json();if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}const key=await deriveKey(ME);const now=Date.now();msgs=await Promise.all(raw.map(async m=>{const exp=new Date(m.destroy_at).getTime();const rem=exp-now;const h=Math.floor(rem/3600000);const mn=Math.floor((rem%3600000)/60000);const body=await decrypt(m.message,key);return{id:m.id,from:m.from_hash?'~'+m.from_hash.slice(0,8):'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};}));renderList();setDot(msgs.length>0);}catch(e){console.warn('[WH]',e);}}
-    function renderList(){const el=$('wList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');}
-    async function openMsg(id){const m=msgs.find(x=>x.id===id);if(!m)return;readId=id;$('wReadFrom').textContent='from: '+m.from;$('wReadBody').textContent=m.body;$('wReadCount').textContent='5';$('wReadCount').style.color='var(--spill)';$('wRead').classList.add('show');fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});startDestruct(id);}
-    function startDestruct(id){clearInterval(dTimer);let n=5;dTimer=setInterval(()=>{n--;const el=$('wReadCount');if(!el){clearInterval(dTimer);return;}el.textContent=n;if(n<=2)el.style.color='#ff3b6f';if(n<=0){clearInterval(dTimer);burnMsg(id);}},1000);}
-    function burnMsg(id){const body=$('wReadBody');if(body)body.classList.add('w-burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('wRead').classList.remove('show');if(body){body.classList.remove('w-burning');body.textContent='';}$('wReadCount').style.color='var(--spill)';$('wInbox').classList.add('show');renderList();setDot(msgs.length>0);},750);}
-    function closeRead(){clearInterval(dTimer);if(readId){if(msgs.find(m=>m.id===readId))burnMsg(readId);readId=null;}$('wRead').classList.remove('show');}
-    async function sendMsg(toUsername,plaintext){const key=await deriveKey(toUsername);const messageEnc=await encrypt(plaintext.trim(),key);const fromHash=await sha256hex(ME+':whisper_sender_v2');const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,fromHash,messageEnc})});return r.ok;}
-    function startPolling(){fetchInbox();clearInterval(pollTimer);pollTimer=setInterval(fetchInbox,POLL_WH_MS);}
-    return{open:openMsg,closeRead,sendMsg,startPolling,fetchInbox};
-})();
+// WHISPER MODULE (singkat)
+const WH=(()=>{ const toB64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf))); const fromB64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0)); async function sha256hex(str){const buf=new TextEncoder().encode(str);const hash=await crypto.subtle.digest('SHA-256',buf);return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');} async function deriveKey(username){const raw=new TextEncoder().encode(username+':whisper_key_v2');const base=await crypto.subtle.importKey('raw',raw,'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:new TextEncoder().encode('jejak_whisper_v2'),iterations:100000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);} async function encrypt(plain,key){const iv=crypto.getRandomValues(new Uint8Array(12));const enc=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain));return toB64(iv)+':'+toB64(enc);} async function decrypt(enc,key){try{const[ivB64,ctB64]=enc.split(':');const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},key,fromB64(ctB64));return new TextDecoder().decode(dec);}catch{return '[tidak bisa didekripsi]';}} let msgs=[],readId=null,dTimer=null,pollTimer=null; function setDot(show){const d=$('wDot'),b=$('whisperBadge');if(d)d.classList.toggle('show',show);if(b)b.style.display=show?'':'none';} async function fetchInbox(){try{const r=await fetch('/api/whisper?username='+encodeURIComponent(ME));if(!r.ok)return;const raw=await r.json();if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}const key=await deriveKey(ME);const now=Date.now();msgs=await Promise.all(raw.map(async m=>{const exp=new Date(m.destroy_at).getTime();const rem=exp-now;const h=Math.floor(rem/3600000);const mn=Math.floor((rem%3600000)/60000);const body=await decrypt(m.message,key);return{id:m.id,from:m.from_hash?'~'+m.from_hash.slice(0,8):'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};}));renderList();setDot(msgs.length>0);}catch(e){console.warn('[WH]',e);}} function renderList(){const el=$('wList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');} async function openMsg(id){const m=msgs.find(x=>x.id===id);if(!m)return;readId=id;$('wReadFrom').textContent='from: '+m.from;$('wReadBody').textContent=m.body;$('wReadCount').textContent='5';$('wReadCount').style.color='var(--spill)';$('wRead').classList.add('show');fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});startDestruct(id);} function startDestruct(id){clearInterval(dTimer);let n=5;dTimer=setInterval(()=>{n--;const el=$('wReadCount');if(!el){clearInterval(dTimer);return;}el.textContent=n;if(n<=2)el.style.color='#ff3b6f';if(n<=0){clearInterval(dTimer);burnMsg(id);}},1000);} function burnMsg(id){const body=$('wReadBody');if(body)body.classList.add('w-burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('wRead').classList.remove('show');if(body){body.classList.remove('w-burning');body.textContent='';}$('wReadCount').style.color='var(--spill)';$('wInbox').classList.add('show');renderList();setDot(msgs.length>0);},750);} function closeRead(){clearInterval(dTimer);if(readId){if(msgs.find(m=>m.id===readId))burnMsg(readId);readId=null;}$('wRead').classList.remove('show');} async function sendMsg(toUsername,plaintext){const key=await deriveKey(toUsername);const messageEnc=await encrypt(plaintext.trim(),key);const fromHash=await sha256hex(ME+':whisper_sender_v2');const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,fromHash,messageEnc})});return r.ok;} function startPolling(){fetchInbox();clearInterval(pollTimer);pollTimer=setInterval(fetchInbox,POLL_WH_MS);} return{open:openMsg,closeRead,sendMsg,startPolling,fetchInbox}; })();
 window.WH=WH;
 
-// ════════════════════════════════════════
-//  APP CORE
-// ════════════════════════════════════════
 function setupGuestUI(){
     const sec=$('userSection');
     if(!sec)return;
     if(IS_GUEST){
         sec.innerHTML='<button class="login-btn-cta" onclick="openLoginModal()">LOGIN →</button>';
-        ['btnHot','btnSoft','whisperBtn'].forEach(id=>{
-            const el=$(id);
-            if(el){el.disabled=true;el.style.opacity='.45';el.title='Login untuk menggunakan';}
-        });
+        ['btnHot','btnSoft','whisperBtn'].forEach(id=>{ const el=$(id); if(el){el.disabled=true;el.style.opacity='.45';el.title='Login untuk menggunakan';} });
     }else{
         sec.innerHTML=`<span class="user-badge">@${ME}</span><button class="settings-btn" id="settingsBtn">⋮</button>`;
-        const dd=document.createElement('div');
-        dd.className='settings-dropdown';dd.id='settingsDropdown';
-        dd.innerHTML='<div class="dropdown-item" id="logoutBtn">🚪 Logout</div>';
-        sec.parentNode.appendChild(dd);
-        const sb=$('settingsBtn'),sd=$('settingsDropdown');
-        if(sb&&sd){
-            sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};
-            document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});
-        }
-        const lb=$('logoutBtn');
-        if(lb)lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);localStorage.removeItem('jejak_auth_v1');toast('👋 Sampai jumpa!');setTimeout(()=>window.location.replace('/index.html'),1000);};
+        const dd=document.createElement('div'); dd.className='settings-dropdown';dd.id='settingsDropdown'; dd.innerHTML='<div class="dropdown-item" id="logoutBtn">🚪 Logout</div>'; sec.parentNode.appendChild(dd); const sb=$('settingsBtn'),sd=$('settingsDropdown'); if(sb&&sd){ sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');}; document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');}); } const lb=$('logoutBtn'); if(lb)lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);localStorage.removeItem('jejak_auth_v1');toast('👋 Sampai jumpa!');setTimeout(()=>window.location.replace('/index.html'),1000);};
     }
 }
 
-async function init(){
-    setupGuestUI();
-    updateInsomniaButton();
-    setInterval(updateInsomniaButton,60000);
-    initRadar();loadSpills();startBrewInterval();
-    if(!IS_GUEST){
-        await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
-        startHeartbeat();loadCount();
-        setInterval(loadCount,15000);
-        tPollInv=setInterval(pollInvitation,POLL_INV_MS);
-        WH.startPolling();
-    }else{
-        loadCount();
-        setInterval(loadCount,15000);
-    }
-}
-
+async function init(){ setupGuestUI(); updateInsomniaButton(); setInterval(updateInsomniaButton,60000); initRadar();loadSpills();startBrewInterval(); if(!IS_GUEST){ await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID}); startHeartbeat();loadCount(); setInterval(loadCount,15000); tPollInv=setInterval(pollInvitation,POLL_INV_MS); WH.startPolling(); }else{ loadCount(); setInterval(loadCount,15000); } }
 function startHeartbeat(){if(tHeart)clearInterval(tHeart);tHeart=setInterval(()=>api('/api/invite',{action:'heartbeat',userId:UID,username:ME}),HEARTBEAT_MS);}
-
-async function startBid(v){
-    if(state!==S.IDLE)return;
-    state=S.BIDDING;vibe=v;
-    $('btnHot').disabled=true;$('btnSoft').disabled=true;
-    showScan(true,v);startCountdown(BID_TIMEOUT_MS/1000);
-    try{
-        const r=await api('/api/invite',{action:'bid',userId:UID,username:ME,sessionId:SID,vibe:v});
-        if(r.action==='matched'){clearBidTimers();enterChatReal(r.room_id,v);return;}
-        if(r.action==='already_waiting'){toast('Sedang dalam antrian...');enterIdle();return;}
-        if(r.action==='waiting'){
-            const n=r.invites_sent||0;
-            $('scanSub').textContent=n>0?`Invitation terkirim ke ${n} stranger...`:'Tidak ada stranger online, menyiapkan AI...';
-            if(n===0){setTimeout(()=>fallbackAI(),1500);return;}
-        }
-    }catch(e){console.warn('Bid:',e);setTimeout(()=>fallbackAI(),1500);return;}
-    tPollMatch=setInterval(pollMatch,POLL_MATCH_MS);
-    tBid=setTimeout(()=>{if(state===S.BIDDING)fallbackAI();},BID_TIMEOUT_MS);
-}
-
-async function pollMatch(){
-    if(state!==S.BIDDING)return;
-    try{const r=await fetch(`/api/invite?userId=${UID}&role=inviter`);const d=await r.json();if(d.matched){clearBidTimers();enterChatReal(d.room_id,d.vibe||vibe);}else if(d.all_expired){clearBidTimers();fallbackAI();}}catch(e){}
-}
-
-async function pollInvitation(){
-    if(state!==S.IDLE)return;
-    if($('invitePopup').classList.contains('show'))return;
-    try{const r=await fetch(`/api/invite?userId=${UID}&role=invitee`);const d=await r.json();if(d.hasInvitation){pendingInv=d.invitation;showInvitePopup(d.invitation);}}catch(e){}
-}
-
-function showInvitePopup(inv){
-    const badge=$('inviteVibeBadge');
-    badge.textContent=inv.vibe==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';
-    badge.className='invite-vibe-badge '+inv.vibe;
-    $('invitePopup').classList.add('show');
-    const exp=new Date(inv.expires_at).getTime();
-    if(tInvPop)clearInterval(tInvPop);
-    tInvPop=setInterval(()=>{const left=Math.max(0,Math.ceil((exp-Date.now())/1000));$('inviteCountdown').textContent=left;if(left<=0){clearInterval(tInvPop);hidePopup();toast('Invitation expired');}},400);
-}
-
+async function startBid(v){ if(state!==S.IDLE)return; state=S.BIDDING;vibe=v; $('btnHot').disabled=true;$('btnSoft').disabled=true; showScan(true,v); startCountdown(BID_TIMEOUT_MS/1000); try{ const r=await api('/api/invite',{action:'bid',userId:UID,username:ME,sessionId:SID,vibe:v}); if(r.action==='matched'){clearBidTimers();enterChatReal(r.room_id,v);return;} if(r.action==='already_waiting'){toast('Sedang dalam antrian...');enterIdle();return;} if(r.action==='waiting'){ const n=r.invites_sent||0; $('scanSub').textContent=n>0?`Invitation terkirim ke ${n} stranger...`:'Tidak ada stranger online, menyiapkan AI...'; if(n===0){setTimeout(()=>fallbackAI(),1500);return;} } }catch(e){console.warn('Bid:',e);setTimeout(()=>fallbackAI(),1500);return;} tPollMatch=setInterval(pollMatch,POLL_MATCH_MS); tBid=setTimeout(()=>{if(state===S.BIDDING)fallbackAI();},BID_TIMEOUT_MS); }
+async function pollMatch(){ if(state!==S.BIDDING)return; try{const r=await fetch(`/api/invite?userId=${UID}&role=inviter`);const d=await r.json();if(d.matched){clearBidTimers();enterChatReal(d.room_id,d.vibe||vibe);}else if(d.all_expired){clearBidTimers();fallbackAI();}}catch(e){} }
+async function pollInvitation(){ if(state!==S.IDLE)return; if($('invitePopup').classList.contains('show'))return; try{const r=await fetch(`/api/invite?userId=${UID}&role=invitee`);const d=await r.json();if(d.hasInvitation){pendingInv=d.invitation;showInvitePopup(d.invitation);}}catch(e){} }
+function showInvitePopup(inv){ const badge=$('inviteVibeBadge'); badge.textContent=inv.vibe==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK'; badge.className='invite-vibe-badge '+inv.vibe; $('invitePopup').classList.add('show'); const exp=new Date(inv.expires_at).getTime(); if(tInvPop)clearInterval(tInvPop); tInvPop=setInterval(()=>{const left=Math.max(0,Math.ceil((exp-Date.now())/1000));$('inviteCountdown').textContent=left;if(left<=0){clearInterval(tInvPop);hidePopup();toast('Invitation expired');}},400); }
 function hidePopup(){$('invitePopup').classList.remove('show');if(tInvPop){clearInterval(tInvPop);tInvPop=null;}pendingInv=null;}
-
-async function acceptInv(){
-    if(!pendingInv)return;
-    const inv=pendingInv;hidePopup();
-    try{const r=await api('/api/invite',{action:'accept',userId:UID,username:ME,invitationId:inv.id});if(r.success)enterChatReal(r.room_id,r.vibe||inv.vibe);else toast(r.reason==='inviter_no_longer_waiting'?'⚡ Sudah diambil stranger lain!':'Invitation expired');}catch(e){toast('Gagal connect');}
-}
-
-function enterChatReal(rId,v){
-    state=S.CHAT_REAL;roomId=rId;vibe=v;chatHist=[];
-    isInsomnia=(v==='hot_take');
-    lastMsgTs=new Date().toISOString();
-    openChatUI(v);
-    if(isInsomnia){
-        addSys('🌙 Masuk room Insomnia');
-        // Seed AI personas — server yang handle, fire and forget
-        fetch('/api/insomnia-seed',{
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body:JSON.stringify({action:'seed',roomId:rId})
-        }).catch(()=>{});
-    }else{
-        addSys('🔗 Terhubung dengan stranger');
-    }
-    tPollMsg=setInterval(pollMsg,POLL_MSG_MS);
-    loadCount();
-}
-
-function fallbackAI(){
-    if(state===S.CHAT_REAL||state===S.CHAT_AI)return;
-    state=S.CHAT_AI;clearBidTimers();showScan(false);
-    isInsomnia=(vibe==='hot_take');
-    fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})}).catch(()=>{});
-    const pool=AI[vibe]||AI.soft_talk;
-    aiChar=pool[Math.floor(Math.random()*pool.length)];
-    roomId=null;chatHist=[];openChatUI(vibe);setTimeout(()=>sendAI('',true),600);
-}
-
-function enterIdle(){
-    clearAllTimers();state=S.IDLE;vibe=null;roomId=null;aiChar=null;chatHist=[];
-    isInsomnia=false;
-    $('btnHot').disabled=false;$('btnSoft').disabled=false;
-    updateInsomniaButton();
-    closeChatUI();showScan(false);hidePopup();loadCount();
-}
-
-async function pollMsg(){
-    if(state!==S.CHAT_REAL||!roomId)return;
-    try{
-        const since=lastMsgTs||new Date(Date.now()-5000).toISOString();
-        const r=await fetch(`/api/messages?roomId=${roomId}&since=${encodeURIComponent(since)}`);
-        const msgs=await r.json();
-        if(!Array.isArray(msgs)||!msgs.length)return;
-        for(const m of msgs){
-            if(m.sender_id!==UID){
-                const isAiMsg=(m.type==='ai')||(m.sender_id&&String(m.sender_id).startsWith('ai_'));
-                addMsg(isAiMsg?'ai-msg':'stranger', m.content, isInsomnia?(m.sender_name||''):null);
-            }
-            if(!lastMsgTs||m.created_at>lastMsgTs)lastMsgTs=m.created_at;
-        }
-    }catch(e){}
-}
-
-async function sendReal(content){
-    if(!roomId||!content.trim())return;
-    // Insomnia: tampilkan nama, Soft Talk: anonim
-    addMsg('user',content,isInsomnia?ME:null);
-    try{const r=await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roomId,senderId:UID,senderName:ME,content:content.trim()})});if(!r.ok){const e=await r.json();if(e.error==='Room not found or ended'){addSys('⚠️ Stranger meninggalkan chat');setTimeout(enterIdle,2000);}}}catch(e){toast('Gagal kirim pesan');}
-}
-
-async function sendAI(msg,first=false){
-    if(state!==S.CHAT_AI)return;showTyping(true);
-    try{
-        if(!first&&msg)chatHist.push({role:'user',content:msg});
-        const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:first?'hai':msg,characterName:aiChar,lastMessages:chatHist.slice(-8)})});
-        const d=await r.json();
-        showTyping(false);
-        if(d.reply){
-            const delay=Math.max(500,Math.min(d.reply.length*30,2500));
-            setTimeout(()=>{
-                // Insomnia: tampilkan nama persona AI, Soft Talk: anonim
-                addMsg('ai-msg', d.reply, isInsomnia?aiChar:null);
-                chatHist.push({role:'assistant',content:d.reply});
-            },delay);
-        }
-    }catch(e){showTyping(false);addMsg('ai-msg','😅',isInsomnia?aiChar:null);}
-}
-
-function openChatUI(v){
-    const badge=$('chatVibeBadge');
-    badge.textContent=v==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';
-    badge.className='chat-vibe-label '+(v||'hot_take');
-    $('radarChat').classList.add('show');
-    $('chatInputWrap').classList.add('show');
-    $('radarCont').classList.add('chat-mode');
-    $('chatInput').focus();
-}
+async function acceptInv(){ if(!pendingInv)return; const inv=pendingInv; hidePopup(); try{const r=await api('/api/invite',{action:'accept',userId:UID,username:ME,invitationId:inv.id});if(r.success)enterChatReal(r.room_id,r.vibe||inv.vibe);else toast(r.reason==='inviter_no_longer_waiting'?'⚡ Sudah diambil stranger lain!':'Invitation expired');}catch(e){toast('Gagal connect');} }
+function enterChatReal(rId,v){ state=S.CHAT_REAL;roomId=rId;vibe=v;chatHist=[]; isInsomnia=(v==='hot_take'); lastMsgTs=new Date().toISOString(); openChatUI(v); if(isInsomnia){ addSys('🌙 Masuk room Insomnia'); fetch('/api/insomnia-seed',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'seed',roomId:rId})}).catch(()=>{}); }else{ addSys('🔗 Terhubung dengan stranger'); } tPollMsg=setInterval(pollMsg,POLL_MSG_MS); loadCount(); }
+function fallbackAI(){ if(state===S.CHAT_REAL||state===S.CHAT_AI)return; state=S.CHAT_AI;clearBidTimers();showScan(false); isInsomnia=(vibe==='hot_take'); fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})}).catch(()=>{}); const pool=AI[vibe]||AI.soft_talk; aiChar=pool[Math.floor(Math.random()*pool.length)]; roomId=null;chatHist=[];openChatUI(vibe);setTimeout(()=>sendAI('',true),600); }
+function enterIdle(){ clearAllTimers();state=S.IDLE;vibe=null;roomId=null;aiChar=null;chatHist=[]; isInsomnia=false; $('btnHot').disabled=false;$('btnSoft').disabled=false; updateInsomniaButton(); closeChatUI();showScan(false);hidePopup();loadCount(); }
+async function pollMsg(){ if(state!==S.CHAT_REAL||!roomId)return; try{ const since=lastMsgTs||new Date(Date.now()-5000).toISOString(); const r=await fetch(`/api/messages?roomId=${roomId}&since=${encodeURIComponent(since)}`); const msgs=await r.json(); if(!Array.isArray(msgs)||!msgs.length)return; for(const m of msgs){ if(m.sender_id!==UID){ const isAiMsg=(m.type==='ai')||(m.sender_id&&String(m.sender_id).startsWith('ai_')); addMsg(isAiMsg?'ai-msg':'stranger', m.content, isInsomnia?(m.sender_name||''):null); } if(!lastMsgTs||m.created_at>lastMsgTs)lastMsgTs=m.created_at; } }catch(e){} }
+async function sendReal(content){ if(!roomId||!content.trim())return; addMsg('user',content,isInsomnia?ME:null); try{const r=await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roomId,senderId:UID,senderName:ME,content:content.trim()})});if(!r.ok){const e=await r.json();if(e.error==='Room not found or ended'){addSys('⚠️ Stranger meninggalkan chat');setTimeout(enterIdle,2000);}}}catch(e){toast('Gagal kirim pesan');} }
+async function sendAI(msg,first=false){ if(state!==S.CHAT_AI)return; showTyping(true); try{ if(!first&&msg)chatHist.push({role:'user',content:msg}); const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:first?'hai':msg,characterName:aiChar,lastMessages:chatHist.slice(-8)})}); const d=await r.json(); showTyping(false); if(d.reply){ const delay=Math.max(500,Math.min(d.reply.length*30,2500)); setTimeout(()=>{ addMsg('ai-msg', d.reply, isInsomnia?aiChar:null); chatHist.push({role:'assistant',content:d.reply}); },delay); } }catch(e){showTyping(false);addMsg('ai-msg','😅',isInsomnia?aiChar:null);} }
+function openChatUI(v){ const badge=$('chatVibeBadge'); badge.textContent=v==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK'; badge.className='chat-vibe-label '+(v||'hot_take'); $('radarChat').classList.add('show'); $('chatInputWrap').classList.add('show'); $('radarCont').classList.add('chat-mode'); $('chatInput').focus(); }
 function closeChatUI(){const c=$('radarChat'),h=c.querySelector('.radar-chat-header'),t=$('typingBubble');c.innerHTML='';c.appendChild(h);c.appendChild(t);c.classList.remove('show');$('chatInputWrap').classList.remove('show');$('radarCont').classList.remove('chat-mode');}
-function addMsg(who,text,senderName=null){
-    const c=$('radarChat'),t=$('typingBubble');
-    // Kalau ada nama → pakai wrapper
-    if(senderName){
-        const wrap=document.createElement('div');
-        wrap.className='msg-wrapper '+who;
-        const nameEl=document.createElement('div');
-        const nameClass=who==='user'?'is-user':who==='ai-msg'?'is-ai':'is-stranger';
-        nameEl.className='msg-sender '+nameClass;
-        nameEl.textContent=(who==='user'?'@'+ME:'@'+senderName);
-        const bubble=document.createElement('div');
-        bubble.className='message '+who;
-        bubble.textContent=text;
-        wrap.appendChild(nameEl);
-        wrap.appendChild(bubble);
-        c.insertBefore(wrap,t);
-    }else{
-        const m=document.createElement('div');
-        m.className='message '+who;
-        m.textContent=text;
-        c.insertBefore(m,t);
-    }
-    c.scrollTop=c.scrollHeight;
-}
+function addMsg(who,text,senderName=null){ const c=$('radarChat'),t=$('typingBubble'); if(senderName){ const wrap=document.createElement('div'); wrap.className='msg-wrapper '+who; const nameEl=document.createElement('div'); const nameClass=who==='user'?'is-user':who==='ai-msg'?'is-ai':'is-stranger'; nameEl.className='msg-sender '+nameClass; nameEl.textContent=(who==='user'?'@'+ME:'@'+senderName); const bubble=document.createElement('div'); bubble.className='message '+who; bubble.textContent=text; wrap.appendChild(nameEl); wrap.appendChild(bubble); c.insertBefore(wrap,t); }else{ const m=document.createElement('div'); m.className='message '+who; m.textContent=text; c.insertBefore(m,t); } c.scrollTop=c.scrollHeight; }
 function addSys(text){const c=$('radarChat'),t=$('typingBubble');const m=document.createElement('div');m.className='message system';m.textContent=text;c.insertBefore(m,t);c.scrollTop=c.scrollHeight;}
 function showTyping(on){const t=$('typingBubble');if(on)t.classList.add('show');else t.classList.remove('show');$('radarChat').scrollTop=$('radarChat').scrollHeight;}
-
-function showScan(on,v){
-    const o=$('scanOverlay');
-    if(on){
-        const b=$('scanVibeBadge');
-        b.textContent=v==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';
-        b.className='scan-vibe '+(v||'hot_take');
-        o.classList.add('show');
-    }else{
-        o.classList.remove('show');
-        if(tScan){clearInterval(tScan);tScan=null;}
-    }
-}
+function showScan(on,v){ const o=$('scanOverlay'); if(on){ const b=$('scanVibeBadge'); b.textContent=v==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK'; b.className='scan-vibe '+(v||'hot_take'); o.classList.add('show'); }else{ o.classList.remove('show'); if(tScan){clearInterval(tScan);tScan=null;} } }
 function startCountdown(sec){let left=sec;$('scanTimer').textContent=sec;$('scanBar').style.width='0%';if(tScan)clearInterval(tScan);tScan=setInterval(()=>{left--;$('scanTimer').textContent=Math.max(0,left);$('scanBar').style.width=((sec-left)/sec*100).toFixed(1)+'%';if(left<=5&&left>0)$('scanSub').textContent='Hampir habis, menyiapkan AI...';if(left<=0)clearInterval(tScan);},1000);}
 function clearBidTimers(){if(tBid){clearTimeout(tBid);tBid=null;}if(tPollMatch){clearInterval(tPollMatch);tPollMatch=null;}if(tScan){clearInterval(tScan);tScan=null;}showScan(false);}
 function clearAllTimers(){clearBidTimers();if(tHeart){clearInterval(tHeart);tHeart=null;}if(tPollMsg){clearInterval(tPollMsg);tPollMsg=null;}if(tPollInv){clearInterval(tPollInv);tPollInv=null;}if(tInvPop){clearInterval(tInvPop);tInvPop=null;}}
-
-async function loadCount(){try{const r=await fetch(`/api/invite?userId=${UID}&role=count`);const d=await r.json();const el=$('onlineCount');if(el)el.textContent=(d.count||0)+' ONLINE';}catch(e){}}
-
-const BREW_INTERVAL_MS=7*60*1000,BREW_KEY='spill_last_brew';
-async function maybeBrewSpill(){const last=parseInt(localStorage.getItem(BREW_KEY)||'0');if(Date.now()-last<BREW_INTERVAL_MS)return false;localStorage.setItem(BREW_KEY,Date.now().toString());try{await fetch('/api/brew',{method:'POST',headers:{'Content-Type':'application/json'}});return true;}catch(e){localStorage.setItem(BREW_KEY,'0');return false;}}
-function startBrewInterval(){maybeBrewSpill().then(b=>{if(b)setTimeout(loadSpills,3000);});setInterval(async()=>{if(await maybeBrewSpill())setTimeout(loadSpills,3000);},BREW_INTERVAL_MS);}
-async function loadSpills(){$('spillsList').innerHTML='<div class="empty-state">🍃 MEMUAT SPILL...</div>';maybeBrewSpill();try{const data=await sbGet('/entries?select=*&order=created_at.desc&limit=50');const all=(data||[]).map(x=>({author:x.username||'anon',mood:x.mood||'chaotic',content:x.content||'...',reactions:x.reactions||{skull:0,cry:0,fire:0,upside:0}}));renderSpills(all);}catch(e){$('spillsList').innerHTML='<div class="empty-state">🍃 Gagal memuat spill</div>';}}
-function renderSpills(all){const c=$('spillsList'),meta=$('feedMeta');if(!all.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}c.innerHTML=all.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${esc(s.author)}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${esc(s.content)}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="rs(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');meta.textContent=all.length+' spill';}
-window.rs=(i,t)=>toast('➕ '+t);
-
-let dots=[],nAngle=0,nSpin=0,phase=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,gm=new Map(),raf,rint;
-function initRadar(){const cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;const rsz=()=>{const r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};rsz();window.addEventListener('resize',rsz);spawnDots();if(rint)clearInterval(rint);rint=setInterval(()=>{dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);nAngle=Math.random()*Math.PI*2;trail.fill(nAngle);radarLoop(cv);}
-function spawnDots(){const c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];for(let i=0;i<8;i++){const a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2;const el=document.createElement('div');el.className='radar-dot';el.style.left=x+'%';el.style.top=y+'%';c.appendChild(el);dots.push({el,x,y,vx:0,vy:0,id:i});}}
-function radarLoop(cv){const ctx=cv.getContext('2d');function draw(){const w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(cx,cy)*.88;if(!w||!h){raf=requestAnimationFrame(draw);return;}phase+=.007;nSpin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phase)*.35)-nSpin)*.028;nAngle=(nAngle+nSpin)%(Math.PI*2);trail[ptr]=nAngle;ptr=(ptr+1)%120;ctx.fillStyle='rgba(2,10,2,.18)';ctx.fillRect(0,0,w,h);for(let i=0;i<119;i++){const a=Math.pow(1-i/120,2.2)*.12;if(a<.002)break;const s=nAngle-(i+1)*nSpin,e=nAngle-i*nSpin;ctx.save();ctx.translate(cx,cy);ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));ctx.closePath();ctx.fillStyle=`rgba(0,229,255,${a})`;ctx.fill();ctx.restore();}ctx.save();ctx.translate(cx,cy);ctx.rotate(nAngle);ctx.shadowColor='rgba(0,229,255,.95)';ctx.shadowBlur=12;const g=ctx.createLinearGradient(0,0,R,0);g.addColorStop(0,'rgba(0,229,255,1)');g.addColorStop(.8,'rgba(0,229,255,.4)');g.addColorStop(1,'rgba(0,229,255,0)');ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(R,0);ctx.strokeStyle=g;ctx.lineWidth=2;ctx.stroke();ctx.shadowBlur=20;ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();ctx.restore();dots.forEach((d,i)=>{const px=d.x/100*w,py=d.y/100*h,da=((Math.atan2(py-cy,px-cx))%(Math.PI*2)+Math.PI*2)%(Math.PI*2);const diff=(nAngle-da+Math.PI*2)%(Math.PI*2);const age=gm.get(i)??999;if(diff<.18&&age>30){gm.set(i,0);if(d.el){d.el.classList.add('active');setTimeout(()=>d.el?.classList.remove('active'),800);}}else gm.set(i,age+1);if(age<55){const t=age/55,ga=(1-t)*(1-t)*.9;if(ga<.01)return;const gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}});raf=requestAnimationFrame(draw);}draw();}
-
+async function loadCount(){try{const r=await fetch(`/api/invite?userId=${UID}&role=count`);const d=await r.json();const el=$('onlineCount');if(el)el.textContent=(d.count||0)+' ONLINE';}catch(e){} }
+const BREW_INTERVAL_MS=7*60*1000,BREW_KEY='spill_last_brew'; async function maybeBrewSpill(){const last=parseInt(localStorage.getItem(BREW_KEY)||'0');if(Date.now()-last<BREW_INTERVAL_MS)return false;localStorage.setItem(BREW_KEY,Date.now().toString());try{await fetch('/api/brew',{method:'POST',headers:{'Content-Type':'application/json'}});return true;}catch(e){localStorage.setItem(BREW_KEY,'0');return false;}} function startBrewInterval(){maybeBrewSpill().then(b=>{if(b)setTimeout(loadSpills,3000);});setInterval(async()=>{if(await maybeBrewSpill())setTimeout(loadSpills,3000);},BREW_INTERVAL_MS);} async function loadSpills(){$('spillsList').innerHTML='<div class="empty-state">🍃 MEMUAT SPILL...</div>';maybeBrewSpill();try{const data=await sbGet('/entries?select=*&order=created_at.desc&limit=50');const all=(data||[]).map(x=>({author:x.username||'anon',mood:x.mood||'chaotic',content:x.content||'...',reactions:x.reactions||{skull:0,cry:0,fire:0,upside:0}}));renderSpills(all);}catch(e){$('spillsList').innerHTML='<div class="empty-state">🍃 Gagal memuat spill</div>';}} function renderSpills(all){const c=$('spillsList'),meta=$('feedMeta');if(!all.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}c.innerHTML=all.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${esc(s.author)}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${esc(s.content)}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="rs(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');meta.textContent=all.length+' spill';} window.rs=(i,t)=>toast('➕ '+t);
+let dots=[],nAngle=0,nSpin=0,phase=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,gm=new Map(),raf,rint; function initRadar(){const cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;const rsz=()=>{const r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};rsz();window.addEventListener('resize',rsz);spawnDots();if(rint)clearInterval(rint);rint=setInterval(()=>{dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);nAngle=Math.random()*Math.PI*2;trail.fill(nAngle);radarLoop(cv);} function spawnDots(){const c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];for(let i=0;i<8;i++){const a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2;const el=document.createElement('div');el.className='radar-dot';el.style.left=x+'%';el.style.top=y+'%';c.appendChild(el);dots.push({el,x,y,vx:0,vy:0,id:i});}} function radarLoop(cv){const ctx=cv.getContext('2d');function draw(){const w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(cx,cy)*.88;if(!w||!h){raf=requestAnimationFrame(draw);return;}phase+=.007;nSpin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phase)*.35)-nSpin)*.028;nAngle=(nAngle+nSpin)%(Math.PI*2);trail[ptr]=nAngle;ptr=(ptr+1)%120;ctx.fillStyle='rgba(2,10,2,.18)';ctx.fillRect(0,0,w,h);for(let i=0;i<119;i++){const a=Math.pow(1-i/120,2.2)*.12;if(a<.002)break;const s=nAngle-(i+1)*nSpin,e=nAngle-i*nSpin;ctx.save();ctx.translate(cx,cy);ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));ctx.closePath();ctx.fillStyle=`rgba(0,229,255,${a})`;ctx.fill();ctx.restore();}ctx.save();ctx.translate(cx,cy);ctx.rotate(nAngle);ctx.shadowColor='rgba(0,229,255,.95)';ctx.shadowBlur=12;const g=ctx.createLinearGradient(0,0,R,0);g.addColorStop(0,'rgba(0,229,255,1)');g.addColorStop(.8,'rgba(0,229,255,.4)');g.addColorStop(1,'rgba(0,229,255,0)');ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(R,0);ctx.strokeStyle=g;ctx.lineWidth=2;ctx.stroke();ctx.shadowBlur=20;ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();ctx.restore();dots.forEach((d,i)=>{const px=d.x/100*w,py=d.y/100*h,da=((Math.atan2(py-cy,px-cx))%(Math.PI*2)+Math.PI*2)%(Math.PI*2);const diff=(nAngle-da+Math.PI*2)%(Math.PI*2);const age=gm.get(i)??999;if(diff<.18&&age>30){gm.set(i,0);if(d.el){d.el.classList.add('active');setTimeout(()=>d.el?.classList.remove('active'),800);}}else gm.set(i,age+1);if(age<55){const t=age/55,ga=(1-t)*(1-t)*.9;if(ga<.01)return;const gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}});raf=requestAnimationFrame(draw);}draw();}
 async function cleanup(){clearAllTimers();const body={userId:UID};if(roomId)body.roomId=roomId;try{await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true});}catch(e){}}
 window.addEventListener('beforeunload',cleanup);
-
-window.addEventListener('load',async()=>{
-    await init();
-
-    if(!IS_GUEST){
-        $('btnHot').onclick=()=>{
-            if(state!==S.IDLE)return;
-            if(!isInsomniaActive()){toast('🌙 Insomnia buka jam 22.00 WIB');return;}
-            startBid('hot_take');
-        };
-        $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');};
-    }
-
-    $('scanCancel').onclick=async()=>{if(state===S.BIDDING){clearBidTimers();await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});enterIdle();toast('Pencarian dibatalkan');}};
-
-    $('btnAccept').onclick=acceptInv;
-    $('btnDecline').onclick=async()=>{if(pendingInv)await api('/api/invite',{action:'decline',userId:UID,username:ME,invitationId:pendingInv.id});hidePopup();};
-
-    const chatSend=async()=>{
-        const inp=$('chatInput'),msg=inp.value.trim();
-        if(!msg)return;
-        inp.value='';
-        if(state===S.CHAT_REAL) await sendReal(msg);
-        else if(state===S.CHAT_AI){
-            // Insomnia: tampilkan nama, Soft Talk: anonim
-            addMsg('user',msg,isInsomnia?ME:null);
-            await sendAI(msg,false);
-        }
-    };    $('chatSend').onclick=chatSend;
-    $('chatInput').onkeypress=e=>{if(e.key==='Enter')chatSend();};
-
-    $('chatClose').onclick=async()=>{
-        if(state===S.CHAT_REAL){
-            addSys('🔴 Kamu mengakhiri chat');
-            await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});
-        }
-        setTimeout(enterIdle,500);
-    };
-
-    if(!IS_GUEST)$('whisperBtn').onclick=()=>$('whisperOverlay').classList.add('show');
-    $('whisperCancel').onclick=()=>{$('whisperOverlay').classList.remove('show');$('whisperTarget').value='';$('whisperMessage').value='';};
-
-    $('whisperSend').onclick=async()=>{
-        const toEl=$('whisperTarget'),msgEl=$('whisperMessage');
-        const to=(toEl.value||'').trim().replace('@','').toLowerCase();
-        const msg=(msgEl.value||'').trim();
-        if(!to||!msg){toast('Isi semua field');return;}
-        if(!/^[a-z0-9_.]{2,24}$/.test(to)){toast('Username tidak valid');return;}
-        const btn=$('whisperSend'),orig=btn.textContent;
-        btn.textContent='ENCRYPTING...';btn.disabled=true;
-        try{const ok=await WH.sendMsg(to,msg);if(ok){$('whisperOverlay').classList.remove('show');toEl.value='';msgEl.value='';toast('✦ whisper terkirim — musnah dalam 24h');}else toast('Gagal — cek username penerima');}
-        catch(e){toast('Error enkripsi');}
-        finally{btn.textContent=orig;btn.disabled=false;}
-    };
-
-    $('wTrigger').onclick=()=>{WH.fetchInbox();$('wInbox').classList.add('show');};
-    $('wInboxClose').onclick=()=>$('wInbox').classList.remove('show');
-    $('wBack').onclick=()=>{WH.closeRead();$('wInbox').classList.add('show');};
-});
-
+window.addEventListener('load',async()=>{ await init(); if(!IS_GUEST){ $('btnHot').onclick=()=>{ if(state!==S.IDLE)return; if(!isInsomniaActive()){toast('🌙 Insomnia buka jam 22.00 WIB');return;} startBid('hot_take'); }; $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');}; } $('scanCancel').onclick=async()=>{if(state===S.BIDDING){clearBidTimers();await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});enterIdle();toast('Pencarian dibatalkan');}}; $('btnAccept').onclick=acceptInv; $('btnDecline').onclick=async()=>{if(pendingInv)await api('/api/invite',{action:'decline',userId:UID,username:ME,invitationId:pendingInv.id});hidePopup();}; const chatSend=async()=>{ const inp=$('chatInput'),msg=inp.value.trim(); if(!msg)return; inp.value=''; if(state===S.CHAT_REAL) await sendReal(msg); else if(state===S.CHAT_AI){ addMsg('user',msg,isInsomnia?ME:null); await sendAI(msg,false); } }; $('chatSend').onclick=chatSend; $('chatInput').onkeypress=e=>{if(e.key==='Enter')chatSend();}; $('chatClose').onclick=async()=>{ if(state===S.CHAT_REAL){ addSys('🔴 Kamu mengakhiri chat'); await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})}); } setTimeout(enterIdle,500); }; if(!IS_GUEST)$('whisperBtn').onclick=()=>$('whisperOverlay').classList.add('show'); $('whisperCancel').onclick=()=>{$('whisperOverlay').classList.remove('show');$('whisperTarget').value='';$('whisperMessage').value='';}; $('whisperSend').onclick=async()=>{ const toEl=$('whisperTarget'),msgEl=$('whisperMessage'); const to=(toEl.value||'').trim().replace('@','').toLowerCase(); const msg=(msgEl.value||'').trim(); if(!to||!msg){toast('Isi semua field');return;} if(!/^[a-z0-9_.]{2,24}$/.test(to)){toast('Username tidak valid');return;} const btn=$('whisperSend'),orig=btn.textContent; btn.textContent='ENCRYPTING...';btn.disabled=true; try{const ok=await WH.sendMsg(to,msg);if(ok){$('whisperOverlay').classList.remove('show');toEl.value='';msgEl.value='';toast('✦ whisper terkirim — musnah dalam 24h');}else toast('Gagal — cek username penerima');} catch(e){toast('Error enkripsi');} finally{btn.textContent=orig;btn.disabled=false;} }; $('wTrigger').onclick=()=>{WH.fetchInbox();$('wInbox').classList.add('show');}; $('wInboxClose').onclick=()=>$('wInbox').classList.remove('show'); $('wBack').onclick=()=>{WH.closeRead();$('wInbox').classList.add('show');}; });
 })();
 </script>
 
-<!-- LOGIN MODAL -->
+<!-- LOGIN MODAL (tetap) -->
 <div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
   <div class="lm-box">
     <button class="lm-close" onclick="closeLM()">✕</button>
@@ -813,90 +484,16 @@ window.addEventListener('load',async()=>{
 </div>
 
 <script>
-const LM={
-  SU:'https://fuovfrdicdhnlymnacpz.supabase.co',
-  SK_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
-  LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
-  async get(path){const r=await fetch(this.SU+'/rest/v1'+path,{headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY}});const t=await r.text();return t?JSON.parse(t):[];},
-  async post(path,body){const r=await fetch(this.SU+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
-  async sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
-  async deviceFP(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('jejak_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
-  async authHash(pin,username){const fp=await this.deviceFP();return this.sha256(pin+':'+username+':'+fp+':jejak_local_v1');},
-  validUsername(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const parts=v.split('.');if(parts.length!==2)return null;if(parts[0].length<2||parts[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(parts[0])||!/^[a-z][a-z0-9]*$/.test(parts[1]))return null;return v;},
-  validPin(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(p==='123456'||p==='654321'||p==='000000'||p==='999999')return false;return true;}
-};
-
+const LM={ SU:'https://fuovfrdicdhnlymnacpz.supabase.co', SK_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0', LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'}, async get(path){const r=await fetch(this.SU+'/rest/v1'+path,{headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY}});const t=await r.text();return t?JSON.parse(t):[];}, async post(path,body){const r=await fetch(this.SU+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;}, async sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}, async deviceFP(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('jejak_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));}, async authHash(pin,username){const fp=await this.deviceFP();return this.sha256(pin+':'+username+':'+fp+':jejak_local_v1');}, validUsername(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const parts=v.split('.');if(parts.length!==2)return null;if(parts[0].length<2||parts[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(parts[0])||!/^[a-z][a-z0-9]*$/.test(parts[1]))return null;return v;}, validPin(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(p==='123456'||p==='654321'||p==='000000'||p==='999999')return false;return true;} };
 function openLoginModal(){document.getElementById('lmBg').classList.add('show');setTimeout(()=>document.getElementById('lmU').focus(),100);}
 function closeLM(){document.getElementById('lmBg').classList.remove('show');}
 function lmSwitch(to){document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none';document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none';setTimeout(()=>{document.getElementById(to==='login'?'lmU':'lmRU').focus();},100);}
 function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
 function lmUpdateLogin(){const ok=LM.validUsername(document.getElementById('lmU').value)&&LM.validPin(document.getElementById('lmP').value);document.getElementById('lmBtnL').disabled=!ok;}
 function lmUpdateReg(){const pin=document.getElementById('lmRP').value;const pin2=document.getElementById('lmRP2').value;const ok=LM.validUsername(document.getElementById('lmRU').value)&&LM.validPin(pin)&&pin===pin2&&document.getElementById('lmAg').checked;document.getElementById('lmBtnR').disabled=!ok;}
-
-async function lmDoLogin(){
-  const u=LM.validUsername(document.getElementById('lmU').value);
-  const p=document.getElementById('lmP').value;
-  lmFb('lmFbL','','');
-  if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
-  if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}
-  const btn=document.getElementById('lmBtnL');
-  btn.disabled=true;btn.textContent='VERIFIKASI...';
-  try{
-    const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');
-    const user=Array.isArray(data)?data[0]:null;
-    if(!user)throw new Error('Username tidak ditemukan');
-    const stored=localStorage.getItem(LM.LS.a);
-    if(!stored)throw new Error('Akun belum terdaftar di device ini — daftar ulang');
-    const hash=await LM.authHash(p,u);
-    if(hash!==stored)throw new Error('PIN salah');
-    localStorage.setItem(LM.LS.u,user.username);
-    localStorage.setItem(LM.LS.i,user.id);
-    localStorage.setItem(LM.LS.l,'true');
-    lmFb('lmFbL','s','✓ Login berhasil!');
-    setTimeout(()=>window.location.reload(),700);
-  }catch(err){lmFb('lmFbL','e',err.message||'Login gagal');btn.disabled=false;btn.textContent='MASUK \u2192';}
-}
-
-async function lmDoReg(){
-  const u=LM.validUsername(document.getElementById('lmRU').value);
-  const p=document.getElementById('lmRP').value;
-  const p2=document.getElementById('lmRP2').value;
-  lmFb('lmFbR','','');
-  if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;}
-  if(!LM.validPin(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;}
-  if(p!==p2){lmFb('lmFbR','e','PIN tidak cocok');return;}
-  const btn=document.getElementById('lmBtnR');
-  btn.disabled=true;btn.textContent='PROSES...';
-  try{
-    const data=await LM.post('/profiles?select=id,username',{username:u});
-    const user=Array.isArray(data)?data[0]:data;
-    if(!user||!user.id)throw new Error('Tidak ada data returned');
-    const hash=await LM.authHash(p,u);
-    localStorage.setItem(LM.LS.u,user.username);
-    localStorage.setItem(LM.LS.i,user.id);
-    localStorage.setItem(LM.LS.l,'true');
-    localStorage.setItem(LM.LS.a,hash);
-    lmFb('lmFbR','s','Akun dibuat!');
-    setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800);
-  }catch(err){
-    const isDupe=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');
-    lmFb('lmFbR','e',isDupe?'Username sudah dipakai':(err.message||'Gagal'));
-    btn.disabled=false;btn.textContent='DAFTAR \u2192';
-  }
-}
-
-(function wireModalInputs(){
-  function toUsername(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const dotIdx=v.indexOf('.');if(dotIdx!==-1)v=v.slice(0,dotIdx+1)+v.slice(dotIdx+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
-  function toPin(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
-  function wire(id,fn,updateFn){const el=document.getElementById(id);if(!el)return;fn(el);el.addEventListener('input',updateFn);}
-  wire('lmU',toUsername,lmUpdateLogin);
-  wire('lmP',toPin,lmUpdateLogin);
-  wire('lmRU',toUsername,lmUpdateReg);
-  wire('lmRP',toPin,lmUpdateReg);
-  wire('lmRP2',toPin,lmUpdateReg);
-  const ag=document.getElementById('lmAg');
-  if(ag)ag.addEventListener('change',lmUpdateReg);
-})();
+async function lmDoLogin(){ const u=LM.validUsername(document.getElementById('lmU').value); const p=document.getElementById('lmP').value; lmFb('lmFbL','',''); if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;} if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;} const btn=document.getElementById('lmBtnL'); btn.disabled=true;btn.textContent='VERIFIKASI...'; try{ const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1'); const user=Array.isArray(data)?data[0]:null; if(!user)throw new Error('Username tidak ditemukan'); const stored=localStorage.getItem(LM.LS.a); if(!stored)throw new Error('Akun belum terdaftar di device ini — daftar ulang'); const hash=await LM.authHash(p,u); if(hash!==stored)throw new Error('PIN salah'); localStorage.setItem(LM.LS.u,user.username); localStorage.setItem(LM.LS.i,user.id); localStorage.setItem(LM.LS.l,'true'); lmFb('lmFbL','s','✓ Login berhasil!'); setTimeout(()=>window.location.reload(),700); }catch(err){lmFb('lmFbL','e',err.message||'Login gagal');btn.disabled=false;btn.textContent='MASUK \u2192';} }
+async function lmDoReg(){ const u=LM.validUsername(document.getElementById('lmRU').value); const p=document.getElementById('lmRP').value; const p2=document.getElementById('lmRP2').value; lmFb('lmFbR','',''); if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;} if(!LM.validPin(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;} if(p!==p2){lmFb('lmFbR','e','PIN tidak cocok');return;} const btn=document.getElementById('lmBtnR'); btn.disabled=true;btn.textContent='PROSES...'; try{ const data=await LM.post('/profiles?select=id,username',{username:u}); const user=Array.isArray(data)?data[0]:data; if(!user||!user.id)throw new Error('Tidak ada data returned'); const hash=await LM.authHash(p,u); localStorage.setItem(LM.LS.u,user.username); localStorage.setItem(LM.LS.i,user.id); localStorage.setItem(LM.LS.l,'true'); localStorage.setItem(LM.LS.a,hash); lmFb('lmFbR','s','Akun dibuat!'); setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800); }catch(err){ const isDupe=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate'); lmFb('lmFbR','e',isDupe?'Username sudah dipakai':(err.message||'Gagal')); btn.disabled=false;btn.textContent='DAFTAR \u2192';} }
+(function wireModalInputs(){ function toUsername(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const dotIdx=v.indexOf('.');if(dotIdx!==-1)v=v.slice(0,dotIdx+1)+v.slice(dotIdx+1).replace(/\./g,'');if(v!==this.value)this.value=v;});} function toPin(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});} function wire(id,fn,updateFn){const el=document.getElementById(id);if(!el)return;fn(el);el.addEventListener('input',updateFn);} wire('lmU',toUsername,lmUpdateLogin); wire('lmP',toPin,lmUpdateLogin); wire('lmRU',toUsername,lmUpdateReg); wire('lmRP',toPin,lmUpdateReg); wire('lmRP2',toPin,lmUpdateReg); const ag=document.getElementById('lmAg'); if(ag)ag.addEventListener('change',lmUpdateReg); })();
 </script>
 </body>
 </html>
