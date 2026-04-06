@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>Brotherhood — Jejalah Negeri</title>
+  <title>Jejalah Negeri — Touring Gallery & FIFO</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -19,456 +19,581 @@
       line-height: 1.5;
       overflow-x: hidden;
     }
-    /* wrapper lebar penuh dengan max-width konten */
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 24px;
     }
-    /* header */
-    .hero-gallery {
+    /* HERO GALLERY UTAMA (baru) */
+    .hero-touring {
+      background: #0F0F0F;
+      border-radius: 32px;
+      margin: 32px auto 48px;
+      padding: 24px;
+      border: 1px solid #2A2A2A;
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+    }
+    .hero-photo-container {
       position: relative;
-      height: 70vh;
-      min-height: 400px;
-      background: linear-gradient(135deg, #0A0A0A, #1A1A1A);
+      border-radius: 24px;
       overflow: hidden;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      margin-bottom: 48px;
+      background: #1A1A1A;
+      cursor: pointer;
+      transition: transform 0.2s;
     }
-    .hero-slider {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-    }
-    .slide {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      opacity: 0;
-      transition: opacity 1s ease;
-    }
-    .slide.active { opacity: 1; }
-    .hero-overlay {
-      position: relative;
-      z-index: 2;
-      background: linear-gradient(0deg, rgba(0,0,0,0.8), transparent);
+    .hero-photo-container:active { transform: scale(0.99); }
+    .hero-main-img {
       width: 100%;
-      padding: 48px 24px;
-      text-align: center;
+      height: 420px;
+      object-fit: cover;
+      display: block;
+      background: #2A2A2A;
     }
-    .hero-title {
-      font-family: 'Space Grotesk', monospace;
-      font-size: 48px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      text-transform: uppercase;
+    .hero-badge {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #FF6B00;
+      pointer-events: none;
     }
-    .hero-title span { color: #FF6B00; }
-    .hero-sub {
-      font-size: 16px;
-      color: #CCC;
-      margin-top: 12px;
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
     }
-    /* section umum */
-    .section {
-      margin-bottom: 64px;
+    .upload-btn {
+      background: #2A2A2A;
+      border: 1px solid #FF6B00;
+      color: #FF6B00;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 14px;
     }
-    .section-header {
+    .upload-btn:hover { background: #FF6B00; color: #000; border-color: #FF6B00; }
+    .narasi-area {
+      margin-top: 20px;
+      background: #141414;
+      border-radius: 20px;
+      padding: 16px;
+    }
+    .narasi-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #FF6B00;
+    }
+    .narasi-text {
+      font-size: 15px;
+      color: #DDD;
+      padding: 8px 0;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    textarea.narasi-input {
+      width: 100%;
+      background: #1E1E1E;
+      border: 1px solid #333;
+      color: white;
+      border-radius: 16px;
+      padding: 12px;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .char-count {
+      font-size: 12px;
+      color: #888;
+      text-align: right;
+    }
+    /* Emoji bar */
+    .emoji-bar {
+      display: flex;
+      gap: 24px;
+      margin: 20px 0 24px;
+      flex-wrap: wrap;
+      background: #111;
+      padding: 12px 20px;
+      border-radius: 60px;
+      justify-content: center;
+    }
+    .emoji-btn {
+      background: #1E1E1E;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.1s;
+      color: white;
+    }
+    .emoji-btn span { font-size: 20px; }
+    .emoji-btn:hover { background: #FF6B00; color: black; transform: scale(1.02);}
+    /* Komentar FIFO */
+    .komentar-section {
+      background: #0C0C0C;
+      border-radius: 24px;
+      padding: 16px;
+      margin: 16px 0 24px;
+      border: 1px solid #222;
+    }
+    .komentar-list {
+      max-height: 240px;
+      overflow-y: auto;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .komentar-item {
+      background: #1A1A1A;
+      padding: 12px;
+      border-radius: 16px;
+      border-left: 3px solid #FF6B00;
+    }
+    .komentar-nama { font-weight: 700; font-size: 13px; color: #FF6B00; }
+    .komentar-isi { font-size: 14px; margin-top: 4px; word-break: break-word; }
+    .komentar-time { font-size: 10px; color: #666; margin-top: 6px; }
+    .komentar-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .komentar-form input {
+      flex: 1;
+      background: #1E1E1E;
+      border: 1px solid #333;
+      padding: 12px;
+      border-radius: 40px;
+      color: white;
+    }
+    /* FIFO Gallery 10 foto */
+    .fifo-gallery {
+      margin: 32px 0 20px;
+    }
+    .fifo-header {
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin-bottom: 24px;
-      border-bottom: 2px solid #2A2A2A;
-      padding-bottom: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
-    .section-title {
-      font-size: 28px;
-      font-weight: 800;
-      font-family: 'Space Grotesk', monospace;
-      letter-spacing: -0.5px;
-    }
-    .section-link {
-      color: #FF6B00;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    /* klub grid */
-    .clubs-grid {
+    .fifo-thumbs {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 12px;
+      background: #0A0A0A;
+      padding: 8px;
+      border-radius: 28px;
     }
-    .club-card {
-      background: #141414;
-      border: 1px solid #2A2A2A;
-      border-radius: 16px;
-      padding: 20px 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-    .club-card:hover {
-      transform: translateY(-6px);
-      border-color: #FF6B00;
-    }
-    .club-logo {
-      width: 80px;
-      height: 80px;
-      background: #2A2A2A;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 12px;
-      font-size: 40px;
-      border: 2px solid #FF6B00;
-    }
-    .club-name {
-      font-weight: 700;
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-    .club-location {
-      font-size: 12px;
-      color: #888;
-    }
-    /* jalur touring & kuliner grid */
-    .routes-grid, .culinary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
-    }
-    .route-card, .culinary-card {
-      background: #141414;
-      border: 1px solid #2A2A2A;
+    .fifo-thumb {
+      aspect-ratio: 1 / 1;
+      background: #1E1E1E;
       border-radius: 16px;
       overflow: hidden;
-      transition: transform 0.2s;
+      border: 2px solid #2A2A2A;
+      transition: 0.1s;
+      cursor: pointer;
     }
-    .route-card:hover, .culinary-card:hover { transform: translateY(-4px); }
-    .route-image, .culinary-image {
-      height: 160px;
-      background: #2A2A2A;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 48px;
+    .fifo-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-    .route-info, .culinary-info {
+    .sequential-preview {
+      margin-top: 20px;
+      background: #111;
+      border-radius: 24px;
       padding: 16px;
+      text-align: center;
+      border: 1px dashed #FF6B00;
     }
-    .route-name, .culinary-name {
-      font-weight: 700;
-      font-size: 18px;
-      margin-bottom: 4px;
+    .seq-img {
+      max-width: 100%;
+      max-height: 200px;
+      border-radius: 20px;
+      margin-top: 8px;
+      object-fit: contain;
     }
-    .route-meta, .culinary-meta {
-      font-size: 12px;
-      color: #FF6B00;
-      margin-bottom: 8px;
-    }
-    .route-desc, .culinary-desc {
-      font-size: 13px;
-      color: #AAA;
-    }
-    /* tombol */
     .btn-brutal {
       background: #FF6B00;
       color: #000;
       border: none;
-      padding: 12px 24px;
+      padding: 10px 20px;
       font-weight: 700;
       border-radius: 40px;
       cursor: pointer;
-      transition: 0.2s;
-      font-family: inherit;
     }
-    .btn-brutal:hover { background: #FF8C33; transform: scale(0.98); }
-    /* modal */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+    /* original style klub dll */
+    .clubs-grid, .routes-grid, .culinary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 24px;
     }
-    .modal-content {
-      background: #141414;
-      border: 1px solid #2A2A2A;
-      border-radius: 24px;
-      max-width: 500px;
-      width: 100%;
-      padding: 32px;
-    }
-    /* detail club (sementara sederhana, bisa pakai modal atau halaman baru) */
-    .club-detail {
-      position: fixed;
-      inset: 0;
-      background: #0A0A0A;
-      z-index: 1100;
-      overflow-y: auto;
-      display: none;
-      padding: 24px;
-    }
-    .club-detail.active { display: block; }
-    .back-btn {
-      background: none;
-      border: none;
-      color: #FF6B00;
-      font-size: 16px;
-      cursor: pointer;
-      margin-bottom: 24px;
-    }
-    /* responsive */
-    @media (max-width: 768px) {
-      .hero-title { font-size: 32px; }
-      .clubs-grid { grid-template-columns: repeat(2, 1fr); }
-    }
+    .club-card, .route-card, .culinary-card { background: #141414; border: 1px solid #2A2A2A; border-radius: 16px; padding: 16px; cursor: pointer; }
+    .section-title { font-size: 28px; font-weight: 800; margin-bottom: 24px; border-left: 5px solid #FF6B00; padding-left: 16px; }
+    .modal, .club-detail { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1200; align-items: center; justify-content: center; padding: 20px; overflow: auto; }
+    .modal-content, .club-detail-content { background: #141414; border-radius: 28px; max-width: 500px; width: 100%; padding: 24px; }
+    .club-detail.active { display: flex; }
+    @media (max-width: 640px) { .hero-main-img { height: 280px; } .emoji-btn { padding: 4px 12px; font-size: 14px; } }
   </style>
 </head>
 <body>
-  <div class="hero-gallery" id="heroGallery">
-    <div class="hero-slider" id="heroSlider"></div>
-    <div class="hero-overlay">
-      <div class="hero-title">Jejalah <span>Negeri</span></div>
-      <div class="hero-sub">Komunitas motor • touring • kuliner nusantara</div>
-    </div>
-  </div>
 
-  <div class="container">
-    <!-- Daftar Klub -->
-    <div class="section">
-      <div class="section-header">
-        <h2 class="section-title">🏍️ Klub Motor</h2>
-        <button class="section-link" id="openRegClubBtn">+ Daftarkan Klub</button>
+<div class="container">
+  <!-- HERO GALLERY TOURING (DENGAN UPLOAD, NARASI, EMOJI, KOMENTAR) -->
+  <div class="hero-touring">
+    <div class="hero-photo-container" id="heroPhotoClickable">
+      <img id="heroMainImage" class="hero-main-img" src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800" alt="Hero Touring">
+      <div class="hero-badge">📸 Klik untuk lihat galeri FIFO ➡️</div>
+    </div>
+    <div class="hero-actions">
+      <label class="upload-btn">📷 Upload Foto Hero <input type="file" id="uploadHeroPhoto" accept="image/*" style="display:none"></label>
+      <button id="editNarasiBtn" class="upload-btn">✏️ Edit Narasi</button>
+    </div>
+
+    <!-- Narasi area (max 450 huruf) -->
+    <div class="narasi-area" id="narasiArea">
+      <div class="narasi-header">
+        <span>📖 Cerita di balik lensa</span>
+        <span id="narasiCharCount">0/450</span>
       </div>
-      <div class="clubs-grid" id="clubsGrid"></div>
-    </div>
-
-    <!-- Jalur Touring Terbaik -->
-    <div class="section">
-      <div class="section-header">
-        <h2 class="section-title">🗺️ Jalur Touring Terbaik</h2>
-        <a href="#" class="section-link">Lihat semua →</a>
+      <div id="narasiDisplay" class="narasi-text">Menaklukkan jalanan nusantara, debu, hujan, dan senyum persaudaraan. Setiap tikungan punya cerita. 🏍️✨</div>
+      <textarea id="narasiInput" class="narasi-input" rows="3" maxlength="450" style="display:none" placeholder="Tulis narasi touring... max 450 karakter"></textarea>
+      <div id="narasiActions" style="display:none; margin-top:12px; text-align:right">
+        <button id="saveNarasiBtn" class="btn-brutal" style="padding:6px 20px">Simpan Narasi</button>
+        <button id="cancelNarasiBtn" class="upload-btn">Batal</button>
       </div>
-      <div class="routes-grid" id="routesGrid"></div>
     </div>
 
-    <!-- Kuliner Nusantara -->
-    <div class="section">
-      <div class="section-header">
-        <h2 class="section-title">🍜 Kuliner Nusantara</h2>
-        <a href="#" class="section-link">Jelajahi →</a>
+    <!-- EMOJI RESPONSE -->
+    <div class="emoji-bar" id="emojiBar">
+      <!-- dinamis via js -->
+    </div>
+
+    <!-- KOMENTAR FIFO (maks 10, First In First Out) -->
+    <div class="komentar-section">
+      <div style="font-weight:700; margin-bottom:12px;">💬 Komentar rider (FIFO · 10 terbaru)</div>
+      <div id="komentarList" class="komentar-list"></div>
+      <div class="komentar-form">
+        <input type="text" id="komentarNama" placeholder="Nama atau alias" value="Rider23">
+        <input type="text" id="komentarIsi" placeholder="Tulis komentar...">
+        <button id="tambahKomentarBtn" class="btn-brutal" style="padding:8px 20px;">Kirim</button>
       </div>
-      <div class="culinary-grid" id="culinaryGrid"></div>
+    </div>
+
+    <!-- FIFO GALLERY 10 FOTO (upload & tampilan thumb) -->
+    <div class="fifo-gallery">
+      <div class="fifo-header">
+        <h3 style="font-size:20px;">🎞️ Galeri FIFO (10 foto touring)</h3>
+        <label class="upload-btn">+ Upload foto galeri <input type="file" id="uploadFifoPhoto" accept="image/*" style="display:none"></label>
+      </div>
+      <div id="fifoThumbContainer" class="fifo-thumbs"></div>
+      <div class="sequential-preview" id="sequentialPreviewArea">
+        <div style="font-weight:600; color:#FF6B00;">✨ Klik foto hero di atas ✨</div>
+        <div id="seqPreviewText" style="font-size:13px; margin:6px 0">Foto FIFO akan tampil berurutan tiap klik</div>
+        <img id="sequentialPreviewImg" class="seq-img" src="https://placehold.co/400x200/2A2A2A/FF6B00?text=Klik+Hero" alt="sequential preview">
+        <div id="seqIndexInfo" style="margin-top:8px; font-size:12px; color:#AAA"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Modal Daftar Klub -->
-  <div id="registerModal" class="modal">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 20px;">Daftarkan Klub Motor</h3>
-      <input type="text" id="regClubName" placeholder="Nama Klub" style="width:100%; margin-bottom:12px; padding:12px; background:#1E1E1E; border:1px solid #333; color:white; border-radius:8px;">
-      <input type="text" id="regAddress" placeholder="Alamat Sekretariat" style="width:100%; margin-bottom:12px; padding:12px; background:#1E1E1E; border:1px solid #333; color:white; border-radius:8px;">
-      <input type="text" id="regChairman" placeholder="Nama Ketua" style="width:100%; margin-bottom:12px; padding:12px; background:#1E1E1E; border:1px solid #333; color:white; border-radius:8px;">
-      <input type="text" id="regContact" placeholder="Nomor Kontak" style="width:100%; margin-bottom:20px; padding:12px; background:#1E1E1E; border:1px solid #333; color:white; border-radius:8px;">
-      <button id="submitRegister" class="btn-brutal" style="width:100%;">DAFTARKAN</button>
-      <button id="closeModal" style="margin-top:12px; width:100%; background:none; border:1px solid #333; padding:10px; border-radius:8px; color:white;">Batal</button>
+  <!-- KONTEN LAMA: Klub Motor, Jalur Touring, Kuliner -->
+  <div class="section">
+    <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h2 class="section-title">🏍️ Klub Motor</h2>
+      <button class="upload-btn" id="openRegClubBtn">+ Daftarkan Klub</button>
     </div>
+    <div class="clubs-grid" id="clubsGrid"></div>
   </div>
 
-  <!-- Detail Club (halaman sementara) -->
-  <div id="clubDetail" class="club-detail">
-    <button class="back-btn" id="closeDetail">← Kembali</button>
-    <div id="clubDetailContent"></div>
+  <div class="section">
+    <h2 class="section-title">🗺️ Jalur Touring Terbaik</h2>
+    <div class="routes-grid" id="routesGrid"></div>
   </div>
 
-  <script>
-    // Supabase
-    const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <div class="section">
+    <h2 class="section-title">🍜 Kuliner Nusantara</h2>
+    <div class="culinary-grid" id="culinaryGrid"></div>
+  </div>
+</div>
 
-    // Simulasi user (ganti dengan auth nanti)
-    let currentUser = localStorage.getItem('brotherhood_user') || 'guest_' + Math.random().toString(36).substr(2, 6);
-    localStorage.setItem('brotherhood_user', currentUser);
+<!-- Modal Daftar Klub (original) -->
+<div id="registerModal" class="modal"><div class="modal-content"><h3>Daftarkan Klub Motor</h3><input type="text" id="regClubName" placeholder="Nama Klub" style="width:100%; margin:8px 0; padding:12px;"><input type="text" id="regAddress" placeholder="Alamat"><input type="text" id="regChairman" placeholder="Ketua"><input type="text" id="regContact" placeholder="Kontak"><button id="submitRegister" class="btn-brutal">DAFTAR</button><button id="closeModal" style="margin-top:12px; background:none; border:1px solid #333; padding:8px; border-radius:40px;">Batal</button></div></div>
+<div id="clubDetail" class="club-detail"><div class="club-detail-content" style="max-width:500px; width:100%;"><button id="closeDetail" class="upload-btn" style="margin-bottom:16px;">← Kembali</button><div id="clubDetailContent"></div></div></div>
 
-    // Hero gallery (mockup foto touring)
-    const galleryImages = [
-      'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200',
-      'https://images.unsplash.com/photo-1566478989037-eec170495d9e?w=1200',
-      'https://images.unsplash.com/photo-1522770179533-24471fcdba45?w=1200',
-      'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=1200'
-    ];
-    let currentSlide = 0;
-    function initHeroSlider() {
-      const slider = document.getElementById('heroSlider');
-      slider.innerHTML = galleryImages.map((img, idx) => `<div class="slide ${idx === 0 ? 'active' : ''}" style="background-image: url('${img}');"></div>`).join('');
-      setInterval(() => {
-        const slides = document.querySelectorAll('.slide');
-        slides[currentSlide].classList.remove('active');
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
-      }, 5000);
-    }
-    initHeroSlider();
+<script>
+  // ---------- KONFIGURASI SUPABASE (untuk klub, rute, kuliner) ----------
+  const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let currentUser = localStorage.getItem('brotherhood_user') || 'user_' + Math.random().toString(36).substr(2, 6);
+  localStorage.setItem('brotherhood_user', currentUser);
 
-    // Load data
-    async function loadClubs() {
-      const { data, error } = await supabase.from('clubs').select('*').order('created_at', { ascending: false });
-      if (error) return;
-      const grid = document.getElementById('clubsGrid');
-      grid.innerHTML = data.map(club => `
-        <div class="club-card" onclick="openClub('${club.id}')">
-          <div class="club-logo">🏍️</div>
-          <div class="club-name">${escapeHtml(club.name)}</div>
-          <div class="club-location">${escapeHtml(club.secretariat_address.split(',')[0])}</div>
-        </div>
-      `).join('');
-    }
+  // ---------- LOCALSTORAGE UNTUK FITUR HERO + FIFO + EMOJI + KOMENTAR ----------
+  const STORAGE_KEYS = {
+    HERO_PHOTO: 'touring_hero_photo',
+    NARASI: 'touring_narasi',
+    EMOJI_COUNTS: 'touring_emoji_counts',
+    KOMENTAR: 'touring_komentar_fifo',
+    FIFO_PHOTOS: 'touring_fifo_photos'
+  };
 
-    async function loadRoutes() {
-      const { data, error } = await supabase.from('touring_routes').select('*').limit(6);
-      if (error) return;
-      const grid = document.getElementById('routesGrid');
-      grid.innerHTML = (data || []).map(route => `
-        <div class="route-card">
-          <div class="route-image">🏔️</div>
-          <div class="route-info">
-            <div class="route-name">${escapeHtml(route.name)}</div>
-            <div class="route-meta">${route.distance_km || '?'} km • ${route.difficulty || 'Medium'}</div>
-            <div class="route-desc">${escapeHtml(route.start_point || '')} → ${escapeHtml(route.end_point || '')}</div>
-          </div>
-        </div>
-      `).join('');
-    }
+  // default data
+  let heroPhotoURL = localStorage.getItem(STORAGE_KEYS.HERO_PHOTO) || 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800';
+  let narasiText = localStorage.getItem(STORAGE_KEYS.NARASI) || 'Menaklukkan jalanan nusantara, debu, hujan, dan senyum persaudaraan. Setiap tikungan punya cerita. 🏍️✨';
+  let emojiCounts = JSON.parse(localStorage.getItem(STORAGE_KEYS.EMOJI_COUNTS)) || { '👍': 24, '❤️': 18, '😎': 12, '🏍️': 31 };
+  let komentarList = JSON.parse(localStorage.getItem(STORAGE_KEYS.KOMENTAR)) || [
+    { nama: 'BikersLampung', teks: 'Mantap touringnya, next ajak kami!', timestamp: Date.now() - 3600000 },
+    { nama: 'RiderJawa', teks: 'Jalur Puncak ke Bandung keren abis', timestamp: Date.now() - 7200000 },
+    { nama: 'Mbak_Motor', teks: 'Fotonya epic! Semangat terus', timestamp: Date.now() - 86400000 }
+  ];
+  let fifoPhotos = JSON.parse(localStorage.getItem(STORAGE_KEYS.FIFO_PHOTOS)) || [
+    'https://images.unsplash.com/photo-1566478989037-eec170495d9e?w=300',
+    'https://images.unsplash.com/photo-1522770179533-24471fcdba45?w=300',
+    'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=300',
+    'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=300',
+    'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=300'
+  ]; // 5 default, nanti bisa ditambah hingga 10
 
-    async function loadCulinary() {
-      const { data, error } = await supabase.from('culinary_spots').select('*').limit(6);
-      if (error) return;
-      const grid = document.getElementById('culinaryGrid');
-      grid.innerHTML = (data || []).map(c => `
-        <div class="culinary-card">
-          <div class="culinary-image">🍲</div>
-          <div class="culinary-info">
-            <div class="culinary-name">${escapeHtml(c.name)}</div>
-            <div class="culinary-meta">⭐ ${c.rating_avg || 0}/5</div>
-            <div class="culinary-desc">${escapeHtml(c.location)}</div>
-          </div>
-        </div>
-      `).join('');
-    }
+  // batasi FIFO photos max 10
+  while(fifoPhotos.length > 10) fifoPhotos.shift();
+  // sequential preview index
+  let currentSeqIndex = 0;
 
-    // Buka detail klub (halaman sederhana)
-    window.openClub = async (clubId) => {
-      const { data: club, error } = await supabase.from('clubs').select('*').eq('id', clubId).single();
-      if (error) return;
-      const detailDiv = document.getElementById('clubDetailContent');
-      detailDiv.innerHTML = `
-        <div style="background:#141414; border-radius:24px; padding:24px;">
-          <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
-            <div style="width:100px; height:100px; background:#2A2A2A; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:48px;">🏍️</div>
-            <div>
-              <h2>${escapeHtml(club.name)}</h2>
-              <p>📍 ${escapeHtml(club.secretariat_address)}</p>
-              <p>👑 ${escapeHtml(club.chairman_name)}</p>
-              <p>📞 ${escapeHtml(club.contact_number)}</p>
-            </div>
-          </div>
-          <hr style="margin:20px 0; border-color:#333;">
-          <h3>Forum Komunitas</h3>
-          <div id="forumMessages" style="height:300px; overflow-y:auto; background:#1E1E1E; border-radius:12px; padding:12px; margin-top:12px;"></div>
-          <div style="display:flex; gap:8px; margin-top:12px;">
-            <input type="text" id="forumInput" placeholder="Tulis pesan..." style="flex:1; background:#2A2A2A; border:none; padding:12px; border-radius:24px; color:white;">
-            <button id="sendForumBtn" class="btn-brutal" style="padding:12px 20px;">Kirim</button>
-          </div>
-        </div>
-      `;
-      document.getElementById('clubDetail').classList.add('active');
-      loadForumMessages(clubId);
-      subscribeForum(clubId);
-    };
+  // Helper simpan & render semua UI
+  function persistAndRender() {
+    localStorage.setItem(STORAGE_KEYS.HERO_PHOTO, heroPhotoURL);
+    localStorage.setItem(STORAGE_KEYS.NARASI, narasiText);
+    localStorage.setItem(STORAGE_KEYS.EMOJI_COUNTS, JSON.stringify(emojiCounts));
+    // komentar FIFO: pastikan max 10
+    if(komentarList.length > 10) komentarList = komentarList.slice(-10);
+    localStorage.setItem(STORAGE_KEYS.KOMENTAR, JSON.stringify(komentarList));
+    if(fifoPhotos.length > 10) fifoPhotos = fifoPhotos.slice(0,10);
+    localStorage.setItem(STORAGE_KEYS.FIFO_PHOTOS, JSON.stringify(fifoPhotos));
+    
+    renderHeroImage();
+    renderNarasi();
+    renderEmojiBar();
+    renderKomentar();
+    renderFifoThumbs();
+    updateSeqPreviewByIndex(currentSeqIndex);
+  }
 
-    async function loadForumMessages(clubId) {
-      const { data, error } = await supabase
-        .from('club_forum_messages')
-        .select('*')
-        .eq('club_id', clubId)
-        .order('created_at', { ascending: false })
-        .limit(30);
-      if (error) return;
-      const container = document.getElementById('forumMessages');
-      container.innerHTML = (data || []).reverse().map(m => `
-        <div style="margin-bottom:12px; padding:8px; background:#2A2A2A; border-radius:12px;">
-          <strong>${escapeHtml(m.username)}</strong> <span style="font-size:11px; color:#888;">${new Date(m.created_at).toLocaleTimeString()}</span>
-          <div>${escapeHtml(m.message)} ${m.emoji || ''}</div>
-        </div>
-      `).join('');
-      const sendBtn = document.getElementById('sendForumBtn');
-      const input = document.getElementById('forumInput');
-      sendBtn.onclick = async () => {
-        const text = input.value.trim();
-        if (!text) return;
-        await supabase.from('club_forum_messages').insert({
-          club_id: clubId,
-          user_id: currentUser,
-          username: currentUser.substring(0,10),
-          message: text
-        });
-        input.value = '';
-        loadForumMessages(clubId);
+  function renderHeroImage() { document.getElementById('heroMainImage').src = heroPhotoURL; }
+  function renderNarasi() {
+    const displayDiv = document.getElementById('narasiDisplay');
+    displayDiv.innerText = narasiText;
+    document.getElementById('narasiCharCount').innerText = narasiText.length + '/450';
+  }
+  function renderEmojiBar() {
+    const bar = document.getElementById('emojiBar');
+    bar.innerHTML = '';
+    for(let [emoji, count] of Object.entries(emojiCounts)) {
+      const btn = document.createElement('button');
+      btn.className = 'emoji-btn';
+      btn.innerHTML = `<span>${emoji}</span> ${count}`;
+      btn.onclick = () => {
+        emojiCounts[emoji] = (emojiCounts[emoji] || 0) + 1;
+        persistAndRender();
       };
+      bar.appendChild(btn);
     }
-
-    let forumSub = null;
-    function subscribeForum(clubId) {
-      if (forumSub) supabase.removeChannel(forumSub);
-      forumSub = supabase
-        .channel('forum-channel')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'club_forum_messages', filter: `club_id=eq.${clubId}` }, () => {
-          loadForumMessages(clubId);
-        })
-        .subscribe();
+    // tambah tombol reset emoji? optional tidak wajib
+  }
+  function renderKomentar() {
+    const container = document.getElementById('komentarList');
+    if(!komentarList.length) { container.innerHTML = '<div style="padding:12px;text-align:center;color:#888">Belum ada komentar, jadilah yang pertama!</div>'; return; }
+    // tampilkan dari yang terbaru ke lama (FIFO tetap menyimpan urutan, tapi UI descending)
+    const reversed = [...komentarList].reverse();
+    container.innerHTML = reversed.map(k => `
+      <div class="komentar-item">
+        <div class="komentar-nama">🏍️ ${escapeHtml(k.nama)}</div>
+        <div class="komentar-isi">${escapeHtml(k.teks)}</div>
+        <div class="komentar-time">${new Date(k.timestamp).toLocaleString()}</div>
+      </div>
+    `).join('');
+  }
+  function renderFifoThumbs() {
+    const container = document.getElementById('fifoThumbContainer');
+    if(fifoPhotos.length === 0) { container.innerHTML = '<div style="color:#888; grid-column:1/-1; text-align:center">Belum ada foto, upload sekarang!</div>'; return; }
+    container.innerHTML = fifoPhotos.map((url, idx) => `
+      <div class="fifo-thumb" onclick="setSeqIndexAndPreview(${idx})">
+        <img src="${url}" alt="thumb">
+      </div>
+    `).join('');
+  }
+  function setSeqIndexAndPreview(idx) {
+    if(fifoPhotos.length === 0) return;
+    currentSeqIndex = idx % fifoPhotos.length;
+    updateSeqPreviewByIndex(currentSeqIndex);
+  }
+  function updateSeqPreviewByIndex(index) {
+    const previewImg = document.getElementById('sequentialPreviewImg');
+    const infoDiv = document.getElementById('seqIndexInfo');
+    const textDiv = document.getElementById('seqPreviewText');
+    if(fifoPhotos.length === 0) {
+      previewImg.src = 'https://placehold.co/400x200/2A2A2A/FF6B00?text=Belum+ada+foto+FIFO';
+      infoDiv.innerText = '0 / 0 foto';
+      textDiv.innerText = 'Upload foto galeri FIFO dulu yuk!';
+      return;
     }
+    const idxNormal = ((index % fifoPhotos.length) + fifoPhotos.length) % fifoPhotos.length;
+    previewImg.src = fifoPhotos[idxNormal];
+    infoDiv.innerText = `${idxNormal+1} / ${fifoPhotos.length} (FIFO)`;
+    textDiv.innerText = '✨ Klik foto hero lagi untuk lanjut ke foto berikutnya ✨';
+  }
+  function nextSequentialOnHeroClick() {
+    if(fifoPhotos.length === 0) {
+      alert('Galeri FIFO masih kosong. Upload foto dulu!');
+      return;
+    }
+    currentSeqIndex = (currentSeqIndex + 1) % fifoPhotos.length;
+    updateSeqPreviewByIndex(currentSeqIndex);
+    // sedikit animasi pada preview
+    const imgEl = document.getElementById('sequentialPreviewImg');
+    imgEl.style.transform = 'scale(0.98)';
+    setTimeout(() => { if(imgEl) imgEl.style.transform = ''; }, 150);
+  }
 
-    document.getElementById('closeDetail').onclick = () => {
-      document.getElementById('clubDetail').classList.remove('active');
-      if (forumSub) supabase.removeChannel(forumSub);
+  // Upload Hero
+  document.getElementById('uploadHeroPhoto').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      heroPhotoURL = ev.target.result;
+      persistAndRender();
     };
-
-    // Registrasi klub
-    document.getElementById('openRegClubBtn').onclick = () => document.getElementById('registerModal').style.display = 'flex';
-    document.getElementById('closeModal').onclick = () => document.getElementById('registerModal').style.display = 'none';
-    document.getElementById('submitRegister').onclick = async () => {
-      const name = document.getElementById('regClubName').value.trim();
-      const addr = document.getElementById('regAddress').value.trim();
-      const chairman = document.getElementById('regChairman').value.trim();
-      const contact = document.getElementById('regContact').value.trim();
-      if (!name || !addr || !chairman || !contact) return alert('Isi semua field');
-      const { error } = await supabase.from('club_registrations').insert({
-        club_name: name,
-        secretariat_address: addr,
-        chairman_name: chairman,
-        contact_number: contact,
-        registered_by: currentUser
-      });
-      if (error) alert('Gagal: ' + error.message);
-      else alert('Pendaftaran berhasil! Butuh 25 anggota dalam 7 hari untuk aktivasi.');
-      document.getElementById('registerModal').style.display = 'none';
+    reader.readAsDataURL(file);
+  });
+  // Edit Narasi
+  const narasiDisplayDiv = document.getElementById('narasiDisplay');
+  const narasiInput = document.getElementById('narasiInput');
+  const narasiActions = document.getElementById('narasiActions');
+  const editBtn = document.getElementById('editNarasiBtn');
+  const saveBtn = document.getElementById('saveNarasiBtn');
+  const cancelBtn = document.getElementById('cancelNarasiBtn');
+  editBtn.onclick = () => {
+    narasiDisplayDiv.style.display = 'none';
+    narasiInput.style.display = 'block';
+    narasiActions.style.display = 'block';
+    narasiInput.value = narasiText;
+    document.getElementById('narasiCharCount').innerText = narasiText.length + '/450';
+    narasiInput.addEventListener('input', () => {
+      document.getElementById('narasiCharCount').innerText = narasiInput.value.length + '/450';
+    });
+  };
+  saveBtn.onclick = () => {
+    let newText = narasiInput.value.slice(0,450);
+    narasiText = newText;
+    persistAndRender();
+    narasiDisplayDiv.style.display = 'block';
+    narasiInput.style.display = 'none';
+    narasiActions.style.display = 'none';
+  };
+  cancelBtn.onclick = () => {
+    narasiDisplayDiv.style.display = 'block';
+    narasiInput.style.display = 'none';
+    narasiActions.style.display = 'none';
+  };
+  // Komentar FIFO (max 10)
+  function tambahKomentar(nama, teks) {
+    if(!teks.trim()) return alert('Komentar tidak boleh kosong');
+    const newKomen = { nama: nama.slice(0,30), teks: teks.slice(0,200), timestamp: Date.now() };
+    komentarList.push(newKomen);
+    if(komentarList.length > 10) komentarList.shift(); // FIFO
+    persistAndRender();
+  }
+  document.getElementById('tambahKomentarBtn').onclick = () => {
+    const nama = document.getElementById('komentarNama').value.trim() || 'Rider';
+    const isi = document.getElementById('komentarIsi').value.trim();
+    if(isi) tambahKomentar(nama, isi);
+    document.getElementById('komentarIsi').value = '';
+  };
+  // Upload FIFO photo (max 10, FIFO)
+  document.getElementById('uploadFifoPhoto').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const newPhoto = ev.target.result;
+      fifoPhotos.push(newPhoto);
+      if(fifoPhotos.length > 10) fifoPhotos.shift(); // hapus oldest (FIFO)
+      // reset index agar tidak melebihi length
+      if(currentSeqIndex >= fifoPhotos.length && fifoPhotos.length>0) currentSeqIndex = 0;
+      persistAndRender();
     };
-
-    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
-
-    loadClubs();
-    loadRoutes();
-    loadCulinary();
-  </script>
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  });
+  // HERO CLICK -> sequential muncul FIFO photo
+  document.getElementById('heroPhotoClickable').addEventListener('click', () => {
+    nextSequentialOnHeroClick();
+  });
+  
+  // ------ Klub, Jalur, Kuliner (tetap dari supabase) ------
+  async function loadClubs() {
+    const { data } = await supabase.from('clubs').select('*').order('created_at', { ascending: false });
+    if(data) document.getElementById('clubsGrid').innerHTML = data.map(c => `<div class="club-card" onclick="openClub('${c.id}')"><div class="club-logo" style="font-size:36px">🏍️</div><div class="club-name">${escapeHtml(c.name)}</div><div class="club-location">${escapeHtml(c.secretariat_address?.split(',')[0] || '')}</div></div>`).join('');
+  }
+  async function loadRoutes() {
+    const { data } = await supabase.from('touring_routes').select('*').limit(6);
+    if(data) document.getElementById('routesGrid').innerHTML = data.map(r => `<div class="route-card"><div class="route-image">🏔️</div><div class="route-info"><div class="route-name">${escapeHtml(r.name)}</div><div class="route-meta">${r.distance_km || '?'} km</div><div class="route-desc">${escapeHtml(r.start_point||'')} → ${escapeHtml(r.end_point||'')}</div></div></div>`).join('');
+  }
+  async function loadCulinary() {
+    const { data } = await supabase.from('culinary_spots').select('*').limit(6);
+    if(data) document.getElementById('culinaryGrid').innerHTML = data.map(c => `<div class="culinary-card"><div class="culinary-image">🍲</div><div class="culinary-info"><div class="culinary-name">${escapeHtml(c.name)}</div><div class="culinary-meta">⭐ ${c.rating_avg || 0}/5</div><div class="culinary-desc">${escapeHtml(c.location)}</div></div></div>`).join('');
+  }
+  window.openClub = async (id) => {
+    const { data: club } = await supabase.from('clubs').select('*').eq('id', id).single();
+    if(club) {
+      document.getElementById('clubDetailContent').innerHTML = `<div><h2>${escapeHtml(club.name)}</h2><p>📍 ${escapeHtml(club.secretariat_address)}</p><p>👑 ${escapeHtml(club.chairman_name)}</p><p>📞 ${escapeHtml(club.contact_number)}</p><div id="forumMessages" style="height:200px; overflow:auto; background:#1E1E1E; margin-top:16px; padding:12px;"></div><input id="forumInput" placeholder="Pesan komunitas..." style="width:100%; margin-top:8px; padding:8px;"><button id="forumSendBtn" class="btn-brutal" style="margin-top:8px;">Kirim</button></div>`;
+      document.getElementById('clubDetail').classList.add('active');
+      loadForumMessages(id);
+    }
+  };
+  async function loadForumMessages(clubId) {
+    const { data } = await supabase.from('club_forum_messages').select('*').eq('club_id', clubId).order('created_at', { ascending: false }).limit(20);
+    const container = document.getElementById('forumMessages');
+    if(container) container.innerHTML = (data||[]).map(m => `<div><strong>${escapeHtml(m.username)}</strong>: ${escapeHtml(m.message)}</div>`).join('');
+    const sendBtn = document.getElementById('forumSendBtn');
+    if(sendBtn) sendBtn.onclick = async () => {
+      const inp = document.getElementById('forumInput');
+      if(inp.value.trim()) await supabase.from('club_forum_messages').insert({ club_id: clubId, user_id: currentUser, username: currentUser.slice(0,10), message: inp.value });
+      inp.value = '';
+      loadForumMessages(clubId);
+    };
+  }
+  document.getElementById('closeDetail').onclick = () => document.getElementById('clubDetail').classList.remove('active');
+  document.getElementById('openRegClubBtn').onclick = () => document.getElementById('registerModal').style.display = 'flex';
+  document.getElementById('closeModal').onclick = () => document.getElementById('registerModal').style.display = 'none';
+  document.getElementById('submitRegister').onclick = async () => {
+    const name = document.getElementById('regClubName').value;
+    if(name) await supabase.from('club_registrations').insert({ club_name: name, secretariat_address: document.getElementById('regAddress').value, chairman_name: document.getElementById('regChairman').value, contact_number: document.getElementById('regContact').value, registered_by: currentUser });
+    alert('Pendaftaran tercatat!');
+    document.getElementById('registerModal').style.display = 'none';
+  };
+  function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+  
+  // init all
+  persistAndRender();
+  loadClubs(); loadRoutes(); loadCulinary();
+</script>
 </body>
 </html>
