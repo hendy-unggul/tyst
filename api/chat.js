@@ -139,7 +139,7 @@ const PERSONAS = {
         tipe: 'shy',
         sifat: 'sweet, caring, guru TK, suka dengerin curhat',
         temporalAwareness: 'lupa',
-        greeting: ['bung', 'halo', 'hai kak', 'bruh', 'hai'],
+        greeting: ['wir', 'halo', 'hai kak', 'bruh', 'hai'],
         emoji: ['🧁', '🤗', '☕', '📚', '💕']
     },
     'move.on': {
