@@ -76,7 +76,7 @@
         .radar-chat-input-wrapper.show{display:flex}
         .radar-chat-input{flex:1;padding:10px 16px;background:var(--bg);border:2px solid var(--bd2);color:var(--tx);border-radius:30px;font-size:14px;outline:none}
         .radar-chat-send{width:44px;height:44px;background:var(--ap);border:2px solid #000;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;flex-shrink:0}
-        .radar-scanning-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.93);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;color:var(--as);font-family:var(--font-mono);gap:0}
+        .radar-scanning-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.93);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;color:var(--as);font-family:var(--font-mono)}
         .radar-scanning-overlay.show{display:flex}
         .scan-vibe{font-size:11px;font-weight:700;letter-spacing:2px;padding:4px 14px;border-radius:20px;margin-bottom:14px}
         .scan-vibe.hot_take{background:#7b2fff;color:#fff}
@@ -137,43 +137,69 @@
         .ni.act{color:var(--spill)!important;transform:translateY(-4px)}
         .ni.act .nico{transform:scale(1.2);color:var(--spill)}
         .ni:hover:not(.act){color:var(--tx)}
-        .ni:hover:not(.act) .nico{transform:scale(1.05);color:var(--tx)}
+        .ni:hover:not(.act) .nico{transform:scale(1.05)}
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none;font-size:13px;white-space:nowrap}
         .toast.show{display:block}
-        /* ── WHISPER OVERLAY ── */
-        .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:1500;align-items:center;justify-content:center}
+        /* ── WHISPER BOTTOM SHEET ── */
+        .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1500;align-items:flex-end;justify-content:center}
         .whisper-overlay.show{display:flex}
-        .whisper-box{background:var(--sf);border:2px solid var(--as);padding:24px;box-shadow:8px 8px 0 #000;max-width:350px;width:90%}
-        .whisper-box-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px;margin-bottom:6px}
-        /* Security badge — menampilkan status keamanan whisper */
-        .whisper-sec-badge{font-family:var(--font-mono);font-size:9px;color:#3a3a3a;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:6px}
-        .whisper-sec-dot{width:5px;height:5px;border-radius:50%;background:#2a9d2a;flex-shrink:0;animation:pulse-dot 2s infinite}
-        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
-        .whisper-input{width:100%;padding:13px;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);margin-bottom:10px;font-size:13px;font-family:var(--font-mono);resize:none;outline:none}
+        .whisper-sheet{background:var(--sf);border:2px solid var(--as);border-bottom:none;max-width:500px;width:100%;border-radius:16px 16px 0 0;overflow:hidden;position:relative;box-shadow:0 -12px 60px rgba(0,229,255,.1)}
+        /* Sending mask */
+        .wh-mask{display:none;position:absolute;inset:0;background:rgba(0,0,0,.96);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:20}
+        .wh-mask.show{display:flex}
+        .wh-spinner{width:30px;height:30px;border:2px solid var(--bd2);border-top-color:var(--as);border-radius:50%;animation:wh-spin .8s linear infinite}
+        @keyframes wh-spin{to{transform:rotate(360deg)}}
+        .wh-mask-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px}
+        .wh-steps{display:flex;flex-direction:column;gap:5px;align-items:center}
+        .wh-step{font-family:var(--font-mono);font-size:9px;color:#444;transition:color .25s;letter-spacing:.5px}
+        .wh-step.act{color:var(--tx)}
+        .wh-step.done{color:var(--aq)}
+        /* No pubkey panel */
+        .wh-nopub{padding:28px 22px;text-align:center;display:none;flex-direction:column;align-items:center;gap:10px}
+        .wh-nopub.show{display:flex}
+        .wh-nopub-icon{font-size:30px}
+        .wh-nopub-title{font-family:var(--font-mono);font-size:11px;color:var(--spill);letter-spacing:1px;font-weight:700}
+        .wh-nopub-body{font-family:var(--font-mono);font-size:10px;color:var(--txs);line-height:1.8;text-align:center}
+        .wh-nopub-back{background:var(--as);color:#000;border:2px solid #000;padding:10px 20px;font-family:var(--font-mono);font-size:11px;cursor:pointer;font-weight:700;letter-spacing:1px;margin-top:4px}
+        /* Philosophy panel */
+        .wh-phil{background:linear-gradient(160deg,#030e0e,#000b14);border-bottom:1px solid rgba(0,229,255,.12);padding:16px 18px}
+        .wh-phil-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+        .wh-phil-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px;font-weight:700}
+        .wh-phil-ver{font-family:var(--font-mono);font-size:9px;color:#1a3a3a;margin-left:auto}
+        .wh-feats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+        .wh-feat{background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.09);padding:8px 10px;border-radius:3px}
+        .wh-feat-lbl{font-family:var(--font-mono);font-size:9px;color:var(--as);letter-spacing:1px;margin-bottom:3px}
+        .wh-feat-val{font-family:var(--font-mono);font-size:10px;color:var(--tx);line-height:1.4}
+        /* Device-key panel — fitur utama */
+        .wh-devkey{background:rgba(255,59,111,.04);border:1px solid rgba(255,59,111,.18);border-radius:3px;padding:11px 13px}
+        .wh-devkey-hdr{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+        .wh-devkey-title{font-family:var(--font-mono);font-size:10px;color:var(--spill);letter-spacing:1px;font-weight:700}
+        .wh-devkey-badge{font-family:var(--font-mono);font-size:8px;background:var(--spill);color:#fff;padding:1px 6px;border-radius:2px;margin-left:auto;letter-spacing:1px}
+        .wh-devkey-body{font-family:var(--font-mono);font-size:10px;color:#999;line-height:1.75}
+        .wh-devkey-body b{color:var(--tx)}
+        .wh-devkey-body .hi{color:var(--spill)}
+        /* Form */
+        .wh-form{padding:16px 18px 22px}
+        .wh-form-lbl{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:1px;margin-bottom:13px;display:flex;justify-content:space-between;align-items:center}
+        .wh-live-dot{width:5px;height:5px;border-radius:50%;background:#2a9d2a;animation:pulse-dot 2s infinite;display:inline-block;margin-right:5px;vertical-align:middle}
+        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.25}}
+        .whisper-input{width:100%;padding:12px 14px;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);margin-bottom:10px;font-size:13px;font-family:var(--font-mono);resize:none;outline:none;border-radius:3px}
         .whisper-input:focus{border-color:var(--as)}
-        .whisper-input::placeholder{color:var(--bd2)}
-        .whisper-ttl{font-family:var(--font-mono);font-size:9px;color:var(--txs);text-align:right;margin:-6px 0 12px;letter-spacing:.05em}
-        .whisper-actions{display:flex;gap:10px}
-        .whisper-btn{flex:1;padding:12px;border:2px solid #000;cursor:pointer;font-size:13px;font-family:var(--font-mono)}
-        .whisper-btn.send{background:var(--as);color:#000;font-weight:700}
-        .whisper-btn.cancel{background:0 0;border-color:var(--bd2);color:var(--txs)}
-        /* sending state — tampilkan bahwa pesan sedang diqueue */
-        .whisper-sending-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:10}
-        .whisper-sending-overlay.show{display:flex}
-        .whisper-box{position:relative;overflow:hidden}
-        .wso-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px}
-        .wso-sub{font-family:var(--font-mono);font-size:9px;color:var(--txs);text-align:center;line-height:1.7;max-width:220px}
-        .wso-spinner{width:28px;height:28px;border:2px solid var(--bd2);border-top-color:var(--as);border-radius:50%;animation:spin-cont .8s linear infinite}
-        @keyframes spin-cont{to{transform:rotate(360deg)}}
-        /* ── WHISPER INBOX ── */
+        .whisper-input::placeholder{color:#2d2d2d}
+        .wh-ttl{font-family:var(--font-mono);font-size:9px;color:#2d2d2d;text-align:right;margin:-6px 0 14px}
+        .wh-actions{display:flex;gap:10px}
+        .wh-btn{flex:1;padding:13px;border:2px solid #000;cursor:pointer;font-size:13px;font-family:var(--font-mono);border-radius:3px;font-weight:700;letter-spacing:1px}
+        .wh-btn.send{background:var(--as);color:#000}
+        .wh-btn.cancel{background:0 0;border-color:var(--bd2);color:var(--txs)}
+        /* Whisper inbox */
         .w-inbox{position:absolute;inset:0;z-index:110;background:rgba(0,0,0,.97);display:none;flex-direction:column}
         .w-inbox.show{display:flex}
         .w-inbox-hdr{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,.98);border-bottom:1px solid var(--bd2);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;z-index:112}
         .w-inbox-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px}
         .w-inbox-close{background:0 0;border:1px solid var(--bd2);color:var(--txs);padding:4px 10px;cursor:pointer;font-size:11px;border-radius:3px;font-family:var(--font-mono)}
         .w-list{flex:1;overflow-y:auto;padding:46px 0 6px;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
-        .w-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--txs);font-family:var(--font-mono);font-size:11px;letter-spacing:1px}
-        .w-empty-g{font-size:26px;opacity:.25}
+        .w-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--txs);font-family:var(--font-mono);font-size:11px}
+        .w-empty-g{font-size:26px;opacity:.2}
         .w-row{border-bottom:1px solid var(--bd);padding:11px 14px;cursor:pointer;transition:background .1s;position:relative}
         .w-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--as);opacity:0;transition:opacity .15s}
         .w-row:hover{background:rgba(0,229,255,.03)}
@@ -197,13 +223,13 @@
         .w-trigger:hover{border-color:var(--as)}
         .w-dot{width:6px;height:6px;border-radius:50%;background:var(--spill);display:none;flex-shrink:0}
         .w-dot.show{display:block}
-        /* ── LOGIN MODAL ── */
+        /* Login modal */
         .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
         .lm-bg.show{display:flex}
         .lm-box{background:var(--sf);border:1px solid var(--bd2);padding:28px 24px;width:100%;max-width:340px;position:relative}
-        .lm-close{position:absolute;top:10px;right:10px;background:0 0;border:1px solid var(--bd2);color:var(--txs);width:26px;height:26px;cursor:pointer;font-size:13px;line-height:1;display:flex;align-items:center;justify-content:center}
+        .lm-close{position:absolute;top:10px;right:10px;background:0 0;border:1px solid var(--bd2);color:var(--txs);width:26px;height:26px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
         .lm-close:hover{border-color:var(--ap);color:var(--ap)}
-        .lm-title{font-family:var(--font-display);font-size:22px;letter-spacing:3px;color:var(--tx);margin-bottom:18px}
+        .lm-title{font-family:var(--font-display);font-size:22px;letter-spacing:3px;margin-bottom:18px}
         .lm-label{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:.5px;margin-bottom:5px}
         .lm-input{width:100%;background:var(--bg);border:2px solid var(--bd2);padding:12px 14px;color:var(--tx);font-family:var(--font-mono);font-size:14px;outline:none;margin-bottom:12px;letter-spacing:.06em;transition:border-color .15s}
         .lm-input:focus{border-color:var(--ap)}
@@ -219,7 +245,7 @@
         .lm-fb.e{border-color:var(--ap);color:var(--ap);background:rgba(255,45,85,.08)}
         .lm-fb.s{border-color:var(--aq);color:var(--aq);background:rgba(191,255,0,.06)}
         .lm-sw{text-align:center;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--txs)}
-        .lm-sw button{background:0 0;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:var(--font-mono);font-size:10px;letter-spacing:.3px}
+        .lm-sw button{background:0 0;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:var(--font-mono);font-size:10px}
         .lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
         .lm-agree input{margin-top:2px;width:15px;height:15px;flex-shrink:0;accent-color:var(--ap)}
         .lm-agree label{font-family:var(--font-mono);font-size:10px;color:var(--txs);line-height:1.5;cursor:pointer}
@@ -244,12 +270,9 @@
             <div class="radar-wrapper">
                 <div class="radar-bezel">
                     <div class="radar-cont" id="radarCont">
-                        <div class="radar-grid"></div>
-                        <div class="radar-ring"></div>
-                        <div class="radar-cross"></div>
+                        <div class="radar-grid"></div><div class="radar-ring"></div><div class="radar-cross"></div>
                         <canvas class="radar-canvas" id="radarCanvas"></canvas>
                         <div class="radar-dots" id="radarDots"></div>
-
                         <div class="radar-scanning-overlay" id="scanOverlay">
                             <div class="scan-vibe" id="scanVibeBadge">INSOMNIA</div>
                             <div class="scan-title">MENCARI STRANGER</div>
@@ -259,7 +282,6 @@
                             <div class="scan-dots"><span></span><span></span><span></span></div>
                             <button class="scan-cancel" id="scanCancel">BATAL</button>
                         </div>
-
                         <div class="radar-chat-container" id="radarChat">
                             <div class="radar-chat-header">
                                 <div style="display:flex;align-items:center;gap:10px">
@@ -268,46 +290,25 @@
                                 </div>
                                 <button class="radar-chat-close" id="chatClose">✕ END</button>
                             </div>
-                            <div class="typing-bubble" id="typingBubble">
-                                <span></span><span></span><span></span>
-                            </div>
+                            <div class="typing-bubble" id="typingBubble"><span></span><span></span><span></span></div>
                         </div>
                         <div class="radar-chat-input-wrapper" id="chatInputWrap">
                             <input type="text" class="radar-chat-input" id="chatInput" placeholder="Ketik pesan..." maxlength="500" autocomplete="off">
                             <button class="radar-chat-send" id="chatSend">➤</button>
                         </div>
-
-                        <button class="w-trigger" id="wTrigger">
-                            ✦ WHISPER
-                            <span class="w-dot" id="wDot"></span>
-                        </button>
-
+                        <button class="w-trigger" id="wTrigger">✦ WHISPER<span class="w-dot" id="wDot"></span></button>
                         <div class="w-inbox" id="wInbox">
-                            <div class="w-inbox-hdr">
-                                <span class="w-inbox-title">✦ WHISPER INBOX</span>
-                                <button class="w-inbox-close" id="wInboxClose">✕</button>
-                            </div>
-                            <div class="w-list" id="wList">
-                                <div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>
-                            </div>
+                            <div class="w-inbox-hdr"><span class="w-inbox-title">✦ WHISPER INBOX</span><button class="w-inbox-close" id="wInboxClose">✕</button></div>
+                            <div class="w-list" id="wList"><div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div></div>
                         </div>
-
                         <div class="w-read" id="wRead">
-                            <div class="w-read-hdr">
-                                <button class="w-back" id="wBack">←</button>
-                                <span class="w-read-from" id="wReadFrom">anonymous</span>
-                                <span class="w-read-count" id="wReadCount">5</span>
-                            </div>
+                            <div class="w-read-hdr"><button class="w-back" id="wBack">←</button><span class="w-read-from" id="wReadFrom">anonymous</span><span class="w-read-count" id="wReadCount">5</span></div>
                             <div class="w-read-body" id="wReadBody"></div>
-                            <div class="w-read-foot">
-                                <span>pesan ini akan musnah</span>
-                                <span>no record kept</span>
-                            </div>
+                            <div class="w-read-foot"><span>pesan ini akan musnah</span><span>no record kept</span></div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="radar-ctas">
                 <div class="gender-row">
                     <button class="btn-gender btn-hot" id="btnHot">
@@ -315,9 +316,7 @@
                         <span>INSOMNIA</span>
                         <span id="insomniaStatus" style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;opacity:.7"></span>
                     </button>
-                    <button class="btn-gender btn-soft" id="btnSoft">
-                        <span class="gender-icon">💬</span><span>SOFT TALK</span>
-                    </button>
+                    <button class="btn-gender btn-soft" id="btnSoft"><span class="gender-icon">💬</span><span>SOFT TALK</span></button>
                 </div>
                 <button class="btn-whisper" id="whisperBtn">
                     <span>✦ WHISPERER</span>
@@ -325,28 +324,21 @@
                 </button>
             </div>
         </div>
-
         <div class="spills-sect">
-            <div class="sect-header">
-                <span>SPILL TERKINI</span>
-                <span id="feedMeta">0 spill</span>
-            </div>
+            <div class="sect-header"><span>SPILL TERKINI</span><span id="feedMeta">0 spill</span></div>
             <div id="spillsList"><div class="empty-state">🍃 MEMUAT SPILL...</div></div>
         </div>
     </div>
-
     <nav class="bnav">
         <div class="bnav-c">
             <a href="spill.html" class="ni act"><span class="nico">✕</span><span>Spill</span></a>
             <a href="jejak.html" class="ni"><span class="nico">◈</span><span>Jejak</span></a>
-            <a href="cocomeo.html" class="ni"><span class="nico">〜</span><span>Ruang</span></a>
             <a href="glitch.html" class="ni"><span class="nico">‼</span><span>Glitch</span></a>
-    
+            <a href="cocomeo.html" class="ni"><span class="nico">〜</span><span>Ruang</span></a>
         </div>
     </nav>
 </div>
 
-<!-- INVITE POPUP -->
 <div class="invite-popup" id="invitePopup">
     <div class="invite-box">
         <div class="invite-vibe-badge" id="inviteVibeBadge">🌙 INSOMNIA</div>
@@ -359,30 +351,69 @@
     </div>
 </div>
 
-<!-- WHISPER COMPOSE OVERLAY -->
+<!-- WHISPER BOTTOM SHEET -->
 <div class="whisper-overlay" id="whisperOverlay">
-    <div class="whisper-box">
-        <!-- Sending state overlay -->
-        <div class="whisper-sending-overlay" id="whisperSendingOverlay">
-            <div class="wso-spinner"></div>
-            <div class="wso-title">ENCRYPTING & QUEUING</div>
-            <div class="wso-sub">
-                Pesan dienkripsi di device kamu.<br>
-                Pengiriman diacak waktunya<br>
-                untuk melindungi identitasmu.
+    <div class="whisper-sheet">
+        <!-- Mask saat encrypting -->
+        <div class="wh-mask" id="whMask">
+            <div class="wh-spinner"></div>
+            <div class="wh-mask-title">PROCESSING</div>
+            <div class="wh-steps">
+                <div class="wh-step" id="whs1">◌ ephemeral keypair</div>
+                <div class="wh-step" id="whs2">◌ ECDH key agreement</div>
+                <div class="wh-step" id="whs3">◌ AES-GCM encrypt + pad</div>
+                <div class="wh-step" id="whs4">◌ queue delivery</div>
             </div>
         </div>
-        <div class="whisper-box-title">✦ WHISPERER</div>
-        <div class="whisper-sec-badge">
-            <span class="whisper-sec-dot"></span>
-            E2E · ANON · TIMED DELIVERY · AUTO-DESTROY
+        <!-- No pubkey -->
+        <div class="wh-nopub" id="whNoPub">
+            <div class="wh-nopub-icon">🔑</div>
+            <div class="wh-nopub-title">PENERIMA BELUM AKTIF</div>
+            <div class="wh-nopub-body">User ini belum pernah membuka<br>aplikasi dengan sistem whisper baru.<br>Mereka perlu login sekali agar<br>public key terdaftar.</div>
+            <button class="wh-nopub-back" id="whNoPubBack">← KEMBALI</button>
         </div>
-        <input type="text" class="whisper-input" id="whisperTarget" placeholder="@username penerima" autocomplete="off" autocorrect="off" autocapitalize="off">
-        <textarea class="whisper-input" id="whisperMessage" placeholder="Tulis pesan rahasia..." rows="4" maxlength="500"></textarea>
-        <div class="whisper-ttl">⏳ musnah 5 detik setelah dibaca · max 24 jam · pengiriman diacak</div>
-        <div class="whisper-actions">
-            <button class="whisper-btn cancel" id="whisperCancel">BATAL</button>
-            <button class="whisper-btn send" id="whisperSend">KIRIM</button>
+        <!-- Philosophy panel -->
+        <div class="wh-phil" id="whPhil">
+            <div class="wh-phil-hdr">
+                <span style="font-size:18px">⬡</span>
+                <span class="wh-phil-title">WHISPER PROTOCOL</span>
+                <span class="wh-phil-ver">v2 · ECDH P-256</span>
+            </div>
+            <div class="wh-feats">
+                <div class="wh-feat"><div class="wh-feat-lbl">ENKRIPSI</div><div class="wh-feat-val">ECDH P-256<br>+ AES-GCM 256</div></div>
+                <div class="wh-feat"><div class="wh-feat-lbl">SENDER</div><div class="wh-feat-val">tidak direkam<br>bahkan di server</div></div>
+                <div class="wh-feat"><div class="wh-feat-lbl">DELIVERY</div><div class="wh-feat-val">diacak waktunya<br>anti timing-attack</div></div>
+                <div class="wh-feat"><div class="wh-feat-lbl">DESTROY</div><div class="wh-feat-val">5 detik setelah<br>dibaca · permanent</div></div>
+            </div>
+            <!-- Device-key — FRAMING SEBAGAI FITUR -->
+            <div class="wh-devkey">
+                <div class="wh-devkey-hdr">
+                    <span style="font-size:15px">📱</span>
+                    <span class="wh-devkey-title">PRIVATE KEY = DEVICE KAMU</span>
+                    <span class="wh-devkey-badge">FITUR</span>
+                </div>
+                <div class="wh-devkey-body">
+                    Private key <b>tidak pernah meninggalkan device-mu</b> dan tidak disimpan
+                    di server manapun — bahkan kami tidak bisa membaca pesanmu.
+                    Ini berarti <span class="hi">ganti device atau clear storage = akses pesan lama
+                    hilang permanent.</span> Bukan kelemahan —
+                    <b>ini desain yang disengaja</b> agar hanya kamu yang bisa dekripsi pesanmu.
+                </div>
+            </div>
+        </div>
+        <!-- Form -->
+        <div class="wh-form" id="whForm">
+            <div class="wh-form-lbl">
+                <span><span class="wh-live-dot"></span>COMPOSE WHISPER</span>
+                <span style="color:#1a3a3a;font-size:9px">end-to-end encrypted</span>
+            </div>
+            <input type="text" class="whisper-input" id="whisperTarget" placeholder="@username penerima" autocomplete="off" autocorrect="off" autocapitalize="off">
+            <textarea class="whisper-input" id="whisperMessage" placeholder="Tulis pesan rahasia..." rows="4" maxlength="500"></textarea>
+            <div class="wh-ttl">⏳ musnah 5 detik setelah dibaca · delivery diacak · max 24 jam</div>
+            <div class="wh-actions">
+                <button class="wh-btn cancel" id="whisperCancel">BATAL</button>
+                <button class="wh-btn send" id="whisperSend">KIRIM ✦</button>
+            </div>
         </div>
     </div>
 </div>
@@ -393,936 +424,341 @@
 (function(){
 'use strict';
 
-/* ═══════════════════════════════════════════════════════════
-   CONSTANTS & CONFIG
-═══════════════════════════════════════════════════════════ */
-const SUPA_URL  = 'https://fuovfrdicdhnlymnacpz.supabase.co';
-const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+/* ═══════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════ */
+const SUPA_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=2000,POLL_MSG_MS=1500,POLL_WH_MS=10000;
+const INSOMNIA_OPEN=22,INSOMNIA_CLOSE=4,INSOMNIA_TZ=7;
+const INSOMNIA_AI=['agak.koplak','chili.padi','satria.bajahitam','sejuta.badai','pretty.sad','move.on'];
+const INS_LS_KEY='insomnia_personas_v1',INS_LS_DATE='insomnia_personas_date';
+const LS_PRIV='wh_privkey_jwk_v1',LS_PUB='wh_pubkey_jwk_v1';
 
-const BID_TIMEOUT_MS = 15000;
-const HEARTBEAT_MS   = 10000;
-const POLL_MATCH_MS  = 2000;
-const POLL_INV_MS    = 2000;
-const POLL_MSG_MS    = 1500;
-const POLL_WH_MS     = 10000;
+const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in'};
+const IS_GUEST=localStorage.getItem(K.l)!=='true';
+const ME=IS_GUEST?null:localStorage.getItem(K.u);
+const UID=IS_GUEST?null:localStorage.getItem(K.i);
+const SID=IS_GUEST?null:'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
 
-/* ── INSOMNIA config ── */
-const INSOMNIA_OPEN_HOUR    = 22;
-const INSOMNIA_CLOSE_HOUR   = 4;
-const INSOMNIA_TZ_OFFSET    = 7;
-const INSOMNIA_AI_FULL      = ['agak.koplak','chili.padi','satria.bajahitam','sejuta.badai','pretty.sad','move.on'];
-const INSOMNIA_LS_KEY       = 'insomnia_personas_v1';
-const INSOMNIA_LS_DATE      = 'insomnia_personas_date';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const toast=(msg,dur=3000)=>{const o=$('toast');if(!o)return;o.textContent=msg;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),dur);};
+const api=async(path,body)=>{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json();};
+const sbGet=async path=>{const r=await fetch(`${SUPA_URL}/rest/v1${path}`,{headers:{apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`}});const t=await r.text();return t?JSON.parse(t):null;};
 
-function getWIBHour(){
-    const now = new Date();
-    const wib = new Date(now.getTime() + now.getTimezoneOffset()*60000 + INSOMNIA_TZ_OFFSET*3600000);
-    return wib.getHours();
-}
-function getWIBSessionDate(){
-    const now = new Date();
-    const wib = new Date(now.getTime() + now.getTimezoneOffset()*60000 + INSOMNIA_TZ_OFFSET*3600000);
-    if(wib.getHours() < INSOMNIA_CLOSE_HOUR) wib.setDate(wib.getDate()-1);
-    return wib.toISOString().slice(0,10);
-}
-function isInsomniaActive(){
-    const h = getWIBHour();
-    return h >= INSOMNIA_OPEN_HOUR || h < INSOMNIA_CLOSE_HOUR;
-}
-function getInsomniaPersonas(){
-    const today     = getWIBSessionDate();
-    const savedDate = localStorage.getItem(INSOMNIA_LS_DATE);
-    const saved     = localStorage.getItem(INSOMNIA_LS_KEY);
-    if(savedDate === today && saved){ try{ return JSON.parse(saved); }catch(e){} }
-    const shuffled  = [...INSOMNIA_AI_FULL].sort(() => Math.random() - .5);
-    const personas  = shuffled.slice(0,3);
-    localStorage.setItem(INSOMNIA_LS_KEY, JSON.stringify(personas));
-    localStorage.setItem(INSOMNIA_LS_DATE, today);
-    return personas;
-}
-function updateInsomniaButton(){
-    const btn    = $('btnHot');
-    const status = $('insomniaStatus');
-    const icon   = $('insomniaIcon');
-    if(!btn || !status) return;
-    if(isInsomniaActive()){
-        btn.classList.remove('inactive');
-        if(!IS_GUEST) btn.disabled = false;
-        status.textContent = 'LIVE';
-        if(icon) icon.textContent = '🌙';
-    } else {
-        btn.classList.add('inactive');
-        btn.disabled = true;
-        status.textContent = '22.00';
-        if(icon) icon.textContent = '😴';
-    }
-}
+function getWIBHour(){const n=new Date();const w=new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000);return w.getHours();}
+function getWIBDate(){const n=new Date();const w=new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000);if(w.getHours()<INSOMNIA_CLOSE)w.setDate(w.getDate()-1);return w.toISOString().slice(0,10);}
+function isInsomniaActive(){const h=getWIBHour();return h>=INSOMNIA_OPEN||h<INSOMNIA_CLOSE;}
+function getInsomniaPersonas(){const t=getWIBDate(),sd=localStorage.getItem(INS_LS_DATE),sv=localStorage.getItem(INS_LS_KEY);if(sd===t&&sv){try{return JSON.parse(sv);}catch(e){}}const sh=[...INSOMNIA_AI].sort(()=>Math.random()-.5).slice(0,3);localStorage.setItem(INS_LS_KEY,JSON.stringify(sh));localStorage.setItem(INS_LS_DATE,t);return sh;}
+function updateInsomniaButton(){const btn=$('btnHot'),st=$('insomniaStatus'),ic=$('insomniaIcon');if(!btn||!st)return;if(isInsomniaActive()){btn.classList.remove('inactive');if(!IS_GUEST)btn.disabled=false;st.textContent='LIVE';if(ic)ic.textContent='🌙';}else{btn.classList.add('inactive');btn.disabled=true;st.textContent='22.00';if(ic)ic.textContent='😴';}}
+const AI={get hot_take(){return getInsomniaPersonas();},soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']};
 
-const AI = {
-    get hot_take(){ return getInsomniaPersonas(); },
-    soft_talk: ['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']
-};
-
-/* ── Auth keys ── */
-const K = { u:'jejak_username', i:'jejak_uid', l:'jejak_logged_in' };
-const IS_GUEST = localStorage.getItem(K.l) !== 'true';
-const ME       = IS_GUEST ? null : localStorage.getItem(K.u);
-const UID      = IS_GUEST ? null : localStorage.getItem(K.i);
-const SID      = IS_GUEST ? null : 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-
-/* ── Helpers ── */
-const $       = id => document.getElementById(id);
-const esc     = s  => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const toast   = (msg, dur=3000) => { const o=$('toast'); if(!o) return; o.textContent=msg; o.classList.add('show'); setTimeout(()=>o.classList.remove('show'), dur); };
-const api     = async (path, body) => { const r = await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); return r.json(); };
-const sbGet   = async path => { const r = await fetch(`${SUPA_URL}/rest/v1${path}`,{headers:{apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`}}); const t = await r.text(); return t ? JSON.parse(t) : null; };
-
-/* ── State machine ── */
-const S = { IDLE:'idle', BIDDING:'bidding', CHAT_REAL:'chat_real', CHAT_AI:'chat_ai' };
-let state = S.IDLE, vibe = null, roomId = null, aiChar = null;
-let chatHist = [], lastMsgTs = null, isInsomnia = false;
-let tBid=null, tHeart=null, tPollMatch=null, tPollMsg=null, tPollInv=null, tScan=null, tInvPop=null;
-let pendingInv = null;
-
-/* ═══════════════════════════════════════════════════════════
-   WHISPER MODULE — SECURITY HARDENED
+/* ═══════════════════════════════════════════════
+   ECDH MODULE
    
-   Perubahan dari versi sebelumnya:
-   1. from_hash DIHAPUS — tidak ada identifier sender yang dikirim
-   2. Padding pesan ke kelipatan 256 byte sebelum enkripsi
-      → mencegah length-based fingerprinting
-   3. Client menginformasikan user bahwa delivery diacak
-   4. Nonce per-message (sudah ada di AES-GCM IV, dipertahankan)
-═══════════════════════════════════════════════════════════ */
-const WH = (() => {
+   Setiap pesan menggunakan ephemeral keypair baru (Ephemeral ECDH).
+   Shared secret di-derive via HKDF-SHA-256 → AES-GCM 256.
+   Plaintext dipadding ke kelipatan 256 byte sebelum enkripsi.
+   Server hanya menyimpan: ciphertext opaque, target_username, destroy_at.
+   Tidak ada from_hash, tidak ada sender identifier apapun.
+═══════════════════════════════════════════════ */
+const ECDH=(()=>{
+    const toB64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+    const fromB64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
 
-    /* ── Crypto helpers ── */
-    const toB64   = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
-    const fromB64 = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    async function genKeypair(){
+        const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);
+        const pubJWK=await crypto.subtle.exportKey('jwk',kp.publicKey);
+        const privJWK=await crypto.subtle.exportKey('jwk',kp.privateKey);
+        delete pubJWK.d;
+        return{publicKey:kp.publicKey,privateKey:kp.privateKey,pubJWK,privJWK};
+    }
+    async function importPriv(jwk){return crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
+    async function importPub(jwk){return crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,[]);}
 
-    /* Derive AES-GCM key dari username penerima + PBKDF2 */
-    async function deriveKey(username){
-        const raw  = new TextEncoder().encode(username + ':whisper_key_v2');
-        const base = await crypto.subtle.importKey('raw', raw, 'PBKDF2', false, ['deriveKey']);
+    async function deriveAES(privKey,pubKey){
+        const bits=await crypto.subtle.deriveBits({name:'ECDH',public:pubKey},privKey,256);
+        const hkdf=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);
         return crypto.subtle.deriveKey(
-            { name:'PBKDF2', salt: new TextEncoder().encode('jejak_whisper_v2'), iterations:100000, hash:'SHA-256' },
-            base,
-            { name:'AES-GCM', length:256 },
-            false,
-            ['encrypt','decrypt']
+            {name:'HKDF',hash:'SHA-256',salt:new Uint8Array(32),info:new TextEncoder().encode('whisper-v2')},
+            hkdf,{name:'AES-GCM',length:256},false,['encrypt','decrypt']
         );
     }
 
-    /*
-     * pad() — pad plaintext ke kelipatan TARGET_BLOCK bytes sebelum enkripsi.
-     * Mencegah attacker menggunakan panjang ciphertext untuk meng-infer
-     * panjang pesan asli (length correlation attack).
-     * Null bytes digunakan sebagai padding karena tidak mungkin muncul
-     * dalam pesan UTF-8 yang valid.
-     */
-    const PAD_BLOCK = 256; // bytes
-    function pad(plain){
-        const encoded = new TextEncoder().encode(plain);
-        const padLen  = PAD_BLOCK - (encoded.length % PAD_BLOCK);
-        const padded  = new Uint8Array(encoded.length + padLen);
-        padded.set(encoded);
-        // padded[encoded.length .. end] sudah 0 (null byte) by default
-        return padded;
-    }
-    function unpad(bytes){
-        // Trim trailing null bytes, lalu decode
-        let end = bytes.length;
-        while(end > 0 && bytes[end-1] === 0) end--;
-        return new TextDecoder().decode(bytes.slice(0, end));
+    const PAD=256;
+    function pad(plain){const e=new TextEncoder().encode(plain);const pl=PAD-(e.length%PAD);const o=new Uint8Array(e.length+pl);o.set(e);return o;}
+    function unpad(bytes){let end=bytes.length;while(end>0&&bytes[end-1]===0)end--;return new TextDecoder().decode(bytes.slice(0,end));}
+
+    /* encrypt — ephemeral ECDH per pesan */
+    async function encrypt(plain,recipientPubJWK){
+        const eph=await genKeypair();
+        const recPub=await importPub(recipientPubJWK);
+        const aes=await deriveAES(eph.privateKey,recPub);
+        const iv=crypto.getRandomValues(new Uint8Array(12));
+        const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},aes,pad(plain));
+        return toB64(iv)+':'+btoa(JSON.stringify(eph.pubJWK))+':'+toB64(ct);
     }
 
-    /* Enkripsi dengan padding */
-    async function encrypt(plain, key){
-        const iv      = crypto.getRandomValues(new Uint8Array(12));
-        const padded  = pad(plain);
-        const enc     = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, padded);
-        return toB64(iv) + ':' + toB64(enc);
+    /* decrypt — gunakan private key penerima + ephemeral pub dari sender */
+    async function decrypt(enc,myPrivJWK){
+        try{
+            const[ivB64,ephPubB64,ctB64]=enc.split(':');
+            const ephPub=await importPub(JSON.parse(atob(ephPubB64)));
+            const myPriv=await importPriv(myPrivJWK);
+            const aes=await deriveAES(myPriv,ephPub);
+            const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},aes,fromB64(ctB64));
+            return unpad(new Uint8Array(plain));
+        }catch(e){return '[tidak bisa didekripsi]';}
     }
 
-    /* Dekripsi dengan unpadding */
-    async function decrypt(enc, key){
-        try {
-            const [ivB64, ctB64] = enc.split(':');
-            const dec = await crypto.subtle.decrypt(
-                { name:'AES-GCM', iv: fromB64(ivB64) },
-                key,
-                fromB64(ctB64)
-            );
-            return unpad(new Uint8Array(dec));
-        } catch {
-            return '[tidak bisa didekripsi]';
-        }
+    async function getOrCreateKeypair(){
+        const privStr=localStorage.getItem(LS_PRIV),pubStr=localStorage.getItem(LS_PUB);
+        if(privStr&&pubStr){try{const priv=await importPriv(JSON.parse(privStr));return{privateKey:priv,privJWK:JSON.parse(privStr),pubJWK:JSON.parse(pubStr)};}catch(e){}}
+        const kp=await genKeypair();
+        localStorage.setItem(LS_PRIV,JSON.stringify(kp.privJWK));
+        localStorage.setItem(LS_PUB,JSON.stringify(kp.pubJWK));
+        return{privateKey:kp.publicKey,privJWK:kp.privJWK,pubJWK:kp.pubJWK};
     }
 
-    /* ── State ── */
-    let msgs = [], readId = null, dTimer = null, pollTimer = null;
-
-    function setDot(show){
-        const d = $('wDot'), b = $('whisperBadge');
-        if(d) d.classList.toggle('show', show);
-        if(b) b.style.display = show ? '' : 'none';
+    async function ensurePubkeyRegistered(){
+        if(IS_GUEST)return null;
+        const kp=await getOrCreateKeypair();
+        if(sessionStorage.getItem('pk_reg')==='1')return kp;
+        try{const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:ME,userId:UID,pubkey:kp.pubJWK})});if(r.ok)sessionStorage.setItem('pk_reg','1');}catch(e){}
+        return kp;
     }
+
+    async function fetchRecipientPubkey(username){
+        const r=await fetch(`/api/pubkey?username=${encodeURIComponent(username)}`);
+        if(!r.ok)return null;
+        const d=await r.json();
+        return d.pubkey||null;
+    }
+
+    return{encrypt,decrypt,getOrCreateKeypair,ensurePubkeyRegistered,fetchRecipientPubkey};
+})();
+
+/* ═══════════════════════════════════════════════
+   WHISPER MODULE
+═══════════════════════════════════════════════ */
+const WH=(()=>{
+    let msgs=[],readId=null,dTimer=null,pollTimer=null,myKP=null;
+
+    function setDot(show){const d=$('wDot'),b=$('whisperBadge');if(d)d.classList.toggle('show',show);if(b)b.style.display=show?'':'none';}
+
+    async function getKP(){if(!myKP)myKP=await ECDH.getOrCreateKeypair();return myKP;}
 
     async function fetchInbox(){
-        try {
-            const r = await fetch('/api/whisper?username=' + encodeURIComponent(ME));
-            if(!r.ok) return;
-            const raw = await r.json();
-            if(!Array.isArray(raw) || !raw.length){ msgs=[]; renderList(); setDot(false); return; }
-            const key = await deriveKey(ME);
-            const now = Date.now();
-            msgs = await Promise.all(raw.map(async m => {
-                const exp  = new Date(m.destroy_at).getTime();
-                const rem  = exp - now;
-                const h    = Math.floor(rem / 3600000);
-                const mn   = Math.floor((rem % 3600000) / 60000);
-                const body = await decrypt(m.message, key);
-                return {
-                    id:   m.id,
-                    /* from_hash sudah tidak dikirim server — selalu anonymous */
-                    from: 'anonymous',
-                    body,
-                    prev: body.slice(0,58) + (body.length > 58 ? '…' : ''),
-                    ttl:  h > 0 ? h+'h' : (rem > 0 ? mn+'m' : 'expired')
-                };
+        if(IS_GUEST)return;
+        try{
+            const r=await fetch('/api/whisper?username='+encodeURIComponent(ME));
+            if(!r.ok)return;
+            const raw=await r.json();
+            if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}
+            const kp=await getKP();const now=Date.now();
+            msgs=await Promise.all(raw.map(async m=>{
+                const exp=new Date(m.destroy_at).getTime(),rem=exp-now;
+                const h=Math.floor(rem/3600000),mn=Math.floor((rem%3600000)/60000);
+                const body=await ECDH.decrypt(m.message,kp.privJWK);
+                return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
             }));
-            renderList();
-            setDot(msgs.length > 0);
-        } catch(e){ console.warn('[WH]', e); }
+            renderList();setDot(msgs.length>0);
+        }catch(e){console.warn('[WH]',e);}
     }
 
     function renderList(){
-        const el = $('wList');
-        if(!el) return;
-        if(!msgs.length){
-            el.innerHTML = '<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';
-            return;
-        }
-        el.innerHTML = msgs.map(m =>
-            `<div class="w-row" onclick="WH.open('${esc(m.id)}')">
-                <div class="w-row-meta">
-                    <span class="w-row-from">${esc(m.from)}</span>
-                    <span class="w-row-ttl">⏳ ${m.ttl}</span>
-                </div>
-                <div class="w-row-prev">${esc(m.prev)}</div>
-            </div>`
-        ).join('');
+        const el=$('wList');if(!el)return;
+        if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}
+        el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');
     }
 
     async function openMsg(id){
-        const m = msgs.find(x => x.id === id);
-        if(!m) return;
-        readId = id;
-        $('wReadFrom').textContent  = 'from: ' + m.from;
-        $('wReadBody').textContent  = m.body;
-        $('wReadCount').textContent = '5';
-        $('wReadCount').style.color = 'var(--spill)';
+        const m=msgs.find(x=>x.id===id);if(!m)return;
+        readId=id;$('wReadFrom').textContent='from: '+m.from;$('wReadBody').textContent=m.body;
+        $('wReadCount').textContent='5';$('wReadCount').style.color='var(--spill)';
         $('wRead').classList.add('show');
-        fetch('/api/whisper', {
-            method:'PATCH',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ id, username: ME })
-        }).catch(()=>{});
+        fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});
         startDestruct(id);
     }
 
-    function startDestruct(id){
-        clearInterval(dTimer);
-        let n = 5;
-        dTimer = setInterval(() => {
-            n--;
-            const el = $('wReadCount');
-            if(!el){ clearInterval(dTimer); return; }
-            el.textContent = n;
-            if(n <= 2) el.style.color = '#ff3b6f';
-            if(n <= 0){ clearInterval(dTimer); burnMsg(id); }
-        }, 1000);
-    }
+    function startDestruct(id){clearInterval(dTimer);let n=5;dTimer=setInterval(()=>{n--;const el=$('wReadCount');if(!el){clearInterval(dTimer);return;}el.textContent=n;if(n<=2)el.style.color='#ff3b6f';if(n<=0){clearInterval(dTimer);burnMsg(id);}},1000);}
 
     function burnMsg(id){
-        const body = $('wReadBody');
-        if(body) body.classList.add('w-burning');
-        msgs = msgs.filter(m => m.id !== id);
-        fetch('/api/whisper', {
-            method:'DELETE',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ id, username: ME })
-        }).catch(()=>{});
-        setTimeout(() => {
-            $('wRead').classList.remove('show');
-            if(body){ body.classList.remove('w-burning'); body.textContent=''; }
-            $('wReadCount').style.color = 'var(--spill)';
-            $('wInbox').classList.add('show');
-            renderList();
-            setDot(msgs.length > 0);
-        }, 750);
+        const body=$('wReadBody');if(body)body.classList.add('w-burning');
+        msgs=msgs.filter(m=>m.id!==id);
+        fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});
+        setTimeout(()=>{$('wRead').classList.remove('show');if(body){body.classList.remove('w-burning');body.textContent='';}$('wReadCount').style.color='var(--spill)';$('wInbox').classList.add('show');renderList();setDot(msgs.length>0);},750);
     }
 
-    function closeRead(){
-        clearInterval(dTimer);
-        if(readId){
-            if(msgs.find(m => m.id === readId)) burnMsg(readId);
-            readId = null;
-        }
-        $('wRead').classList.remove('show');
+    function closeRead(){clearInterval(dTimer);if(readId){if(msgs.find(m=>m.id===readId))burnMsg(readId);readId=null;}$('wRead').classList.remove('show');}
+
+    async function sendMsg(toUsername,plaintext){
+        const recPubJWK=await ECDH.fetchRecipientPubkey(toUsername);
+        if(!recPubJWK)return{ok:false,reason:'no_pubkey'};
+        const messageEnc=await ECDH.encrypt(plaintext.trim(),recPubJWK);
+        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,messageEnc})});
+        return{ok:r.ok||r.status===202,reason:null};
     }
 
-    /*
-     * sendMsg — kirim whisper TANPA from_hash.
-     *
-     * Perubahan keamanan:
-     * - fromHash dihilangkan sepenuhnya dari payload
-     * - Pesan dipadding sebelum enkripsi (di encrypt())
-     * - Server akan menambahkan random delay 0–45 detik sebelum insert
-     *   sehingga created_at di DB tidak mencerminkan waktu kirim nyata
-     * - Client langsung dapat response 202 Accepted; delivery async di server
-     */
-    async function sendMsg(toUsername, plaintext){
-        const key        = await deriveKey(toUsername);
-        const messageEnc = await encrypt(plaintext.trim(), key);
-        /* Tidak mengirim fromHash sama sekali */
-        const r = await fetch('/api/whisper', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({ to: toUsername, messageEnc })
-        });
-        /*
-         * Server mengembalikan 202 Accepted segera (bukan 200 OK),
-         * menandakan pesan masuk antrian delivery — bukan langsung tersimpan.
-         * Client tetap menganggap ini sukses.
-         */
-        return r.ok;
-    }
+    function startPolling(){fetchInbox();clearInterval(pollTimer);pollTimer=setInterval(fetchInbox,POLL_WH_MS);}
 
-    function startPolling(){
-        fetchInbox();
-        clearInterval(pollTimer);
-        pollTimer = setInterval(fetchInbox, POLL_WH_MS);
-    }
-
-    return { open: openMsg, closeRead, sendMsg, startPolling, fetchInbox };
+    return{open:openMsg,closeRead,sendMsg,startPolling,fetchInbox};
 })();
-window.WH = WH;
+window.WH=WH;
 
-/* ═══════════════════════════════════════════════════════════
-   UI SETUP
-═══════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   UI + STATE
+═══════════════════════════════════════════════ */
 function setupGuestUI(){
-    const sec = $('userSection');
-    if(!sec) return;
+    const sec=$('userSection');if(!sec)return;
     if(IS_GUEST){
-        sec.innerHTML = '<button class="login-btn-cta" onclick="openLoginModal()">LOGIN →</button>';
-        const gb = $('guestBanner');
-        if(gb) gb.style.display = 'flex';
-        ['btnHot','btnSoft','whisperBtn'].forEach(id => {
-            const el = $(id);
-            if(el){ el.disabled=true; el.style.opacity='.45'; el.title='Login untuk menggunakan'; }
-        });
-    } else {
-        sec.innerHTML = `<span class="user-badge">@${ME}</span><button class="settings-btn" id="settingsBtn">⋮</button>`;
-        const dd = document.createElement('div');
-        dd.className = 'settings-dropdown'; dd.id = 'settingsDropdown';
-        dd.innerHTML = '<div class="dropdown-item" id="logoutBtn">🚪 Logout</div>';
+        sec.innerHTML='<button class="login-btn-cta" onclick="openLoginModal()">LOGIN →</button>';
+        const gb=$('guestBanner');if(gb)gb.style.display='flex';
+        ['btnHot','btnSoft','whisperBtn'].forEach(id=>{const el=$(id);if(el){el.disabled=true;el.style.opacity='.45';}});
+    }else{
+        sec.innerHTML=`<span class="user-badge">@${ME}</span><button class="settings-btn" id="settingsBtn">⋮</button>`;
+        const dd=document.createElement('div');dd.className='settings-dropdown';dd.id='settingsDropdown';
+        dd.innerHTML='<div class="dropdown-item" id="logoutBtn">🚪 Logout</div>';
         sec.parentNode.appendChild(dd);
-        const sb=$('settingsBtn'), sd=$('settingsDropdown');
-        if(sb && sd){
-            sb.onclick = e => { e.stopPropagation(); sd.classList.toggle('show'); };
-            document.addEventListener('click', e => { if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target)) sd.classList.remove('show'); });
-        }
-        const lb = $('logoutBtn');
-        if(lb) lb.onclick = async () => {
-            await cleanup();
-            localStorage.removeItem(K.l);
-            localStorage.removeItem('jejak_auth_v1');
-            toast('👋 Sampai jumpa!');
-            setTimeout(() => window.location.replace('/index.html'), 1000);
-        };
+        const sb=$('settingsBtn'),sd=$('settingsDropdown');
+        if(sb&&sd){sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});}
+        const lb=$('logoutBtn');if(lb)lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);localStorage.removeItem('jejak_auth_v1');toast('👋 Sampai jumpa!');setTimeout(()=>window.location.replace('/index.html'),1000);};
     }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════════════ */
 async function init(){
-    setupGuestUI();
-    updateInsomniaButton();
-    setInterval(updateInsomniaButton, 60000);
-    initRadar();
-    loadSpills();
-    startBrewInterval();
+    setupGuestUI();updateInsomniaButton();setInterval(updateInsomniaButton,60000);
+    initRadar();loadSpills();startBrewInterval();
     if(!IS_GUEST){
-        await api('/api/invite', { action:'register', userId:UID, username:ME, sessionId:SID });
-        startHeartbeat();
-        loadCount();
-        setInterval(loadCount, 15000);
-        tPollInv = setInterval(pollInvitation, POLL_INV_MS);
+        await ECDH.ensurePubkeyRegistered();
+        await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
+        startHeartbeat();loadCount();setInterval(loadCount,15000);
+        tPollInv=setInterval(pollInvitation,POLL_INV_MS);
         WH.startPolling();
-    } else {
-        loadCount();
-        setInterval(loadCount, 15000);
-    }
+    }else{loadCount();setInterval(loadCount,15000);}
 }
 
-function startHeartbeat(){
-    if(tHeart) clearInterval(tHeart);
-    tHeart = setInterval(() => api('/api/invite', { action:'heartbeat', userId:UID, username:ME }), HEARTBEAT_MS);
-}
+const S={IDLE:'idle',BIDDING:'bidding',CHAT_REAL:'chat_real',CHAT_AI:'chat_ai'};
+let state=S.IDLE,vibe=null,roomId=null,aiChar=null;
+let chatHist=[],lastMsgTs=null,isInsomnia=false;
+let tBid=null,tHeart=null,tPollMatch=null,tPollMsg=null,tPollInv=null,tScan=null,tInvPop=null,pendingInv=null;
 
-/* ═══════════════════════════════════════════════════════════
-   MATCHMAKING
-═══════════════════════════════════════════════════════════ */
-async function startBid(v){
-    if(state !== S.IDLE) return;
-    state = S.BIDDING; vibe = v;
-    $('btnHot').disabled = true; $('btnSoft').disabled = true;
-    showScan(true, v);
-    startCountdown(BID_TIMEOUT_MS / 1000);
-    try {
-        const r = await api('/api/invite', { action:'bid', userId:UID, username:ME, sessionId:SID, vibe:v });
-        if(r.action === 'matched'){ clearBidTimers(); enterChatReal(r.room_id, v); return; }
-        if(r.action === 'already_waiting'){ toast('Sedang dalam antrian...'); enterIdle(); return; }
-        if(r.action === 'waiting'){
-            const n = r.invites_sent || 0;
-            $('scanSub').textContent = n > 0
-                ? `Invitation terkirim ke ${n} stranger...`
-                : 'Tidak ada stranger online, menyiapkan AI...';
-            if(n === 0){ setTimeout(() => fallbackAI(), 1500); return; }
-        }
-    } catch(e){ console.warn('Bid:', e); setTimeout(() => fallbackAI(), 1500); return; }
-    tPollMatch = setInterval(pollMatch, POLL_MATCH_MS);
-    tBid = setTimeout(() => { if(state === S.BIDDING) fallbackAI(); }, BID_TIMEOUT_MS);
-}
+function startHeartbeat(){if(tHeart)clearInterval(tHeart);tHeart=setInterval(()=>api('/api/invite',{action:'heartbeat',userId:UID,username:ME}),HEARTBEAT_MS);}
+async function startBid(v){if(state!==S.IDLE)return;state=S.BIDDING;vibe=v;$('btnHot').disabled=true;$('btnSoft').disabled=true;showScan(true,v);startCountdown(BID_TIMEOUT_MS/1000);try{const r=await api('/api/invite',{action:'bid',userId:UID,username:ME,sessionId:SID,vibe:v});if(r.action==='matched'){clearBidTimers();enterChatReal(r.room_id,v);return;}if(r.action==='already_waiting'){toast('Sedang dalam antrian...');enterIdle();return;}if(r.action==='waiting'){const n=r.invites_sent||0;$('scanSub').textContent=n>0?`Invitation terkirim ke ${n} stranger...`:'Tidak ada stranger online, menyiapkan AI...';if(n===0){setTimeout(()=>fallbackAI(),1500);return;}}}catch(e){console.warn('Bid:',e);setTimeout(()=>fallbackAI(),1500);return;}tPollMatch=setInterval(pollMatch,POLL_MATCH_MS);tBid=setTimeout(()=>{if(state===S.BIDDING)fallbackAI();},BID_TIMEOUT_MS);}
+async function pollMatch(){if(state!==S.BIDDING)return;try{const r=await fetch(`/api/invite?userId=${UID}&role=inviter`);const d=await r.json();if(d.matched){clearBidTimers();enterChatReal(d.room_id,d.vibe||vibe);}else if(d.all_expired){clearBidTimers();fallbackAI();}}catch(e){}}
+async function pollInvitation(){if(state!==S.IDLE)return;if($('invitePopup').classList.contains('show'))return;try{const r=await fetch(`/api/invite?userId=${UID}&role=invitee`);const d=await r.json();if(d.hasInvitation){pendingInv=d.invitation;showInvitePopup(d.invitation);}}catch(e){}}
+function showInvitePopup(inv){const badge=$('inviteVibeBadge');badge.textContent=inv.vibe==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';badge.className='invite-vibe-badge '+inv.vibe;$('invitePopup').classList.add('show');const exp=new Date(inv.expires_at).getTime();if(tInvPop)clearInterval(tInvPop);tInvPop=setInterval(()=>{const left=Math.max(0,Math.ceil((exp-Date.now())/1000));$('inviteCountdown').textContent=left;if(left<=0){clearInterval(tInvPop);hidePopup();toast('Invitation expired');}},400);}
+function hidePopup(){$('invitePopup').classList.remove('show');if(tInvPop){clearInterval(tInvPop);tInvPop=null;}pendingInv=null;}
+async function acceptInv(){if(!pendingInv)return;const inv=pendingInv;hidePopup();try{const r=await api('/api/invite',{action:'accept',userId:UID,username:ME,invitationId:inv.id});if(r.success)enterChatReal(r.room_id,r.vibe||inv.vibe);else toast(r.reason==='inviter_no_longer_waiting'?'⚡ Sudah diambil stranger lain!':'Invitation expired');}catch(e){toast('Gagal connect');}}
+function enterChatReal(rId,v){state=S.CHAT_REAL;roomId=rId;vibe=v;chatHist=[];isInsomnia=(v==='hot_take');lastMsgTs=new Date().toISOString();openChatUI(v);if(isInsomnia){addSys('🌙 Masuk room Insomnia');fetch('/api/insomnia-seed',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'seed',roomId:rId})}).catch(()=>{});}else{addSys('🔗 Terhubung dengan stranger');}tPollMsg=setInterval(pollMsg,POLL_MSG_MS);loadCount();}
+function fallbackAI(){if(state===S.CHAT_REAL||state===S.CHAT_AI)return;state=S.CHAT_AI;clearBidTimers();showScan(false);isInsomnia=(vibe==='hot_take');fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})}).catch(()=>{});const pool=AI[vibe]||AI.soft_talk;aiChar=pool[Math.floor(Math.random()*pool.length)];roomId=null;chatHist=[];openChatUI(vibe);setTimeout(()=>sendAI('',true),600);}
+function enterIdle(){clearAllTimers();state=S.IDLE;vibe=null;roomId=null;aiChar=null;chatHist=[];isInsomnia=false;$('btnHot').disabled=false;$('btnSoft').disabled=false;updateInsomniaButton();closeChatUI();showScan(false);hidePopup();loadCount();}
+async function pollMsg(){if(state!==S.CHAT_REAL||!roomId)return;try{const since=lastMsgTs||new Date(Date.now()-5000).toISOString();const r=await fetch(`/api/messages?roomId=${roomId}&since=${encodeURIComponent(since)}`);const msgs=await r.json();if(!Array.isArray(msgs)||!msgs.length)return;for(const m of msgs){if(m.sender_id!==UID){const isAiMsg=(m.type==='ai')||(m.sender_id&&String(m.sender_id).startsWith('ai_'));addMsg(isAiMsg?'ai-msg':'stranger',m.content,isInsomnia?(m.sender_name||''):null);}if(!lastMsgTs||m.created_at>lastMsgTs)lastMsgTs=m.created_at;}}catch(e){}}
+async function sendReal(content){if(!roomId||!content.trim())return;addMsg('user',content,isInsomnia?ME:null);try{const r=await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({roomId,senderId:UID,senderName:ME,content:content.trim()})});if(!r.ok){const e=await r.json();if(e.error==='Room not found or ended'){addSys('⚠️ Stranger meninggalkan chat');setTimeout(enterIdle,2000);}}}catch(e){toast('Gagal kirim pesan');}}
+async function sendAI(msg,first=false){if(state!==S.CHAT_AI)return;showTyping(true);try{if(!first&&msg)chatHist.push({role:'user',content:msg});const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:first?'hai':msg,characterName:aiChar,lastMessages:chatHist.slice(-8)})});const d=await r.json();showTyping(false);if(d.reply){const delay=Math.max(500,Math.min(d.reply.length*30,2500));setTimeout(()=>{addMsg('ai-msg',d.reply,isInsomnia?aiChar:null);chatHist.push({role:'assistant',content:d.reply});},delay);}}catch(e){showTyping(false);addMsg('ai-msg','😅',isInsomnia?aiChar:null);}}
+function openChatUI(v){const badge=$('chatVibeBadge');badge.textContent=v==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';badge.className='chat-vibe-label '+(v||'hot_take');$('radarChat').classList.add('show');$('chatInputWrap').classList.add('show');$('radarCont').classList.add('chat-mode');$('chatInput').focus();}
+function closeChatUI(){const c=$('radarChat'),h=c.querySelector('.radar-chat-header'),t=$('typingBubble');c.innerHTML='';c.appendChild(h);c.appendChild(t);c.classList.remove('show');$('chatInputWrap').classList.remove('show');$('radarCont').classList.remove('chat-mode');}
+function addMsg(who,text,senderName=null){const c=$('radarChat'),t=$('typingBubble');if(senderName){const wrap=document.createElement('div');wrap.className='msg-wrapper '+who;const nameEl=document.createElement('div');nameEl.className='msg-sender '+(who==='user'?'is-user':who==='ai-msg'?'is-ai':'is-stranger');nameEl.textContent=(who==='user'?'@'+ME:'@'+senderName);const bubble=document.createElement('div');bubble.className='message '+who;bubble.textContent=text;wrap.appendChild(nameEl);wrap.appendChild(bubble);c.insertBefore(wrap,t);}else{const m=document.createElement('div');m.className='message '+who;m.textContent=text;c.insertBefore(m,t);}c.scrollTop=c.scrollHeight;}
+function addSys(text){const c=$('radarChat'),t=$('typingBubble');const m=document.createElement('div');m.className='message system';m.textContent=text;c.insertBefore(m,t);c.scrollTop=c.scrollHeight;}
+function showTyping(on){const t=$('typingBubble');on?t.classList.add('show'):t.classList.remove('show');$('radarChat').scrollTop=$('radarChat').scrollHeight;}
+function showScan(on,v){const o=$('scanOverlay');if(on){const b=$('scanVibeBadge');b.textContent=v==='hot_take'?'🌙 INSOMNIA':'💬 SOFT TALK';b.className='scan-vibe '+(v||'hot_take');o.classList.add('show');}else{o.classList.remove('show');if(tScan){clearInterval(tScan);tScan=null;}}}
+function startCountdown(sec){let left=sec;$('scanTimer').textContent=sec;$('scanBar').style.width='0%';if(tScan)clearInterval(tScan);tScan=setInterval(()=>{left--;$('scanTimer').textContent=Math.max(0,left);$('scanBar').style.width=((sec-left)/sec*100).toFixed(1)+'%';if(left<=5&&left>0)$('scanSub').textContent='Hampir habis, menyiapkan AI...';if(left<=0)clearInterval(tScan);},1000);}
+function clearBidTimers(){if(tBid){clearTimeout(tBid);tBid=null;}if(tPollMatch){clearInterval(tPollMatch);tPollMatch=null;}if(tScan){clearInterval(tScan);tScan=null;}showScan(false);}
+function clearAllTimers(){clearBidTimers();if(tHeart){clearInterval(tHeart);tHeart=null;}if(tPollMsg){clearInterval(tPollMsg);tPollMsg=null;}if(tPollInv){clearInterval(tPollInv);tPollInv=null;}if(tInvPop){clearInterval(tInvPop);tInvPop=null;}}
+async function loadCount(){try{const r=await fetch(`/api/invite?userId=${UID}&role=count`);const d=await r.json();const el=$('onlineCount');if(el)el.textContent=(d.count||0)+' ONLINE';}catch(e){}}
 
-async function pollMatch(){
-    if(state !== S.BIDDING) return;
-    try {
-        const r = await fetch(`/api/invite?userId=${UID}&role=inviter`);
-        const d = await r.json();
-        if(d.matched){ clearBidTimers(); enterChatReal(d.room_id, d.vibe || vibe); }
-        else if(d.all_expired){ clearBidTimers(); fallbackAI(); }
-    } catch(e){}
-}
+const BREW_MS=7*60*1000,BREW_KEY='spill_last_brew';
+async function maybeBrewSpill(){const last=parseInt(localStorage.getItem(BREW_KEY)||'0');if(Date.now()-last<BREW_MS)return false;localStorage.setItem(BREW_KEY,Date.now().toString());try{await fetch('/api/brew',{method:'POST',headers:{'Content-Type':'application/json'}});return true;}catch(e){localStorage.setItem(BREW_KEY,'0');return false;}}
+function startBrewInterval(){maybeBrewSpill().then(b=>{if(b)setTimeout(loadSpills,3000);});setInterval(async()=>{if(await maybeBrewSpill())setTimeout(loadSpills,3000);},BREW_MS);}
+async function loadSpills(){$('spillsList').innerHTML='<div class="empty-state">🍃 MEMUAT SPILL...</div>';try{const data=await sbGet('/entries?select=*&order=created_at.desc&limit=50');const all=(data||[]).map(x=>({author:x.username||'anon',mood:x.mood||'chaotic',content:x.content||'...',reactions:x.reactions||{skull:0,cry:0,fire:0,upside:0}}));renderSpills(all);}catch(e){$('spillsList').innerHTML='<div class="empty-state">🍃 Gagal memuat spill</div>';}}
+function renderSpills(all){const c=$('spillsList'),meta=$('feedMeta');if(!all.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}c.innerHTML=all.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${esc(s.author)}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${esc(s.content)}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="rs(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');meta.textContent=all.length+' spill';}
+window.rs=(i,t)=>toast('➕ '+t);
 
-async function pollInvitation(){
-    if(state !== S.IDLE) return;
-    if($('invitePopup').classList.contains('show')) return;
-    try {
-        const r = await fetch(`/api/invite?userId=${UID}&role=invitee`);
-        const d = await r.json();
-        if(d.hasInvitation){ pendingInv = d.invitation; showInvitePopup(d.invitation); }
-    } catch(e){}
-}
+let dots=[],nAngle=0,nSpin=0,phase=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,gm=new Map(),raf,rint;
+function initRadar(){const cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;const rsz=()=>{const r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};rsz();window.addEventListener('resize',rsz);spawnDots();if(rint)clearInterval(rint);rint=setInterval(()=>{dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);nAngle=Math.random()*Math.PI*2;trail.fill(nAngle);radarLoop(cv);}
+function spawnDots(){const c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];for(let i=0;i<8;i++){const a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2;const el=document.createElement('div');el.className='radar-dot';el.style.left=x+'%';el.style.top=y+'%';c.appendChild(el);dots.push({el,x,y,vx:0,vy:0,id:i});}}
+function radarLoop(cv){const ctx=cv.getContext('2d');function draw(){const w=cv.width,h=cv.height,cx=w/2,cy=h/2,R=Math.min(cx,cy)*.88;if(!w||!h){raf=requestAnimationFrame(draw);return;}phase+=.007;nSpin+=((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phase)*.35)-nSpin)*.028;nAngle=(nAngle+nSpin)%(Math.PI*2);trail[ptr]=nAngle;ptr=(ptr+1)%120;ctx.fillStyle='rgba(2,10,2,.18)';ctx.fillRect(0,0,w,h);for(let i=0;i<119;i++){const a=Math.pow(1-i/120,2.2)*.12;if(a<.002)break;const s=nAngle-(i+1)*nSpin,e=nAngle-i*nSpin;ctx.save();ctx.translate(cx,cy);ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));ctx.closePath();ctx.fillStyle=`rgba(0,229,255,${a})`;ctx.fill();ctx.restore();}ctx.save();ctx.translate(cx,cy);ctx.rotate(nAngle);ctx.shadowColor='rgba(0,229,255,.95)';ctx.shadowBlur=12;const g=ctx.createLinearGradient(0,0,R,0);g.addColorStop(0,'rgba(0,229,255,1)');g.addColorStop(.8,'rgba(0,229,255,.4)');g.addColorStop(1,'rgba(0,229,255,0)');ctx.beginPath();ctx.moveTo(3,0);ctx.lineTo(R,0);ctx.strokeStyle=g;ctx.lineWidth=2;ctx.stroke();ctx.shadowBlur=20;ctx.beginPath();ctx.rect(-4,-4,8,8);ctx.fillStyle='#00e5ff';ctx.fill();ctx.restore();dots.forEach((d,i)=>{const px=d.x/100*w,py=d.y/100*h,da=((Math.atan2(py-cy,px-cx))%(Math.PI*2)+Math.PI*2)%(Math.PI*2);const diff=(nAngle-da+Math.PI*2)%(Math.PI*2);const age=gm.get(i)??999;if(diff<.18&&age>30){gm.set(i,0);if(d.el){d.el.classList.add('active');setTimeout(()=>d.el?.classList.remove('active'),800);}}else gm.set(i,age+1);if(age<55){const t=age/55,ga=(1-t)*(1-t)*.9;if(ga<.01)return;const gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);gr.addColorStop(0,`rgba(0,229,255,${ga})`);gr.addColorStop(1,`rgba(0,229,255,0)`);ctx.beginPath();ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}});raf=requestAnimationFrame(draw);}draw();}
 
-function showInvitePopup(inv){
-    const badge = $('inviteVibeBadge');
-    badge.textContent = inv.vibe === 'hot_take' ? '🌙 INSOMNIA' : '💬 SOFT TALK';
-    badge.className   = 'invite-vibe-badge ' + inv.vibe;
-    $('invitePopup').classList.add('show');
-    const exp = new Date(inv.expires_at).getTime();
-    if(tInvPop) clearInterval(tInvPop);
-    tInvPop = setInterval(() => {
-        const left = Math.max(0, Math.ceil((exp - Date.now()) / 1000));
-        $('inviteCountdown').textContent = left;
-        if(left <= 0){ clearInterval(tInvPop); hidePopup(); toast('Invitation expired'); }
-    }, 400);
-}
+async function cleanup(){clearAllTimers();const body={userId:UID};if(roomId)body.roomId=roomId;try{await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true});}catch(e){}}
+window.addEventListener('beforeunload',cleanup);
 
-function hidePopup(){
-    $('invitePopup').classList.remove('show');
-    if(tInvPop){ clearInterval(tInvPop); tInvPop=null; }
-    pendingInv = null;
-}
+/* ── Step helper untuk sending mask ── */
+function setStep(n){['whs1','whs2','whs3','whs4'].forEach((id,i)=>{const el=$(id);if(!el)return;el.className='wh-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
 
-async function acceptInv(){
-    if(!pendingInv) return;
-    const inv = pendingInv; hidePopup();
-    try {
-        const r = await api('/api/invite', { action:'accept', userId:UID, username:ME, invitationId:inv.id });
-        if(r.success) enterChatReal(r.room_id, r.vibe || inv.vibe);
-        else toast(r.reason === 'inviter_no_longer_waiting' ? '⚡ Sudah diambil stranger lain!' : 'Invitation expired');
-    } catch(e){ toast('Gagal connect'); }
-}
+function resetWhisperSheet(){$('whNoPub').classList.remove('show');$('whPhil').style.display='';$('whForm').style.display='';}
 
-function enterChatReal(rId, v){
-    state=S.CHAT_REAL; roomId=rId; vibe=v; chatHist=[]; isInsomnia=(v==='hot_take');
-    lastMsgTs = new Date().toISOString();
-    openChatUI(v);
-    if(isInsomnia){
-        addSys('🌙 Masuk room Insomnia');
-        fetch('/api/insomnia-seed', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'seed', roomId:rId }) }).catch(()=>{});
-    } else {
-        addSys('🔗 Terhubung dengan stranger');
-    }
-    tPollMsg = setInterval(pollMsg, POLL_MSG_MS);
-    loadCount();
-}
-
-function fallbackAI(){
-    if(state === S.CHAT_REAL || state === S.CHAT_AI) return;
-    state = S.CHAT_AI; clearBidTimers(); showScan(false);
-    isInsomnia = (vibe === 'hot_take');
-    fetch('/api/invite', { method:'DELETE', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ userId:UID }) }).catch(()=>{});
-    const pool = AI[vibe] || AI.soft_talk;
-    aiChar = pool[Math.floor(Math.random() * pool.length)];
-    roomId = null; chatHist = [];
-    openChatUI(vibe);
-    setTimeout(() => sendAI('', true), 600);
-}
-
-function enterIdle(){
-    clearAllTimers(); state=S.IDLE; vibe=null; roomId=null; aiChar=null; chatHist=[];
-    isInsomnia = false;
-    $('btnHot').disabled = false; $('btnSoft').disabled = false;
-    updateInsomniaButton();
-    closeChatUI(); showScan(false); hidePopup(); loadCount();
-}
-
-/* ═══════════════════════════════════════════════════════════
-   MESSAGING
-═══════════════════════════════════════════════════════════ */
-async function pollMsg(){
-    if(state !== S.CHAT_REAL || !roomId) return;
-    try {
-        const since = lastMsgTs || new Date(Date.now()-5000).toISOString();
-        const r     = await fetch(`/api/messages?roomId=${roomId}&since=${encodeURIComponent(since)}`);
-        const msgs  = await r.json();
-        if(!Array.isArray(msgs) || !msgs.length) return;
-        for(const m of msgs){
-            if(m.sender_id !== UID){
-                const isAiMsg = (m.type==='ai') || (m.sender_id && String(m.sender_id).startsWith('ai_'));
-                addMsg(isAiMsg ? 'ai-msg' : 'stranger', m.content, isInsomnia ? (m.sender_name||'') : null);
-            }
-            if(!lastMsgTs || m.created_at > lastMsgTs) lastMsgTs = m.created_at;
-        }
-    } catch(e){}
-}
-
-async function sendReal(content){
-    if(!roomId || !content.trim()) return;
-    addMsg('user', content, isInsomnia ? ME : null);
-    try {
-        const r = await fetch('/api/messages', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ roomId, senderId:UID, senderName:ME, content:content.trim() })
-        });
-        if(!r.ok){
-            const e = await r.json();
-            if(e.error === 'Room not found or ended'){
-                addSys('⚠️ Stranger meninggalkan chat');
-                setTimeout(enterIdle, 2000);
-            }
-        }
-    } catch(e){ toast('Gagal kirim pesan'); }
-}
-
-async function sendAI(msg, first=false){
-    if(state !== S.CHAT_AI) return;
-    showTyping(true);
-    try {
-        if(!first && msg) chatHist.push({ role:'user', content:msg });
-        const r = await fetch('/api/chat', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ message: first?'hai':msg, characterName:aiChar, lastMessages:chatHist.slice(-8) })
-        });
-        const d = await r.json();
-        showTyping(false);
-        if(d.reply){
-            const delay = Math.max(500, Math.min(d.reply.length*30, 2500));
-            setTimeout(() => {
-                addMsg('ai-msg', d.reply, isInsomnia ? aiChar : null);
-                chatHist.push({ role:'assistant', content:d.reply });
-            }, delay);
-        }
-    } catch(e){ showTyping(false); addMsg('ai-msg', '😅', isInsomnia ? aiChar : null); }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   CHAT UI
-═══════════════════════════════════════════════════════════ */
-function openChatUI(v){
-    const badge = $('chatVibeBadge');
-    badge.textContent = v === 'hot_take' ? '🌙 INSOMNIA' : '💬 SOFT TALK';
-    badge.className   = 'chat-vibe-label ' + (v || 'hot_take');
-    $('radarChat').classList.add('show');
-    $('chatInputWrap').classList.add('show');
-    $('radarCont').classList.add('chat-mode');
-    $('chatInput').focus();
-}
-
-function closeChatUI(){
-    const c = $('radarChat'), h = c.querySelector('.radar-chat-header'), t = $('typingBubble');
-    c.innerHTML = '';
-    c.appendChild(h);
-    c.appendChild(t);
-    c.classList.remove('show');
-    $('chatInputWrap').classList.remove('show');
-    $('radarCont').classList.remove('chat-mode');
-}
-
-function addMsg(who, text, senderName=null){
-    const c = $('radarChat'), t = $('typingBubble');
-    if(senderName){
-        const wrap    = document.createElement('div');
-        wrap.className = 'msg-wrapper ' + who;
-        const nameEl  = document.createElement('div');
-        const nameClass = who==='user' ? 'is-user' : who==='ai-msg' ? 'is-ai' : 'is-stranger';
-        nameEl.className = 'msg-sender ' + nameClass;
-        nameEl.textContent = (who==='user' ? '@'+ME : '@'+senderName);
-        const bubble  = document.createElement('div');
-        bubble.className = 'message ' + who;
-        bubble.textContent = text;
-        wrap.appendChild(nameEl);
-        wrap.appendChild(bubble);
-        c.insertBefore(wrap, t);
-    } else {
-        const m = document.createElement('div');
-        m.className = 'message ' + who;
-        m.textContent = text;
-        c.insertBefore(m, t);
-    }
-    c.scrollTop = c.scrollHeight;
-}
-
-function addSys(text){
-    const c = $('radarChat'), t = $('typingBubble');
-    const m = document.createElement('div');
-    m.className = 'message system'; m.textContent = text;
-    c.insertBefore(m, t);
-    c.scrollTop = c.scrollHeight;
-}
-
-function showTyping(on){
-    const t = $('typingBubble');
-    on ? t.classList.add('show') : t.classList.remove('show');
-    $('radarChat').scrollTop = $('radarChat').scrollHeight;
-}
-
-function showScan(on, v){
-    const o = $('scanOverlay');
-    if(on){
-        const b = $('scanVibeBadge');
-        b.textContent = v === 'hot_take' ? '🌙 INSOMNIA' : '💬 SOFT TALK';
-        b.className   = 'scan-vibe ' + (v || 'hot_take');
-        o.classList.add('show');
-    } else {
-        o.classList.remove('show');
-        if(tScan){ clearInterval(tScan); tScan=null; }
-    }
-}
-
-function startCountdown(sec){
-    let left = sec;
-    $('scanTimer').textContent = sec;
-    $('scanBar').style.width = '0%';
-    if(tScan) clearInterval(tScan);
-    tScan = setInterval(() => {
-        left--;
-        $('scanTimer').textContent = Math.max(0, left);
-        $('scanBar').style.width = ((sec-left)/sec*100).toFixed(1) + '%';
-        if(left <= 5 && left > 0) $('scanSub').textContent = 'Hampir habis, menyiapkan AI...';
-        if(left <= 0) clearInterval(tScan);
-    }, 1000);
-}
-
-function clearBidTimers(){
-    if(tBid){ clearTimeout(tBid); tBid=null; }
-    if(tPollMatch){ clearInterval(tPollMatch); tPollMatch=null; }
-    if(tScan){ clearInterval(tScan); tScan=null; }
-    showScan(false);
-}
-
-function clearAllTimers(){
-    clearBidTimers();
-    if(tHeart){ clearInterval(tHeart); tHeart=null; }
-    if(tPollMsg){ clearInterval(tPollMsg); tPollMsg=null; }
-    if(tPollInv){ clearInterval(tPollInv); tPollInv=null; }
-    if(tInvPop){ clearInterval(tInvPop); tInvPop=null; }
-}
-
-async function loadCount(){
-    try {
-        const r  = await fetch(`/api/invite?userId=${UID}&role=count`);
-        const d  = await r.json();
-        const el = $('onlineCount');
-        if(el) el.textContent = (d.count || 0) + ' ONLINE';
-    } catch(e){}
-}
-
-/* ═══════════════════════════════════════════════════════════
-   SPILL FEED
-═══════════════════════════════════════════════════════════ */
-const BREW_INTERVAL_MS = 7 * 60 * 1000;
-const BREW_KEY         = 'spill_last_brew';
-
-async function maybeBrewSpill(){
-    const last = parseInt(localStorage.getItem(BREW_KEY) || '0');
-    if(Date.now() - last < BREW_INTERVAL_MS) return false;
-    localStorage.setItem(BREW_KEY, Date.now().toString());
-    try { await fetch('/api/brew', { method:'POST', headers:{'Content-Type':'application/json'} }); return true; }
-    catch(e){ localStorage.setItem(BREW_KEY, '0'); return false; }
-}
-
-function startBrewInterval(){
-    maybeBrewSpill().then(b => { if(b) setTimeout(loadSpills, 3000); });
-    setInterval(async () => { if(await maybeBrewSpill()) setTimeout(loadSpills, 3000); }, BREW_INTERVAL_MS);
-}
-
-async function loadSpills(){
-    $('spillsList').innerHTML = '<div class="empty-state">🍃 MEMUAT SPILL...</div>';
-    maybeBrewSpill();
-    try {
-        const data = await sbGet('/entries?select=*&order=created_at.desc&limit=50');
-        const all  = (data || []).map(x => ({
-            author:    x.username || 'anon',
-            mood:      x.mood || 'chaotic',
-            content:   x.content || '...',
-            reactions: x.reactions || { skull:0, cry:0, fire:0, upside:0 }
-        }));
-        renderSpills(all);
-    } catch(e){
-        $('spillsList').innerHTML = '<div class="empty-state">🍃 Gagal memuat spill</div>';
-    }
-}
-
-function renderSpills(all){
-    const c    = $('spillsList');
-    const meta = $('feedMeta');
-    if(!all.length){
-        c.innerHTML = '<div class="empty-state">🍃 Belum ada spill</div>';
-        meta.textContent = '0 spill';
-        return;
-    }
-    c.innerHTML = all.map((s,i) =>
-        `<div class="spill-card">
-            <div class="spill-header">
-                <span class="spill-author">@${esc(s.author)}</span>
-                <span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span>
-            </div>
-            <div class="spill-content">${esc(s.content)}</div>
-            <div class="spill-reactions">
-                ${['skull','cry','fire','upside'].map(r =>
-                    `<button class="react-btn" onclick="rs(${i},'${r}')">
-                        ${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}
-                        <span class="react-count">${s.reactions[r]||0}</span>
-                    </button>`
-                ).join('')}
-            </div>
-        </div>`
-    ).join('');
-    meta.textContent = all.length + ' spill';
-}
-window.rs = (i,t) => toast('➕ ' + t);
-
-/* ═══════════════════════════════════════════════════════════
-   RADAR ANIMATION
-═══════════════════════════════════════════════════════════ */
-let dots=[], nAngle=0, nSpin=0, phase=Math.random()*Math.PI*2;
-let trail=new Float32Array(120), ptr=0, gm=new Map(), raf, rint;
-
-function initRadar(){
-    const cv = $('radarCanvas'), ct = $('radarCont');
-    if(!cv || !ct) return;
-    const rsz = () => { const r = ct.getBoundingClientRect(); if(r.width>0){ cv.width=r.width; cv.height=r.height; } };
-    rsz(); window.addEventListener('resize', rsz);
-    spawnDots();
-    if(rint) clearInterval(rint);
-    rint = setInterval(() => {
-        dots.forEach(d => {
-            d.vx = d.vx*.88 + (Math.random()-.5)*.3;
-            d.vy = d.vy*.88 + (Math.random()-.5)*.3;
-            d.x  = Math.max(9, Math.min(91, d.x+d.vx));
-            d.y  = Math.max(9, Math.min(91, d.y+d.vy));
-            if(d.el){ d.el.style.left=d.x+'%'; d.el.style.top=d.y+'%'; }
-        });
-    }, 100);
-    nAngle = Math.random() * Math.PI * 2;
-    trail.fill(nAngle);
-    radarLoop(cv);
-}
-
-function spawnDots(){
-    const c = $('radarDots');
-    if(!c) return;
-    c.innerHTML = ''; dots = [];
-    for(let i=0; i<8; i++){
-        const a=Math.random()*Math.PI*2, d=12+Math.random()*70;
-        const x=50+Math.cos(a)*d/2, y=50+Math.sin(a)*d/2;
-        const el = document.createElement('div');
-        el.className = 'radar-dot';
-        el.style.left = x+'%'; el.style.top = y+'%';
-        c.appendChild(el);
-        dots.push({ el, x, y, vx:0, vy:0, id:i });
-    }
-}
-
-function radarLoop(cv){
-    const ctx = cv.getContext('2d');
-    function draw(){
-        const w=cv.width, h=cv.height, cx=w/2, cy=h/2, R=Math.min(cx,cy)*.88;
-        if(!w || !h){ raf=requestAnimationFrame(draw); return; }
-        phase += .007;
-        nSpin += ((60/4*Math.PI*2)/(60*60)*(1+Math.sin(phase)*.35) - nSpin)*.028;
-        nAngle = (nAngle + nSpin) % (Math.PI*2);
-        trail[ptr] = nAngle; ptr = (ptr+1) % 120;
-        ctx.fillStyle = 'rgba(2,10,2,.18)';
-        ctx.fillRect(0,0,w,h);
-        for(let i=0; i<119; i++){
-            const a = Math.pow(1-i/120, 2.2)*.12;
-            if(a < .002) break;
-            const s=nAngle-(i+1)*nSpin, e=nAngle-i*nSpin;
-            ctx.save(); ctx.translate(cx,cy);
-            ctx.beginPath(); ctx.moveTo(0,0);
-            ctx.arc(0,0,R,Math.min(s,e),Math.max(s,e));
-            ctx.closePath();
-            ctx.fillStyle = `rgba(0,229,255,${a})`;
-            ctx.fill(); ctx.restore();
-        }
-        ctx.save(); ctx.translate(cx,cy); ctx.rotate(nAngle);
-        ctx.shadowColor='rgba(0,229,255,.95)'; ctx.shadowBlur=12;
-        const g = ctx.createLinearGradient(0,0,R,0);
-        g.addColorStop(0,'rgba(0,229,255,1)'); g.addColorStop(.8,'rgba(0,229,255,.4)'); g.addColorStop(1,'rgba(0,229,255,0)');
-        ctx.beginPath(); ctx.moveTo(3,0); ctx.lineTo(R,0);
-        ctx.strokeStyle=g; ctx.lineWidth=2; ctx.stroke();
-        ctx.shadowBlur=20; ctx.beginPath(); ctx.rect(-4,-4,8,8); ctx.fillStyle='#00e5ff'; ctx.fill();
-        ctx.restore();
-        dots.forEach((d,i) => {
-            const px=d.x/100*w, py=d.y/100*h;
-            const da=((Math.atan2(py-cy,px-cx))%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
-            const diff=(nAngle-da+Math.PI*2)%(Math.PI*2);
-            const age=gm.get(i)??999;
-            if(diff<.18 && age>30){ gm.set(i,0); if(d.el){ d.el.classList.add('active'); setTimeout(()=>d.el?.classList.remove('active'),800); } }
-            else gm.set(i,age+1);
-            if(age<55){
-                const t=age/55, ga=(1-t)*(1-t)*.9;
-                if(ga<.01) return;
-                const gr=ctx.createRadialGradient(px,py,0,px,py,16*(1-t)+3);
-                gr.addColorStop(0,`rgba(0,229,255,${ga})`); gr.addColorStop(1,`rgba(0,229,255,0)`);
-                ctx.beginPath(); ctx.arc(px,py,16*(1-t)+3,0,Math.PI*2);
-                ctx.fillStyle=gr; ctx.fill();
-            }
-        });
-        raf = requestAnimationFrame(draw);
-    }
-    draw();
-}
-
-async function cleanup(){
-    clearAllTimers();
-    const body = { userId:UID };
-    if(roomId) body.roomId = roomId;
-    try {
-        await fetch('/api/invite', { method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body), keepalive:true });
-    } catch(e){}
-}
-window.addEventListener('beforeunload', cleanup);
-
-/* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    EVENT WIRING
-═══════════════════════════════════════════════════════════ */
-window.addEventListener('load', async () => {
+═══════════════════════════════════════════════ */
+window.addEventListener('load',async()=>{
     await init();
 
     if(!IS_GUEST){
-        $('btnHot').onclick = () => {
-            if(state !== S.IDLE) return;
-            if(!isInsomniaActive()){ toast('🌙 Insomnia buka jam 22.00 WIB'); return; }
-            startBid('hot_take');
-        };
-        $('btnSoft').onclick = () => { if(state === S.IDLE) startBid('soft_talk'); };
+        $('btnHot').onclick=()=>{if(state!==S.IDLE)return;if(!isInsomniaActive()){toast('🌙 Insomnia buka jam 22.00 WIB');return;}startBid('hot_take');};
+        $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');};
     }
 
-    $('scanCancel').onclick = async () => {
-        if(state === S.BIDDING){
-            clearBidTimers();
-            await fetch('/api/invite', { method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ userId:UID }) });
-            enterIdle();
-            toast('Pencarian dibatalkan');
-        }
-    };
+    $('scanCancel').onclick=async()=>{if(state===S.BIDDING){clearBidTimers();await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});enterIdle();toast('Pencarian dibatalkan');}};
+    $('btnAccept').onclick=acceptInv;
+    $('btnDecline').onclick=async()=>{if(pendingInv)await api('/api/invite',{action:'decline',userId:UID,username:ME,invitationId:pendingInv.id});hidePopup();};
 
-    $('btnAccept').onclick  = acceptInv;
-    $('btnDecline').onclick = async () => {
-        if(pendingInv) await api('/api/invite', { action:'decline', userId:UID, username:ME, invitationId:pendingInv.id });
-        hidePopup();
-    };
+    const chatSend=async()=>{const inp=$('chatInput'),msg=inp.value.trim();if(!msg)return;inp.value='';if(state===S.CHAT_REAL)await sendReal(msg);else if(state===S.CHAT_AI){addMsg('user',msg,isInsomnia?ME:null);await sendAI(msg,false);}};
+    $('chatSend').onclick=chatSend;
+    $('chatInput').onkeypress=e=>{if(e.key==='Enter')chatSend();};
+    $('chatClose').onclick=async()=>{if(state===S.CHAT_REAL){addSys('🔴 Kamu mengakhiri chat');await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});}setTimeout(enterIdle,500);};
 
-    const chatSend = async () => {
-        const inp = $('chatInput'), msg = inp.value.trim();
-        if(!msg) return;
-        inp.value = '';
-        if(state === S.CHAT_REAL)      await sendReal(msg);
-        else if(state === S.CHAT_AI){ addMsg('user', msg, isInsomnia ? ME : null); await sendAI(msg, false); }
-    };
-    $('chatSend').onclick           = chatSend;
-    $('chatInput').onkeypress       = e => { if(e.key === 'Enter') chatSend(); };
+    if(!IS_GUEST)$('whisperBtn').onclick=()=>{resetWhisperSheet();$('whisperOverlay').classList.add('show');};
 
-    $('chatClose').onclick = async () => {
-        if(state === S.CHAT_REAL){
-            addSys('🔴 Kamu mengakhiri chat');
-            await fetch('/api/invite', { method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ userId:UID, roomId }) });
-        }
-        setTimeout(enterIdle, 500);
-    };
+    $('whisperCancel').onclick=()=>{$('whisperOverlay').classList.remove('show');$('whisperTarget').value='';$('whisperMessage').value='';};
 
-    /* ── Whisper compose ── */
-    if(!IS_GUEST){
-        $('whisperBtn').onclick = () => $('whisperOverlay').classList.add('show');
-    }
+    $('whNoPubBack').onclick=resetWhisperSheet;
 
-    $('whisperCancel').onclick = () => {
-        $('whisperOverlay').classList.remove('show');
-        $('whisperTarget').value = '';
-        $('whisperMessage').value = '';
-    };
+    $('whisperSend').onclick=async()=>{
+        const toEl=$('whisperTarget'),msgEl=$('whisperMessage');
+        const to=(toEl.value||'').trim().replace('@','').toLowerCase();
+        const msg=(msgEl.value||'').trim();
+        if(!to||!msg){toast('Isi semua field');return;}
+        if(!/^[a-z0-9_.]{2,24}$/.test(to)){toast('Username tidak valid');return;}
 
-    $('whisperSend').onclick = async () => {
-        const toEl  = $('whisperTarget');
-        const msgEl = $('whisperMessage');
-        const to    = (toEl.value || '').trim().replace('@','').toLowerCase();
-        const msg   = (msgEl.value || '').trim();
+        const mask=$('whMask');mask.classList.add('show');setStep(0);
 
-        if(!to || !msg){ toast('Isi semua field'); return; }
-        if(!/^[a-z0-9_.]{2,24}$/.test(to)){ toast('Username tidak valid'); return; }
+        try{
+            await new Promise(r=>setTimeout(r,250));setStep(1);
 
-        /* Tampilkan sending overlay — user tahu pesan sedang diqueue */
-        const sendingOv = $('whisperSendingOverlay');
-        sendingOv.classList.add('show');
-
-        try {
-            const ok = await WH.sendMsg(to, msg);
-            sendingOv.classList.remove('show');
-            if(ok){
-                $('whisperOverlay').classList.remove('show');
-                toEl.value = ''; msgEl.value = '';
-                toast('✦ whisper diqueue — delivery diacak waktunya');
-            } else {
-                toast('Gagal — cek username penerima');
+            const recPubJWK=await ECDH.fetchRecipientPubkey(to);
+            if(!recPubJWK){
+                mask.classList.remove('show');
+                $('whPhil').style.display='none';$('whForm').style.display='none';
+                $('whNoPub').classList.add('show');
+                return;
             }
-        } catch(e){
-            sendingOv.classList.remove('show');
-            toast('Error enkripsi');
-        }
+            setStep(2);
+
+            const messageEnc=await ECDH.encrypt(msg.trim(),recPubJWK);
+            setStep(3);await new Promise(r=>setTimeout(r,200));
+
+            const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc})});
+            setStep(3);await new Promise(r=>setTimeout(r,350));
+
+            mask.classList.remove('show');
+            if(r.ok||r.status===202){
+                $('whisperOverlay').classList.remove('show');
+                toEl.value='';msgEl.value='';
+                toast('✦ whisper terenkripsi — delivery diacak waktunya');
+            }else{toast('Gagal — cek username penerima');}
+        }catch(e){mask.classList.remove('show');console.error('[whisper]',e);toast('Error enkripsi');}
     };
 
-    /* ── Whisper inbox ── */
-    $('wTrigger').onclick   = () => { WH.fetchInbox(); $('wInbox').classList.add('show'); };
-    $('wInboxClose').onclick = () => $('wInbox').classList.remove('show');
-    $('wBack').onclick      = () => { WH.closeRead(); $('wInbox').classList.add('show'); };
+    $('wTrigger').onclick=()=>{WH.fetchInbox();$('wInbox').classList.add('show');};
+    $('wInboxClose').onclick=()=>$('wInbox').classList.remove('show');
+    $('wBack').onclick=()=>{WH.closeRead();$('wInbox').classList.add('show');};
 });
 
 })();
 </script>
 
-<!-- ═══════════════════════════════════════════════════════
-     LOGIN MODAL
-═══════════════════════════════════════════════════════ -->
+<!-- LOGIN MODAL -->
 <div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
   <div class="lm-box">
     <button class="lm-close" onclick="closeLM()">✕</button>
@@ -1354,76 +790,22 @@ window.addEventListener('load', async () => {
     </div>
   </div>
 </div>
-
 <script>
-/* ══════════════════════════════════════════════
-   LOGIN MODULE — tidak ada perubahan logika
-══════════════════════════════════════════════ */
-const LM = {
-    SU: 'https://fuovfrdicdhnlymnacpz.supabase.co',
-    SK_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
-    LS: { u:'jejak_username', i:'jejak_uid', l:'jejak_logged_in', a:'jejak_auth_v1' },
-    async get(path){ const r=await fetch(this.SU+'/rest/v1'+path,{headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY}}); const t=await r.text(); return t?JSON.parse(t):[]; },
-    async post(path,body){ const r=await fetch(this.SU+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)}); const t=await r.text(); const d=t?JSON.parse(t):null; if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;} return d; },
-    async sha256(str){ const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); },
-    async deviceFP(){ const p=[]; try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('jejak_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');} p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language); return this.sha256(p.join('|')); },
-    async authHash(pin,username){ const fp=await this.deviceFP(); return this.sha256(pin+':'+username+':'+fp+':jejak_local_v1'); },
-    validUsername(v){ v=(v||'').trim().toLowerCase(); if(!v||!v.includes('.'))return null; const parts=v.split('.'); if(parts.length!==2)return null; if(parts[0].length<2||parts[1].length<2)return null; if(!/^[a-z][a-z0-9]*$/.test(parts[0])||!/^[a-z][a-z0-9]*$/.test(parts[1]))return null; return v; },
-    validPin(p){ if(!/^\d{6}$/.test(p))return false; if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false; if(p==='123456'||p==='654321'||p==='000000'||p==='999999')return false; return true; }
-};
-function openLoginModal(){ document.getElementById('lmBg').classList.add('show'); setTimeout(()=>document.getElementById('lmU').focus(),100); }
-function closeLM(){ document.getElementById('lmBg').classList.remove('show'); }
-function lmSwitch(to){ document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none'; document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none'; setTimeout(()=>{ document.getElementById(to==='login'?'lmU':'lmRU').focus(); },100); }
-function lmFb(id,type,msg){ const el=document.getElementById(id); if(!el)return; if(!type){el.className='lm-fb';el.textContent='';return;} el.className='lm-fb show '+type; el.textContent=msg; }
-function lmUpdateLogin(){ const ok=LM.validUsername(document.getElementById('lmU').value)&&LM.validPin(document.getElementById('lmP').value); document.getElementById('lmBtnL').disabled=!ok; }
-function lmUpdateReg(){ const pin=document.getElementById('lmRP').value; const pin2=document.getElementById('lmRP2').value; const ok=LM.validUsername(document.getElementById('lmRU').value)&&LM.validPin(pin)&&pin===pin2&&document.getElementById('lmAg').checked; document.getElementById('lmBtnR').disabled=!ok; }
-async function lmDoLogin(){
-    const u=LM.validUsername(document.getElementById('lmU').value); const p=document.getElementById('lmP').value;
-    lmFb('lmFbL','','');
-    if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
-    if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}
-    const btn=document.getElementById('lmBtnL'); btn.disabled=true; btn.textContent='VERIFIKASI...';
-    try {
-        const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');
-        const user=Array.isArray(data)?data[0]:null;
-        if(!user) throw new Error('Username tidak ditemukan');
-        const stored=localStorage.getItem(LM.LS.a);
-        if(!stored) throw new Error('Akun belum terdaftar di device ini — daftar ulang');
-        const hash=await LM.authHash(p,u);
-        if(hash!==stored) throw new Error('PIN salah');
-        localStorage.setItem(LM.LS.u,user.username); localStorage.setItem(LM.LS.i,user.id); localStorage.setItem(LM.LS.l,'true');
-        lmFb('lmFbL','s','✓ Login berhasil!');
-        setTimeout(()=>window.location.reload(),700);
-    } catch(err){ lmFb('lmFbL','e',err.message||'Login gagal'); btn.disabled=false; btn.textContent='MASUK →'; }
-}
-async function lmDoReg(){
-    const u=LM.validUsername(document.getElementById('lmRU').value); const p=document.getElementById('lmRP').value; const p2=document.getElementById('lmRP2').value;
-    lmFb('lmFbR','','');
-    if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;}
-    if(!LM.validPin(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;}
-    if(p!==p2){lmFb('lmFbR','e','PIN tidak cocok');return;}
-    const btn=document.getElementById('lmBtnR'); btn.disabled=true; btn.textContent='PROSES...';
-    try {
-        const data=await LM.post('/profiles?select=id,username',{username:u});
-        const user=Array.isArray(data)?data[0]:data;
-        if(!user||!user.id) throw new Error('Tidak ada data returned');
-        const hash=await LM.authHash(p,u);
-        localStorage.setItem(LM.LS.u,user.username); localStorage.setItem(LM.LS.i,user.id); localStorage.setItem(LM.LS.l,'true'); localStorage.setItem(LM.LS.a,hash);
-        lmFb('lmFbR','s','Akun dibuat!');
-        setTimeout(()=>{ alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!'); window.location.reload(); },800);
-    } catch(err){
-        const isDupe=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');
-        lmFb('lmFbR','e',isDupe?'Username sudah dipakai':(err.message||'Gagal'));
-        btn.disabled=false; btn.textContent='DAFTAR →';
-    }
-}
-(function wireModalInputs(){
-    function toUsername(el){ el.addEventListener('input',function(){ let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,''); const dotIdx=v.indexOf('.'); if(dotIdx!==-1) v=v.slice(0,dotIdx+1)+v.slice(dotIdx+1).replace(/\./g,''); if(v!==this.value)this.value=v; }); }
-    function toPin(el){ el.addEventListener('input',function(){ this.value=this.value.replace(/[^0-9]/g,'').slice(0,6); }); }
-    function wire(id,fn,updateFn){ const el=document.getElementById(id); if(!el)return; fn(el); el.addEventListener('input',updateFn); }
-    wire('lmU',toUsername,lmUpdateLogin); wire('lmP',toPin,lmUpdateLogin);
-    wire('lmRU',toUsername,lmUpdateReg); wire('lmRP',toPin,lmUpdateReg); wire('lmRP2',toPin,lmUpdateReg);
-    const ag=document.getElementById('lmAg'); if(ag) ag.addEventListener('change',lmUpdateReg);
+const LM={SU:'https://fuovfrdicdhnlymnacpz.supabase.co',SK_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},async get(path){const r=await fetch(this.SU+'/rest/v1'+path,{headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY}});const t=await r.text();return t?JSON.parse(t):[];},async post(path,body){const r=await fetch(this.SU+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},async sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},async deviceFP(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('jejak_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},async authHash(pin,username){const fp=await this.deviceFP();return this.sha256(pin+':'+username+':'+fp+':jejak_local_v1');},validUsername(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const parts=v.split('.');if(parts.length!==2)return null;if(parts[0].length<2||parts[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(parts[0])||!/^[a-z][a-z0-9]*$/.test(parts[1]))return null;return v;},validPin(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(p==='123456'||p==='654321'||p==='000000'||p==='999999')return false;return true;}};
+function openLoginModal(){document.getElementById('lmBg').classList.add('show');setTimeout(()=>document.getElementById('lmU').focus(),100);}
+function closeLM(){document.getElementById('lmBg').classList.remove('show');}
+function lmSwitch(to){document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none';document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none';setTimeout(()=>{document.getElementById(to==='login'?'lmU':'lmRU').focus();},100);}
+function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
+function lmUpdateLogin(){const ok=LM.validUsername(document.getElementById('lmU').value)&&LM.validPin(document.getElementById('lmP').value);document.getElementById('lmBtnL').disabled=!ok;}
+function lmUpdateReg(){const pin=document.getElementById('lmRP').value;const pin2=document.getElementById('lmRP2').value;const ok=LM.validUsername(document.getElementById('lmRU').value)&&LM.validPin(pin)&&pin===pin2&&document.getElementById('lmAg').checked;document.getElementById('lmBtnR').disabled=!ok;}
+async function lmDoLogin(){const u=LM.validUsername(document.getElementById('lmU').value);const p=document.getElementById('lmP').value;lmFb('lmFbL','','');if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='VERIFIKASI...';try{const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');const user=Array.isArray(data)?data[0]:null;if(!user)throw new Error('Username tidak ditemukan');const stored=localStorage.getItem(LM.LS.a);if(!stored)throw new Error('Akun belum terdaftar di device ini — daftar ulang');const hash=await LM.authHash(p,u);if(hash!==stored)throw new Error('PIN salah');localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);localStorage.setItem(LM.LS.l,'true');lmFb('lmFbL','s','✓ Login berhasil!');setTimeout(()=>window.location.reload(),700);}catch(err){lmFb('lmFbL','e',err.message||'Login gagal');btn.disabled=false;btn.textContent='MASUK →';}}
+async function lmDoReg(){const u=LM.validUsername(document.getElementById('lmRU').value);const p=document.getElementById('lmRP').value;const p2=document.getElementById('lmRP2').value;lmFb('lmFbR','','');if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;}if(!LM.validPin(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;}if(p!==p2){lmFb('lmFbR','e','PIN tidak cocok');return;}const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent='PROSES...';try{const data=await LM.post('/profiles?select=id,username',{username:u});const user=Array.isArray(data)?data[0]:data;if(!user||!user.id)throw new Error('Tidak ada data returned');const hash=await LM.authHash(p,u);localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,hash);lmFb('lmFbR','s','Akun dibuat!');setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800);}catch(err){const isDupe=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');lmFb('lmFbR','e',isDupe?'Username sudah dipakai':(err.message||'Gagal'));btn.disabled=false;btn.textContent='DAFTAR →';}}
+(function wireModalInputs(){function toUsername(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const dotIdx=v.indexOf('.');if(dotIdx!==-1)v=v.slice(0,dotIdx+1)+v.slice(dotIdx+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
+function toPin(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
+function wire(id,fn,upFn){const el=document.getElementById(id);if(!el)return;fn(el);el.addEventListener('input',upFn);}
+wire('lmU',toUsername,lmUpdateLogin);wire('lmP',toPin,lmUpdateLogin);
+wire('lmRU',toUsername,lmUpdateReg);wire('lmRP',toPin,lmUpdateReg);wire('lmRP2',toPin,lmUpdateReg);
+const ag=document.getElementById('lmAg');if(ag)ag.addEventListener('change',lmUpdateReg);
 })();
 </script>
 </body>
