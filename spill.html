@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>SPILL — vibe radar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
         :root{
@@ -144,7 +147,6 @@
         .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1500;align-items:flex-end;justify-content:center}
         .whisper-overlay.show{display:flex}
         .whisper-sheet{background:var(--sf);border:2px solid var(--as);border-bottom:none;max-width:500px;width:100%;border-radius:16px 16px 0 0;overflow:hidden;position:relative;box-shadow:0 -12px 60px rgba(0,229,255,.1)}
-        /* Sending mask */
         .wh-mask{display:none;position:absolute;inset:0;background:rgba(0,0,0,.96);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:20}
         .wh-mask.show{display:flex}
         .wh-spinner{width:30px;height:30px;border:2px solid var(--bd2);border-top-color:var(--as);border-radius:50%;animation:wh-spin .8s linear infinite}
@@ -154,14 +156,12 @@
         .wh-step{font-family:var(--font-mono);font-size:9px;color:#444;transition:color .25s;letter-spacing:.5px}
         .wh-step.act{color:var(--tx)}
         .wh-step.done{color:var(--aq)}
-        /* No pubkey panel */
         .wh-nopub{padding:28px 22px;text-align:center;display:none;flex-direction:column;align-items:center;gap:10px}
         .wh-nopub.show{display:flex}
         .wh-nopub-icon{font-size:30px}
         .wh-nopub-title{font-family:var(--font-mono);font-size:11px;color:var(--spill);letter-spacing:1px;font-weight:700}
         .wh-nopub-body{font-family:var(--font-mono);font-size:10px;color:var(--txs);line-height:1.8;text-align:center}
         .wh-nopub-back{background:var(--as);color:#000;border:2px solid #000;padding:10px 20px;font-family:var(--font-mono);font-size:11px;cursor:pointer;font-weight:700;letter-spacing:1px;margin-top:4px}
-        /* Philosophy panel */
         .wh-phil{background:linear-gradient(160deg,#030e0e,#000b14);border-bottom:1px solid rgba(0,229,255,.12);padding:16px 18px}
         .wh-phil-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
         .wh-phil-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px;font-weight:700}
@@ -170,7 +170,6 @@
         .wh-feat{background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.09);padding:8px 10px;border-radius:3px}
         .wh-feat-lbl{font-family:var(--font-mono);font-size:9px;color:var(--as);letter-spacing:1px;margin-bottom:3px}
         .wh-feat-val{font-family:var(--font-mono);font-size:10px;color:var(--tx);line-height:1.4}
-        /* Device-key panel — fitur utama */
         .wh-devkey{background:rgba(255,59,111,.04);border:1px solid rgba(255,59,111,.18);border-radius:3px;padding:11px 13px}
         .wh-devkey-hdr{display:flex;align-items:center;gap:8px;margin-bottom:7px}
         .wh-devkey-title{font-family:var(--font-mono);font-size:10px;color:var(--spill);letter-spacing:1px;font-weight:700}
@@ -178,7 +177,6 @@
         .wh-devkey-body{font-family:var(--font-mono);font-size:10px;color:#999;line-height:1.75}
         .wh-devkey-body b{color:var(--tx)}
         .wh-devkey-body .hi{color:var(--spill)}
-        /* Form */
         .wh-form{padding:16px 18px 22px}
         .wh-form-lbl{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:1px;margin-bottom:13px;display:flex;justify-content:space-between;align-items:center}
         .wh-live-dot{width:5px;height:5px;border-radius:50%;background:#2a9d2a;animation:pulse-dot 2s infinite;display:inline-block;margin-right:5px;vertical-align:middle}
@@ -191,7 +189,6 @@
         .wh-btn{flex:1;padding:13px;border:2px solid #000;cursor:pointer;font-size:13px;font-family:var(--font-mono);border-radius:3px;font-weight:700;letter-spacing:1px}
         .wh-btn.send{background:var(--as);color:#000}
         .wh-btn.cancel{background:0 0;border-color:var(--bd2);color:var(--txs)}
-        /* Whisper inbox */
         .w-inbox{position:absolute;inset:0;z-index:110;background:rgba(0,0,0,.97);display:none;flex-direction:column}
         .w-inbox.show{display:flex}
         .w-inbox-hdr{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,.98);border-bottom:1px solid var(--bd2);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;z-index:112}
@@ -223,32 +220,57 @@
         .w-trigger:hover{border-color:var(--as)}
         .w-dot{width:6px;height:6px;border-radius:50%;background:var(--spill);display:none;flex-shrink:0}
         .w-dot.show{display:block}
-        /* Login modal */
-        .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+
+        /* ══════════════════════════════════════════
+           LOGIN MODAL — tema matching login.html
+           Bebas Neue + DM Mono + corner brackets
+        ══════════════════════════════════════════ */
+        .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
         .lm-bg.show{display:flex}
-        .lm-box{background:var(--sf);border:1px solid var(--bd2);padding:28px 24px;width:100%;max-width:340px;position:relative}
-        .lm-close{position:absolute;top:10px;right:10px;background:0 0;border:1px solid var(--bd2);color:var(--txs);width:26px;height:26px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
+        .lm-shell{max-width:380px;width:100%;position:relative}
+        /* accent bar gradient */
+        .lm-accent{height:3px;background:linear-gradient(90deg,var(--ap),var(--as),var(--aq))}
+        /* hero zone — disclaimer menggantikan wordmark */
+        .lm-hero{background:#0a0a0a;border:2px solid #2e2e2e;border-top:none;padding:20px 22px 16px;position:relative;box-shadow:6px 6px 0 #000}
+        .lm-hero::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--as);border-left:2px solid var(--as)}
+        .lm-hero::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--ap);border-right:2px solid var(--ap)}
+        .lm-hero-tr{position:absolute;top:-1px;right:-1px;width:16px;height:16px;border-top:2px solid var(--aq);border-right:2px solid var(--aq)}
+        .lm-hero-bl{position:absolute;bottom:-1px;left:-1px;width:16px;height:16px;border-bottom:2px solid var(--glitch);border-left:2px solid var(--glitch)}
+        .lm-eyebrow{font-family:'DM Mono',monospace;font-size:8px;color:#2a2a2a;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
+        /* disclaimer text */
+        .lm-disclaimer{font-family:'DM Mono',monospace;font-size:9px;color:#484848;line-height:2;letter-spacing:.4px}
+        .lm-disclaimer .warn{color:#5a3535}
+        .lm-disclaimer .dim{color:#313131}
+        .lm-disclaimer .closing{display:block;margin-top:10px;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:3px;color:#2a2a2a}
+        /* form box */
+        .lm-box{margin-top:8px;background:#0f0f0f;border:2px solid #2e2e2e;padding:22px;box-shadow:6px 6px 0 #000;position:relative}
+        .lm-box::before{content:'';position:absolute;top:-1px;left:-1px;width:12px;height:12px;border-top:2px solid var(--as);border-left:2px solid var(--as)}
+        .lm-box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:12px;height:12px;border-bottom:2px solid var(--ap);border-right:2px solid var(--ap)}
+        .lm-close{position:absolute;top:10px;right:10px;background:0 0;border:1px solid #2a2a2a;color:#444;width:26px;height:26px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s}
         .lm-close:hover{border-color:var(--ap);color:var(--ap)}
-        .lm-title{font-family:var(--font-display);font-size:22px;letter-spacing:3px;margin-bottom:18px}
-        .lm-label{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:.5px;margin-bottom:5px}
-        .lm-input{width:100%;background:var(--bg);border:2px solid var(--bd2);padding:12px 14px;color:var(--tx);font-family:var(--font-mono);font-size:14px;outline:none;margin-bottom:12px;letter-spacing:.06em;transition:border-color .15s}
+        .lm-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--tx);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+        .lm-title::after{content:'LIVE';font-family:'DM Mono',monospace;font-size:9px;background:var(--ap);color:#fff;padding:2px 7px;letter-spacing:1px}
+        .lm-label{font-family:'DM Mono',monospace;font-size:10px;color:#555;letter-spacing:.5px;margin-bottom:5px}
+        .lm-input{width:100%;background:var(--bg);border:2px solid #2a2a2a;padding:12px 14px;color:var(--tx);font-family:'DM Mono',monospace;font-size:14px;outline:none;margin-bottom:12px;letter-spacing:.06em;box-shadow:2px 2px 0 #000;transition:border-color .15s}
         .lm-input:focus{border-color:var(--ap)}
-        .lm-input::placeholder{color:#444}
+        .lm-input::placeholder{color:#2a2a2a}
         .lm-pin{text-align:center;letter-spacing:.8em;font-size:20px;font-weight:700;-webkit-text-security:disc}
         .lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:13px}
-        .lm-btn{width:100%;background:var(--ap);color:#fff;border:2px solid #000;padding:14px;font-family:var(--font-display);font-size:18px;letter-spacing:2px;cursor:pointer;box-shadow:4px 4px 0 #000;margin-top:2px;transition:transform .08s,box-shadow .08s}
-        .lm-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #000}
-        .lm-btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #000}
-        .lm-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 #000}
-        .lm-fb{font-family:var(--font-mono);font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:10px;display:none;line-height:1.5}
+        .lm-fb{font-family:'DM Mono',monospace;font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:10px;display:none;line-height:1.5}
         .lm-fb.show{display:block}
         .lm-fb.e{border-color:var(--ap);color:var(--ap);background:rgba(255,45,85,.08)}
         .lm-fb.s{border-color:var(--aq);color:var(--aq);background:rgba(191,255,0,.06)}
-        .lm-sw{text-align:center;margin-top:12px;font-family:var(--font-mono);font-size:10px;color:var(--txs)}
-        .lm-sw button{background:0 0;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:var(--font-mono);font-size:10px}
+        .lm-btn{width:100%;background:var(--ap);color:#fff;border:2px solid #000;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;cursor:pointer;box-shadow:5px 5px 0 #000;transition:transform .08s,box-shadow .08s;display:flex;align-items:center;justify-content:center;gap:10px}
+        .lm-btn::before{content:'⬡';font-size:14px;opacity:.8}
+        .lm-btn:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 #000}
+        .lm-btn:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #000}
+        .lm-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:5px 5px 0 #000}
+        .lm-sw{text-align:center;margin-top:11px;font-family:'DM Mono',monospace;font-size:10px;color:#444}
+        .lm-sw button{background:0 0;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px}
+        .lm-pin-note{font-family:'DM Mono',monospace;font-size:9px;color:#252525;text-align:center;margin-top:8px}
         .lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
         .lm-agree input{margin-top:2px;width:15px;height:15px;flex-shrink:0;accent-color:var(--ap)}
-        .lm-agree label{font-family:var(--font-mono);font-size:10px;color:var(--txs);line-height:1.5;cursor:pointer}
+        .lm-agree label{font-family:'DM Mono',monospace;font-size:10px;color:#555;line-height:1.5;cursor:pointer}
     </style>
 </head>
 <body>
@@ -258,8 +280,8 @@
         <div class="user-section" id="userSection"></div>
     </div>
     <div class="guest-banner" id="guestBanner" style="display:none">
-    <span>mode <b>guest</b> — spill feed bisa dibaca, fitur interaktif perlu login ↑</span>
-</div>
+        <span>mode <b>guest</b> — spill feed bisa dibaca, fitur interaktif perlu login ↑</span>
+    </div>
     <div class="scroll">
         <div class="radar-sect">
             <div class="radar-header">
@@ -353,7 +375,6 @@
 <!-- WHISPER BOTTOM SHEET -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-sheet">
-        <!-- Mask saat encrypting -->
         <div class="wh-mask" id="whMask">
             <div class="wh-spinner"></div>
             <div class="wh-mask-title">PROCESSING</div>
@@ -364,14 +385,12 @@
                 <div class="wh-step" id="whs4">◌ queue delivery</div>
             </div>
         </div>
-        <!-- No pubkey -->
         <div class="wh-nopub" id="whNoPub">
             <div class="wh-nopub-icon">🔑</div>
             <div class="wh-nopub-title">PENERIMA BELUM AKTIF</div>
             <div class="wh-nopub-body">User ini belum pernah membuka<br>aplikasi dengan sistem whisper baru.<br>Mereka perlu login sekali agar<br>public key terdaftar.</div>
             <button class="wh-nopub-back" id="whNoPubBack">← KEMBALI</button>
         </div>
-        <!-- Philosophy panel -->
         <div class="wh-phil" id="whPhil">
             <div class="wh-phil-hdr">
                 <span style="font-size:18px">⬡</span>
@@ -384,7 +403,6 @@
                 <div class="wh-feat"><div class="wh-feat-lbl">DELIVERY</div><div class="wh-feat-val">diacak waktunya<br>anti timing-attack</div></div>
                 <div class="wh-feat"><div class="wh-feat-lbl">DESTROY</div><div class="wh-feat-val">5 detik setelah<br>dibaca · permanent</div></div>
             </div>
-            <!-- Device-key — FRAMING SEBAGAI FITUR -->
             <div class="wh-devkey">
                 <div class="wh-devkey-hdr">
                     <span style="font-size:15px">📱</span>
@@ -400,7 +418,6 @@
                 </div>
             </div>
         </div>
-        <!-- Form -->
         <div class="wh-form" id="whForm">
             <div class="wh-form-lbl">
                 <span><span class="wh-live-dot"></span>COMPOSE WHISPER</span>
@@ -423,9 +440,6 @@
 (function(){
 'use strict';
 
-/* ═══════════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════════ */
 const SUPA_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
 const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=2000,POLL_MSG_MS=1500,POLL_WH_MS=10000;
@@ -453,162 +467,40 @@ function getInsomniaPersonas(){const t=getWIBDate(),sd=localStorage.getItem(INS_
 function updateInsomniaButton(){const btn=$('btnHot'),st=$('insomniaStatus'),ic=$('insomniaIcon');if(!btn||!st)return;if(isInsomniaActive()){btn.classList.remove('inactive');if(!IS_GUEST)btn.disabled=false;st.textContent='LIVE';if(ic)ic.textContent='🌙';}else{btn.classList.add('inactive');btn.disabled=true;st.textContent='22.00';if(ic)ic.textContent='😴';}}
 const AI={get hot_take(){return getInsomniaPersonas();},soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']};
 
-/* ═══════════════════════════════════════════════
-   ECDH MODULE
-   
-   Setiap pesan menggunakan ephemeral keypair baru (Ephemeral ECDH).
-   Shared secret di-derive via HKDF-SHA-256 → AES-GCM 256.
-   Plaintext dipadding ke kelipatan 256 byte sebelum enkripsi.
-   Server hanya menyimpan: ciphertext opaque, target_username, destroy_at.
-   Tidak ada from_hash, tidak ada sender identifier apapun.
-═══════════════════════════════════════════════ */
 const ECDH=(()=>{
     const toB64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
     const fromB64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-
-    async function genKeypair(){
-        const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);
-        const pubJWK=await crypto.subtle.exportKey('jwk',kp.publicKey);
-        const privJWK=await crypto.subtle.exportKey('jwk',kp.privateKey);
-        delete pubJWK.d;
-        return{publicKey:kp.publicKey,privateKey:kp.privateKey,pubJWK,privJWK};
-    }
+    async function genKeypair(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);const pubJWK=await crypto.subtle.exportKey('jwk',kp.publicKey);const privJWK=await crypto.subtle.exportKey('jwk',kp.privateKey);delete pubJWK.d;return{publicKey:kp.publicKey,privateKey:kp.privateKey,pubJWK,privJWK};}
     async function importPriv(jwk){return crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
     async function importPub(jwk){return crypto.subtle.importKey('jwk',jwk,{name:'ECDH',namedCurve:'P-256'},true,[]);}
-
-    async function deriveAES(privKey,pubKey){
-        const bits=await crypto.subtle.deriveBits({name:'ECDH',public:pubKey},privKey,256);
-        const hkdf=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);
-        return crypto.subtle.deriveKey(
-            {name:'HKDF',hash:'SHA-256',salt:new Uint8Array(32),info:new TextEncoder().encode('whisper-v2')},
-            hkdf,{name:'AES-GCM',length:256},false,['encrypt','decrypt']
-        );
-    }
-
+    async function deriveAES(privKey,pubKey){const bits=await crypto.subtle.deriveBits({name:'ECDH',public:pubKey},privKey,256);const hkdf=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:new Uint8Array(32),info:new TextEncoder().encode('whisper-v2')},hkdf,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
     const PAD=256;
     function pad(plain){const e=new TextEncoder().encode(plain);const pl=PAD-(e.length%PAD);const o=new Uint8Array(e.length+pl);o.set(e);return o;}
     function unpad(bytes){let end=bytes.length;while(end>0&&bytes[end-1]===0)end--;return new TextDecoder().decode(bytes.slice(0,end));}
-
-    /* encrypt — ephemeral ECDH per pesan */
-    async function encrypt(plain,recipientPubJWK){
-        const eph=await genKeypair();
-        const recPub=await importPub(recipientPubJWK);
-        const aes=await deriveAES(eph.privateKey,recPub);
-        const iv=crypto.getRandomValues(new Uint8Array(12));
-        const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},aes,pad(plain));
-        return toB64(iv)+':'+btoa(JSON.stringify(eph.pubJWK))+':'+toB64(ct);
-    }
-
-    /* decrypt — gunakan private key penerima + ephemeral pub dari sender */
-    async function decrypt(enc,myPrivJWK){
-        try{
-            const[ivB64,ephPubB64,ctB64]=enc.split(':');
-            const ephPub=await importPub(JSON.parse(atob(ephPubB64)));
-            const myPriv=await importPriv(myPrivJWK);
-            const aes=await deriveAES(myPriv,ephPub);
-            const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},aes,fromB64(ctB64));
-            return unpad(new Uint8Array(plain));
-        }catch(e){return '[tidak bisa didekripsi]';}
-    }
-
-    async function getOrCreateKeypair(){
-        const privStr=localStorage.getItem(LS_PRIV),pubStr=localStorage.getItem(LS_PUB);
-        if(privStr&&pubStr){try{const priv=await importPriv(JSON.parse(privStr));return{privateKey:priv,privJWK:JSON.parse(privStr),pubJWK:JSON.parse(pubStr)};}catch(e){}}
-        const kp=await genKeypair();
-        localStorage.setItem(LS_PRIV,JSON.stringify(kp.privJWK));
-        localStorage.setItem(LS_PUB,JSON.stringify(kp.pubJWK));
-        return{privateKey:kp.publicKey,privJWK:kp.privJWK,pubJWK:kp.pubJWK};
-    }
-
-    async function ensurePubkeyRegistered(){
-        if(IS_GUEST)return null;
-        const kp=await getOrCreateKeypair();
-        if(sessionStorage.getItem('pk_reg')==='1')return kp;
-        try{const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:ME,userId:UID,pubkey:kp.pubJWK})});if(r.ok)sessionStorage.setItem('pk_reg','1');}catch(e){}
-        return kp;
-    }
-
-    async function fetchRecipientPubkey(username){
-        const r=await fetch(`/api/pubkey?username=${encodeURIComponent(username)}`);
-        if(!r.ok)return null;
-        const d=await r.json();
-        return d.pubkey||null;
-    }
-
+    async function encrypt(plain,recipientPubJWK){const eph=await genKeypair();const recPub=await importPub(recipientPubJWK);const aes=await deriveAES(eph.privateKey,recPub);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},aes,pad(plain));return toB64(iv)+':'+btoa(JSON.stringify(eph.pubJWK))+':'+toB64(ct);}
+    async function decrypt(enc,myPrivJWK){try{const[ivB64,ephPubB64,ctB64]=enc.split(':');const ephPub=await importPub(JSON.parse(atob(ephPubB64)));const myPriv=await importPriv(myPrivJWK);const aes=await deriveAES(myPriv,ephPub);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},aes,fromB64(ctB64));return unpad(new Uint8Array(plain));}catch(e){return '[tidak bisa didekripsi]';}}
+    async function getOrCreateKeypair(){const privStr=localStorage.getItem(LS_PRIV),pubStr=localStorage.getItem(LS_PUB);if(privStr&&pubStr){try{const priv=await importPriv(JSON.parse(privStr));return{privateKey:priv,privJWK:JSON.parse(privStr),pubJWK:JSON.parse(pubStr)};}catch(e){}}const kp=await genKeypair();localStorage.setItem(LS_PRIV,JSON.stringify(kp.privJWK));localStorage.setItem(LS_PUB,JSON.stringify(kp.pubJWK));return{privateKey:kp.publicKey,privJWK:kp.privJWK,pubJWK:kp.pubJWK};}
+    async function ensurePubkeyRegistered(){if(IS_GUEST)return null;const kp=await getOrCreateKeypair();if(sessionStorage.getItem('pk_reg')==='1')return kp;try{const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:ME,userId:UID,pubkey:kp.pubJWK})});if(r.ok)sessionStorage.setItem('pk_reg','1');}catch(e){}return kp;}
+    async function fetchRecipientPubkey(username){const r=await fetch(`/api/pubkey?username=${encodeURIComponent(username)}`);if(!r.ok)return null;const d=await r.json();return d.pubkey||null;}
     return{encrypt,decrypt,getOrCreateKeypair,ensurePubkeyRegistered,fetchRecipientPubkey};
 })();
 
-/* ═══════════════════════════════════════════════
-   WHISPER MODULE
-═══════════════════════════════════════════════ */
 const WH=(()=>{
     let msgs=[],readId=null,dTimer=null,pollTimer=null,myKP=null;
-
     function setDot(show){const d=$('wDot'),b=$('whisperBadge');if(d)d.classList.toggle('show',show);if(b)b.style.display=show?'':'none';}
-
     async function getKP(){if(!myKP)myKP=await ECDH.getOrCreateKeypair();return myKP;}
-
-    async function fetchInbox(){
-        if(IS_GUEST)return;
-        try{
-            const r=await fetch('/api/whisper?username='+encodeURIComponent(ME));
-            if(!r.ok)return;
-            const raw=await r.json();
-            if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}
-            const kp=await getKP();const now=Date.now();
-            msgs=await Promise.all(raw.map(async m=>{
-                const exp=new Date(m.destroy_at).getTime(),rem=exp-now;
-                const h=Math.floor(rem/3600000),mn=Math.floor((rem%3600000)/60000);
-                const body=await ECDH.decrypt(m.message,kp.privJWK);
-                return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
-            }));
-            renderList();setDot(msgs.length>0);
-        }catch(e){console.warn('[WH]',e);}
-    }
-
-    function renderList(){
-        const el=$('wList');if(!el)return;
-        if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}
-        el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');
-    }
-
-    async function openMsg(id){
-        const m=msgs.find(x=>x.id===id);if(!m)return;
-        readId=id;$('wReadFrom').textContent='from: '+m.from;$('wReadBody').textContent=m.body;
-        $('wReadCount').textContent='5';$('wReadCount').style.color='var(--spill)';
-        $('wRead').classList.add('show');
-        fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});
-        startDestruct(id);
-    }
-
+    async function fetchInbox(){if(IS_GUEST)return;try{const r=await fetch('/api/whisper?username='+encodeURIComponent(ME));if(!r.ok)return;const raw=await r.json();if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}const kp=await getKP();const now=Date.now();msgs=await Promise.all(raw.map(async m=>{const exp=new Date(m.destroy_at).getTime(),rem=exp-now;const h=Math.floor(rem/3600000),mn=Math.floor((rem%3600000)/60000);const body=await ECDH.decrypt(m.message,kp.privJWK);return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};}));renderList();setDot(msgs.length>0);}catch(e){console.warn('[WH]',e);}}
+    function renderList(){const el=$('wList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');}
+    async function openMsg(id){const m=msgs.find(x=>x.id===id);if(!m)return;readId=id;$('wReadFrom').textContent='from: '+m.from;$('wReadBody').textContent=m.body;$('wReadCount').textContent='5';$('wReadCount').style.color='var(--spill)';$('wRead').classList.add('show');fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});startDestruct(id);}
     function startDestruct(id){clearInterval(dTimer);let n=5;dTimer=setInterval(()=>{n--;const el=$('wReadCount');if(!el){clearInterval(dTimer);return;}el.textContent=n;if(n<=2)el.style.color='#ff3b6f';if(n<=0){clearInterval(dTimer);burnMsg(id);}},1000);}
-
-    function burnMsg(id){
-        const body=$('wReadBody');if(body)body.classList.add('w-burning');
-        msgs=msgs.filter(m=>m.id!==id);
-        fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});
-        setTimeout(()=>{$('wRead').classList.remove('show');if(body){body.classList.remove('w-burning');body.textContent='';}$('wReadCount').style.color='var(--spill)';$('wInbox').classList.add('show');renderList();setDot(msgs.length>0);},750);
-    }
-
+    function burnMsg(id){const body=$('wReadBody');if(body)body.classList.add('w-burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('wRead').classList.remove('show');if(body){body.classList.remove('w-burning');body.textContent='';}$('wReadCount').style.color='var(--spill)';$('wInbox').classList.add('show');renderList();setDot(msgs.length>0);},750);}
     function closeRead(){clearInterval(dTimer);if(readId){if(msgs.find(m=>m.id===readId))burnMsg(readId);readId=null;}$('wRead').classList.remove('show');}
-
-    async function sendMsg(toUsername,plaintext){
-        const recPubJWK=await ECDH.fetchRecipientPubkey(toUsername);
-        if(!recPubJWK)return{ok:false,reason:'no_pubkey'};
-        const messageEnc=await ECDH.encrypt(plaintext.trim(),recPubJWK);
-        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,messageEnc})});
-        return{ok:r.ok||r.status===202,reason:null};
-    }
-
+    async function sendMsg(toUsername,plaintext){const recPubJWK=await ECDH.fetchRecipientPubkey(toUsername);if(!recPubJWK)return{ok:false,reason:'no_pubkey'};const messageEnc=await ECDH.encrypt(plaintext.trim(),recPubJWK);const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,messageEnc})});return{ok:r.ok||r.status===202,reason:null};}
     function startPolling(){fetchInbox();clearInterval(pollTimer);pollTimer=setInterval(fetchInbox,POLL_WH_MS);}
-
     return{open:openMsg,closeRead,sendMsg,startPolling,fetchInbox};
 })();
 window.WH=WH;
 
-/* ═══════════════════════════════════════════════
-   UI + STATE
-═══════════════════════════════════════════════ */
 function setupGuestUI(){
     const sec=$('userSection');if(!sec)return;
     if(IS_GUEST){
@@ -682,73 +574,45 @@ function radarLoop(cv){const ctx=cv.getContext('2d');function draw(){const w=cv.
 async function cleanup(){clearAllTimers();const body={userId:UID};if(roomId)body.roomId=roomId;try{await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true});}catch(e){}}
 window.addEventListener('beforeunload',cleanup);
 
-/* ── Step helper untuk sending mask ── */
 function setStep(n){['whs1','whs2','whs3','whs4'].forEach((id,i)=>{const el=$(id);if(!el)return;el.className='wh-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
-
 function resetWhisperSheet(){$('whNoPub').classList.remove('show');$('whPhil').style.display='';$('whForm').style.display='';}
 
-/* ═══════════════════════════════════════════════
-   EVENT WIRING
-═══════════════════════════════════════════════ */
 window.addEventListener('load',async()=>{
     await init();
-
     if(!IS_GUEST){
         $('btnHot').onclick=()=>{if(state!==S.IDLE)return;if(!isInsomniaActive()){toast('🌙 Insomnia buka jam 22.00 WIB');return;}startBid('hot_take');};
         $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');};
     }
-
     $('scanCancel').onclick=async()=>{if(state===S.BIDDING){clearBidTimers();await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});enterIdle();toast('Pencarian dibatalkan');}};
     $('btnAccept').onclick=acceptInv;
     $('btnDecline').onclick=async()=>{if(pendingInv)await api('/api/invite',{action:'decline',userId:UID,username:ME,invitationId:pendingInv.id});hidePopup();};
-
     const chatSend=async()=>{const inp=$('chatInput'),msg=inp.value.trim();if(!msg)return;inp.value='';if(state===S.CHAT_REAL)await sendReal(msg);else if(state===S.CHAT_AI){addMsg('user',msg,isInsomnia?ME:null);await sendAI(msg,false);}};
     $('chatSend').onclick=chatSend;
     $('chatInput').onkeypress=e=>{if(e.key==='Enter')chatSend();};
     $('chatClose').onclick=async()=>{if(state===S.CHAT_REAL){addSys('🔴 Kamu mengakhiri chat');await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});}setTimeout(enterIdle,500);};
-
     if(!IS_GUEST)$('whisperBtn').onclick=()=>{resetWhisperSheet();$('whisperOverlay').classList.add('show');};
-
     $('whisperCancel').onclick=()=>{$('whisperOverlay').classList.remove('show');$('whisperTarget').value='';$('whisperMessage').value='';};
-
     $('whNoPubBack').onclick=resetWhisperSheet;
-
     $('whisperSend').onclick=async()=>{
         const toEl=$('whisperTarget'),msgEl=$('whisperMessage');
         const to=(toEl.value||'').trim().replace('@','').toLowerCase();
         const msg=(msgEl.value||'').trim();
         if(!to||!msg){toast('Isi semua field');return;}
         if(!/^[a-z0-9_.]{2,24}$/.test(to)){toast('Username tidak valid');return;}
-
         const mask=$('whMask');mask.classList.add('show');setStep(0);
-
         try{
             await new Promise(r=>setTimeout(r,250));setStep(1);
-
             const recPubJWK=await ECDH.fetchRecipientPubkey(to);
-            if(!recPubJWK){
-                mask.classList.remove('show');
-                $('whPhil').style.display='none';$('whForm').style.display='none';
-                $('whNoPub').classList.add('show');
-                return;
-            }
+            if(!recPubJWK){mask.classList.remove('show');$('whPhil').style.display='none';$('whForm').style.display='none';$('whNoPub').classList.add('show');return;}
             setStep(2);
-
             const messageEnc=await ECDH.encrypt(msg.trim(),recPubJWK);
             setStep(3);await new Promise(r=>setTimeout(r,200));
-
             const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc})});
             setStep(3);await new Promise(r=>setTimeout(r,350));
-
             mask.classList.remove('show');
-            if(r.ok||r.status===202){
-                $('whisperOverlay').classList.remove('show');
-                toEl.value='';msgEl.value='';
-                toast('✦ whisper terenkripsi — delivery diacak waktunya');
-            }else{toast('Gagal — cek username penerima');}
+            if(r.ok||r.status===202){$('whisperOverlay').classList.remove('show');toEl.value='';msgEl.value='';toast('✦ whisper terenkripsi — delivery diacak waktunya');}else{toast('Gagal — cek username penerima');}
         }catch(e){mask.classList.remove('show');console.error('[whisper]',e);toast('Error enkripsi');}
     };
-
     $('wTrigger').onclick=()=>{WH.fetchInbox();$('wInbox').classList.add('show');};
     $('wInboxClose').onclick=()=>$('wInbox').classList.remove('show');
     $('wBack').onclick=()=>{WH.closeRead();$('wInbox').classList.add('show');};
@@ -757,54 +621,157 @@ window.addEventListener('load',async()=>{
 })();
 </script>
 
-<!-- LOGIN MODAL -->
+<!-- ══════════════════════════════════════════════════
+     LOGIN MODAL — tema matching login.html
+     Disclaimer sebagai hero menggantikan wordmark
+══════════════════════════════════════════════════ -->
 <div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
-  <div class="lm-box">
-    <button class="lm-close" onclick="closeLM()">✕</button>
-    <div id="lmPanelLogin">
-      <div class="lm-title">MASUK</div>
-      <div class="lm-label">username</div>
-      <input class="lm-input" id="lmU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
-      <div class="lm-label">PIN 6 digit</div>
-      <input class="lm-input lm-pin" id="lmP" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
-      <div class="lm-fb" id="lmFbL"></div>
-      <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()">MASUK →</button>
-      <div class="lm-sw"><button onclick="lmSwitch('reg')">Belum punya akun? Daftar</button></div>
-    </div>
-    <div id="lmPanelReg" style="display:none">
-      <div class="lm-title">DAFTAR</div>
-      <div class="lm-label">username — format <span style="color:var(--as);font-family:var(--font-mono)">kata.kata</span></div>
-      <input class="lm-input" id="lmRU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
-      <div class="lm-label">PIN 6 digit</div>
-      <input class="lm-input lm-pin" id="lmRP" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
-      <div class="lm-label">konfirmasi PIN</div>
-      <input class="lm-input lm-pin" id="lmRP2" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
-      <div class="lm-fb" id="lmFbR"></div>
-      <div class="lm-agree">
-        <input type="checkbox" id="lmAg" onchange="lmUpdateReg()">
-        <label for="lmAg">PIN hilang = akun hilang <b style="color:var(--ap)">PERMANENT</b> — no recovery</label>
+  <div class="lm-shell">
+
+    <!-- gradient accent bar -->
+    <div class="lm-accent"></div>
+
+    <!-- hero — disclaimer zone -->
+    <div class="lm-hero">
+      <span class="lm-hero-tr"></span>
+      <span class="lm-hero-bl"></span>
+      <div class="lm-eyebrow">zero-knowledge platform</div>
+      <div class="lm-disclaimer">
+        di ruang ini kamu akan bertemu suara&#8209;suara.<br>
+        beberapa nyata &mdash; beberapa bukan.<br>
+        beberapa hadir dengan niat baik &mdash;
+        <span class="warn">beberapa tidak.</span><br><br>
+        <span class="dim">
+          jejak.space adalah ruang anonim terbuka.<br>
+          kami tidak memverifikasi identitasmu.<br>
+          dengan masuk, kamu menyatakan telah berusia 17+<br>
+          dan bertanggung jawab penuh atas<br>
+          setiap kata yang kamu tulis di sini.
+        </span>
+        <span class="closing">&mdash; masuk sadar. keluar utuh.</span>
       </div>
-      <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px">DAFTAR →</button>
-      <div class="lm-sw"><button onclick="lmSwitch('login')">Sudah punya akun? Masuk</button></div>
     </div>
+
+    <!-- form box -->
+    <div class="lm-box">
+      <button class="lm-close" onclick="closeLM()">✕</button>
+
+      <!-- LOGIN -->
+      <div id="lmPanelLogin">
+        <div class="lm-title">MASUK</div>
+        <div class="lm-label">username</div>
+        <input class="lm-input" id="lmU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+        <div class="lm-label">PIN 6 digit</div>
+        <input class="lm-input lm-pin" id="lmP" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <div class="lm-fb" id="lmFbL"></div>
+        <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()">MASUK →</button>
+        <div class="lm-sw"><button onclick="lmSwitch('reg')">Belum punya akun? Daftar</button></div>
+        <div class="lm-pin-note">lupa PIN? tidak bisa dipulihkan — buat akun baru.</div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="lmPanelReg" style="display:none">
+        <div class="lm-title">DAFTAR</div>
+        <div class="lm-label">username &mdash; format <span style="color:var(--as);font-family:'DM Mono',monospace">kata.kata</span></div>
+        <input class="lm-input" id="lmRU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+        <div class="lm-label">PIN 6 digit</div>
+        <input class="lm-input lm-pin" id="lmRP" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <div class="lm-label">konfirmasi PIN</div>
+        <input class="lm-input lm-pin" id="lmRP2" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <div class="lm-fb" id="lmFbR"></div>
+        <div class="lm-agree">
+          <input type="checkbox" id="lmAg" onchange="lmUpdateReg()">
+          <label for="lmAg">PIN hilang = akun hilang <b style="color:var(--ap)">PERMANENT</b> — no recovery</label>
+        </div>
+        <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px">DAFTAR →</button>
+        <div class="lm-sw"><button onclick="lmSwitch('login')">Sudah punya akun? Masuk</button></div>
+      </div>
+    </div>
+
   </div>
 </div>
+
 <script>
-const LM={SU:'https://fuovfrdicdhnlymnacpz.supabase.co',SK_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},async get(path){const r=await fetch(this.SU+'/rest/v1'+path,{headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY}});const t=await r.text();return t?JSON.parse(t):[];},async post(path,body){const r=await fetch(this.SU+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},async sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},async deviceFP(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('jejak_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},async authHash(pin,username){const fp=await this.deviceFP();return this.sha256(pin+':'+username+':'+fp+':jejak_local_v1');},validUsername(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const parts=v.split('.');if(parts.length!==2)return null;if(parts[0].length<2||parts[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(parts[0])||!/^[a-z][a-z0-9]*$/.test(parts[1]))return null;return v;},validPin(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(p==='123456'||p==='654321'||p==='000000'||p==='999999')return false;return true;}};
-function openLoginModal(){document.getElementById('lmBg').classList.add('show');setTimeout(()=>document.getElementById('lmU').focus(),100);}
+const LM={
+  SU:'https://fuovfrdicdhnlymnacpz.supabase.co',
+  SK_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
+  LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
+  async get(path){const r=await fetch(this.SU+'/rest/v1'+path,{headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY}});const t=await r.text();return t?JSON.parse(t):[];},
+  async post(path,body){const r=await fetch(this.SU+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
+  async sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
+  async deviceFP(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('jejak_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
+  async authHash(pin,username){const fp=await this.deviceFP();return this.sha256(pin+':'+username+':'+fp+':jejak_local_v1');},
+  validUsername(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const parts=v.split('.');if(parts.length!==2)return null;if(parts[0].length<2||parts[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(parts[0])||!/^[a-z][a-z0-9]*$/.test(parts[1]))return null;return v;},
+  validPin(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(p==='123456'||p==='654321'||p==='000000'||p==='999999')return false;return true;}
+};
+
+function openLoginModal(){
+  document.getElementById('lmBg').classList.add('show');
+  lmSwitch('login');
+  setTimeout(()=>document.getElementById('lmU').focus(),120);
+}
 function closeLM(){document.getElementById('lmBg').classList.remove('show');}
-function lmSwitch(to){document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none';document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none';setTimeout(()=>{document.getElementById(to==='login'?'lmU':'lmRU').focus();},100);}
+function lmSwitch(to){
+  document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none';
+  document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none';
+  setTimeout(()=>document.getElementById(to==='login'?'lmU':'lmRU').focus(),100);
+}
 function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
 function lmUpdateLogin(){const ok=LM.validUsername(document.getElementById('lmU').value)&&LM.validPin(document.getElementById('lmP').value);document.getElementById('lmBtnL').disabled=!ok;}
 function lmUpdateReg(){const pin=document.getElementById('lmRP').value;const pin2=document.getElementById('lmRP2').value;const ok=LM.validUsername(document.getElementById('lmRU').value)&&LM.validPin(pin)&&pin===pin2&&document.getElementById('lmAg').checked;document.getElementById('lmBtnR').disabled=!ok;}
-async function lmDoLogin(){const u=LM.validUsername(document.getElementById('lmU').value);const p=document.getElementById('lmP').value;lmFb('lmFbL','','');if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='VERIFIKASI...';try{const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');const user=Array.isArray(data)?data[0]:null;if(!user)throw new Error('Username tidak ditemukan');const stored=localStorage.getItem(LM.LS.a);if(!stored)throw new Error('Akun belum terdaftar di device ini — daftar ulang');const hash=await LM.authHash(p,u);if(hash!==stored)throw new Error('PIN salah');localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);localStorage.setItem(LM.LS.l,'true');lmFb('lmFbL','s','✓ Login berhasil!');setTimeout(()=>window.location.reload(),700);}catch(err){lmFb('lmFbL','e',err.message||'Login gagal');btn.disabled=false;btn.textContent='MASUK →';}}
-async function lmDoReg(){const u=LM.validUsername(document.getElementById('lmRU').value);const p=document.getElementById('lmRP').value;const p2=document.getElementById('lmRP2').value;lmFb('lmFbR','','');if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;}if(!LM.validPin(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;}if(p!==p2){lmFb('lmFbR','e','PIN tidak cocok');return;}const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent='PROSES...';try{const data=await LM.post('/profiles?select=id,username',{username:u});const user=Array.isArray(data)?data[0]:data;if(!user||!user.id)throw new Error('Tidak ada data returned');const hash=await LM.authHash(p,u);localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,hash);lmFb('lmFbR','s','Akun dibuat!');setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800);}catch(err){const isDupe=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');lmFb('lmFbR','e',isDupe?'Username sudah dipakai':(err.message||'Gagal'));btn.disabled=false;btn.textContent='DAFTAR →';}}
-(function wireModalInputs(){function toUsername(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const dotIdx=v.indexOf('.');if(dotIdx!==-1)v=v.slice(0,dotIdx+1)+v.slice(dotIdx+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
-function toPin(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
-function wire(id,fn,upFn){const el=document.getElementById(id);if(!el)return;fn(el);el.addEventListener('input',upFn);}
-wire('lmU',toUsername,lmUpdateLogin);wire('lmP',toPin,lmUpdateLogin);
-wire('lmRU',toUsername,lmUpdateReg);wire('lmRP',toPin,lmUpdateReg);wire('lmRP2',toPin,lmUpdateReg);
-const ag=document.getElementById('lmAg');if(ag)ag.addEventListener('change',lmUpdateReg);
+
+async function lmDoLogin(){
+  const u=LM.validUsername(document.getElementById('lmU').value);
+  const p=document.getElementById('lmP').value;
+  lmFb('lmFbL','','');
+  if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
+  if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}
+  const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='VERIFIKASI...';
+  try{
+    const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username&limit=1');
+    const user=Array.isArray(data)?data[0]:null;
+    if(!user)throw new Error('Username tidak ditemukan');
+    const stored=localStorage.getItem(LM.LS.a);
+    if(!stored)throw new Error('Akun belum terdaftar di device ini — daftar ulang');
+    const hash=await LM.authHash(p,u);
+    if(hash!==stored)throw new Error('PIN salah');
+    localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);localStorage.setItem(LM.LS.l,'true');
+    lmFb('lmFbL','s','✓ Login berhasil!');
+    setTimeout(()=>window.location.reload(),700);
+  }catch(err){lmFb('lmFbL','e',err.message||'Login gagal');btn.disabled=false;btn.textContent='MASUK →';}
+}
+
+async function lmDoReg(){
+  const u=LM.validUsername(document.getElementById('lmRU').value);
+  const p=document.getElementById('lmRP').value;
+  const p2=document.getElementById('lmRP2').value;
+  lmFb('lmFbR','','');
+  if(!u){lmFb('lmFbR','e','Format username: kata.kata');return;}
+  if(!LM.validPin(p)){lmFb('lmFbR','e','PIN terlalu lemah');return;}
+  if(p!==p2){lmFb('lmFbR','e','PIN tidak cocok');return;}
+  const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent='PROSES...';
+  try{
+    const data=await LM.post('/profiles?select=id,username',{username:u});
+    const user=Array.isArray(data)?data[0]:data;
+    if(!user||!user.id)throw new Error('Tidak ada data returned');
+    const hash=await LM.authHash(p,u);
+    localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,hash);
+    lmFb('lmFbR','s','Akun dibuat!');
+    setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800);
+  }catch(err){
+    const isDupe=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');
+    lmFb('lmFbR','e',isDupe?'Username sudah dipakai':(err.message||'Gagal'));
+    btn.disabled=false;btn.textContent='DAFTAR →';
+  }
+}
+
+(function wireModalInputs(){
+  function toUsername(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const dotIdx=v.indexOf('.');if(dotIdx!==-1)v=v.slice(0,dotIdx+1)+v.slice(dotIdx+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
+  function toPin(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
+  function wire(id,fn,upFn){const el=document.getElementById(id);if(!el)return;fn(el);el.addEventListener('input',upFn);}
+  wire('lmU',toUsername,lmUpdateLogin);wire('lmP',toPin,lmUpdateLogin);
+  wire('lmRU',toUsername,lmUpdateReg);wire('lmRP',toPin,lmUpdateReg);wire('lmRP2',toPin,lmUpdateReg);
+  const ag=document.getElementById('lmAg');if(ag)ag.addEventListener('change',lmUpdateReg);
 })();
 </script>
 </body>
