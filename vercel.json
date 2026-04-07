@@ -3,24 +3,31 @@
     {
       "source": "/",
       "destination": "/spill.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/login.html",
+      "destination": "/login",
+      "permanent": true
+    },
+    {
+      "source": "/index.html",
+      "destination": "/",
+      "permanent": true
     }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "no-referrer"
-        }
+        {"key":"X-Content-Type-Options","value":"nosniff"},
+        {"key":"X-Frame-Options","value":"DENY"},
+        {"key":"Referrer-Policy","value":"no-referrer"}
       ]
     }
   ]
