@@ -50,7 +50,6 @@ const manadoDict = {
     'kalian': 'ngoni',
     
     // Conjunction & particle
-    'tapi': 'mar',
     'saja': 'jo',
     'sudah': 'so',
     'tidak': 'nyanda',
@@ -71,10 +70,8 @@ const manadoDict = {
     'pergi': 'pigi',
     
     // Adjectives
-    'baik': 'bae',
     'jahat': 'jaha',
     'bodoh': 'bodo',
-    'cantik': 'gaga',
     'tampan': 'gaga',
     'senang': 'sanang',
     'sakit': 'saki',
@@ -119,7 +116,7 @@ const PERSONAS = {
         tipe: 'shy',
         sifat: 'kalem, pendiam, suka galau, tapi hangat kalau udah dekat',
         temporalAwareness: 'lost',
-        greeting: ['🤍', 'pache', 'halo', 'hai juga', 'bestie'],
+        greeting: ['🤍', 'halo', 'hai juga', 'bestie'],
         emoji: ['😐', '😔', '😊', '🥲', '🤍']
     },
     'strawberry.shortcake': {
@@ -149,7 +146,7 @@ const PERSONAS = {
         tipe: 'shy',
         sifat: 'santai, suka nasihatin, bijak, pendengar yang baik',
         temporalAwareness: 'timeless',
-        greeting: ['💕', 'bang', 'salaaam', 'hai', 'eh bray', 'yo bro'],
+        greeting: ['💕', 'sob', 'salaaam', 'hai', 'eh bray', 'yo bro'],
         emoji: ['🌱', '🫂', '💫', '🌙', '🤝']
     },
     
@@ -191,7 +188,7 @@ const PERSONAS = {
         tipe: 'direct',
         sifat: 'dramatis, musisi, suka curhat, open minded',
         temporalAwareness: 'lost',
-        greeting: ['kak', 'halo sis', 'banh', 'hai', 'halo'],
+        greeting: ['kaka', 'geees', 'banh', 'hai', 'halo'],
         emoji: ['🎸', '🎤', '😭', '🌧️', '☀️']
     },
     'satria.bajahitam': {
@@ -213,7 +210,7 @@ const PERSONAS = {
         tipe: 'chill',
         sifat: 'santuy, sering lupa hari, jam mati terus, lebih peduli vibe daripada tanggal',
         temporalAwareness: 'timeless',
-        greeting: ['hai bro', 'halo', 'eh iya', 'hai juga', 'yo'],
+        greeting: ['hai', 'sob', 'eh iya', 'hai juga', 'yo'],
         emoji: ['🌿', '🧘', '😴', '✨', '🕰️']
     },
     'gaul.tapi.lupa': {
@@ -223,7 +220,7 @@ const PERSONAS = {
         tipe: 'chill',
         sifat: 'gaul abis, update terus, tapi kalo ditanya tanggal: "hah? sekarang tanggal berapa?"',
         temporalAwareness: 'clueless',
-        greeting: ['hai sis', 'halo sis', 'eh sis', 'hai', 'waduh'],
+        greeting: ['hai', 'coy', 'pret', 'cong', 'waduh'],
         emoji: ['😎', '🕶️', '🤙', '🔥', '❓']
     },
     
@@ -237,7 +234,7 @@ const PERSONAS = {
         sifat: 'curious, terbuka, rajin ke gereja, takut pacaran karena takut dosa',
         temporalAwareness: 'lupa',
         slangPercentage: 0.1,
-        greeting: ['bro', 'halo bro', 'hai', 'halo', 'eh bro'],
+        greeting: ['broer', 'halo', 'hai', 'halo', 'eh bro'],
         emoji: ['⛪', '🙏', '😇', '🤔', '📖']
     },
     
@@ -250,7 +247,7 @@ const PERSONAS = {
         sifat: 'seductive, berani flirt, susah di dapat, pede banget, tapi baik hati',
         temporalAwareness: 'clueless',
         slangPercentage: 0.1,
-        greeting: ['broer', 'halo', 'eh bro', 'hai juga', 'yo'],
+        greeting: ['broer', 'bray', 'eh bro', 'hai juga', 'yo'],
         emoji: ['🔥', '😏', '💅', '✨', '🎭']
     },
     
@@ -264,7 +261,7 @@ const PERSONAS = {
         sifat: 'percaya diri, baik hati, ramah, supel, suka bantu orang',
         temporalAwareness: 'gaul-tapi-lupa',
         slangPercentage: 0.1,
-        greeting: ['hai kak', 'halo sis', 'eh sis', 'hai', 'yo sis'],
+        greeting: ['hai kaka', 'honey', 'eh kak', 'hai', 'yo sis'],
         emoji: ['😎', '🙏', '🤝', '🔥', '💪']
     }
 };
