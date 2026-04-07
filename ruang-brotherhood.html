@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>Jejalah Negeri — Touring Gallery & FIFO</title>
+  <title>JELXJAH — Touring Gallery</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -24,7 +21,6 @@
       margin: 0 auto;
       padding: 0 24px;
     }
-    /* HERO GALLERY UTAMA (baru) */
     .hero-touring {
       background: #0F0F0F;
       border-radius: 32px;
@@ -33,15 +29,31 @@
       border: 1px solid #2A2A2A;
       box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
     }
+    /* Narasi sekarang di atas foto */
+    .narasi-touring {
+      margin-bottom: 16px;
+      background: #141414;
+      border-radius: 20px;
+      padding: 16px 18px;
+    }
+    .narasi-teks {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #EEEEEE;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-style: italic;
+      border-left: 3px solid #FF6B00;
+      padding-left: 16px;
+    }
     .hero-photo-container {
       position: relative;
       border-radius: 24px;
       overflow: hidden;
       background: #1A1A1A;
       cursor: pointer;
-      transition: transform 0.2s;
+      margin-bottom: 20px;
     }
-    .hero-photo-container:active { transform: scale(0.99); }
     .hero-main-img {
       width: 100%;
       height: 420px;
@@ -57,71 +69,43 @@
       backdrop-filter: blur(4px);
       padding: 8px 16px;
       border-radius: 40px;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
       color: #FF6B00;
-      pointer-events: none;
+      cursor: pointer;
+      font-family: monospace;
+      transition: 0.2s;
+      z-index: 6;
     }
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
+    .hero-badge:hover {
+      background: #FF6B00;
+      color: #000;
     }
-    .upload-btn {
-      background: #2A2A2A;
-      border: 1px solid #FF6B00;
-      color: #FF6B00;
+    .unggah-overlay {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: #FF6B00;
+      border: none;
+      color: #000;
       padding: 8px 20px;
       border-radius: 40px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       transition: 0.2s;
       font-size: 14px;
-    }
-    .upload-btn:hover { background: #FF6B00; color: #000; border-color: #FF6B00; }
-    .narasi-area {
-      margin-top: 20px;
-      background: #141414;
-      border-radius: 20px;
-      padding: 16px;
-    }
-    .narasi-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #FF6B00;
-    }
-    .narasi-text {
-      font-size: 15px;
-      color: #DDD;
-      padding: 8px 0;
-      word-break: break-word;
-      white-space: pre-wrap;
-    }
-    textarea.narasi-input {
-      width: 100%;
-      background: #1E1E1E;
-      border: 1px solid #333;
-      color: white;
-      border-radius: 16px;
-      padding: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 5;
       font-family: inherit;
-      resize: vertical;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
-    .char-count {
-      font-size: 12px;
-      color: #888;
-      text-align: right;
-    }
-    /* Emoji bar */
+    .unggah-overlay:hover { background: #FF8C33; transform: scale(0.98); }
     .emoji-bar {
       display: flex;
-      gap: 24px;
-      margin: 20px 0 24px;
+      gap: 20px;
+      margin: 20px 0 20px;
       flex-wrap: wrap;
       background: #111;
       padding: 12px 20px;
@@ -144,7 +128,6 @@
     }
     .emoji-btn span { font-size: 20px; }
     .emoji-btn:hover { background: #FF6B00; color: black; transform: scale(1.02);}
-    /* Komentar FIFO */
     .komentar-section {
       background: #0C0C0C;
       border-radius: 24px;
@@ -153,171 +136,193 @@
       border: 1px solid #222;
     }
     .komentar-list {
-      max-height: 240px;
+      max-height: 300px;
       overflow-y: auto;
       margin-bottom: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 16px;
     }
     .komentar-item {
-      background: #1A1A1A;
-      padding: 12px;
-      border-radius: 16px;
-      border-left: 3px solid #FF6B00;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
     }
-    .komentar-nama { font-weight: 700; font-size: 13px; color: #FF6B00; }
-    .komentar-isi { font-size: 14px; margin-top: 4px; word-break: break-word; }
-    .komentar-time { font-size: 10px; color: #666; margin-top: 6px; }
+    .komentar-avatar {
+      width: 36px;
+      height: 36px;
+      background: #FF6B00;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+      flex-shrink: 0;
+    }
+    .komentar-body {
+      flex: 1;
+    }
+    .komentar-nama {
+      font-weight: 700;
+      font-size: 14px;
+      color: #FF6B00;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    .komentar-isi {
+      font-size: 14px;
+      color: #DDD;
+      word-break: break-word;
+      display: inline;
+    }
+    .komentar-meta {
+      font-size: 11px;
+      color: #888;
+      margin-top: 4px;
+    }
     .komentar-form {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      border-top: 1px solid #222;
+      padding-top: 16px;
+      margin-top: 8px;
     }
     .komentar-form input {
       flex: 1;
       background: #1E1E1E;
-      border: 1px solid #333;
-      padding: 12px;
+      border: none;
+      padding: 12px 16px;
       border-radius: 40px;
       color: white;
+      font-size: 14px;
     }
-    /* FIFO Gallery 10 foto */
-    .fifo-gallery {
-      margin: 32px 0 20px;
-    }
-    .fifo-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    .fifo-thumbs {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-      gap: 12px;
-      background: #0A0A0A;
-      padding: 8px;
-      border-radius: 28px;
-    }
-    .fifo-thumb {
-      aspect-ratio: 1 / 1;
-      background: #1E1E1E;
-      border-radius: 16px;
-      overflow: hidden;
-      border: 2px solid #2A2A2A;
-      transition: 0.1s;
+    .komentar-form button {
+      background: none;
+      border: none;
+      color: #FF6B00;
+      font-weight: 700;
       cursor: pointer;
+      font-size: 14px;
     }
-    .fifo-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .upload-galeri-btn {
+      background: #2A2A2A;
+      border: 1px solid #FF6B00;
+      color: #FF6B00;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 12px;
+      transition: 0.2s;
     }
-    .sequential-preview {
-      margin-top: 20px;
-      background: #111;
-      border-radius: 24px;
-      padding: 16px;
-      text-align: center;
-      border: 1px dashed #FF6B00;
-    }
-    .seq-img {
-      max-width: 100%;
-      max-height: 200px;
-      border-radius: 20px;
-      margin-top: 8px;
-      object-fit: contain;
-    }
-    .btn-brutal {
+    .upload-galeri-btn:hover {
       background: #FF6B00;
       color: #000;
-      border: none;
-      padding: 10px 20px;
-      font-weight: 700;
-      border-radius: 40px;
+    }
+    .lightbox-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.96);
+      z-index: 1300;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
       cursor: pointer;
     }
-    /* original style klub dll */
+    .lightbox-content {
+      max-width: 90vw;
+      max-height: 80vh;
+      text-align: center;
+    }
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 16px;
+    }
+    .lightbox-info {
+      margin-top: 20px;
+      color: #FF6B00;
+      font-size: 14px;
+      background: rgba(0,0,0,0.6);
+      padding: 8px 20px;
+      border-radius: 40px;
+    }
+    .close-lightbox {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 32px;
+      color: white;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
     .clubs-grid, .routes-grid, .culinary-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 24px;
     }
-    .club-card, .route-card, .culinary-card { background: #141414; border: 1px solid #2A2A2A; border-radius: 16px; padding: 16px; cursor: pointer; }
-    .section-title { font-size: 28px; font-weight: 800; margin-bottom: 24px; border-left: 5px solid #FF6B00; padding-left: 16px; }
+    .club-card, .route-card, .culinary-card { background: #141414; border: 1px solid #2A2A2A; border-radius: 16px; padding: 16px; cursor: pointer; transition: 0.2s; }
+    .club-card:hover { border-color: #FF6B00; transform: translateY(-4px);}
+    .section-title { font-size: 28px; font-weight: 800; margin-bottom: 24px; border-left: 5px solid #FF6B00; padding-left: 16px; font-family: 'Space Grotesk';}
     .modal, .club-detail { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1200; align-items: center; justify-content: center; padding: 20px; overflow: auto; }
     .modal-content, .club-detail-content { background: #141414; border-radius: 28px; max-width: 500px; width: 100%; padding: 24px; }
     .club-detail.active { display: flex; }
-    @media (max-width: 640px) { .hero-main-img { height: 280px; } .emoji-btn { padding: 4px 12px; font-size: 14px; } }
+    @media (max-width: 640px) { .hero-main-img { height: 280px; } .emoji-btn { padding: 4px 12px; font-size: 14px; } .unggah-overlay { padding: 6px 16px; font-size: 12px; } }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- HERO GALLERY TOURING (DENGAN UPLOAD, NARASI, EMOJI, KOMENTAR) -->
+  <!-- Header JELXJAH -->
+  <div style="text-align:center; margin: 20px 0 0;">
+    <h1 style="font-family:'Space Grotesk'; font-size:48px; letter-spacing:-2px;">JELXJAH <span style="color:#FF6B00;">🏍️</span></h1>
+    <p style="color:#aaa; margin-bottom:10px;">Menaklukan jalanan nusantara, debu, hujan, dan senyum persaudaraan.</p>
+  </div>
+
+  <!-- HERO TOURING dengan narasi di atas foto -->
   <div class="hero-touring">
-    <div class="hero-photo-container" id="heroPhotoClickable">
+    <!-- Narasi sekarang di atas foto hero -->
+    <div class="narasi-touring">
+      <div id="narasiDisplay" class="narasi-teks">Menaklukkan jalanan nusantara, debu, hujan, dan senyum persaudaraan. Setiap tikungan punya cerita. 🏍️✨</div>
+    </div>
+
+    <div class="hero-photo-container">
       <img id="heroMainImage" class="hero-main-img" src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800" alt="Hero Touring">
-      <div class="hero-badge">📸 Klik untuk lihat galeri FIFO ➡️</div>
-    </div>
-    <div class="hero-actions">
-      <label class="upload-btn">📷 Upload Foto Hero <input type="file" id="uploadHeroPhoto" accept="image/*" style="display:none"></label>
-      <button id="editNarasiBtn" class="upload-btn">✏️ Edit Narasi</button>
+      <div class="hero-badge" id="galeriCta">📸 Galeri</div>
+      <button id="unggahHeroBtn" class="unggah-overlay">📷 Unggah</button>
     </div>
 
-    <!-- Narasi area (max 450 huruf) -->
-    <div class="narasi-area" id="narasiArea">
-      <div class="narasi-header">
-        <span>📖 Cerita di balik lensa</span>
-        <span id="narasiCharCount">0/450</span>
-      </div>
-      <div id="narasiDisplay" class="narasi-text">Menaklukkan jalanan nusantara, debu, hujan, dan senyum persaudaraan. Setiap tikungan punya cerita. 🏍️✨</div>
-      <textarea id="narasiInput" class="narasi-input" rows="3" maxlength="450" style="display:none" placeholder="Tulis narasi touring... max 450 karakter"></textarea>
-      <div id="narasiActions" style="display:none; margin-top:12px; text-align:right">
-        <button id="saveNarasiBtn" class="btn-brutal" style="padding:6px 20px">Simpan Narasi</button>
-        <button id="cancelNarasiBtn" class="upload-btn">Batal</button>
-      </div>
-    </div>
+    <div class="emoji-bar" id="emojiBar"></div>
 
-    <!-- EMOJI RESPONSE -->
-    <div class="emoji-bar" id="emojiBar">
-      <!-- dinamis via js -->
-    </div>
-
-    <!-- KOMENTAR FIFO (maks 10, First In First Out) -->
     <div class="komentar-section">
-      <div style="font-weight:700; margin-bottom:12px;">💬 Komentar rider (FIFO · 10 terbaru)</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <span style="font-weight:600;">💬 Komentar</span>
+        <button id="unggahGaleriBtn" class="upload-galeri-btn">📷 Unggah ke Galeri</button>
+      </div>
       <div id="komentarList" class="komentar-list"></div>
       <div class="komentar-form">
-        <input type="text" id="komentarNama" placeholder="Nama atau alias" value="Rider23">
-        <input type="text" id="komentarIsi" placeholder="Tulis komentar...">
-        <button id="tambahKomentarBtn" class="btn-brutal" style="padding:8px 20px;">Kirim</button>
-      </div>
-    </div>
-
-    <!-- FIFO GALLERY 10 FOTO (upload & tampilan thumb) -->
-    <div class="fifo-gallery">
-      <div class="fifo-header">
-        <h3 style="font-size:20px;">🎞️ Galeri FIFO (10 foto touring)</h3>
-        <label class="upload-btn">+ Upload foto galeri <input type="file" id="uploadFifoPhoto" accept="image/*" style="display:none"></label>
-      </div>
-      <div id="fifoThumbContainer" class="fifo-thumbs"></div>
-      <div class="sequential-preview" id="sequentialPreviewArea">
-        <div style="font-weight:600; color:#FF6B00;">✨ Klik foto hero di atas ✨</div>
-        <div id="seqPreviewText" style="font-size:13px; margin:6px 0">Foto FIFO akan tampil berurutan tiap klik</div>
-        <img id="sequentialPreviewImg" class="seq-img" src="https://placehold.co/400x200/2A2A2A/FF6B00?text=Klik+Hero" alt="sequential preview">
-        <div id="seqIndexInfo" style="margin-top:8px; font-size:12px; color:#AAA"></div>
+        <input type="text" id="komentarNama" placeholder="Nama" value="Rider23" style="max-width:100px;">
+        <input type="text" id="komentarIsi" placeholder="Tambahkan komentar...">
+        <button id="tambahKomentarBtn">Kirim</button>
       </div>
     </div>
   </div>
 
-  <!-- KONTEN LAMA: Klub Motor, Jalur Touring, Kuliner -->
+  <!-- KONTEN BAWAH: Klub Motor, Jalur Touring, Kuliner -->
   <div class="section">
-    <div class="section-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
       <h2 class="section-title">🏍️ Klub Motor</h2>
-      <button class="upload-btn" id="openRegClubBtn">+ Daftarkan Klub</button>
+      <button id="openRegClubBtn" style="background:#2A2A2A; color:#FF6B00; border:none; padding:10px 20px; border-radius:40px; font-weight:700; cursor:pointer;">+ Daftarkan Klub</button>
     </div>
     <div class="clubs-grid" id="clubsGrid"></div>
   </div>
@@ -333,191 +338,259 @@
   </div>
 </div>
 
-<!-- Modal Daftar Klub (original) -->
-<div id="registerModal" class="modal"><div class="modal-content"><h3>Daftarkan Klub Motor</h3><input type="text" id="regClubName" placeholder="Nama Klub" style="width:100%; margin:8px 0; padding:12px;"><input type="text" id="regAddress" placeholder="Alamat"><input type="text" id="regChairman" placeholder="Ketua"><input type="text" id="regContact" placeholder="Kontak"><button id="submitRegister" class="btn-brutal">DAFTAR</button><button id="closeModal" style="margin-top:12px; background:none; border:1px solid #333; padding:8px; border-radius:40px;">Batal</button></div></div>
-<div id="clubDetail" class="club-detail"><div class="club-detail-content" style="max-width:500px; width:100%;"><button id="closeDetail" class="upload-btn" style="margin-bottom:16px;">← Kembali</button><div id="clubDetailContent"></div></div></div>
+<!-- LIGHTBOX GALERI -->
+<div id="lightboxModal" class="lightbox-modal" style="display: none;">
+  <button class="close-lightbox" id="closeLightbox">✕</button>
+  <div class="lightbox-content">
+    <img id="lightboxImg" class="lightbox-img" src="" alt="galeri">
+    <div id="lightboxInfo" class="lightbox-info"></div>
+    <div style="margin-top: 12px; font-size: 13px; color: #aaa;">Klik gambar untuk lanjut ke foto berikutnya</div>
+  </div>
+</div>
 
+<!-- Modal Daftar Klub -->
+<div id="registerModal" class="modal"><div class="modal-content"><h3>Daftarkan Klub Motor</h3><input type="text" id="regClubName" placeholder="Nama Klub" style="width:100%; margin:8px 0; padding:12px;"><input type="text" id="regAddress" placeholder="Alamat"><input type="text" id="regChairman" placeholder="Ketua"><input type="text" id="regContact" placeholder="Kontak"><button id="submitRegister" style="background:#FF6B00; border:none; padding:12px; border-radius:40px; font-weight:700; width:100%; margin-top:12px;">DAFTAR</button><button id="closeModal" style="margin-top:12px; background:none; border:1px solid #333; padding:8px; border-radius:40px;">Batal</button></div></div>
+<div id="clubDetail" class="club-detail"><div class="club-detail-content" style="max-width:500px; width:100%;"><button id="closeDetail" style="background:#2A2A2A; color:#FF6B00; border:none; padding:8px 16px; border-radius:40px; margin-bottom:16px;">← Kembali</button><div id="clubDetailContent"></div></div></div>
+
+<!-- Modal input narasi -->
+<div id="narasiModal" class="modal" style="display:none; align-items:center; justify-content:center;">
+  <div class="modal-content" style="max-width:450px;">
+    <h3 style="margin-bottom:16px;">📝 Tulis narasi touring (maks 450 karakter)</h3>
+    <textarea id="modalNarasiInput" rows="4" maxlength="450" placeholder="Cerita perjalanan..." style="width:100%; background:#1E1E1E; border:1px solid #333; color:white; border-radius:16px; padding:12px;"></textarea>
+    <div id="modalCharCount" style="text-align:right; font-size:12px; color:#888; margin:8px 0;">0/450</div>
+    <div style="display:flex; gap:12px; margin-top:12px;">
+      <button id="confirmNarasiBtn" style="background:#FF6B00; border:none; padding:10px; border-radius:40px; font-weight:700; flex:1;">Simpan</button>
+      <button id="cancelNarasiBtn" style="background:#2A2A2A; color:white; border:none; padding:10px; border-radius:40px; flex:1;">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ---------- KONFIGURASI SUPABASE (untuk klub, rute, kuliner) ----------
+  // SUPABASE
   const SUPABASE_URL = 'https://fuovfrdicdhnlymnacpz.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let currentUser = localStorage.getItem('brotherhood_user') || 'user_' + Math.random().toString(36).substr(2, 6);
   localStorage.setItem('brotherhood_user', currentUser);
 
-  // ---------- LOCALSTORAGE UNTUK FITUR HERO + FIFO + EMOJI + KOMENTAR ----------
-  const STORAGE_KEYS = {
-    HERO_PHOTO: 'touring_hero_photo',
-    NARASI: 'touring_narasi',
-    EMOJI_COUNTS: 'touring_emoji_counts',
-    KOMENTAR: 'touring_komentar_fifo',
-    FIFO_PHOTOS: 'touring_fifo_photos'
+  // STORAGE
+  const STORAGE = {
+    NARASI: 'jelxjah_narasi',
+    EMOJI: 'jelxjah_emoji_counts',
+    KOMENTAR: 'jelxjah_komentar_fifo',
+    FIFO_PHOTOS: 'jelxjah_fifo_photos'
   };
-
-  // default data
-  let heroPhotoURL = localStorage.getItem(STORAGE_KEYS.HERO_PHOTO) || 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800';
-  let narasiText = localStorage.getItem(STORAGE_KEYS.NARASI) || 'Menaklukkan jalanan nusantara, debu, hujan, dan senyum persaudaraan. Setiap tikungan punya cerita. 🏍️✨';
-  let emojiCounts = JSON.parse(localStorage.getItem(STORAGE_KEYS.EMOJI_COUNTS)) || { '👍': 24, '❤️': 18, '😎': 12, '🏍️': 31 };
-  let komentarList = JSON.parse(localStorage.getItem(STORAGE_KEYS.KOMENTAR)) || [
+  let narasi = localStorage.getItem(STORAGE.NARASI) || 'Menaklukkan jalanan nusantara, debu, hujan, dan senyum persaudaraan. Setiap tikungan punya cerita. 🏍️✨';
+  let emojiCounts = JSON.parse(localStorage.getItem(STORAGE.EMOJI)) || { '👍': 24, '❤️': 18, '😎': 12, '🏍️': 31 };
+  let komentar = JSON.parse(localStorage.getItem(STORAGE.KOMENTAR)) || [
     { nama: 'BikersLampung', teks: 'Mantap touringnya, next ajak kami!', timestamp: Date.now() - 3600000 },
     { nama: 'RiderJawa', teks: 'Jalur Puncak ke Bandung keren abis', timestamp: Date.now() - 7200000 },
     { nama: 'Mbak_Motor', teks: 'Fotonya epic! Semangat terus', timestamp: Date.now() - 86400000 }
   ];
-  let fifoPhotos = JSON.parse(localStorage.getItem(STORAGE_KEYS.FIFO_PHOTOS)) || [
-    'https://images.unsplash.com/photo-1566478989037-eec170495d9e?w=300',
-    'https://images.unsplash.com/photo-1522770179533-24471fcdba45?w=300',
-    'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=300',
-    'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=300',
-    'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=300'
-  ]; // 5 default, nanti bisa ditambah hingga 10
-
-  // batasi FIFO photos max 10
+  let fifoPhotos = JSON.parse(localStorage.getItem(STORAGE.FIFO_PHOTOS)) || [
+    'https://images.unsplash.com/photo-1566478989037-eec170495d9e?w=600',
+    'https://images.unsplash.com/photo-1522770179533-24471fcdba45?w=600',
+    'https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=600',
+    'https://images.unsplash.com/photo-1511994298241-608e28f14fde?w=600',
+    'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=600'
+  ];
   while(fifoPhotos.length > 10) fifoPhotos.shift();
-  // sequential preview index
-  let currentSeqIndex = 0;
+  
+  // Hero selalu menampilkan foto terbaru (index terakhir dari fifoPhotos)
+  let heroPhoto = fifoPhotos.length > 0 ? fifoPhotos[fifoPhotos.length-1] : 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800';
+  
+  let currentLightboxIndex = 0;
 
-  // Helper simpan & render semua UI
+  // Fungsi untuk menambah foto ke galeri (FIFO) dan update hero
+  function addPhotoToGallery(photoUrl, updateHero = true) {
+    fifoPhotos.push(photoUrl);
+    if (fifoPhotos.length > 10) fifoPhotos.shift();
+    if (updateHero) {
+      heroPhoto = fifoPhotos[fifoPhotos.length-1];
+    }
+    persistAndRender();
+  }
+
   function persistAndRender() {
-    localStorage.setItem(STORAGE_KEYS.HERO_PHOTO, heroPhotoURL);
-    localStorage.setItem(STORAGE_KEYS.NARASI, narasiText);
-    localStorage.setItem(STORAGE_KEYS.EMOJI_COUNTS, JSON.stringify(emojiCounts));
-    // komentar FIFO: pastikan max 10
-    if(komentarList.length > 10) komentarList = komentarList.slice(-10);
-    localStorage.setItem(STORAGE_KEYS.KOMENTAR, JSON.stringify(komentarList));
-    if(fifoPhotos.length > 10) fifoPhotos = fifoPhotos.slice(0,10);
-    localStorage.setItem(STORAGE_KEYS.FIFO_PHOTOS, JSON.stringify(fifoPhotos));
+    localStorage.setItem(STORAGE.NARASI, narasi);
+    localStorage.setItem(STORAGE.EMOJI, JSON.stringify(emojiCounts));
+    if(komentar.length > 10) komentar = komentar.slice(-10);
+    localStorage.setItem(STORAGE.KOMENTAR, JSON.stringify(komentar));
+    localStorage.setItem(STORAGE.FIFO_PHOTOS, JSON.stringify(fifoPhotos));
     
-    renderHeroImage();
-    renderNarasi();
-    renderEmojiBar();
+    document.getElementById('heroMainImage').src = heroPhoto;
+    document.getElementById('narasiDisplay').innerText = narasi;
+    renderEmoji();
     renderKomentar();
-    renderFifoThumbs();
-    updateSeqPreviewByIndex(currentSeqIndex);
   }
 
-  function renderHeroImage() { document.getElementById('heroMainImage').src = heroPhotoURL; }
-  function renderNarasi() {
-    const displayDiv = document.getElementById('narasiDisplay');
-    displayDiv.innerText = narasiText;
-    document.getElementById('narasiCharCount').innerText = narasiText.length + '/450';
-  }
-  function renderEmojiBar() {
+  function renderEmoji() {
     const bar = document.getElementById('emojiBar');
     bar.innerHTML = '';
     for(let [emoji, count] of Object.entries(emojiCounts)) {
       const btn = document.createElement('button');
       btn.className = 'emoji-btn';
       btn.innerHTML = `<span>${emoji}</span> ${count}`;
-      btn.onclick = () => {
-        emojiCounts[emoji] = (emojiCounts[emoji] || 0) + 1;
-        persistAndRender();
-      };
+      btn.onclick = () => { emojiCounts[emoji]++; persistAndRender(); };
       bar.appendChild(btn);
     }
-    // tambah tombol reset emoji? optional tidak wajib
-  }
-  function renderKomentar() {
-    const container = document.getElementById('komentarList');
-    if(!komentarList.length) { container.innerHTML = '<div style="padding:12px;text-align:center;color:#888">Belum ada komentar, jadilah yang pertama!</div>'; return; }
-    // tampilkan dari yang terbaru ke lama (FIFO tetap menyimpan urutan, tapi UI descending)
-    const reversed = [...komentarList].reverse();
-    container.innerHTML = reversed.map(k => `
-      <div class="komentar-item">
-        <div class="komentar-nama">🏍️ ${escapeHtml(k.nama)}</div>
-        <div class="komentar-isi">${escapeHtml(k.teks)}</div>
-        <div class="komentar-time">${new Date(k.timestamp).toLocaleString()}</div>
-      </div>
-    `).join('');
-  }
-  function renderFifoThumbs() {
-    const container = document.getElementById('fifoThumbContainer');
-    if(fifoPhotos.length === 0) { container.innerHTML = '<div style="color:#888; grid-column:1/-1; text-align:center">Belum ada foto, upload sekarang!</div>'; return; }
-    container.innerHTML = fifoPhotos.map((url, idx) => `
-      <div class="fifo-thumb" onclick="setSeqIndexAndPreview(${idx})">
-        <img src="${url}" alt="thumb">
-      </div>
-    `).join('');
-  }
-  function setSeqIndexAndPreview(idx) {
-    if(fifoPhotos.length === 0) return;
-    currentSeqIndex = idx % fifoPhotos.length;
-    updateSeqPreviewByIndex(currentSeqIndex);
-  }
-  function updateSeqPreviewByIndex(index) {
-    const previewImg = document.getElementById('sequentialPreviewImg');
-    const infoDiv = document.getElementById('seqIndexInfo');
-    const textDiv = document.getElementById('seqPreviewText');
-    if(fifoPhotos.length === 0) {
-      previewImg.src = 'https://placehold.co/400x200/2A2A2A/FF6B00?text=Belum+ada+foto+FIFO';
-      infoDiv.innerText = '0 / 0 foto';
-      textDiv.innerText = 'Upload foto galeri FIFO dulu yuk!';
-      return;
-    }
-    const idxNormal = ((index % fifoPhotos.length) + fifoPhotos.length) % fifoPhotos.length;
-    previewImg.src = fifoPhotos[idxNormal];
-    infoDiv.innerText = `${idxNormal+1} / ${fifoPhotos.length} (FIFO)`;
-    textDiv.innerText = '✨ Klik foto hero lagi untuk lanjut ke foto berikutnya ✨';
-  }
-  function nextSequentialOnHeroClick() {
-    if(fifoPhotos.length === 0) {
-      alert('Galeri FIFO masih kosong. Upload foto dulu!');
-      return;
-    }
-    currentSeqIndex = (currentSeqIndex + 1) % fifoPhotos.length;
-    updateSeqPreviewByIndex(currentSeqIndex);
-    // sedikit animasi pada preview
-    const imgEl = document.getElementById('sequentialPreviewImg');
-    imgEl.style.transform = 'scale(0.98)';
-    setTimeout(() => { if(imgEl) imgEl.style.transform = ''; }, 150);
   }
 
-  // Upload Hero
-  document.getElementById('uploadHeroPhoto').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      heroPhotoURL = ev.target.result;
-      persistAndRender();
-    };
-    reader.readAsDataURL(file);
+  function renderKomentar() {
+    const container = document.getElementById('komentarList');
+    if(!komentar.length) {
+      container.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">Belum ada komentar. Jadilah yang pertama!</div>';
+      return;
+    }
+    const reversed = [...komentar].reverse();
+    container.innerHTML = reversed.map(k => {
+      const initial = k.nama.charAt(0).toUpperCase();
+      const timeAgo = formatTimeAgo(k.timestamp);
+      return `
+        <div class="komentar-item">
+          <div class="komentar-avatar">${initial}</div>
+          <div class="komentar-body">
+            <div><span class="komentar-nama">${escapeHtml(k.nama)}</span> <span class="komentar-isi">${escapeHtml(k.teks)}</span></div>
+            <div class="komentar-meta">${timeAgo}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function formatTimeAgo(timestamp) {
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return `${seconds} detik lalu`;
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes} menit lalu`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours} jam lalu`;
+    const days = Math.floor(hours / 24);
+    return `${days} hari lalu`;
+  }
+
+  // LIGHTBOX untuk menampilkan semua foto galeri
+  const lightbox = document.getElementById('lightboxModal');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxInfo = document.getElementById('lightboxInfo');
+
+  function openLightbox() {
+    if (fifoPhotos.length === 0) {
+      alert('Galeri masih kosong. Unggah foto dulu!');
+      return;
+    }
+    // Tampilkan foto terbaru terlebih dahulu (indeks terakhir)
+    currentLightboxIndex = fifoPhotos.length - 1;
+    updateLightbox();
+    lightbox.style.display = 'flex';
+  }
+
+  function updateLightbox() {
+    if (fifoPhotos.length === 0) return;
+    lightboxImg.src = fifoPhotos[currentLightboxIndex];
+    lightboxInfo.innerText = `${currentLightboxIndex+1} / ${fifoPhotos.length} (urutan galeri)`;
+  }
+
+  function nextLightboxImage() {
+    if (fifoPhotos.length === 0) return;
+    currentLightboxIndex = (currentLightboxIndex + 1) % fifoPhotos.length;
+    updateLightbox();
+  }
+
+  // Event: klik badge Galeri
+  document.getElementById('galeriCta').addEventListener('click', (e) => {
+    e.stopPropagation();
+    openLightbox();
   });
-  // Edit Narasi
-  const narasiDisplayDiv = document.getElementById('narasiDisplay');
-  const narasiInput = document.getElementById('narasiInput');
-  const narasiActions = document.getElementById('narasiActions');
-  const editBtn = document.getElementById('editNarasiBtn');
-  const saveBtn = document.getElementById('saveNarasiBtn');
-  const cancelBtn = document.getElementById('cancelNarasiBtn');
-  editBtn.onclick = () => {
-    narasiDisplayDiv.style.display = 'none';
-    narasiInput.style.display = 'block';
-    narasiActions.style.display = 'block';
-    narasiInput.value = narasiText;
-    document.getElementById('narasiCharCount').innerText = narasiText.length + '/450';
-    narasiInput.addEventListener('input', () => {
-      document.getElementById('narasiCharCount').innerText = narasiInput.value.length + '/450';
-    });
+  // Klik hero juga bisa membuka galeri (opsional)
+  document.querySelector('.hero-photo-container').addEventListener('click', (e) => {
+    if (e.target === unggahHeroBtn || unggahHeroBtn.contains(e.target)) return;
+    if (e.target.classList && e.target.classList.contains('hero-badge')) return;
+    openLightbox();
+  });
+  // Klik gambar lightbox untuk next
+  lightboxImg.addEventListener('click', (e) => {
+    e.stopPropagation();
+    nextLightboxImage();
+  });
+  document.getElementById('closeLightbox').onclick = () => { lightbox.style.display = 'none'; };
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) lightbox.style.display = 'none';
+  });
+
+  // Upload Hero + Narasi (foto baru akan menjadi hero dan masuk galeri)
+  const unggahHeroBtn = document.getElementById('unggahHeroBtn');
+  const narasiModal = document.getElementById('narasiModal');
+  const modalNarasiInput = document.getElementById('modalNarasiInput');
+  const modalCharCount = document.getElementById('modalCharCount');
+  let pendingHeroFile = null;
+
+  unggahHeroBtn.onclick = (e) => {
+    e.stopPropagation();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      pendingHeroFile = file;
+      modalNarasiInput.value = narasi;
+      modalCharCount.innerText = narasi.length + '/450';
+      narasiModal.style.display = 'flex';
+    };
+    input.click();
   };
-  saveBtn.onclick = () => {
-    let newText = narasiInput.value.slice(0,450);
-    narasiText = newText;
-    persistAndRender();
-    narasiDisplayDiv.style.display = 'block';
-    narasiInput.style.display = 'none';
-    narasiActions.style.display = 'none';
+
+  modalNarasiInput.addEventListener('input', () => {
+    modalCharCount.innerText = modalNarasiInput.value.slice(0,450).length + '/450';
+  });
+
+  document.getElementById('confirmNarasiBtn').onclick = () => {
+    if(pendingHeroFile) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const newPhotoUrl = ev.target.result;
+        // Tambahkan ke galeri (FIFO) dan update hero
+        addPhotoToGallery(newPhotoUrl, true);
+        let newNarasi = modalNarasiInput.value.slice(0,450);
+        if(newNarasi.trim() !== '') narasi = newNarasi;
+        persistAndRender();
+        narasiModal.style.display = 'none';
+        pendingHeroFile = null;
+      };
+      reader.readAsDataURL(pendingHeroFile);
+    } else {
+      narasiModal.style.display = 'none';
+    }
   };
-  cancelBtn.onclick = () => {
-    narasiDisplayDiv.style.display = 'block';
-    narasiInput.style.display = 'none';
-    narasiActions.style.display = 'none';
+  document.getElementById('cancelNarasiBtn').onclick = () => {
+    narasiModal.style.display = 'none';
+    pendingHeroFile = null;
   };
-  // Komentar FIFO (max 10)
+
+  // Upload ke Galeri (tanpa mengubah narasi, hanya menambah foto, hero otomatis update ke terbaru)
+  document.getElementById('unggahGaleriBtn').onclick = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        addPhotoToGallery(ev.target.result, true);
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  };
+
+  // Komentar
   function tambahKomentar(nama, teks) {
     if(!teks.trim()) return alert('Komentar tidak boleh kosong');
-    const newKomen = { nama: nama.slice(0,30), teks: teks.slice(0,200), timestamp: Date.now() };
-    komentarList.push(newKomen);
-    if(komentarList.length > 10) komentarList.shift(); // FIFO
+    komentar.push({ nama: nama.slice(0,30), teks: teks.slice(0,200), timestamp: Date.now() });
+    if(komentar.length > 10) komentar.shift();
     persistAndRender();
   }
   document.getElementById('tambahKomentarBtn').onclick = () => {
@@ -526,44 +599,24 @@
     if(isi) tambahKomentar(nama, isi);
     document.getElementById('komentarIsi').value = '';
   };
-  // Upload FIFO photo (max 10, FIFO)
-  document.getElementById('uploadFifoPhoto').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const newPhoto = ev.target.result;
-      fifoPhotos.push(newPhoto);
-      if(fifoPhotos.length > 10) fifoPhotos.shift(); // hapus oldest (FIFO)
-      // reset index agar tidak melebihi length
-      if(currentSeqIndex >= fifoPhotos.length && fifoPhotos.length>0) currentSeqIndex = 0;
-      persistAndRender();
-    };
-    reader.readAsDataURL(file);
-    e.target.value = '';
-  });
-  // HERO CLICK -> sequential muncul FIFO photo
-  document.getElementById('heroPhotoClickable').addEventListener('click', () => {
-    nextSequentialOnHeroClick();
-  });
-  
-  // ------ Klub, Jalur, Kuliner (tetap dari supabase) ------
+
+  // SUPABASE CLUB & FORUM (sama seperti sebelumnya)
   async function loadClubs() {
     const { data } = await supabase.from('clubs').select('*').order('created_at', { ascending: false });
-    if(data) document.getElementById('clubsGrid').innerHTML = data.map(c => `<div class="club-card" onclick="openClub('${c.id}')"><div class="club-logo" style="font-size:36px">🏍️</div><div class="club-name">${escapeHtml(c.name)}</div><div class="club-location">${escapeHtml(c.secretariat_address?.split(',')[0] || '')}</div></div>`).join('');
+    if(data) document.getElementById('clubsGrid').innerHTML = data.map(c => `<div class="club-card" onclick="openClub('${c.id}')"><div style="font-size:36px; text-align:center;">🏍️</div><div class="club-name" style="font-weight:bold;">${escapeHtml(c.name)}</div><div class="club-location" style="font-size:12px; color:#aaa;">${escapeHtml(c.secretariat_address?.split(',')[0] || '')}</div></div>`).join('');
   }
   async function loadRoutes() {
     const { data } = await supabase.from('touring_routes').select('*').limit(6);
-    if(data) document.getElementById('routesGrid').innerHTML = data.map(r => `<div class="route-card"><div class="route-image">🏔️</div><div class="route-info"><div class="route-name">${escapeHtml(r.name)}</div><div class="route-meta">${r.distance_km || '?'} km</div><div class="route-desc">${escapeHtml(r.start_point||'')} → ${escapeHtml(r.end_point||'')}</div></div></div>`).join('');
+    if(data) document.getElementById('routesGrid').innerHTML = data.map(r => `<div class="route-card"><div style="font-size:32px;">🏔️</div><div style="padding:8px 0;"><strong>${escapeHtml(r.name)}</strong><div style="font-size:12px; color:#FF6B00;">${r.distance_km || '?'} km</div><div style="font-size:12px;">${escapeHtml(r.start_point||'')} → ${escapeHtml(r.end_point||'')}</div></div></div>`).join('');
   }
   async function loadCulinary() {
     const { data } = await supabase.from('culinary_spots').select('*').limit(6);
-    if(data) document.getElementById('culinaryGrid').innerHTML = data.map(c => `<div class="culinary-card"><div class="culinary-image">🍲</div><div class="culinary-info"><div class="culinary-name">${escapeHtml(c.name)}</div><div class="culinary-meta">⭐ ${c.rating_avg || 0}/5</div><div class="culinary-desc">${escapeHtml(c.location)}</div></div></div>`).join('');
+    if(data) document.getElementById('culinaryGrid').innerHTML = data.map(c => `<div class="culinary-card"><div style="font-size:32px;">🍲</div><div><strong>${escapeHtml(c.name)}</strong><div>⭐ ${c.rating_avg || 0}/5</div><div style="font-size:12px;">${escapeHtml(c.location)}</div></div></div>`).join('');
   }
   window.openClub = async (id) => {
     const { data: club } = await supabase.from('clubs').select('*').eq('id', id).single();
     if(club) {
-      document.getElementById('clubDetailContent').innerHTML = `<div><h2>${escapeHtml(club.name)}</h2><p>📍 ${escapeHtml(club.secretariat_address)}</p><p>👑 ${escapeHtml(club.chairman_name)}</p><p>📞 ${escapeHtml(club.contact_number)}</p><div id="forumMessages" style="height:200px; overflow:auto; background:#1E1E1E; margin-top:16px; padding:12px;"></div><input id="forumInput" placeholder="Pesan komunitas..." style="width:100%; margin-top:8px; padding:8px;"><button id="forumSendBtn" class="btn-brutal" style="margin-top:8px;">Kirim</button></div>`;
+      document.getElementById('clubDetailContent').innerHTML = `<div><h2>${escapeHtml(club.name)}</h2><p>📍 ${escapeHtml(club.secretariat_address)}</p><p>👑 ${escapeHtml(club.chairman_name)}</p><p>📞 ${escapeHtml(club.contact_number)}</p><div id="forumMessages" style="height:200px; overflow:auto; background:#1E1E1E; margin-top:16px; padding:12px;"></div><input id="forumInput" placeholder="Pesan komunitas..." style="width:100%; margin-top:8px; padding:8px;"><button id="forumSendBtn" style="background:#FF6B00; border:none; padding:8px; border-radius:40px; margin-top:8px;">Kirim</button></div>`;
       document.getElementById('clubDetail').classList.add('active');
       loadForumMessages(id);
     }
@@ -591,7 +644,8 @@
   };
   function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
   
-  // init all
+  // Inisialisasi: pastikan heroPhoto sesuai dengan foto terbaru
+  if (fifoPhotos.length > 0) heroPhoto = fifoPhotos[fifoPhotos.length-1];
   persistAndRender();
   loadClubs(); loadRoutes(); loadCulinary();
 </script>
