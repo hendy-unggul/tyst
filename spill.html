@@ -509,7 +509,7 @@ function setupGuestUI(){
         sec.parentNode.appendChild(dd);
         const sb=$('settingsBtn'),sd=$('settingsDropdown');
         if(sb&&sd){sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});}
-        const lb=$('logoutBtn');if(lb)lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);localStorage.removeItem('jejak_auth_v1');toast('👋 Sampai jumpa!');setTimeout(()=>window.location.replace('/index.html'),1000);};
+        const lb=$('logoutBtn');if(lb)lb.onclick=async()=>{await cleanup();localStorage.removeItem(K.l);localStorage.removeItem('jejak_auth_v1');toast('👋 Sampai jumpa!');setTimeout(()=>window.location.replace('/spill.html'),1000);};
     }
 }
 
