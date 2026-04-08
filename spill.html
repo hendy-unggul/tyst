@@ -764,28 +764,31 @@ async function lmDoLogin(){
   if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
   if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}
   const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='VERIFIKASI...';
-  try{
-    // Ambil data user dari database (termasuk auth_hash)
-    const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username,auth_hash&limit=1');
-    const user=Array.isArray(data)?data[0]:null;
-    if(!user)throw new Error('Username tidak ditemukan');
-    // Hitung hash dari PIN + username + device fingerprint saat ini
-    const hash=await LM.authHash(p,u);
-    // Bandingkan dengan auth_hash yang tersimpan di database
-    if(!user.auth_hash || user.auth_hash !== hash){
+  async function lmDoLogin() {
+  // ... validasi awal sama ...
+  try {
+    const data = await LM.get('/profiles?username=eq.' + encodeURIComponent(u) + '&select=id,username,auth_hash&limit=1');
+    const user = Array.isArray(data) ? data[0] : null;
+    if (!user) throw new Error('Username tidak ditemukan');
+
+    const hash = await LM.authHash(p, u);
+
+    if (!user.auth_hash) {
+      // auth_hash belum ada → ini akun lama, langsung set hash sekarang
+      // (atau tolak dan minta daftar ulang — tergantung policy)
+      await LM.patch('/profiles?id=eq.' + user.id, { auth_hash: hash });
+    } else if (user.auth_hash !== hash) {
       throw new Error('PIN salah atau device tidak dikenal');
     }
-    // Simpan data ke localStorage untuk sesi
-    localStorage.setItem(LM.LS.u,user.username);
-    localStorage.setItem(LM.LS.i,user.id);
-    localStorage.setItem(LM.LS.l,'true');
-    localStorage.setItem(LM.LS.a,hash); // simpan hash agar tidak perlu query lagi
-    lmFb('lmFbL','s','✓ Login berhasil!');
-    setTimeout(()=>window.location.reload(),700);
-  }catch(err){
-    lmFb('lmFbL','e',err.message||'Login gagal');
-    btn.disabled=false;
-    btn.textContent='MASUK →';
+
+    localStorage.setItem(LM.LS.u, user.username);
+    localStorage.setItem(LM.LS.i, user.id);
+    localStorage.setItem(LM.LS.l, 'true');
+    localStorage.setItem(LM.LS.a, hash);
+    lmFb('lmFbL', 's', '✓ Login berhasil!');
+    setTimeout(() => window.location.reload(), 700);
+  } catch(err) {
+    // ...
   }
 }
 
