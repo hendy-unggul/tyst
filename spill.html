@@ -768,25 +768,25 @@ async function lmDoLogin() {
   btn.disabled = true;
   btn.textContent = 'VERIFIKASI...';
   try {
-    // Ambil data user dari database
+    // Ambil data user dari database (termasuk auth_hash)
     const data = await LM.get('/profiles?username=eq.' + encodeURIComponent(u) + '&select=id,username,auth_hash&limit=1');
     const user = Array.isArray(data) ? data[0] : null;
     if (!user) throw new Error('Username tidak ditemukan');
-    
+
     // Hitung hash dari PIN + username + device fingerprint saat ini
     const hash = await LM.authHash(p, u);
-    
+
     // Bandingkan dengan auth_hash yang tersimpan di database
     if (!user.auth_hash || user.auth_hash !== hash) {
       throw new Error('PIN salah atau device tidak dikenal');
     }
-    
-    // Simpan data ke localStorage untuk session (opsional, bisa juga hanya untuk UI)
+
+    // Simpan data ke localStorage untuk sesi (agar tidak perlu hitung ulang setiap saat)
     localStorage.setItem(LM.LS.u, user.username);
     localStorage.setItem(LM.LS.i, user.id);
     localStorage.setItem(LM.LS.l, 'true');
-    localStorage.setItem(LM.LS.a, hash); // tetap simpan agar tidak perlu hitung ulang setiap saat
-    
+    localStorage.setItem(LM.LS.a, hash); // simpan hash agar tidak perlu query lagi
+
     lmFb('lmFbL', 's', '✓ Login berhasil!');
     setTimeout(() => window.location.reload(), 700);
   } catch (err) {
