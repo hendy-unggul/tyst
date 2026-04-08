@@ -423,7 +423,6 @@
 (function(){
 'use strict';
 
-// ==================== KONSTANTA ====================
 const SUPA_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
 const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=2000,POLL_MSG_MS=1500,POLL_WH_MS=10000;
@@ -443,15 +442,13 @@ const toast=(msg,dur=3000)=>{const o=$('toast');if(!o)return;o.textContent=msg;o
 const api=async(path,body)=>{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json();};
 const sbGet=async path=>{const r=await fetch(`${SUPA_URL}/rest/v1${path}`,{headers:{apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`}});const t=await r.text();return t?JSON.parse(t):null;};
 
-// ==================== AUTH HEADERS ====================
 function getAuthHeaders(){
     if(IS_GUEST) return {};
     const hash=localStorage.getItem(K.a);
     if(!hash) return {};
-    return { 'Authorization': `Bearer ${hash}` };
+    return {'Authorization':`Bearer ${hash}`};
 }
 
-// ==================== FUNGSI PENDUKUNG ====================
 function getWIBHour(){const n=new Date();const w=new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000);return w.getHours();}
 function getWIBDate(){const n=new Date();const w=new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000);if(w.getHours()<INSOMNIA_CLOSE)w.setDate(w.getDate()-1);return w.toISOString().slice(0,10);}
 function isInsomniaActive(){const h=getWIBHour();return h>=INSOMNIA_OPEN||h<INSOMNIA_CLOSE;}
@@ -459,7 +456,6 @@ function getInsomniaPersonas(){const t=getWIBDate(),sd=localStorage.getItem(INS_
 function updateInsomniaButton(){const btn=$('btnHot'),st=$('insomniaStatus'),ic=$('insomniaIcon');if(!btn||!st)return;if(isInsomniaActive()){btn.classList.remove('inactive');if(!IS_GUEST)btn.disabled=false;st.textContent='LIVE';if(ic)ic.textContent='🌙';}else{btn.classList.add('inactive');btn.disabled=true;st.textContent='22.00';if(ic)ic.textContent='😴';}}
 const AI={get hot_take(){return getInsomniaPersonas();},soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']};
 
-// ==================== ECDH (dengan auth di fetchRecipientPubkey) ====================
 const ECDH=(()=>{
     const toB64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
     const fromB64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
@@ -478,7 +474,6 @@ const ECDH=(()=>{
     return{encrypt,decrypt,getOrCreateKeypair,ensurePubkeyRegistered,fetchRecipientPubkey};
 })();
 
-// ==================== WHISPER OBJECT (dengan auth headers) ====================
 const WH=(()=>{
     let msgs=[],readId=null,dTimer=null,pollTimer=null,myKP=null;
     function setDot(show){const d=$('wDot'),b=$('whisperBadge');if(d)d.classList.toggle('show',show);if(b)b.style.display=show?'':'none';}
@@ -486,18 +481,13 @@ const WH=(()=>{
     async function fetchInbox(){
         if(IS_GUEST) return;
         const headers=getAuthHeaders();
-        if(!headers.Authorization){
-            toast('Token tidak ditemukan, silakan login ulang');
-            return;
-        }
+        if(!headers.Authorization){toast('Token tidak ditemukan, silakan login ulang');return;}
         try{
             const r=await fetch('/api/whisper?username='+encodeURIComponent(ME),{headers});
             if(r.status===401||r.status===403){
                 toast('Sesi expired. Silakan login kembali.');
-                localStorage.removeItem(K.l);
-                localStorage.removeItem(K.a);
-                window.location.reload();
-                return;
+                localStorage.removeItem(K.l);localStorage.removeItem(K.a);
+                window.location.reload();return;
             }
             if(!r.ok) return;
             const raw=await r.json();
@@ -510,14 +500,12 @@ const WH=(()=>{
                 const body=await ECDH.decrypt(m.message,kp.privJWK);
                 return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
             }));
-            renderList();
-            setDot(msgs.length>0);
+            renderList();setDot(msgs.length>0);
         }catch(e){console.warn('[WH] fetchInbox',e);}
     }
     function renderList(){const el=$('wList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');}
     async function openMsg(id){
-        const m=msgs.find(x=>x.id===id);
-        if(!m)return;
+        const m=msgs.find(x=>x.id===id);if(!m)return;
         readId=id;
         $('wReadFrom').textContent='from: '+m.from;
         $('wReadBody').textContent=m.body;
@@ -544,7 +532,6 @@ const WH=(()=>{
 })();
 window.WH=WH;
 
-// ==================== SETUP GUEST UI ====================
 function setupGuestUI(){
     const sec=$('userSection');if(!sec)return;
     if(IS_GUEST){
@@ -562,7 +549,6 @@ function setupGuestUI(){
     }
 }
 
-// ==================== STATE CHAT & INVITE ====================
 const S={IDLE:'idle',BIDDING:'bidding',CHAT_REAL:'chat_real',CHAT_AI:'chat_ai'};
 let state=S.IDLE,vibe=null,roomId=null,aiChar=null;
 let chatHist=[],lastMsgTs=null,isInsomnia=false;
@@ -592,7 +578,6 @@ function clearBidTimers(){if(tBid){clearTimeout(tBid);tBid=null;}if(tPollMatch){
 function clearAllTimers(){clearBidTimers();if(tHeart){clearInterval(tHeart);tHeart=null;}if(tPollMsg){clearInterval(tPollMsg);tPollMsg=null;}if(tPollInv){clearInterval(tPollInv);tPollInv=null;}if(tInvPop){clearInterval(tInvPop);tInvPop=null;}}
 async function loadCount(){try{const r=await fetch(`/api/invite?userId=${UID}&role=count`);const d=await r.json();const el=$('onlineCount');if(el)el.textContent=(d.count||0)+' ONLINE';}catch(e){}}
 
-// ==================== SPILL FEED ====================
 const BREW_MS=7*60*1000,BREW_KEY='spill_last_brew';
 async function maybeBrewSpill(){const last=parseInt(localStorage.getItem(BREW_KEY)||'0');if(Date.now()-last<BREW_MS)return false;localStorage.setItem(BREW_KEY,Date.now().toString());try{await fetch('/api/brew',{method:'POST',headers:{'Content-Type':'application/json'}});return true;}catch(e){localStorage.setItem(BREW_KEY,'0');return false;}}
 function startBrewInterval(){maybeBrewSpill().then(b=>{if(b)setTimeout(loadSpills,3000);});setInterval(async()=>{if(await maybeBrewSpill())setTimeout(loadSpills,3000);},BREW_MS);}
@@ -600,7 +585,6 @@ async function loadSpills(){$('spillsList').innerHTML='<div class="empty-state">
 function renderSpills(all){const c=$('spillsList'),meta=$('feedMeta');if(!all.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}c.innerHTML=all.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${esc(s.author)}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${esc(s.content)}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="rs(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');meta.textContent=all.length+' spill';}
 window.rs=(i,t)=>toast('➕ '+t);
 
-// ==================== RADAR (ANIMASI) ====================
 let dots=[],nAngle=0,nSpin=0,phase=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,gm=new Map(),raf,rint;
 function initRadar(){const cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;const rsz=()=>{const r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};rsz();window.addEventListener('resize',rsz);spawnDots();if(rint)clearInterval(rint);rint=setInterval(()=>{dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);nAngle=Math.random()*Math.PI*2;trail.fill(nAngle);radarLoop(cv);}
 function spawnDots(){const c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];for(let i=0;i<8;i++){const a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2;const el=document.createElement('div');el.className='radar-dot';el.style.left=x+'%';el.style.top=y+'%';c.appendChild(el);dots.push({el,x,y,vx:0,vy:0,id:i});}}
@@ -612,7 +596,6 @@ window.addEventListener('beforeunload',cleanup);
 function setStep(n){['whs1','whs2','whs3','whs4'].forEach((id,i)=>{const el=$(id);if(!el)return;el.className='wh-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
 function resetWhisperSheet(){$('whNoPub').classList.remove('show');$('whPhil').style.display='';$('whForm').style.display='';}
 
-// ==================== INIT ====================
 async function init(){
     setupGuestUI();
     updateInsomniaButton();
@@ -634,8 +617,7 @@ async function init(){
     }
 }
 
-// ==================== EVENT LISTENER ====================
-window.addEventListener('load', ()=>{
+window.addEventListener('load',()=>{
     init();
     if(!IS_GUEST){
         $('btnHot').onclick=()=>{if(state!==S.IDLE)return;if(!isInsomniaActive()){toast('🌙 Insomnia buka jam 22.00 WIB');return;}startBid('hot_take');};
@@ -734,7 +716,6 @@ window.addEventListener('load', ()=>{
 </div>
 
 <script>
-// ==================== LOGIN & REGISTER (DENGAN DATABASE auth_hash) ====================
 const LM={
   SU:'https://fuovfrdicdhnlymnacpz.supabase.co',
   SK_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
@@ -756,39 +737,36 @@ function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if
 function lmUpdateLogin(){const ok=LM.validUsername(document.getElementById('lmU').value)&&LM.validPin(document.getElementById('lmP').value);document.getElementById('lmBtnL').disabled=!ok;}
 function lmUpdateReg(){const pin=document.getElementById('lmRP').value;const pin2=document.getElementById('lmRP2').value;const ok=LM.validUsername(document.getElementById('lmRU').value)&&LM.validPin(pin)&&pin===pin2&&document.getElementById('lmAg').checked;document.getElementById('lmBtnR').disabled=!ok;}
 
-// LOGIN dengan verifikasi database auth_hash
 async function lmDoLogin(){
   const u=LM.validUsername(document.getElementById('lmU').value);
   const p=document.getElementById('lmP').value;
   lmFb('lmFbL','','');
   if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
   if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}
-  const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='VERIFIKASI...';
-  async function lmDoLogin() {
-  // ... validasi awal sama ...
-  try {
-    const data = await LM.get('/profiles?username=eq.' + encodeURIComponent(u) + '&select=id,username,auth_hash&limit=1');
-    const user = Array.isArray(data) ? data[0] : null;
-    if (!user) throw new Error('Username tidak ditemukan');
-
-    const hash = await LM.authHash(p, u);
-
-    if (!user.auth_hash) {
-      // auth_hash belum ada → ini akun lama, langsung set hash sekarang
-      // (atau tolak dan minta daftar ulang — tergantung policy)
-      await LM.patch('/profiles?id=eq.' + user.id, { auth_hash: hash });
-    } else if (user.auth_hash !== hash) {
+  const btn=document.getElementById('lmBtnL');
+  btn.disabled=true;
+  btn.textContent='VERIFIKASI...';
+  try{
+    const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username,auth_hash&limit=1');
+    const user=Array.isArray(data)?data[0]:null;
+    if(!user)throw new Error('Username tidak ditemukan');
+    const hash=await LM.authHash(p,u);
+    if(!user.auth_hash){
+      // Akun lama tanpa auth_hash → set hash sekarang (first login dari device ini)
+      await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:hash});
+    } else if(user.auth_hash!==hash){
       throw new Error('PIN salah atau device tidak dikenal');
     }
-
-    localStorage.setItem(LM.LS.u, user.username);
-    localStorage.setItem(LM.LS.i, user.id);
-    localStorage.setItem(LM.LS.l, 'true');
-    localStorage.setItem(LM.LS.a, hash);
-    lmFb('lmFbL', 's', '✓ Login berhasil!');
-    setTimeout(() => window.location.reload(), 700);
-  } catch(err) {
-    // ...
+    localStorage.setItem(LM.LS.u,user.username);
+    localStorage.setItem(LM.LS.i,user.id);
+    localStorage.setItem(LM.LS.l,'true');
+    localStorage.setItem(LM.LS.a,hash);
+    lmFb('lmFbL','s','✓ Login berhasil!');
+    setTimeout(()=>window.location.reload(),700);
+  }catch(err){
+    lmFb('lmFbL','e',err.message||'Login gagal');
+    btn.disabled=false;
+    btn.textContent='MASUK →';
   }
 }
 
@@ -810,8 +788,7 @@ async function lmDoReg(){
     localStorage.setItem(LM.LS.i,user.id);
     localStorage.setItem(LM.LS.l,'true');
     localStorage.setItem(LM.LS.a,hash);
-    // Simpan auth_hash ke database (penting untuk verifikasi backend)
-    await LM.patch('/profiles?id=eq.'+user.id, { auth_hash: hash });
+    await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:hash});
     lmFb('lmFbR','s','Akun dibuat!');
     setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800);
   }catch(err){
