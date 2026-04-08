@@ -8,9 +8,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        /* ========== S T Y L E  (sama seperti sebelumnya, tidak diubah) ========== */
+        /* ========== S T Y L E  L E N G K A P ========== */
         *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        :root{--bg:#0A0A0A;--sf:#141414;--bd:#2A2A2A;--bd2:#333;--tx:#FFF;--txs:#888;--spill:#ff3b6f;--ruang:#00e5ff;--jejak:#9900ff;--glitch:#FFD700;--ap:var(--spill);--as:var(--ruang);--aq:#bfff00;--font-display:'Arial Black',sans-serif;--font-mono:'Courier New',monospace;--font-body:Arial,sans-serif}
+        :root{
+            --bg:#0A0A0A;--sf:#141414;--bd:#2A2A2A;--bd2:#333;--tx:#FFF;--txs:#888;
+            --spill:#ff3b6f;--ruang:#00e5ff;--jejak:#9900ff;--glitch:#FFD700;
+            --ap:var(--spill);--as:var(--ruang);--aq:#bfff00;
+            --font-display:'Arial Black',sans-serif;--font-mono:'Courier New',monospace;--font-body:Arial,sans-serif
+        }
         body{background:var(--bg);color:var(--tx);font-family:var(--font-body);height:100vh;display:flex;flex-direction:column}
         .app{max-width:500px;margin:0 auto;width:100%;height:100vh;display:flex;flex-direction:column;background:var(--bg);border-left:2px solid var(--bd);border-right:2px solid var(--bd);position:relative;overflow:hidden}
         .header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:2px solid var(--bd);background:var(--sf);position:relative;z-index:10}
@@ -416,7 +421,10 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ==================== KONSTANTA & GLOBAL ====================
+(function(){
+'use strict';
+
+// ==================== KONSTANTA ====================
 const SUPA_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
 const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=2000,POLL_MSG_MS=1500,POLL_WH_MS=10000;
@@ -436,13 +444,15 @@ const toast=(msg,dur=3000)=>{const o=$('toast');if(!o)return;o.textContent=msg;o
 const api=async(path,body)=>{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json();};
 const sbGet=async path=>{const r=await fetch(`${SUPA_URL}/rest/v1${path}`,{headers:{apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`}});const t=await r.text();return t?JSON.parse(t):null;};
 
+// ==================== AUTH HEADERS ====================
 function getAuthHeaders(){
     if(IS_GUEST) return {};
     const hash=localStorage.getItem(K.a);
     if(!hash) return {};
-    return {'Authorization':`Bearer ${hash}`};
+    return { 'Authorization': `Bearer ${hash}` };
 }
 
+// ==================== FUNGSI PENDUKUNG ====================
 function getWIBHour(){const n=new Date();const w=new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000);return w.getHours();}
 function getWIBDate(){const n=new Date();const w=new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000);if(w.getHours()<INSOMNIA_CLOSE)w.setDate(w.getDate()-1);return w.toISOString().slice(0,10);}
 function isInsomniaActive(){const h=getWIBHour();return h>=INSOMNIA_OPEN||h<INSOMNIA_CLOSE;}
@@ -450,7 +460,7 @@ function getInsomniaPersonas(){const t=getWIBDate(),sd=localStorage.getItem(INS_
 function updateInsomniaButton(){const btn=$('btnHot'),st=$('insomniaStatus'),ic=$('insomniaIcon');if(!btn||!st)return;if(isInsomniaActive()){btn.classList.remove('inactive');if(!IS_GUEST)btn.disabled=false;st.textContent='LIVE';if(ic)ic.textContent='🌙';}else{btn.classList.add('inactive');btn.disabled=true;st.textContent='22.00';if(ic)ic.textContent='😴';}}
 const AI={get hot_take(){return getInsomniaPersonas();},soft_talk:['beby.manis','pretty.sad','strawberry.shortcake','cinnamon.girl','move.on']};
 
-// ==================== ECDH ====================
+// ==================== ECDH (dengan auth di fetchRecipientPubkey) ====================
 const ECDH=(()=>{
     const toB64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
     const fromB64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
@@ -469,18 +479,28 @@ const ECDH=(()=>{
     return{encrypt,decrypt,getOrCreateKeypair,ensurePubkeyRegistered,fetchRecipientPubkey};
 })();
 
-// ==================== WHISPER OBJECT ====================
+// ==================== WHISPER OBJECT (dengan auth headers) ====================
 const WH=(()=>{
     let msgs=[],readId=null,dTimer=null,pollTimer=null,myKP=null;
     function setDot(show){const d=$('wDot'),b=$('whisperBadge');if(d)d.classList.toggle('show',show);if(b)b.style.display=show?'':'none';}
     async function getKP(){if(!myKP)myKP=await ECDH.getOrCreateKeypair();return myKP;}
     async function fetchInbox(){
-        if(IS_GUEST)return;
+        if(IS_GUEST) return;
         const headers=getAuthHeaders();
+        if(!headers.Authorization){
+            toast('Token tidak ditemukan, silakan login ulang');
+            return;
+        }
         try{
             const r=await fetch('/api/whisper?username='+encodeURIComponent(ME),{headers});
-            if(r.status===401||r.status===403){toast('Sesi habis, silakan login ulang');return;}
-            if(!r.ok)return;
+            if(r.status===401||r.status===403){
+                toast('Sesi expired. Silakan login kembali.');
+                localStorage.removeItem(K.l);
+                localStorage.removeItem(K.a);
+                window.location.reload();
+                return;
+            }
+            if(!r.ok) return;
             const raw=await r.json();
             if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}
             const kp=await getKP();
@@ -525,6 +545,7 @@ const WH=(()=>{
 })();
 window.WH=WH;
 
+// ==================== SETUP GUEST UI ====================
 function setupGuestUI(){
     const sec=$('userSection');if(!sec)return;
     if(IS_GUEST){
@@ -542,7 +563,7 @@ function setupGuestUI(){
     }
 }
 
-// ==================== STATE & FUNGSI CHAT ====================
+// ==================== STATE CHAT & INVITE ====================
 const S={IDLE:'idle',BIDDING:'bidding',CHAT_REAL:'chat_real',CHAT_AI:'chat_ai'};
 let state=S.IDLE,vibe=null,roomId=null,aiChar=null;
 let chatHist=[],lastMsgTs=null,isInsomnia=false;
@@ -580,7 +601,7 @@ async function loadSpills(){$('spillsList').innerHTML='<div class="empty-state">
 function renderSpills(all){const c=$('spillsList'),meta=$('feedMeta');if(!all.length){c.innerHTML='<div class="empty-state">🍃 Belum ada spill</div>';meta.textContent='0 spill';return;}c.innerHTML=all.map((s,i)=>`<div class="spill-card"><div class="spill-header"><span class="spill-author">@${esc(s.author)}</span><span class="spill-mood ${s.mood}">${s.mood.toUpperCase()}</span></div><div class="spill-content">${esc(s.content)}</div><div class="spill-reactions">${['skull','cry','fire','upside'].map(r=>`<button class="react-btn" onclick="rs(${i},'${r}')">${r==='skull'?'💀':r==='cry'?'😭':r==='fire'?'🔥':'🙃'}<span class="react-count">${s.reactions[r]||0}</span></button>`).join('')}</div></div>`).join('');meta.textContent=all.length+' spill';}
 window.rs=(i,t)=>toast('➕ '+t);
 
-// ==================== RADAR (animasi) ====================
+// ==================== RADAR (ANIMASI) ====================
 let dots=[],nAngle=0,nSpin=0,phase=Math.random()*Math.PI*2,trail=new Float32Array(120),ptr=0,gm=new Map(),raf,rint;
 function initRadar(){const cv=$('radarCanvas'),ct=$('radarCont');if(!cv||!ct)return;const rsz=()=>{const r=ct.getBoundingClientRect();if(r.width>0){cv.width=r.width;cv.height=r.height;}};rsz();window.addEventListener('resize',rsz);spawnDots();if(rint)clearInterval(rint);rint=setInterval(()=>{dots.forEach(d=>{d.vx=d.vx*.88+(Math.random()-.5)*.3;d.vy=d.vy*.88+(Math.random()-.5)*.3;d.x=Math.max(9,Math.min(91,d.x+d.vx));d.y=Math.max(9,Math.min(91,d.y+d.vy));if(d.el){d.el.style.left=d.x+'%';d.el.style.top=d.y+'%';}});},100);nAngle=Math.random()*Math.PI*2;trail.fill(nAngle);radarLoop(cv);}
 function spawnDots(){const c=$('radarDots');if(!c)return;c.innerHTML='';dots=[];for(let i=0;i<8;i++){const a=Math.random()*Math.PI*2,d=12+Math.random()*70,x=50+Math.cos(a)*d/2,y=50+Math.sin(a)*d/2;const el=document.createElement('div');el.className='radar-dot';el.style.left=x+'%';el.style.top=y+'%';c.appendChild(el);dots.push({el,x,y,vx:0,vy:0,id:i});}}
@@ -617,7 +638,6 @@ async function init(){
 // ==================== EVENT LISTENER ====================
 window.addEventListener('load', ()=>{
     init();
-    // Event handler setelah DOM siap
     if(!IS_GUEST){
         $('btnHot').onclick=()=>{if(state!==S.IDLE)return;if(!isInsomniaActive()){toast('🌙 Insomnia buka jam 22.00 WIB');return;}startBid('hot_take');};
         $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');};
@@ -656,8 +676,10 @@ window.addEventListener('load', ()=>{
     $('wInboxClose').onclick=()=>$('wInbox').classList.remove('show');
     $('wBack').onclick=()=>{WH.closeRead();$('wInbox').classList.add('show');};
 });
+})();
 </script>
 
+<!-- LOGIN MODAL -->
 <div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
   <div class="lm-shell">
     <div class="lm-accent"></div>
@@ -714,12 +736,14 @@ window.addEventListener('load', ()=>{
 </div>
 
 <script>
+// ==================== LOGIN & REGISTER ====================
 const LM={
   SU:'https://fuovfrdicdhnlymnacpz.supabase.co',
   SK_KEY:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
   LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
   async get(path){const r=await fetch(this.SU+'/rest/v1'+path,{headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY}});const t=await r.text();return t?JSON.parse(t):[];},
   async post(path,body){const r=await fetch(this.SU+'/rest/v1'+path,{method:'POST',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(body)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
+  async patch(path,body){const r=await fetch(this.SU+'/rest/v1'+path,{method:'PATCH',headers:{apikey:this.SK_KEY,Authorization:'Bearer '+this.SK_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const t=await r.text();return t?JSON.parse(t):null;},
   async sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
   async deviceFP(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('jejak_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
   async authHash(pin,username){const fp=await this.deviceFP();return this.sha256(pin+':'+username+':'+fp+':jejak_local_v1');},
@@ -775,6 +799,8 @@ async function lmDoReg(){
     localStorage.setItem(LM.LS.i,user.id);
     localStorage.setItem(LM.LS.l,'true');
     localStorage.setItem(LM.LS.a,hash);
+    // Simpan auth_hash ke database (penting untuk verifikasi backend)
+    await LM.patch('/profiles?id=eq.'+user.id, { auth_hash: hash });
     lmFb('lmFbR','s','Akun dibuat!');
     setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800);
   }catch(err){
