@@ -616,7 +616,7 @@
 </head>
 <body>
 <div class="container">
-  <a href="cocomeo-bola.html" class="back-link">← Kembali ke Komunitas</a>
+  <a href="ruang-bola.html" class="back-link">← Kembali ke Komunitas</a>
   
   <h1 class="page-title glitch-text" data-text="TES PSIKOMETRIK ATLET">TES PSIKOMETRIK ATLET</h1>
   <p class="page-subtitle">Big Five Inventory (BFI-50) — 50 pertanyaan • Estimasi 15 menit</p>
@@ -836,11 +836,11 @@
 
   // ==================== AMBIL USERNAME DARI LOCALSTORAGE ====================
   function loadUsername() {
-    var storedUsername = localStorage.getItem('jejak_username') || sessionStorage.getItem('cocomeo_username');
+    var storedUsername = localStorage.getItem('jejak_username') || sessionStorage.getItem('ruang_username');
     if (!storedUsername) {
       storedUsername = prompt("Masukkan username Anda (harus sudah terdaftar di komunitas):", "atlet_example");
       if (storedUsername) {
-        sessionStorage.setItem('cocomeo_username', storedUsername);
+        sessionStorage.setItem('ruang_username', storedUsername);
       } else {
         storedUsername = "guest_atlet";
       }
