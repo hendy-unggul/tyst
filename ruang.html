@@ -94,7 +94,7 @@
       flex-direction: column;
     }
 
-    /* === COCOMEO HEADER === */
+    /* === RUANG HEADER === */
     header {
       position: sticky;
       top: 0;
@@ -146,7 +146,7 @@
     }
 
     .logo::before, .logo::after {
-      content: 'COCOMEO';
+      content: 'RUANG';
       position: absolute;
       top: 0;
       left: 0;
@@ -198,7 +198,7 @@
       margin-left: var(--space-xs);
     }
 
-    /* === COCOMEO LANDING === */
+    /* === RUANG LANDING === */
     .cocomeo-landing {
       padding: var(--space-md);
     }
@@ -859,7 +859,7 @@
 </head>
 <body>
   <div class="wrapper">
-    <!-- Header: COCOMEO Only -->
+    <!-- Header: RUANG Only -->
     <header>
       <div class="logo-container">
         <div class="logo" onclick="window.location.href='index.html'">RUANG</div>
@@ -867,8 +867,8 @@
       </div>
     </header>
 
-    <!-- Cocomeo Landing -->
-    <div class="cocomeo-landing">
+    <!-- Ruang Landing -->
+    <div class="ruang-landing">
       
       <!-- Welcome: Minimal, no big title -->
       <div class="welcome-section">
@@ -883,7 +883,7 @@
         
         <div class="rooms-grid">
           <!-- 1. Bola -->
-          <a href="cocomeo-bola.html" class="room-card bola-card">
+          <a href="ruang-bola.html" class="room-card bola-card">
             <div class="room-activity live">
               <span class="activity-dot pulse"></span>
               LIVE
@@ -1133,7 +1133,7 @@
       <div class="discovery-section">
         <div class="discovery-icon">🧭</div>
         <div class="discovery-title">Masih Cari-Cari?</div>
-        <div class="discovery-text">Cocomeo itu coba-coba. Gak cocok di satu ruang? Pindah aja. Gak ada yang marah.</div>
+        <div class="discovery-text">Gak cocok di satu ruang? Pindah aja. Gak ada yang marah.</div>
         <button class="discovery-btn" onclick="scrollToTop()">Lihat Semua Ruang</button>
       </div>
 
@@ -1284,7 +1284,7 @@
       const comments = [
         { user: 'User123', text: 'Mantap! 👍' },
         { user: 'Anon99', text: 'Setuju banget' },
-        { user: 'CocomeoUser', text: 'Interesting...' }
+        { user: 'RuangUser', text: 'Interesting...' }
       ];
       
       container.innerHTML = comments.map(function(c) {
@@ -1348,7 +1348,7 @@
     function goTo(page) {
       const pages = {
         'jejak': 'jejak.html',
-        'ruang': 'cocomeo.html',
+        'ruang': 'ruang.html',
         'spill': 'spill.html',
         'glitch': 'glitch.html'
       };
