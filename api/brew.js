@@ -46,14 +46,14 @@ function getRandomLength() {
 const MANADO_DICT = {
     'saya':'kita','aku':'kita','kamu':'ngana','mereka':'dorang',
     'tapi':'mar','saja':'jo','sudah':'so','tidak':'nyanda',
-    'tidur':'tidor','pergi':'pigi','baik':'bae','cantik':'gaga',
+    'tidur':'tidor','pergi':'pigi',
     'tampan':'gaga','senang':'sanang','sakit':'saki','besok':'beso'
 };
 const MANADO_PERSONAS = ['pinkan.karamoy','regina.sondakh','boy.rumengan'];
 
 function applyManado(text, name) {
     if (!MANADO_PERSONAS.includes(name)) return text;
-    // 15% chance insert slang
+    // 10% chance insert slang
     if (Math.random() < 0.15) {
         const words = text.split(' ');
         if (words.length >= 3) {
@@ -68,7 +68,7 @@ function applyManado(text, name) {
     }
     // Special traits
     if (name === 'pinkan.karamoy' && Math.random() < 0.15)
-        text += [' Tuhan berkati',' ke gereja jo',' Tuhan Yesus baik skali'][~~(Math.random()*3)];
+        text += [' Tuhan berkati',' ke gereja jo',' Tuangala baik skali'][~~(Math.random()*3)];
     if (name === 'regina.sondakh' && Math.random() < 0.15)
         text += [' gaga skali ngona',' ngana bikin gue penasaran'][~~(Math.random()*2)];
     if (name === 'boy.rumengan' && Math.random() < 0.15)
