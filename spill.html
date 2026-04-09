@@ -13,7 +13,8 @@
             --bg:#0A0A0A;--sf:#141414;--bd:#2A2A2A;--bd2:#333;--tx:#FFF;--txs:#888;
             --spill:#ff3b6f;--ruang:#00e5ff;--jejak:#9900ff;--glitch:#FFD700;
             --ap:var(--spill);--as:var(--ruang);--aq:#bfff00;
-            --font-display:'Arial Black',sans-serif;--font-mono:'Courier New',monospace;--font-body:Arial,sans-serif
+            --font-display:'Arial Black',sans-serif;--font-mono:'DM Mono','Courier New',monospace;--font-body:Arial,sans-serif;
+            --safe:#1D9E75;--safe-dim:#0a1a10
         }
         body{background:var(--bg);color:var(--tx);font-family:var(--font-body);height:100vh;display:flex;flex-direction:column}
         .app{max-width:500px;margin:0 auto;width:100%;height:100vh;display:flex;flex-direction:column;background:var(--bg);border-left:2px solid var(--bd);border-right:2px solid var(--bd);position:relative;overflow:hidden}
@@ -115,7 +116,8 @@
         .btn-hot.inactive{background:linear-gradient(145deg,#111,#1a1a2e);color:#444;border-color:#222}
         .btn-soft{background:linear-gradient(145deg,var(--as),#4d7aff);color:#000}
         .gender-icon{font-size:34px}
-        .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--txs)}
+        .btn-whisper{width:100%;padding:14px;background:0 0;border:2px dashed var(--bd2);font-family:var(--font-body);cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--txs);transition:border-color .15s,color .15s}
+        .btn-whisper:hover{border-color:var(--as);color:var(--tx)}
         .btn-whisper-badge{background:var(--spill);color:#fff;font-family:var(--font-mono);font-size:9px;padding:2px 7px;border-radius:10px;display:none}
         .spills-sect{padding:18px}
         .sect-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-family:var(--font-mono);font-size:12px}
@@ -143,51 +145,66 @@
         .ni:hover:not(.act) .nico{transform:scale(1.05)}
         .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:12px 22px;z-index:2000;border-radius:30px;display:none;font-size:13px;white-space:nowrap}
         .toast.show{display:block}
-        .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1500;align-items:flex-end;justify-content:center}
+
+        /* WHISPER OVERLAY — revisi total: calm & trusted */
+        .whisper-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:1500;align-items:flex-end;justify-content:center}
         .whisper-overlay.show{display:flex}
-        .whisper-sheet{background:var(--sf);border:2px solid var(--as);border-bottom:none;max-width:500px;width:100%;border-radius:16px 16px 0 0;overflow:hidden;position:relative;box-shadow:0 -12px 60px rgba(0,229,255,.1)}
-        .wh-mask{display:none;position:absolute;inset:0;background:rgba(0,0,0,.96);align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:20}
-        .wh-mask.show{display:flex}
-        .wh-spinner{width:30px;height:30px;border:2px solid var(--bd2);border-top-color:var(--as);border-radius:50%;animation:wh-spin .8s linear infinite}
-        @keyframes wh-spin{to{transform:rotate(360deg)}}
-        .wh-mask-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px}
-        .wh-steps{display:flex;flex-direction:column;gap:5px;align-items:center}
-        .wh-step{font-family:var(--font-mono);font-size:9px;color:#444;transition:color .25s;letter-spacing:.5px}
-        .wh-step.act{color:var(--tx)}
-        .wh-step.done{color:var(--aq)}
-        .wh-nopub{padding:28px 22px;text-align:center;display:none;flex-direction:column;align-items:center;gap:10px}
-        .wh-nopub.show{display:flex}
-        .wh-nopub-icon{font-size:30px}
-        .wh-nopub-title{font-family:var(--font-mono);font-size:11px;color:var(--spill);letter-spacing:1px;font-weight:700}
-        .wh-nopub-body{font-family:var(--font-mono);font-size:10px;color:var(--txs);line-height:1.8;text-align:center}
-        .wh-nopub-back{background:var(--as);color:#000;border:2px solid #000;padding:10px 20px;font-family:var(--font-mono);font-size:11px;cursor:pointer;font-weight:700;letter-spacing:1px;margin-top:4px}
-        .wh-phil{background:linear-gradient(160deg,#030e0e,#000b14);border-bottom:1px solid rgba(0,229,255,.12);padding:16px 18px}
-        .wh-phil-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-        .wh-phil-title{font-family:var(--font-mono);font-size:11px;color:var(--as);letter-spacing:2px;font-weight:700}
-        .wh-phil-ver{font-family:var(--font-mono);font-size:9px;color:#1a3a3a;margin-left:auto}
-        .wh-feats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
-        .wh-feat{background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.09);padding:8px 10px;border-radius:3px}
-        .wh-feat-lbl{font-family:var(--font-mono);font-size:9px;color:var(--as);letter-spacing:1px;margin-bottom:3px}
-        .wh-feat-val{font-family:var(--font-mono);font-size:10px;color:var(--tx);line-height:1.4}
-        .wh-devkey{background:rgba(255,59,111,.04);border:1px solid rgba(255,59,111,.18);border-radius:3px;padding:11px 13px}
-        .wh-devkey-hdr{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-        .wh-devkey-title{font-family:var(--font-mono);font-size:10px;color:var(--spill);letter-spacing:1px;font-weight:700}
-        .wh-devkey-badge{font-family:var(--font-mono);font-size:8px;background:var(--spill);color:#fff;padding:1px 6px;border-radius:2px;margin-left:auto;letter-spacing:1px}
-        .wh-devkey-body{font-family:var(--font-mono);font-size:10px;color:#999;line-height:1.75}
-        .wh-devkey-body b{color:var(--tx)}
-        .wh-devkey-body .hi{color:var(--spill)}
-        .wh-form{padding:16px 18px 22px}
-        .wh-form-lbl{font-family:var(--font-mono);font-size:10px;color:var(--txs);letter-spacing:1px;margin-bottom:13px;display:flex;justify-content:space-between;align-items:center}
-        .wh-live-dot{width:5px;height:5px;border-radius:50%;background:#2a9d2a;animation:pulse-dot 2s infinite;display:inline-block;margin-right:5px;vertical-align:middle}
-        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.25}}
-        .whisper-input{width:100%;padding:12px 14px;background:var(--bg);border:1px solid var(--bd2);color:var(--tx);margin-bottom:10px;font-size:13px;font-family:var(--font-mono);resize:none;outline:none;border-radius:3px}
-        .whisper-input:focus{border-color:var(--as)}
-        .whisper-input::placeholder{color:#2d2d2d}
-        .wh-ttl{font-family:var(--font-mono);font-size:9px;color:#2d2d2d;text-align:right;margin:-6px 0 14px}
-        .wh-actions{display:flex;gap:10px}
-        .wh-btn{flex:1;padding:13px;border:2px solid #000;cursor:pointer;font-size:13px;font-family:var(--font-mono);border-radius:3px;font-weight:700;letter-spacing:1px}
-        .wh-btn.send{background:var(--as);color:#000}
-        .wh-btn.cancel{background:0 0;border-color:var(--bd2);color:var(--txs)}
+        .whisper-sheet{background:#0f0f0f;border:1px solid #1e1e1e;border-bottom:none;max-width:500px;width:100%;border-radius:20px 20px 0 0;overflow:hidden;position:relative;min-height:200px}
+
+        /* Header */
+        .wh-header{padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #161616}
+        .wh-header-left{display:flex;align-items:center;gap:10px}
+        .wh-safe-dot{width:7px;height:7px;border-radius:50%;background:var(--safe);flex-shrink:0;animation:spulse 3s infinite}
+        @keyframes spulse{0%,100%{opacity:1}50%{opacity:.35}}
+        .wh-title{font-size:16px;font-weight:700;color:var(--tx);line-height:1}
+        .wh-safe-label{font-family:var(--font-mono);font-size:10px;color:var(--safe);letter-spacing:.3px;margin-top:2px}
+        .wh-close-btn{background:0 0;border:1px solid #252525;color:#555;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s;line-height:1}
+        .wh-close-btn:hover{border-color:#555;color:var(--tx)}
+
+        /* Form */
+        .wh-form-body{padding:18px 20px 22px}
+        .wh-field{margin-bottom:14px}
+        .wh-field-label{font-size:11px;color:#444;margin-bottom:6px;font-family:var(--font-mono);letter-spacing:.3px}
+        .wh-input{width:100%;padding:12px 15px;background:#141414;border:1px solid #1e1e1e;color:var(--tx);font-size:14px;font-family:var(--font-body);border-radius:12px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+        .wh-input:focus{border-color:#2e2e2e}
+        .wh-input::placeholder{color:#282828}
+        .wh-textarea{resize:none;line-height:1.6}
+        .wh-char{font-family:var(--font-mono);font-size:10px;color:#252525;text-align:right;margin-top:4px}
+
+        /* Trust strip */
+        .wh-trust{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--safe-dim);border-radius:10px;margin-bottom:16px;border:1px solid #0f2a1a}
+        .wh-trust-dot{width:6px;height:6px;border-radius:50%;background:var(--safe);flex-shrink:0}
+        .wh-trust-text{font-size:12px;color:var(--safe);flex:1;opacity:.85}
+        .wh-trust-link{font-size:11px;color:var(--safe);opacity:.5;cursor:pointer;font-family:var(--font-mono);white-space:nowrap;text-decoration:underline;text-underline-offset:2px}
+        .wh-trust-link:hover{opacity:.9}
+
+        /* Send button */
+        .wh-send-btn{width:100%;padding:15px;background:#fff;border:none;color:#000;font-size:15px;font-weight:700;border-radius:14px;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:.2px}
+        .wh-send-btn:hover{opacity:.88}
+        .wh-send-btn:active{transform:scale(.98)}
+        .wh-send-btn:disabled{opacity:.2;cursor:not-allowed;transform:none}
+
+        /* Processing layer */
+        .wh-layer{position:absolute;inset:0;background:#0f0f0f;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:32px}
+        .wh-layer.show{display:flex}
+        .wh-proc-ring{width:32px;height:32px;border:1.5px solid #1e1e1e;border-top-color:var(--safe);border-radius:50%;animation:ring-spin .7s linear infinite;flex-shrink:0}
+        @keyframes ring-spin{to{transform:rotate(360deg)}}
+        .wh-proc-label{font-family:var(--font-mono);font-size:11px;color:#444;letter-spacing:1px}
+        .wh-proc-steps{display:flex;flex-direction:column;gap:4px;align-items:center}
+        .wh-proc-step{font-family:var(--font-mono);font-size:10px;color:#1e1e1e;transition:color .25s}
+        .wh-proc-step.act{color:#666}
+        .wh-proc-step.done{color:var(--safe)}
+
+        /* Sent layer */
+        .wh-sent-orb{width:54px;height:54px;border-radius:50%;border:1.5px solid var(--safe);display:flex;align-items:center;justify-content:center;animation:orb-pop .4s cubic-bezier(.2,.9,.4,1.1) both}
+        @keyframes orb-pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+        .wh-sent-orb-inner{width:20px;height:20px;border-radius:50%;background:var(--safe-dim);border:1.5px solid var(--safe)}
+        .wh-sent-title{font-size:18px;font-weight:700;color:var(--tx);text-align:center}
+        .wh-sent-sub{font-size:13px;color:#444;line-height:1.7;text-align:center;max-width:240px}
+        .wh-layer-close{background:0 0;border:1px solid #222;color:#444;padding:9px 22px;cursor:pointer;font-family:var(--font-mono);font-size:11px;border-radius:8px;transition:border-color .15s,color .15s;margin-top:4px}
+        .wh-layer-close:hover{border-color:#555;color:var(--tx)}
+
+        /* Inbox & read */
         .w-inbox{position:absolute;inset:0;z-index:110;background:rgba(0,0,0,.97);display:none;flex-direction:column}
         .w-inbox.show{display:flex}
         .w-inbox-hdr{position:absolute;top:0;left:0;right:0;background:rgba(10,10,10,.98);border-bottom:1px solid var(--bd2);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;z-index:112}
@@ -219,6 +236,22 @@
         .w-trigger:hover{border-color:var(--as)}
         .w-dot{width:6px;height:6px;border-radius:50%;background:var(--spill);display:none;flex-shrink:0}
         .w-dot.show{display:block}
+
+        /* How it works sheet */
+        .wh-how-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:1600;align-items:flex-end;justify-content:center}
+        .wh-how-overlay.show{display:flex}
+        .wh-how-sheet{background:#111;border:1px solid #1a1a1a;border-bottom:none;max-width:500px;width:100%;border-radius:20px 20px 0 0;padding:24px 20px 36px;max-height:80vh;overflow-y:auto}
+        .wh-how-title{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:20px}
+        .wh-how-row{display:flex;gap:14px;margin-bottom:18px;align-items:flex-start}
+        .wh-how-num{width:26px;height:26px;border-radius:50%;background:var(--safe-dim);border:1px solid #0f3020;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:11px;color:var(--safe);flex-shrink:0;margin-top:1px}
+        .wh-how-h{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:4px}
+        .wh-how-p{font-size:12px;color:#555;line-height:1.7}
+        .wh-how-tech{background:#0a0a0a;border:1px solid #161616;border-radius:8px;padding:12px 14px;margin-top:4px;font-family:var(--font-mono);font-size:10px;color:#2a2a2a;line-height:2}
+        .wh-how-tech span{color:#3a3a3a}
+        .wh-how-close{width:100%;margin-top:20px;padding:13px;background:0 0;border:1px solid #222;color:#444;font-family:var(--font-mono);font-size:12px;border-radius:10px;cursor:pointer;transition:border-color .15s,color .15s}
+        .wh-how-close:hover{border-color:#555;color:var(--tx)}
+
+        /* Login modal */
         .lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
         .lm-bg.show{display:flex}
         .lm-shell{max-width:380px;width:100%;position:relative}
@@ -226,8 +259,6 @@
         .lm-hero{background:#0a0a0a;border:2px solid #2e2e2e;border-top:none;padding:20px 22px 16px;position:relative;box-shadow:6px 6px 0 #000}
         .lm-hero::before{content:'';position:absolute;top:-1px;left:-1px;width:16px;height:16px;border-top:2px solid var(--as);border-left:2px solid var(--as)}
         .lm-hero::after{content:'';position:absolute;bottom:-1px;right:-1px;width:16px;height:16px;border-bottom:2px solid var(--ap);border-right:2px solid var(--ap)}
-        .lm-hero-tr{position:absolute;top:-1px;right:-1px;width:16px;height:16px;border-top:2px solid var(--aq);border-right:2px solid var(--aq)}
-        .lm-hero-bl{position:absolute;bottom:-1px;left:-1px;width:16px;height:16px;border-bottom:2px solid var(--glitch);border-left:2px solid var(--glitch)}
         .lm-eyebrow{font-family:'DM Mono',monospace;font-size:8px;color:#2a2a2a;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
         .lm-disclaimer{font-family:'DM Mono',monospace;font-size:9px;color:#484848;line-height:2;letter-spacing:.4px}
         .lm-disclaimer .warn{color:#5a3535}
@@ -330,7 +361,7 @@
                     <button class="btn-gender btn-soft" id="btnSoft"><span class="gender-icon">💬</span><span>SOFT TALK</span></button>
                 </div>
                 <button class="btn-whisper" id="whisperBtn">
-                    <span>✦ WHISPERER</span>
+                    <span>✦ WHISPER</span>
                     <span class="btn-whisper-badge" id="whisperBadge">● BARU</span>
                 </button>
             </div>
@@ -350,6 +381,7 @@
     </nav>
 </div>
 
+<!-- Invite popup -->
 <div class="invite-popup" id="invitePopup">
     <div class="invite-box">
         <div class="invite-vibe-badge" id="inviteVibeBadge">🌙 INSOMNIA</div>
@@ -362,58 +394,110 @@
     </div>
 </div>
 
+<!-- ==================== WHISPER OVERLAY (REVISI TOTAL) ==================== -->
 <div class="whisper-overlay" id="whisperOverlay">
     <div class="whisper-sheet">
-        <div class="wh-mask" id="whMask">
-            <div class="wh-spinner"></div>
-            <div class="wh-mask-title">PROCESSING</div>
-            <div class="wh-steps">
-                <div class="wh-step" id="whs1">◌ ephemeral keypair</div>
-                <div class="wh-step" id="whs2">◌ ECDH key agreement</div>
-                <div class="wh-step" id="whs3">◌ AES-GCM encrypt + pad</div>
-                <div class="wh-step" id="whs4">◌ queue delivery</div>
+
+        <!-- Layer: Processing -->
+        <div class="wh-layer" id="whLayerProc">
+            <div class="wh-proc-ring"></div>
+            <div class="wh-proc-label">MENGENKRIPSI</div>
+            <div class="wh-proc-steps">
+                <div class="wh-proc-step" id="whs1">membuat keypair</div>
+                <div class="wh-proc-step" id="whs2">enkripsi pesan</div>
+                <div class="wh-proc-step" id="whs3">mengirim via relay</div>
             </div>
         </div>
-        <div class="wh-nopub" id="whNoPub">
-            <div class="wh-nopub-icon">🔑</div>
-            <div class="wh-nopub-title">PENERIMA BELUM AKTIF</div>
-            <div class="wh-nopub-body">User ini belum pernah membuka<br>aplikasi dengan sistem whisper baru.<br>Mereka perlu login sekali agar<br>public key terdaftar.</div>
-            <button class="wh-nopub-back" id="whNoPubBack">← KEMBALI</button>
+
+        <!-- Layer: Sent -->
+        <div class="wh-layer" id="whLayerSent">
+            <div class="wh-sent-orb"><div class="wh-sent-orb-inner"></div></div>
+            <div class="wh-sent-title">Pesan sudah lepas.</div>
+            <div class="wh-sent-sub" id="whSentSub">Tidak ada yang bisa memanggilnya kembali. Akan musnah setelah dibaca.</div>
+            <button class="wh-layer-close" onclick="closeWhisper()">tutup</button>
         </div>
-        <div class="wh-phil" id="whPhil">
-            <div class="wh-phil-hdr">
-                <span style="font-size:18px">⬡</span>
-                <span class="wh-phil-title">WHISPER PROTOCOL</span>
-                <span class="wh-phil-ver">v2 · ECDH P-256</span>
-            </div>
-            <div class="wh-devkey">
-                <div class="wh-devkey-hdr">
-                    <span style="font-size:15px">📱</span>
-                    <span class="wh-devkey-title">PRIVATE KEY = DEVICE KAMU</span>
-                    <span class="wh-devkey-badge">FITUR</span>
+
+        <!-- Layer: No pubkey -->
+        <div class="wh-layer" id="whLayerNoPub">
+            <div style="font-size:28px;opacity:.25;margin-bottom:8px">○</div>
+            <div style="font-size:14px;font-weight:700;color:var(--tx);margin-bottom:8px">Penerima belum aktif</div>
+            <div style="font-size:12px;color:#444;line-height:1.7;text-align:center;max-width:220px;margin-bottom:20px">User ini perlu login sekali agar bisa menerima whisper.</div>
+            <button class="wh-layer-close" onclick="whShowForm()">← kembali</button>
+        </div>
+
+        <!-- Main form -->
+        <div id="whMainForm">
+            <div class="wh-header">
+                <div class="wh-header-left">
+                    <div class="wh-safe-dot"></div>
+                    <div>
+                        <div class="wh-title">Whisper</div>
+                        <div class="wh-safe-label">anonim · terlindungi</div>
+                    </div>
                 </div>
-                <div class="wh-devkey-body">
-                    Private key <b>tidak pernah meninggalkan device-mu</b> dan tidak disimpan
-                    di server manapun — bahkan kami tidak bisa membaca pesanmu.
-                    Ini berarti <span class="hi">ganti device atau clear storage = akses pesan lama
-                    hilang permanent.</span> Bukan kelemahan —
-                    <b>ini desain yang disengaja</b> agar hanya kamu yang bisa dekripsi pesanmu. *Protocol:ECDH P-256 AES-GCM 256
+                <button class="wh-close-btn" onclick="closeWhisper()">✕</button>
+            </div>
+            <div class="wh-form-body">
+                <div class="wh-field">
+                    <div class="wh-field-label">ke siapa?</div>
+                    <input type="text" class="wh-input" id="whisperTarget" placeholder="username" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="whValidate()">
                 </div>
+                <div class="wh-field">
+                    <div class="wh-field-label">pesanmu</div>
+                    <textarea class="wh-input wh-textarea" id="whisperMessage" placeholder="Tulis apa saja..." rows="4" maxlength="500" oninput="whValidate();whCharUpdate()"></textarea>
+                    <div class="wh-char"><span id="whChar">0</span>/500</div>
+                </div>
+                <div class="wh-trust">
+                    <div class="wh-trust-dot"></div>
+                    <div class="wh-trust-text">pengirim tidak bisa dilacak siapapun</div>
+                    <span class="wh-trust-link" onclick="whShowHow()">cara kerja ↗</span>
+                </div>
+                <button class="wh-send-btn" id="whSendBtn" disabled onclick="whDoSend()">Kirim</button>
             </div>
         </div>
-        <div class="wh-form" id="whForm">
-            <div class="wh-form-lbl">
-                <span><span class="wh-live-dot"></span>COMPOSE WHISPER</span>
-                <span style="color:#1a3a3a;font-size:9px">end-to-end encrypted</span>
-            </div>
-            <input type="text" class="whisper-input" id="whisperTarget" placeholder="@username penerima" autocomplete="off" autocorrect="off" autocapitalize="off">
-            <textarea class="whisper-input" id="whisperMessage" placeholder="Tulis pesan rahasia..." rows="4" maxlength="500"></textarea>
-            <div class="wh-ttl">⏳ musnah 5 detik setelah dibaca · delivery diacak · max 24 jam</div>
-            <div class="wh-actions">
-                <button class="wh-btn cancel" id="whisperCancel">BATAL</button>
-                <button class="wh-btn send" id="whisperSend">KIRIM ✦</button>
+
+    </div>
+</div>
+
+<!-- How it works sheet -->
+<div class="wh-how-overlay" id="whHowOverlay">
+    <div class="wh-how-sheet">
+        <div class="wh-how-title">Bagaimana whisper melindungimu</div>
+        <div class="wh-how-row">
+            <div class="wh-how-num">1</div>
+            <div>
+                <div class="wh-how-h">Pengirim tidak diketahui siapapun</div>
+                <div class="wh-how-p">Pesan dikirim lewat relay anonim. Server kami hanya melihat IP relay, bukan IP-mu. Bahkan jika server diretas, tidak ada identitasmu di sana.</div>
             </div>
         </div>
+        <div class="wh-how-row">
+            <div class="wh-how-num">2</div>
+            <div>
+                <div class="wh-how-h">Kami tidak bisa membaca pesanmu</div>
+                <div class="wh-how-p">Enkripsi terjadi di device-mu sebelum pesan keluar. Kunci pribadi tidak pernah meninggalkan perangkatmu — bahkan kami tidak punya akses.</div>
+            </div>
+        </div>
+        <div class="wh-how-row">
+            <div class="wh-how-num">3</div>
+            <div>
+                <div class="wh-how-h">Waktu pengiriman diacak</div>
+                <div class="wh-how-p">Pesan tidak langsung terkirim. Ada jeda acak 2–47 detik agar pola waktu tidak bisa dianalisis untuk melacakmu.</div>
+            </div>
+        </div>
+        <div class="wh-how-row">
+            <div class="wh-how-num">4</div>
+            <div>
+                <div class="wh-how-h">Musnah setelah dibaca</div>
+                <div class="wh-how-p">5 detik setelah penerima membuka pesan, ia terhapus dari server selamanya. Tidak ada backup, tidak ada log.</div>
+            </div>
+        </div>
+        <div class="wh-how-tech">
+            <span>protokol:</span> ECDH P-256 · AES-GCM 256-bit · HKDF-SHA256<br>
+            <span>padding:</span> block 256 byte — ukuran pesan tidak bocor<br>
+            <span>relay:</span> strip semua identifying headers sebelum forward<br>
+            <span>storage:</span> private key hanya di device, tidak pernah dikirim
+        </div>
+        <button class="wh-how-close" onclick="whCloseHow()">tutup</button>
     </div>
 </div>
 
@@ -422,7 +506,6 @@
 <script>
 (function(){
 'use strict';
-
 const SUPA_URL='https://fuovfrdicdhnlymnacpz.supabase.co';
 const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
 const BID_TIMEOUT_MS=15000,HEARTBEAT_MS=10000,POLL_MATCH_MS=2000,POLL_INV_MS=2000,POLL_MSG_MS=1500,POLL_WH_MS=10000;
@@ -435,21 +518,13 @@ const IS_GUEST=localStorage.getItem(K.l)!=='true';
 const ME=IS_GUEST?null:localStorage.getItem(K.u);
 const UID=IS_GUEST?null:localStorage.getItem(K.i);
 const SID=IS_GUEST?null:'sess_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
-
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const toast=(msg,dur=3000)=>{const o=$('toast');if(!o)return;o.textContent=msg;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),dur);};
 const api=async(path,body)=>{const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return r.json();};
 const sbGet=async path=>{const r=await fetch(`${SUPA_URL}/rest/v1${path}`,{headers:{apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`}});const t=await r.text();return t?JSON.parse(t):null;};
-
-function getAuthHeaders(){
-    if(IS_GUEST) return {};
-    const hash=localStorage.getItem(K.a);
-    if(!hash) return {};
-    return {'Authorization':`Bearer ${hash}`};
-}
-
-function getWIBHour(){const n=new Date();const w=new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000);return w.getHours();}
+function getAuthHeaders(){if(IS_GUEST)return{};const h=localStorage.getItem(K.a);if(!h)return{};return{'Authorization':'Bearer '+h};}
+function getWIBHour(){const n=new Date();return new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000).getHours();}
 function getWIBDate(){const n=new Date();const w=new Date(n.getTime()+n.getTimezoneOffset()*60000+INSOMNIA_TZ*3600000);if(w.getHours()<INSOMNIA_CLOSE)w.setDate(w.getDate()-1);return w.toISOString().slice(0,10);}
 function isInsomniaActive(){const h=getWIBHour();return h>=INSOMNIA_OPEN||h<INSOMNIA_CLOSE;}
 function getInsomniaPersonas(){const t=getWIBDate(),sd=localStorage.getItem(INS_LS_DATE),sv=localStorage.getItem(INS_LS_KEY);if(sd===t&&sv){try{return JSON.parse(sv);}catch(e){}}const sh=[...INSOMNIA_AI].sort(()=>Math.random()-.5).slice(0,3);localStorage.setItem(INS_LS_KEY,JSON.stringify(sh));localStorage.setItem(INS_LS_DATE,t);return sh;}
@@ -470,26 +545,23 @@ const ECDH=(()=>{
     async function decrypt(enc,myPrivJWK){try{const[ivB64,ephPubB64,ctB64]=enc.split(':');const ephPub=await importPub(JSON.parse(atob(ephPubB64)));const myPriv=await importPriv(myPrivJWK);const aes=await deriveAES(myPriv,ephPub);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:fromB64(ivB64)},aes,fromB64(ctB64));return unpad(new Uint8Array(plain));}catch(e){return '[tidak bisa didekripsi]';}}
     async function getOrCreateKeypair(){const privStr=localStorage.getItem(LS_PRIV),pubStr=localStorage.getItem(LS_PUB);if(privStr&&pubStr){try{const priv=await importPriv(JSON.parse(privStr));return{privateKey:priv,privJWK:JSON.parse(privStr),pubJWK:JSON.parse(pubStr)};}catch(e){}}const kp=await genKeypair();localStorage.setItem(LS_PRIV,JSON.stringify(kp.privJWK));localStorage.setItem(LS_PUB,JSON.stringify(kp.pubJWK));return{privateKey:kp.publicKey,privJWK:kp.privJWK,pubJWK:kp.pubJWK};}
     async function ensurePubkeyRegistered(){if(IS_GUEST)return null;const kp=await getOrCreateKeypair();if(sessionStorage.getItem('pk_reg')==='1')return kp;try{const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json',...getAuthHeaders()},body:JSON.stringify({username:ME,userId:UID,pubkey:kp.pubJWK})});if(r.ok)sessionStorage.setItem('pk_reg','1');}catch(e){}return kp;}
-    async function fetchRecipientPubkey(username){const headers=getAuthHeaders();const r=await fetch(`/api/pubkey?username=${encodeURIComponent(username)}`,{headers});if(!r.ok)return null;const d=await r.json();return d.pubkey||null;}
+    async function fetchRecipientPubkey(username){const headers=getAuthHeaders();const r=await fetch('/api/pubkey?username='+encodeURIComponent(username),{headers});if(!r.ok)return null;const d=await r.json();return d.pubkey||null;}
     return{encrypt,decrypt,getOrCreateKeypair,ensurePubkeyRegistered,fetchRecipientPubkey};
 })();
+window._ECDH=ECDH;
 
 const WH=(()=>{
     let msgs=[],readId=null,dTimer=null,pollTimer=null,myKP=null;
     function setDot(show){const d=$('wDot'),b=$('whisperBadge');if(d)d.classList.toggle('show',show);if(b)b.style.display=show?'':'none';}
     async function getKP(){if(!myKP)myKP=await ECDH.getOrCreateKeypair();return myKP;}
     async function fetchInbox(){
-        if(IS_GUEST) return;
+        if(IS_GUEST)return;
         const headers=getAuthHeaders();
         if(!headers.Authorization){toast('Token tidak ditemukan, silakan login ulang');return;}
         try{
             const r=await fetch('/api/whisper?username='+encodeURIComponent(ME),{headers});
-            if(r.status===401||r.status===403){
-                toast('Sesi expired. Silakan login kembali.');
-                localStorage.removeItem(K.l);localStorage.removeItem(K.a);
-                window.location.reload();return;
-            }
-            if(!r.ok) return;
+            if(r.status===401||r.status===403){toast('Sesi expired. Silakan login kembali.');localStorage.removeItem(K.l);localStorage.removeItem(K.a);window.location.reload();return;}
+            if(!r.ok)return;
             const raw=await r.json();
             if(!Array.isArray(raw)||!raw.length){msgs=[];renderList();setDot(false);return;}
             const kp=await getKP();
@@ -504,31 +576,12 @@ const WH=(()=>{
         }catch(e){console.warn('[WH] fetchInbox',e);}
     }
     function renderList(){const el=$('wList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="w-empty"><div class="w-empty-g">◌</div><span>no whispers</span></div>';return;}el.innerHTML=msgs.map(m=>`<div class="w-row" onclick="WH.open('${esc(m.id)}')"><div class="w-row-meta"><span class="w-row-from">${esc(m.from)}</span><span class="w-row-ttl">⏳ ${m.ttl}</span></div><div class="w-row-prev">${esc(m.prev)}</div></div>`).join('');}
-    async function openMsg(id){
-        const m=msgs.find(x=>x.id===id);if(!m)return;
-        readId=id;
-        $('wReadFrom').textContent='from: '+m.from;
-        $('wReadBody').textContent=m.body;
-        $('wReadCount').textContent='5';
-        $('wReadCount').style.color='var(--spill)';
-        $('wRead').classList.add('show');
-        const headers=getAuthHeaders();
-        await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify({id,username:ME})}).catch(()=>{});
-        startDestruct(id);
-    }
+    async function openMsg(id){const m=msgs.find(x=>x.id===id);if(!m)return;readId=id;$('wReadFrom').textContent='dari: '+m.from;$('wReadBody').textContent=m.body;$('wReadCount').textContent='5';$('wReadCount').style.color='var(--spill)';$('wRead').classList.add('show');const headers=getAuthHeaders();await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify({id,username:ME})}).catch(()=>{});startDestruct(id);}
     function startDestruct(id){clearInterval(dTimer);let n=5;dTimer=setInterval(()=>{n--;const el=$('wReadCount');if(!el){clearInterval(dTimer);return;}el.textContent=n;if(n<=2)el.style.color='#ff3b6f';if(n<=0){clearInterval(dTimer);burnMsg(id);}},1000);}
-    function burnMsg(id){
-        const body=$('wReadBody');
-        if(body)body.classList.add('w-burning');
-        msgs=msgs.filter(m=>m.id!==id);
-        const headers=getAuthHeaders();
-        fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify({id,username:ME})}).catch(()=>{});
-        setTimeout(()=>{$('wRead').classList.remove('show');if(body){body.classList.remove('w-burning');body.textContent='';}$('wReadCount').style.color='var(--spill)';$('wInbox').classList.add('show');renderList();setDot(msgs.length>0);},750);
-    }
+    function burnMsg(id){const body=$('wReadBody');if(body)body.classList.add('w-burning');msgs=msgs.filter(m=>m.id!==id);const headers=getAuthHeaders();fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...headers},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('wRead').classList.remove('show');if(body){body.classList.remove('w-burning');body.textContent='';}$('wReadCount').style.color='var(--spill)';$('wInbox').classList.add('show');renderList();setDot(msgs.length>0);},750);}
     function closeRead(){clearInterval(dTimer);if(readId){if(msgs.find(m=>m.id===readId))burnMsg(readId);readId=null;}$('wRead').classList.remove('show');}
-    async function sendMsg(toUsername,plaintext){const recPubJWK=await ECDH.fetchRecipientPubkey(toUsername);if(!recPubJWK)return{ok:false,reason:'no_pubkey'};const messageEnc=await ECDH.encrypt(plaintext.trim(),recPubJWK);const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to:toUsername,messageEnc})});return{ok:r.ok||r.status===202,reason:null};}
     function startPolling(){fetchInbox();clearInterval(pollTimer);pollTimer=setInterval(fetchInbox,POLL_WH_MS);}
-    return{open:openMsg,closeRead,sendMsg,startPolling,fetchInbox};
+    return{open:openMsg,closeRead,startPolling,fetchInbox};
 })();
 window.WH=WH;
 
@@ -553,7 +606,6 @@ const S={IDLE:'idle',BIDDING:'bidding',CHAT_REAL:'chat_real',CHAT_AI:'chat_ai'};
 let state=S.IDLE,vibe=null,roomId=null,aiChar=null;
 let chatHist=[],lastMsgTs=null,isInsomnia=false;
 let tBid=null,tHeart=null,tPollMatch=null,tPollMsg=null,tPollInv=null,tScan=null,tInvPop=null,pendingInv=null;
-
 function startHeartbeat(){if(tHeart)clearInterval(tHeart);tHeart=setInterval(()=>api('/api/invite',{action:'heartbeat',userId:UID,username:ME}),HEARTBEAT_MS);}
 async function startBid(v){if(state!==S.IDLE)return;state=S.BIDDING;vibe=v;$('btnHot').disabled=true;$('btnSoft').disabled=true;showScan(true,v);startCountdown(BID_TIMEOUT_MS/1000);try{const r=await api('/api/invite',{action:'bid',userId:UID,username:ME,sessionId:SID,vibe:v});if(r.action==='matched'){clearBidTimers();enterChatReal(r.room_id,v);return;}if(r.action==='already_waiting'){toast('Sedang dalam antrian...');enterIdle();return;}if(r.action==='waiting'){const n=r.invites_sent||0;$('scanSub').textContent=n>0?`Invitation terkirim ke ${n} stranger...`:'Tidak ada stranger online, menyiapkan AI...';if(n===0){setTimeout(()=>fallbackAI(),1500);return;}}}catch(e){console.warn('Bid:',e);setTimeout(()=>fallbackAI(),1500);return;}tPollMatch=setInterval(pollMatch,POLL_MATCH_MS);tBid=setTimeout(()=>{if(state===S.BIDDING)fallbackAI();},BID_TIMEOUT_MS);}
 async function pollMatch(){if(state!==S.BIDDING)return;try{const r=await fetch(`/api/invite?userId=${UID}&role=inviter`);const d=await r.json();if(d.matched){clearBidTimers();enterChatReal(d.room_id,d.vibe||vibe);}else if(d.all_expired){clearBidTimers();fallbackAI();}}catch(e){}}
@@ -593,28 +645,15 @@ function radarLoop(cv){const ctx=cv.getContext('2d');function draw(){const w=cv.
 async function cleanup(){clearAllTimers();const body={userId:UID};if(roomId)body.roomId=roomId;try{await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true});}catch(e){}}
 window.addEventListener('beforeunload',cleanup);
 
-function setStep(n){['whs1','whs2','whs3','whs4'].forEach((id,i)=>{const el=$(id);if(!el)return;el.className='wh-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
-function resetWhisperSheet(){$('whNoPub').classList.remove('show');$('whPhil').style.display='';$('whForm').style.display='';}
-
 async function init(){
-    setupGuestUI();
-    updateInsomniaButton();
-    setInterval(updateInsomniaButton,60000);
-    initRadar();
-    loadSpills();
-    startBrewInterval();
+    setupGuestUI();updateInsomniaButton();setInterval(updateInsomniaButton,60000);
+    initRadar();loadSpills();startBrewInterval();
     if(!IS_GUEST){
         await ECDH.ensurePubkeyRegistered();
         await api('/api/invite',{action:'register',userId:UID,username:ME,sessionId:SID});
-        startHeartbeat();
-        loadCount();
-        setInterval(loadCount,15000);
-        tPollInv=setInterval(pollInvitation,POLL_INV_MS);
-        WH.startPolling();
-    } else {
-        loadCount();
-        setInterval(loadCount,15000);
-    }
+        startHeartbeat();loadCount();setInterval(loadCount,15000);
+        tPollInv=setInterval(pollInvitation,POLL_INV_MS);WH.startPolling();
+    }else{loadCount();setInterval(loadCount,15000);}
 }
 
 window.addEventListener('load',()=>{
@@ -622,6 +661,7 @@ window.addEventListener('load',()=>{
     if(!IS_GUEST){
         $('btnHot').onclick=()=>{if(state!==S.IDLE)return;if(!isInsomniaActive()){toast('🌙 Insomnia buka jam 22.00 WIB');return;}startBid('hot_take');};
         $('btnSoft').onclick=()=>{if(state===S.IDLE)startBid('soft_talk');};
+        $('whisperBtn').onclick=()=>{whShowForm();$('whisperOverlay').classList.add('show');setTimeout(()=>{const t=$('whisperTarget');if(t)t.focus();},150);};
     }
     $('scanCancel').onclick=async()=>{if(state===S.BIDDING){clearBidTimers();await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID})});enterIdle();toast('Pencarian dibatalkan');}};
     $('btnAccept').onclick=acceptInv;
@@ -630,42 +670,121 @@ window.addEventListener('load',()=>{
     $('chatSend').onclick=chatSend;
     $('chatInput').onkeypress=e=>{if(e.key==='Enter')chatSend();};
     $('chatClose').onclick=async()=>{if(state===S.CHAT_REAL){addSys('🔴 Kamu mengakhiri chat');await fetch('/api/invite',{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:UID,roomId})});}setTimeout(enterIdle,500);};
-    if(!IS_GUEST)$('whisperBtn').onclick=()=>{resetWhisperSheet();$('whisperOverlay').classList.add('show');};
-    $('whisperCancel').onclick=()=>{$('whisperOverlay').classList.remove('show');$('whisperTarget').value='';$('whisperMessage').value='';};
-    $('whNoPubBack').onclick=resetWhisperSheet;
-    $('whisperSend').onclick=async()=>{
-        const toEl=$('whisperTarget'),msgEl=$('whisperMessage');
-        const to=(toEl.value||'').trim().replace('@','').toLowerCase();
-        const msg=(msgEl.value||'').trim();
-        if(!to||!msg){toast('Isi semua field');return;}
-        if(!/^[a-z0-9_.]{2,24}$/.test(to)){toast('Username tidak valid');return;}
-        const mask=$('whMask');mask.classList.add('show');setStep(0);
-        try{
-            await new Promise(r=>setTimeout(r,250));setStep(1);
-            const recPubJWK=await ECDH.fetchRecipientPubkey(to);
-            if(!recPubJWK){mask.classList.remove('show');$('whPhil').style.display='none';$('whForm').style.display='none';$('whNoPub').classList.add('show');return;}
-            setStep(2);
-            const messageEnc=await ECDH.encrypt(msg.trim(),recPubJWK);
-            setStep(3);await new Promise(r=>setTimeout(r,200));
-            const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc})});
-            setStep(3);await new Promise(r=>setTimeout(r,350));
-            mask.classList.remove('show');
-            if(r.ok||r.status===202){$('whisperOverlay').classList.remove('show');toEl.value='';msgEl.value='';toast('✦ whisper terenkripsi — delivery diacak waktunya');}else{toast('Gagal — cek username penerima');}
-        }catch(e){mask.classList.remove('show');console.error('[whisper]',e);toast('Error enkripsi');}
-    };
     $('wTrigger').onclick=()=>{WH.fetchInbox();$('wInbox').classList.add('show');};
     $('wInboxClose').onclick=()=>$('wInbox').classList.remove('show');
     $('wBack').onclick=()=>{WH.closeRead();$('wInbox').classList.add('show');};
 });
 })();
+
+/* ==================== WHISPER GLOBAL FUNCTIONS ==================== */
+function whLayerShow(id){
+    ['whLayerProc','whLayerSent','whLayerNoPub'].forEach(l=>{
+        const el=document.getElementById(l);
+        if(el)el.classList.toggle('show',l===id);
+    });
+}
+
+function whShowForm(){
+    whLayerShow(null);
+    const f=document.getElementById('whMainForm');
+    if(f)f.style.display='';
+}
+
+function closeWhisper(){
+    document.getElementById('whisperOverlay').classList.remove('show');
+    document.getElementById('whisperTarget').value='';
+    document.getElementById('whisperMessage').value='';
+    const c=document.getElementById('whChar');if(c)c.textContent='0';
+    const b=document.getElementById('whSendBtn');if(b)b.disabled=true;
+    setTimeout(whShowForm,300);
+}
+
+function whValidate(){
+    const to=(document.getElementById('whisperTarget').value||'').trim().replace('@','');
+    const msg=(document.getElementById('whisperMessage').value||'').trim();
+    const ok=/^[a-z0-9_.]{2,24}$/.test(to)&&msg.length>0;
+    const btn=document.getElementById('whSendBtn');
+    if(btn)btn.disabled=!ok;
+}
+
+function whCharUpdate(){
+    const el=document.getElementById('whisperMessage');
+    const c=document.getElementById('whChar');
+    if(el&&c)c.textContent=el.value.length;
+}
+
+function whShowHow(){document.getElementById('whHowOverlay').classList.add('show');}
+function whCloseHow(){document.getElementById('whHowOverlay').classList.remove('show');}
+
+function whSetStep(n){
+    ['whs1','whs2','whs3'].forEach((id,i)=>{
+        const el=document.getElementById(id);
+        if(!el)return;
+        el.className='wh-proc-step';
+        if(i<n)el.classList.add('done');
+        else if(i===n)el.classList.add('act');
+    });
+}
+
+async function whDoSend(){
+    const to=(document.getElementById('whisperTarget').value||'').trim().replace('@','').toLowerCase();
+    const msg=(document.getElementById('whisperMessage').value||'').trim();
+    if(!to||!msg)return;
+
+    // Hide form, show processing
+    document.getElementById('whMainForm').style.display='none';
+    whLayerShow('whLayerProc');
+    whSetStep(0);
+
+    try{
+        await new Promise(r=>setTimeout(r,300));
+        whSetStep(1);
+
+        const K_a='jejak_auth_v1';
+        const hash=localStorage.getItem(K_a)||'';
+        const headers=hash?{'Authorization':'Bearer '+hash}:{};
+        const pkRes=await fetch('/api/pubkey?username='+encodeURIComponent(to),{headers});
+        if(!pkRes.ok){whLayerShow('whLayerNoPub');return;}
+        const pkData=await pkRes.json();
+        if(!pkData.pubkey){whLayerShow('whLayerNoPub');return;}
+
+        whSetStep(2);
+        const messageEnc=await window._ECDH.encrypt(msg,pkData.pubkey);
+        await new Promise(r=>setTimeout(r,200));
+
+        // Try relay first, fallback to direct
+        let r;
+        try{
+            r=await fetch('/api/whisper-relay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc})});
+        }catch(e){
+            r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc})});
+        }
+
+        if(r.ok||r.status===202){
+            const sub=document.getElementById('whSentSub');
+            if(sub)sub.textContent='Tidak ada yang bisa memanggilnya kembali. Akan musnah 5 detik setelah '+to+' membaca.';
+            whLayerShow('whLayerSent');
+        }else{
+            whShowForm();
+            const t=document.getElementById('toast');
+            if(t){t.textContent='Gagal, coba lagi';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+        }
+    }catch(err){
+        console.error('[whisper send]',err);
+        whShowForm();
+        const t=document.getElementById('toast');
+        if(t){t.textContent='Error, coba lagi';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+    }
+}
 </script>
 
+<!-- ==================== LOGIN MODAL ==================== -->
 <div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
   <div class="lm-shell">
     <div class="lm-accent"></div>
     <div class="lm-hero">
-      <span class="lm-hero-tr"></span>
-      <span class="lm-hero-bl"></span>
+      <span style="position:absolute;top:-1px;right:-1px;width:16px;height:16px;border-top:2px solid #bfff00;border-right:2px solid #bfff00"></span>
+      <span style="position:absolute;bottom:-1px;left:-1px;width:16px;height:16px;border-bottom:2px solid #FFD700;border-left:2px solid #FFD700"></span>
       <div class="lm-eyebrow">zero-knowledge platform</div>
       <div class="lm-disclaimer">
         di ruang ini kamu akan bertemu suara&#8209;suara.<br>
@@ -729,47 +848,38 @@ const LM={
   validUsername(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const parts=v.split('.');if(parts.length!==2)return null;if(parts[0].length<2||parts[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(parts[0])||!/^[a-z][a-z0-9]*$/.test(parts[1]))return null;return v;},
   validPin(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(p==='123456'||p==='654321'||p==='000000'||p==='999999')return false;return true;}
 };
-
 function openLoginModal(){document.getElementById('lmBg').classList.add('show');lmSwitch('login');setTimeout(()=>document.getElementById('lmU').focus(),120);}
 function closeLM(){document.getElementById('lmBg').classList.remove('show');}
 function lmSwitch(to){document.getElementById('lmPanelLogin').style.display=to==='login'?'':'none';document.getElementById('lmPanelReg').style.display=to==='reg'?'':'none';setTimeout(()=>document.getElementById(to==='login'?'lmU':'lmRU').focus(),100);}
 function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
 function lmUpdateLogin(){const ok=LM.validUsername(document.getElementById('lmU').value)&&LM.validPin(document.getElementById('lmP').value);document.getElementById('lmBtnL').disabled=!ok;}
 function lmUpdateReg(){const pin=document.getElementById('lmRP').value;const pin2=document.getElementById('lmRP2').value;const ok=LM.validUsername(document.getElementById('lmRU').value)&&LM.validPin(pin)&&pin===pin2&&document.getElementById('lmAg').checked;document.getElementById('lmBtnR').disabled=!ok;}
-
 async function lmDoLogin(){
   const u=LM.validUsername(document.getElementById('lmU').value);
   const p=document.getElementById('lmP').value;
   lmFb('lmFbL','','');
   if(!u){lmFb('lmFbL','e','Format username: kata.kata');return;}
   if(!LM.validPin(p)){lmFb('lmFbL','e','PIN: 6 digit angka');return;}
-  const btn=document.getElementById('lmBtnL');
-  btn.disabled=true;
-  btn.textContent='VERIFIKASI...';
+  const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='VERIFIKASI...';
   try{
     const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username,auth_hash&limit=1');
     const user=Array.isArray(data)?data[0]:null;
     if(!user)throw new Error('Username tidak ditemukan');
     const hash=await LM.authHash(p,u);
     if(!user.auth_hash){
-      // Akun lama tanpa auth_hash → set hash sekarang (first login dari device ini)
       await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:hash});
-    } else if(user.auth_hash!==hash){
+    }else if(user.auth_hash!==hash){
       throw new Error('PIN salah atau device tidak dikenal');
     }
-    localStorage.setItem(LM.LS.u,user.username);
-    localStorage.setItem(LM.LS.i,user.id);
-    localStorage.setItem(LM.LS.l,'true');
-    localStorage.setItem(LM.LS.a,hash);
+    localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
+    localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,hash);
     lmFb('lmFbL','s','✓ Login berhasil!');
     setTimeout(()=>window.location.reload(),700);
   }catch(err){
     lmFb('lmFbL','e',err.message||'Login gagal');
-    btn.disabled=false;
-    btn.textContent='MASUK →';
+    btn.disabled=false;btn.textContent='MASUK →';
   }
 }
-
 async function lmDoReg(){
   const u=LM.validUsername(document.getElementById('lmRU').value);
   const p=document.getElementById('lmRP').value;
@@ -784,21 +894,17 @@ async function lmDoReg(){
     const user=Array.isArray(data)?data[0]:data;
     if(!user||!user.id)throw new Error('Tidak ada data returned');
     const hash=await LM.authHash(p,u);
-    localStorage.setItem(LM.LS.u,user.username);
-    localStorage.setItem(LM.LS.i,user.id);
-    localStorage.setItem(LM.LS.l,'true');
-    localStorage.setItem(LM.LS.a,hash);
+    localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
+    localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,hash);
     await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:hash});
     lmFb('lmFbR','s','Akun dibuat!');
     setTimeout(()=>{alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');window.location.reload();},800);
   }catch(err){
     const isDupe=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');
     lmFb('lmFbR','e',isDupe?'Username sudah dipakai':(err.message||'Gagal'));
-    btn.disabled=false;
-    btn.textContent='DAFTAR →';
+    btn.disabled=false;btn.textContent='DAFTAR →';
   }
 }
-
 (function wireModalInputs(){
   function toUsername(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const dotIdx=v.indexOf('.');if(dotIdx!==-1)v=v.slice(0,dotIdx+1)+v.slice(dotIdx+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
   function toPin(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
