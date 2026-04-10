@@ -51,7 +51,7 @@ async function hashIP(ip) {
 const RATE_WINDOW_MS = 60 * 60 * 1000; // 1 jam
 const RATE_POST_IP = 30;
 const RATE_POST_RECIPIENT = 20;
-const RATE_GET = 120;
+const RATE_GET = 200; // buffer aman untuk polling 1 menit + manual refresh
 
 async function checkRateLimit(key, max) {
   try {
