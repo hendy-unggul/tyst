@@ -755,11 +755,7 @@ async function whDoSend(){
 
         // Try relay first, fallback to direct
         let r;
-        try{
-            r=await fetch('/api/whisper-relay',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc})});
-        }catch(e){
-            r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc})});
-        }
+        r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc})});
 
         if(r.ok||r.status===202){
             const sub=document.getElementById('whSentSub');
