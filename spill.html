@@ -559,7 +559,8 @@ const WH=(()=>{
         const headers=getAuthHeaders();
         if(!headers.Authorization){toast('Token tidak ditemukan, silakan login ulang');return;}
         try{
-            const r=await fetch('/api/whisper?username='+encodeURIComponent(ME),{headers});
+            const authToken=localStorage.getItem('jejak_auth_v1')||'';
+const r=await fetch('/api/whisper?username='+encodeURIComponent(ME),{headers:{'Authorization':'Bearer '+authToken}});
             if(r.status===401||r.status===403){toast('Sesi expired. Silakan login kembali.');localStorage.removeItem(K.l);localStorage.removeItem(K.a);window.location.reload();return;}
             if(!r.ok)return;
             const raw=await r.json();
