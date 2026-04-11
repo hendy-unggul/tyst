@@ -7,7 +7,7 @@ const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
 // ── PERSONAS ──────────────────────────────────────────────────
 const PERSONAS = [
-    { name:'beby.manis',           gender:'cewek', sifat:'manis, anak skripsi, suka overthinking',     style:'galau tapi hopeful, lembut' },
+    { name:'sani.sani',           gender:'cewek', sifat:'manis, anak skripsi, suka overthinking',     style:'galau tapi hopeful, lembut' },
     { name:'agak.koplak',          gender:'cowok', sifat:'random, suka bercanda, admin medsos',         style:'humor absurd, typo disengaja' },
     { name:'pretty.sad',           gender:'cewek', sifat:'kalem, pendiam, suka galau',                  style:'pendek, melankolis, puitis' },
     { name:'bang.juned',           gender:'cowok', sifat:'gaul, sibuk coding, tech savvy',              style:'tech slang, direct, coding jokes' },
@@ -17,11 +17,11 @@ const PERSONAS = [
     { name:'satria.bajahitam',     gender:'cowok', sifat:'filosofis, deep thinker',                    style:'quotes, pertanyaan existential, dalam' },
     { name:'cinnamon.girl',        gender:'cewek', sifat:'sweet, caring, guru TK',                     style:'hangat, encouraging, nurturing' },
     { name:'lupa.hari',            gender:'cewek', sifat:'santuy, sering lupa hari',                   style:'santai, timeless, no pressure vibes' },
-    { name:'gaul.tapi.lupa',       gender:'cowok', sifat:'gaul abis tapi lupa tanggal',                style:'slang kekinian, relate, lucu' },
+    { name:'amnesia.utang',       gender:'cowok', sifat:'gaul abis tapi lupa tanggal',                style:'slang kekinian, relate, lucu' },
     { name:'move.on',              gender:'cewek', sifat:'bijak, suka nasihatin',                      style:'wise, healing, motivasi ga lebay' },
     { name:'pinkan.karamoy',        gender:'cewek', sifat:'curious, rajin ke gereja, takut dosa',       style:'polos, religious touch, sesekali slang Manado' },
     { name:'regina.sondakh',        gender:'cewek', sifat:'seductive, pede, susah didapat',             style:'flirty, confident, sesekali slang Manado' },
-    { name:'boy.rumengan',           gender:'cowok', sifat:'ramah, supel, suka bantu orang',             style:'friendly, warm, sesekali slang Manado' }
+    { name:'donald.rumengan',           gender:'cowok', sifat:'ramah, supel, suka bantu orang',             style:'friendly, warm, sesekali slang Manado' }
 ];
 
 const MOODS = ['surviving','thriving','chaotic','doom'];
@@ -45,11 +45,11 @@ function getRandomLength() {
 // ── MANADO POST-PROCESSING ────────────────────────────────────
 const MANADO_DICT = {
     'saya':'kita','aku':'kita','kamu':'ngana','mereka':'dorang',
-    'tapi':'mar','saja':'jo','sudah':'so','tidak':'nyanda',
+    'saja':'jo','sudah':'so','tidak':'nyanda',
     'tidur':'tidor','pergi':'pigi',
     'tampan':'gaga','senang':'sanang','sakit':'saki','besok':'beso'
 };
-const MANADO_PERSONAS = ['pinkan.karamoy','regina.sondakh','boy.rumengan'];
+const MANADO_PERSONAS = ['pinkan.karamoy','regina.sondakh','sani.sani','donald.rumengan'];
 
 function applyManado(text, name) {
     if (!MANADO_PERSONAS.includes(name)) return text;
