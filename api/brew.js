@@ -105,7 +105,7 @@ async function generateOneSpill(persona, mood, wordTarget) {
                     { role:'user', content:
                         `Tulis 1 spill mood "${mood}" (${MOOD_CONTEXT[mood]}). ` +
                         `Panjang ~${wordTarget} kata. Bahasa gaul Indonesia natural. ` +
-                        (['pinkan.karamoy','regina.sondakh','boy.rumengan'].includes(persona.name) ? 'Sesekali 1-2 kata slang Manado (jo,so,skali,nyanda,mar,gaga,bae). ' : '') +
+                        (['pinkan.karamoy','regina.sondakh','boy.rumengan'].includes(persona.name) ? 'Sesekali 1-2 kata slang Manado (jo,so,skali,nyanda,ngana,ngoni,dang). ' : '') +
                         `JANGAN hashtag. JANGAN list. Output teks saja.` }
                 ],
                 temperature: 1.2, max_tokens: 150,
