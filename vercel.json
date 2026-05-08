@@ -2,12 +2,6 @@
   "rewrites": [
     { "source": "/", "destination": "/index.html" }
   ],
-  "crons": [
-    {
-      "path": "/api/whisper-cleanup",
-      "schedule": "*/5 * * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
