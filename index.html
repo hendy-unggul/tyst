@@ -1,313 +1,523 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>JEJAK — masuk</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#080808;--sf:#0f0f0f;--bd:#222;--bd2:#2e2e2e;--tx:#f0ece6;--txs:#777;--txm:#444;--ap:#ff2d55;--as:#00e5ff;--aq:#bfff00;--gold:#ffd60a}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{background:var(--bg);color:var(--tx);font-family:Syne,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px 20px 40px}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,229,255,.012) 2px,rgba(0,229,255,.012) 4px);z-index:0}
-.shell{max-width:400px;width:100%;position:relative;z-index:1}
-.accent{height:3px;background:linear-gradient(90deg,var(--ap),var(--as),var(--aq))}
-.logo-zone{background:var(--sf);border:2px solid var(--bd2);border-top:none;padding:28px 24px 20px;position:relative;box-shadow:6px 6px 0 #000}
-.logo-zone::before{content:'';position:absolute;top:-1px;left:-1px;width:18px;height:18px;border-top:3px solid var(--as);border-left:3px solid var(--as)}
-.logo-zone::after{content:'';position:absolute;bottom:-1px;right:-1px;width:18px;height:18px;border-bottom:3px solid var(--ap);border-right:3px solid var(--ap)}
-.logo-corner-tr{position:absolute;top:-1px;right:-1px;width:18px;height:18px;border-top:3px solid var(--aq);border-right:3px solid var(--aq)}
-.logo-corner-bl{position:absolute;bottom:-1px;left:-1px;width:18px;height:18px;border-bottom:3px solid var(--gold);border-left:3px solid var(--gold)}
-.eyebrow{font-family:'DM Mono',monospace;font-size:9px;color:var(--txm);letter-spacing:4px;text-transform:uppercase;margin-bottom:10px}
-.wordmark{font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:.9;letter-spacing:3px;color:var(--tx)}
-.wordmark .x{color:var(--ap);display:inline-block;animation:spin 4s ease-in-out infinite}
-@keyframes spin{0%,90%,100%{transform:rotate(0)}95%{transform:rotate(180deg)}}
-.tagline{font-family:'DM Mono',monospace;font-size:10px;color:var(--txs);letter-spacing:2px;text-transform:uppercase;margin-top:8px}
-.auth-box{margin-top:10px;background:var(--sf);border:2px solid var(--bd2);padding:24px;box-shadow:6px 6px 0 #000;position:relative}
-.auth-box::before{content:'';position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-top:2px solid var(--as);border-left:2px solid var(--as)}
-.auth-box::after{content:'';position:absolute;bottom:-1px;right:-1px;width:14px;height:14px;border-bottom:2px solid var(--ap);border-right:2px solid var(--ap)}
-.form-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--tx);margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.form-title::after{content:'LIVE';font-family:'DM Mono',monospace;font-size:9px;background:var(--ap);color:#fff;padding:2px 7px;letter-spacing:1px}
-.lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--txs);letter-spacing:.5px;margin-bottom:5px}
-.inp{width:100%;background:var(--bg);border:2px solid var(--bd2);padding:12px 14px;color:var(--tx);font-family:'DM Mono',monospace;font-size:14px;outline:none;margin-bottom:12px;letter-spacing:.06em;box-shadow:2px 2px 0 #000;transition:border-color .15s}
-.inp:focus{border-color:var(--ap)}
-.inp::placeholder{color:var(--txm)}
-.pin{text-align:center;letter-spacing:.8em;font-size:20px;font-weight:700;-webkit-text-security:disc}
-.pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:13px}
-.fb{font-family:'DM Mono',monospace;font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:10px;display:none;line-height:1.5}
-.fb.show{display:block}
-.fb.e{border-color:var(--ap);color:var(--ap);background:rgba(255,45,85,.08)}
-.fb.s{border-color:var(--aq);color:var(--aq);background:rgba(191,255,0,.06)}
-.btn{width:100%;background:var(--ap);color:#fff;border:2px solid #000;padding:14px;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;cursor:pointer;box-shadow:5px 5px 0 #000;transition:transform .08s,box-shadow .08s;display:flex;align-items:center;justify-content:center;gap:10px}
-.btn::before{content:'⬡';font-size:16px;opacity:.8}
-.btn:hover{transform:translate(-1px,-1px);box-shadow:6px 6px 0 #000}
-.btn:active{transform:translate(3px,3px);box-shadow:2px 2px 0 #000}
-.btn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:5px 5px 0 #000}
-.toggle{text-align:center;margin-top:12px;font-family:'DM Mono',monospace;font-size:10px;color:var(--txs)}
-.toggle button{background:none;border:none;color:var(--as);text-decoration:underline;cursor:pointer;font-family:'DM Mono',monospace;font-size:10px}
-.note{padding:10px 12px;background:rgba(255,45,85,.05);border:1px solid var(--ap);border-left:3px solid var(--ap);margin-top:12px}
-.note p{font-family:'DM Mono',monospace;font-size:9px;color:var(--txs);line-height:1.6}
-.note p b{color:var(--ap)}
-.agree{display:flex;gap:10px;align-items:flex-start;margin:10px 0}
-.agree input{margin-top:2px;width:16px;height:16px;flex-shrink:0;accent-color:var(--ap)}
-.agree label{font-family:'DM Mono',monospace;font-size:10px;color:var(--tx);line-height:1.6;cursor:pointer}
-.footer{margin-top:10px;padding:10px 14px;border:1px solid var(--bd);display:flex;justify-content:space-between}
-.footer span{font-family:'DM Mono',monospace;font-size:9px;color:var(--txm);letter-spacing:1px}
-.footer-dot{display:inline-block;width:5px;height:5px;background:var(--aq);transform:rotate(45deg);margin-right:6px;animation:blink 2s step-end infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-.browse{text-align:center;margin-top:10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--txs)}
-.browse a{color:var(--as);text-decoration:underline;cursor:pointer}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>TYST — send without a trace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+        :root{
+            --bg:#F5F4F0;--bg2:#EEECEA;--bg3:#E4E2DE;
+            --ink:#1A1916;--ink2:#6B6860;--ink3:#A8A69F;--rule:#D8D6D0;
+            --accent:#2D5A3D;--accent2:#4A8A5E;--accent-bg:#EBF2ED;
+            --danger:#C0392B;
+            --ff:'Syne',sans-serif;--ffm:'Syne Mono',monospace;--r:4px;
+        }
+        body{background:var(--bg);color:var(--ink);font-family:var(--ff);min-height:100svh;display:flex;flex-direction:column}
+        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5}
+        .app{max-width:480px;margin:0 auto;width:100%;min-height:100svh;display:flex;flex-direction:column;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
+        /* HEADER */
+        .hd{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--rule);background:var(--bg);position:sticky;top:0;z-index:100}
+        .logo{font-weight:800;font-size:20px;letter-spacing:-0.5px}
+        .logo sup{font-size:8px;font-weight:400;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;vertical-align:super;margin-left:3px;font-family:var(--ffm)}
+        .hd-r{display:flex;align-items:center;gap:10px}
+        .btn-login{font-family:var(--ffm);font-size:11px;color:var(--accent);background:var(--accent-bg);border:1px solid rgba(45,90,61,.25);padding:7px 14px;cursor:pointer;letter-spacing:.3px;border-radius:var(--r);transition:background .15s}
+        .btn-login:hover{background:#ddeee3}
+        .user-chip{font-family:var(--ffm);font-size:11px;color:var(--ink2);background:var(--bg2);border:1px solid var(--rule);padding:5px 10px;border-radius:var(--r)}
+        .btn-icon{width:32px;height:32px;background:0 0;border:1px solid var(--rule);color:var(--ink2);cursor:pointer;border-radius:var(--r);font-size:16px;display:flex;align-items:center;justify-content:center;transition:border-color .15s}
+        .btn-icon:hover{border-color:var(--ink3)}
+        .dd{position:absolute;top:65px;right:24px;background:var(--bg);border:1px solid var(--rule);box-shadow:0 8px 32px rgba(0,0,0,.08);z-index:200;min-width:150px;border-radius:var(--r);display:none;overflow:hidden}
+        .dd.show{display:block}
+        .dd-item{padding:11px 16px;font-family:var(--ffm);font-size:12px;color:var(--ink);cursor:pointer;transition:background .1s}
+        .dd-item:hover{background:var(--bg2)}
+        /* HERO */
+        .hero{padding:44px 24px 36px;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
+        .hero::after{content:'TYST';position:absolute;right:-14px;bottom:-28px;font-size:120px;font-weight:800;color:var(--bg3);letter-spacing:-6px;line-height:1;pointer-events:none;user-select:none}
+        .hero-tag{display:inline-flex;align-items:center;gap:7px;font-family:var(--ffm);font-size:10px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+        .tag-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 3s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+        .hero-h{font-size:36px;font-weight:800;letter-spacing:-1.5px;line-height:1.06;margin-bottom:12px;position:relative;z-index:1}
+        .hero-h em{font-style:normal;color:var(--accent)}
+        .hero-sub{font-family:var(--ffm);font-size:11px;color:var(--ink3);line-height:2;position:relative;z-index:1}
+        /* FORM */
+        .form-sect{padding:30px 24px;border-bottom:1px solid var(--rule)}
+        .eyebrow{font-family:var(--ffm);font-size:10px;color:var(--ink3);letter-spacing:2px;text-transform:uppercase;margin-bottom:22px}
+        .field{margin-bottom:18px}
+        .f-label{font-family:var(--ffm);font-size:10px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;display:block}
+        .f-input{width:100%;padding:13px 15px;background:var(--bg);border:1px solid var(--rule);color:var(--ink);font-size:14px;font-family:var(--ff);border-radius:var(--r);outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
+        .f-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,90,61,.07)}
+        .f-input::placeholder{color:var(--ink3)}
+        .f-ta{resize:none;line-height:1.65;min-height:110px}
+        .char{font-family:var(--ffm);font-size:10px;color:var(--ink3);text-align:right;margin-top:5px}
+        .trust{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--accent-bg);border:1px solid rgba(45,90,61,.14);border-radius:var(--r);margin-bottom:18px}
+        .trust-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0}
+        .trust-txt{font-family:var(--ffm);font-size:11px;color:var(--accent);flex:1;opacity:.85}
+        .trust-lnk{font-family:var(--ffm);font-size:10px;color:var(--accent);opacity:.5;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:opacity .15s}
+        .trust-lnk:hover{opacity:.9}
+        .btn-send{width:100%;padding:14px;background:var(--ink);color:var(--bg);border:none;font-family:var(--ff);font-weight:700;font-size:14px;letter-spacing:.3px;border-radius:var(--r);cursor:pointer;transition:background .15s,transform .1s}
+        .btn-send:hover{background:#2e2b27}
+        .btn-send:active{transform:scale(.99)}
+        .btn-send:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed;transform:none}
+        /* INBOX */
+        .inbox-sect{padding:14px 24px;border-bottom:1px solid var(--rule);display:none}
+        .btn-inbox{width:100%;padding:13px 16px;background:0 0;border:1px dashed var(--rule);font-family:var(--ffm);font-size:12px;color:var(--ink2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-radius:var(--r);transition:border-color .15s,color .15s}
+        .btn-inbox:hover{border-color:var(--ink3);color:var(--ink)}
+        .inbox-badge{background:var(--danger);color:#fff;font-size:9px;padding:2px 7px;border-radius:20px;display:none;font-family:var(--ffm)}
+        /* FOOTER */
+        .proto{padding:22px 24px;margin-top:auto}
+        .proto-txt{font-family:var(--ffm);font-size:9px;color:var(--ink3);line-height:2.1}
+        .proto-txt b{color:var(--ink2)}
+        /* PROCESSING OVERLAY */
+        .proc-ov{display:none;position:fixed;inset:0;background:rgba(245,244,240,.78);backdrop-filter:blur(10px);z-index:1500;align-items:flex-end;justify-content:center}
+        .proc-ov.show{display:flex}
+        .proc-sheet{background:var(--bg);border:1px solid var(--rule);border-bottom:none;max-width:480px;width:100%;border-radius:16px 16px 0 0;overflow:hidden;position:relative;min-height:220px;box-shadow:0 -8px 40px rgba(0,0,0,.07)}
+        .p-layer{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px}
+        .p-layer.show{display:flex}
+        .spinner{width:26px;height:26px;border:1.5px solid var(--rule);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .proc-lbl{font-family:var(--ffm);font-size:10px;color:var(--ink3);letter-spacing:2px;text-transform:uppercase}
+        .proc-steps{display:flex;flex-direction:column;gap:5px;align-items:center}
+        .proc-step{font-family:var(--ffm);font-size:11px;color:var(--rule);transition:color .25s}
+        .proc-step.act{color:var(--ink2)}
+        .proc-step.done{color:var(--accent)}
+        .sent-circle{width:50px;height:50px;border-radius:50%;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;animation:pop .4s cubic-bezier(.2,.9,.4,1.1) both}
+        @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+        .sent-inner{width:18px;height:18px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent)}
+        .sent-title{font-size:18px;font-weight:700;letter-spacing:-.5px;color:var(--ink);text-align:center}
+        .sent-sub{font-family:var(--ffm);font-size:11px;color:var(--ink3);line-height:1.85;text-align:center;max-width:240px}
+        .btn-dismiss{background:0 0;border:1px solid var(--rule);color:var(--ink2);font-family:var(--ffm);font-size:11px;padding:9px 22px;border-radius:var(--r);cursor:pointer;transition:border-color .15s,color .15s;margin-top:4px}
+        .btn-dismiss:hover{border-color:var(--ink3);color:var(--ink)}
+        .nopub-icon{width:40px;height:40px;border:1px solid var(--rule);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-size:18px}
+        .nopub-title{font-size:15px;font-weight:700;color:var(--ink)}
+        .nopub-sub{font-family:var(--ffm);font-size:11px;color:var(--ink3);line-height:1.85;text-align:center;max-width:210px}
+        /* INBOX PANEL */
+        .inbox-panel{position:fixed;inset:0;background:var(--bg);z-index:1600;display:none;flex-direction:column;max-width:480px;margin:0 auto;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
+        .inbox-panel.show{display:flex}
+        .panel-hd{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--rule);background:var(--bg)}
+        .panel-title{font-family:var(--ffm);font-size:11px;color:var(--ink2);letter-spacing:2px;text-transform:uppercase}
+        .btn-close{background:0 0;border:1px solid var(--rule);color:var(--ink2);width:28px;height:28px;border-radius:var(--r);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:border-color .15s}
+        .btn-close:hover{border-color:var(--ink3)}
+        .msg-list{flex:1;overflow-y:auto}
+        .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--ink3)}
+        .empty-icon{font-size:26px;opacity:.2}
+        .empty-txt{font-family:var(--ffm);font-size:11px}
+        .msg-row{padding:16px 24px;border-bottom:1px solid var(--rule);cursor:pointer;transition:background .1s;position:relative}
+        .msg-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);opacity:0;transition:opacity .15s}
+        .msg-row:hover{background:var(--bg2)}
+        .msg-row:hover::before{opacity:1}
+        .msg-meta{display:flex;justify-content:space-between;margin-bottom:4px}
+        .msg-from{font-family:var(--ffm);font-size:10px;color:var(--accent);letter-spacing:.5px}
+        .msg-ttl{font-family:var(--ffm);font-size:10px;color:var(--danger)}
+        .msg-prev{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        /* READ PANEL */
+        .read-panel{position:fixed;inset:0;background:var(--bg);z-index:1700;display:none;flex-direction:column;max-width:480px;margin:0 auto;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
+        .read-panel.show{display:flex}
+        .read-hd{display:flex;align-items:center;gap:12px;padding:18px 24px;border-bottom:1px solid var(--rule)}
+        .btn-back{background:0 0;border:1px solid var(--rule);color:var(--ink2);padding:4px 10px;border-radius:var(--r);cursor:pointer;font-family:var(--ffm);font-size:11px;transition:border-color .15s}
+        .btn-back:hover{border-color:var(--ink3)}
+        .read-from{font-family:var(--ffm);font-size:11px;color:var(--ink2);flex:1}
+        .read-count{font-weight:800;font-size:24px;color:var(--danger);line-height:1;letter-spacing:-1px}
+        .read-body{flex:1;padding:28px 24px;font-size:15px;line-height:1.75;color:var(--ink);overflow-y:auto}
+        .read-foot{border-top:1px solid var(--rule);padding:10px 24px;display:flex;justify-content:space-between}
+        .read-foot span{font-family:var(--ffm);font-size:9px;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase}
+        @keyframes burn{0%{opacity:1;transform:translateY(0)}60%{opacity:.4;transform:translateY(-12px);filter:brightness(1.4)}100%{opacity:0;transform:translateY(-28px)}}
+        .burning{animation:burn .7s ease-in forwards}
+        /* HOW */
+        .how-ov{display:none;position:fixed;inset:0;background:rgba(245,244,240,.82);backdrop-filter:blur(10px);z-index:2000;align-items:flex-end;justify-content:center}
+        .how-ov.show{display:flex}
+        .how-sheet{background:var(--bg);border:1px solid var(--rule);border-bottom:none;max-width:480px;width:100%;border-radius:16px 16px 0 0;padding:28px 24px 40px;max-height:80svh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.06)}
+        .how-title{font-size:17px;font-weight:700;letter-spacing:-.5px;margin-bottom:22px}
+        .how-row{display:flex;gap:14px;margin-bottom:20px}
+        .how-num{width:24px;height:24px;border-radius:50%;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:var(--ffm);font-size:10px;color:var(--ink3);flex-shrink:0;margin-top:2px}
+        .how-h{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px}
+        .how-p{font-family:var(--ffm);font-size:11px;color:var(--ink3);line-height:1.85}
+        .how-tech{background:var(--bg2);border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px;margin-top:4px;font-family:var(--ffm);font-size:10px;color:var(--ink3);line-height:2.1}
+        .how-tech b{color:var(--ink2)}
+        .btn-how-close{width:100%;margin-top:22px;padding:13px;background:0 0;border:1px solid var(--rule);color:var(--ink2);font-family:var(--ffm);font-size:11px;border-radius:var(--r);cursor:pointer;transition:border-color .15s,color .15s}
+        .btn-how-close:hover{border-color:var(--ink3);color:var(--ink)}
+        /* TOAST */
+        .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:20px;font-family:var(--ffm);font-size:12px;z-index:9998;display:none;white-space:nowrap}
+        .toast.show{display:block}
+        /* LOGIN */
+        .lm-bg{position:fixed;inset:0;background:rgba(245,244,240,.9);backdrop-filter:blur(12px);z-index:9997;display:none;align-items:center;justify-content:center;padding:20px}
+        .lm-bg.show{display:flex}
+        .lm-card{background:var(--bg);border:1px solid var(--rule);max-width:360px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 16px 64px rgba(0,0,0,.09)}
+        .lm-top{padding:22px 24px 18px;border-bottom:1px solid var(--rule);background:var(--bg2)}
+        .lm-wordmark{font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+        .lm-disc{font-family:var(--ffm);font-size:10px;color:var(--ink3);line-height:1.9}
+        .lm-body{padding:22px;position:relative}
+        .lm-x{position:absolute;top:14px;right:14px;background:0 0;border:1px solid var(--rule);color:var(--ink3);width:26px;height:26px;border-radius:var(--r);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:border-color .15s}
+        .lm-x:hover{border-color:var(--ink3)}
+        .lm-title{font-size:17px;font-weight:700;letter-spacing:-.5px;margin-bottom:18px}
+        .lm-label{font-family:var(--ffm);font-size:10px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;display:block}
+        .lm-input{width:100%;background:var(--bg);border:1px solid var(--rule);padding:11px 13px;color:var(--ink);font-family:var(--ffm);font-size:13px;outline:none;margin-bottom:13px;border-radius:var(--r);transition:border-color .15s,box-shadow .15s}
+        .lm-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,90,61,.07)}
+        .lm-input::placeholder{color:var(--ink3)}
+        .lm-pin{text-align:center;letter-spacing:.7em;font-size:18px;-webkit-text-security:disc}
+        .lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:12px}
+        .lm-fb{font-family:var(--ffm);font-size:10px;padding:8px 10px;border:1px solid;border-radius:var(--r);margin-bottom:11px;display:none;line-height:1.5}
+        .lm-fb.show{display:block}
+        .lm-fb.e{border-color:var(--danger);color:var(--danger);background:#fdf0ef}
+        .lm-fb.s{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
+        .lm-btn{width:100%;background:var(--ink);color:var(--bg);border:none;padding:13px;font-family:var(--ff);font-weight:700;font-size:14px;letter-spacing:.3px;cursor:pointer;border-radius:var(--r);transition:background .15s}
+        .lm-btn:hover{background:#2e2b27}
+        .lm-btn:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed}
+        .lm-sw{text-align:center;margin-top:11px;font-family:var(--ffm);font-size:10px;color:var(--ink3)}
+        .lm-sw button{background:0 0;border:none;color:var(--accent);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-family:var(--ffm);font-size:10px}
+        .lm-note{font-family:var(--ffm);font-size:9px;color:var(--ink3);text-align:center;margin-top:8px}
+        .lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
+        .lm-agree input{margin-top:2px;width:14px;height:14px;accent-color:var(--accent)}
+        .lm-agree label{font-family:var(--ffm);font-size:10px;color:var(--ink3);line-height:1.6;cursor:pointer}
+        .lm-agree label b{color:var(--danger)}
+    </style>
 </head>
 <body>
-<div class="shell">
-  <div class="accent"></div>
-  <div class="logo-zone">
-    <span class="logo-corner-tr"></span>
-    <span class="logo-corner-bl"></span>
-    <div class="eyebrow">zero-knowledge platform</div>
-    <div class="wordmark">JE<span class="x">✕</span>AK</div>
-    <div class="tagline">your space · your rules</div>
-  </div>
+<div class="app">
+    <header class="hd">
+        <div class="logo">TYST<sup>beta</sup></div>
+        <div class="hd-r" id="userSection"></div>
+    </header>
 
-  <div class="auth-box">
-    <!-- LOGIN -->
-    <form id="fLogin">
-      <div class="form-title">MASUK</div>
-      <div class="lbl">username</div>
-      <input class="inp" id="lU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
-      <div class="lbl">PIN 6 digit</div>
-      <input class="inp pin" id="lP" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
-      <div class="fb" id="lFb"></div>
-      <button type="submit" class="btn" id="lBtn" disabled>MASUK →</button>
-      <div class="toggle"><button type="button" onclick="showReg()">Belum punya akun? Daftar</button></div>
-      <div class="note"><p>Lupa PIN? <b>Tidak bisa recovery</b> — buat akun baru.</p></div>
-    </form>
+    <section class="hero">
+        <div class="hero-tag"><span class="tag-dot"></span>encrypted · ephemeral · anonymous</div>
+        <h1 class="hero-h">Send without<br>a <em>trace.</em></h1>
+        <p class="hero-sub">sender is untraceable · encrypted on your device<br>destroyed 5 s after reading · no logs kept</p>
+    </section>
 
-    <!-- REGISTER -->
-    <form id="fReg" style="display:none">
-      <div class="form-title">DAFTAR</div>
-      <div class="lbl">username — format <span style="color:var(--as);font-family:'DM Mono',monospace">kata.kata</span></div>
-      <input class="inp" id="rU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
-      <div class="lbl">PIN 6 digit</div>
-      <input class="inp pin" id="rP" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
-      <div class="lbl">konfirmasi PIN</div>
-      <input class="inp pin" id="rP2" placeholder="●  ●  ●  ●  ●  ●" autocomplete="off" maxlength="6" inputmode="numeric">
-      <div class="fb" id="rFb"></div>
-      <div class="agree">
-        <input type="checkbox" id="rAg">
-        <label for="rAg">PIN hilang = akun hilang <b style="color:var(--ap)">PERMANENT</b> — no recovery</label>
+    <section class="form-sect">
+        <div class="eyebrow">compose</div>
+        <div class="field">
+            <label class="f-label" for="tystTo">recipient</label>
+            <input type="text" class="f-input" id="tystTo" placeholder="username"
+                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="tystValidate()">
+        </div>
+        <div class="field">
+            <label class="f-label" for="tystMsg">message</label>
+            <textarea class="f-input f-ta" id="tystMsg" placeholder="Write anything…"
+                maxlength="500" oninput="tystValidate();tystChar()"></textarea>
+            <div class="char"><span id="charN">0</span> / 500</div>
+        </div>
+        <div class="trust">
+            <div class="trust-dot"></div>
+            <span class="trust-txt">sender identity is unknown to anyone</span>
+            <span class="trust-lnk" onclick="showHow()">how it works ↗</span>
+        </div>
+        <button class="btn-send" id="sendBtn" disabled onclick="tystSend()">Send Anonymously</button>
+    </section>
+
+    <section class="inbox-sect" id="inboxSect">
+        <button class="btn-inbox" id="inboxBtn">
+            <span>↓ Open inbox</span>
+            <span class="inbox-badge" id="inboxBadge">new</span>
+        </button>
+    </section>
+
+    <footer class="proto">
+        <div class="proto-txt">
+            <b>protocol</b> · ECDH P-256 · AES-GCM 256-bit · HKDF-SHA256<br>
+            <b>padding</b> · 256-byte blocks — message size does not leak<br>
+            <b>relay</b> · strips all identifying headers before forwarding<br>
+            <b>storage</b> · private key stays on your device, never sent
+        </div>
+    </footer>
+</div>
+
+<!-- PROCESSING -->
+<div class="proc-ov" id="procOv">
+    <div class="proc-sheet">
+        <div class="p-layer" id="lProc">
+            <div class="spinner"></div>
+            <div class="proc-lbl">encrypting</div>
+            <div class="proc-steps">
+                <div class="proc-step" id="ps1">generating ephemeral keypair</div>
+                <div class="proc-step" id="ps2">encrypting message</div>
+                <div class="proc-step" id="ps3">sending via relay</div>
+            </div>
+        </div>
+        <div class="p-layer" id="lSent">
+            <div class="sent-circle"><div class="sent-inner"></div></div>
+            <div class="sent-title">Message released.</div>
+            <div class="sent-sub" id="sentSub">No one can retrieve it. It will vanish after being read.</div>
+            <button class="btn-dismiss" onclick="closeProcOv()">close</button>
+        </div>
+        <div class="p-layer" id="lNoPub">
+            <div class="nopub-icon">○</div>
+            <div class="nopub-title">Recipient not active</div>
+            <div class="nopub-sub">This user needs to sign in once before they can receive messages.</div>
+            <button class="btn-dismiss" onclick="closeProcOv()">go back</button>
+        </div>
+    </div>
+</div>
+
+<!-- INBOX -->
+<div class="inbox-panel" id="inboxPanel">
+    <div class="panel-hd">
+        <span class="panel-title">inbox</span>
+        <button class="btn-close" id="inboxClose">✕</button>
+    </div>
+    <div class="msg-list" id="msgList">
+        <div class="empty-state"><div class="empty-icon">○</div><div class="empty-txt">no messages</div></div>
+    </div>
+</div>
+
+<!-- READ -->
+<div class="read-panel" id="readPanel">
+    <div class="read-hd">
+        <button class="btn-back" id="readBack">← back</button>
+        <span class="read-from" id="readFrom">anonymous</span>
+        <span class="read-count" id="readCount">5</span>
+    </div>
+    <div class="read-body" id="readBody"></div>
+    <div class="read-foot"><span>this message will self-destruct</span><span>no record kept</span></div>
+</div>
+
+<!-- HOW -->
+<div class="how-ov" id="howOv">
+    <div class="how-sheet">
+        <div class="how-title">How TYST protects you</div>
+        <div class="how-row"><div class="how-num">1</div><div><div class="how-h">Sender identity is unknown to anyone</div><div class="how-p">Messages are sent through an anonymous relay. Our server only sees the relay's IP, not yours. Even if the server is compromised, your identity is not there.</div></div></div>
+        <div class="how-row"><div class="how-num">2</div><div><div class="how-h">We cannot read your message</div><div class="how-p">Encryption happens on your device before the message leaves. Your private key never leaves your device — we have no access to it.</div></div></div>
+        <div class="how-row"><div class="how-num">3</div><div><div class="how-h">Delivery time is randomised</div><div class="how-p">A random delay of 2–47 seconds is added so timing patterns cannot be used to trace you.</div></div></div>
+        <div class="how-row"><div class="how-num">4</div><div><div class="how-h">Destroyed after reading</div><div class="how-p">5 seconds after the recipient opens the message, it is permanently deleted. No backup, no log.</div></div></div>
+        <div class="how-tech"><b>protocol</b> · ECDH P-256 · AES-GCM 256-bit · HKDF-SHA256<br><b>padding</b> · 256-byte blocks — message size does not leak<br><b>relay</b> · strips all identifying headers before forwarding<br><b>storage</b> · private key stays on your device, never sent</div>
+        <button class="btn-how-close" onclick="hideHow()">close</button>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
+  <div class="lm-card">
+    <div class="lm-top">
+      <div class="lm-wordmark">TYST</div>
+      <div class="lm-disc">an open anonymous space. we do not verify your identity.<br>by signing in you confirm you are 17+ and take full<br>responsibility for what you write here.</div>
+    </div>
+    <div class="lm-body">
+      <button class="lm-x" onclick="closeLM()">✕</button>
+      <div id="lmLogin">
+        <div class="lm-title">Sign in</div>
+        <label class="lm-label">username</label>
+        <input class="lm-input" id="lmU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+        <label class="lm-label">6-digit PIN</label>
+        <input class="lm-input lm-pin" id="lmP" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <div class="lm-fb" id="lmFbL"></div>
+        <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()">Sign in →</button>
+        <div class="lm-sw"><button onclick="lmSwitch('reg')">No account yet? Register</button></div>
+        <div class="lm-note">forgot your PIN? it cannot be recovered — create a new account.</div>
       </div>
-      <button type="submit" class="btn" id="rBtn" disabled style="margin-top:8px">DAFTAR →</button>
-      <div class="toggle"><button type="button" onclick="showLogin()">Sudah punya akun? Masuk</button></div>
-    </form>
-  </div>
-
-  <div class="browse">atau <a href="/spill.html">lihat spill tanpa login →</a></div>
-
-  <div class="footer">
-    <span><span class="footer-dot"></span>soul by itsALrUdio</span>
-    <span>v3.1 · 2025</span>
+      <div id="lmReg" style="display:none">
+        <div class="lm-title">Register</div>
+        <label class="lm-label">username — format <span style="color:var(--accent);font-family:var(--ffm)">word.word</span></label>
+        <input class="lm-input" id="lmRU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+        <label class="lm-label">6-digit PIN</label>
+        <input class="lm-input lm-pin" id="lmRP" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <label class="lm-label">confirm PIN</label>
+        <input class="lm-input lm-pin" id="lmRP2" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <div class="lm-fb" id="lmFbR"></div>
+        <div class="lm-agree"><input type="checkbox" id="lmAg" onchange="lmUpdateReg()"><label for="lmAg">Lost PIN = lost account — <b>PERMANENT</b>, no recovery</label></div>
+        <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px">Register →</button>
+        <div class="lm-sw"><button onclick="lmSwitch('login')">Already have an account? Sign in</button></div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-//  JEJAK AUTH v3.1 — plain fetch, no SDK, no GoTrue
-//  PIN tidak pernah dikirim ke server
-// ══════════════════════════════════════════════
-const SU  = 'https://fuovfrdicdhnlymnacpz.supabase.co';
-const SK  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
-const LS  = {u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'};
+(function(){
+'use strict';
+const SU='https://fuovfrdicdhnlymnacpz.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+const POLL=60000,LP='tyst_priv_v1',LPU='tyst_pub_v1';
+const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'};
+const IS_GUEST=localStorage.getItem(K.l)!=='true';
+const ME=IS_GUEST?null:localStorage.getItem(K.u);
+const UID=IS_GUEST?null:localStorage.getItem(K.i);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const toast=(m,d=3000)=>{const o=$('toast');if(!o)return;o.textContent=m;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),d);};
+function getAuth(){if(IS_GUEST)return{};const h=localStorage.getItem(K.a);return h?{'Authorization':'Bearer '+h}:{};}
 
-// Sudah login? langsung ke spill
-if (localStorage.getItem(LS.l) === 'true') {
-  window.location.replace('/spill.html');
-}
+/* ECDH */
+const ECDH=(()=>{
+    const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+    const fb64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+    async function gen(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);const priv=await crypto.subtle.exportKey('jwk',kp.privateKey);delete pub.d;return{publicKey:kp.publicKey,privateKey:kp.privateKey,pub,priv};}
+    async function ipriv(j){return crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
+    async function ipub(j){return crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,[]);}
+    async function aes(pr,pu){const bits=await crypto.subtle.deriveBits({name:'ECDH',public:pu},pr,256);const hkdf=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:new Uint8Array(32),info:new TextEncoder().encode('whisper-v2')},hkdf,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+    const P=256;
+    function pad(s){const e=new TextEncoder().encode(s);const l=P-(e.length%P);const o=new Uint8Array(e.length+l);o.set(e);return o;}
+    function unpad(b){let n=b.length;while(n>0&&b[n-1]===0)n--;return new TextDecoder().decode(b.slice(0,n));}
+    async function encrypt(plain,pubJWK){const e=await gen();const rp=await ipub(pubJWK);const k=await aes(e.privateKey,rp);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,pad(plain));return b64(iv)+':'+btoa(JSON.stringify(e.pub))+':'+b64(ct);}
+    async function decrypt(enc,privJWK){try{const[iv,ep,ct]=enc.split(':');const eph=await ipub(JSON.parse(atob(ep)));const my=await ipriv(privJWK);const k=await aes(my,eph);const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:fb64(iv)},k,fb64(ct));return unpad(new Uint8Array(p));}catch(e){return '[could not decrypt]';}}
+    async function getOrCreate(){const ps=localStorage.getItem(LP),pu=localStorage.getItem(LPU);if(ps&&pu){try{const p=await ipriv(JSON.parse(ps));return{privateKey:p,priv:JSON.parse(ps),pub:JSON.parse(pu)};}catch(e){}}const kp=await gen();localStorage.setItem(LP,JSON.stringify(kp.priv));localStorage.setItem(LPU,JSON.stringify(kp.pub));return{privateKey:kp.publicKey,priv:kp.priv,pub:kp.pub};}
+    async function reg(){if(IS_GUEST)return null;const kp=await getOrCreate();if(sessionStorage.getItem('pk_reg')==='1')return kp;try{const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({username:ME,userId:UID,pubkey:kp.pub})});if(r.ok)sessionStorage.setItem('pk_reg','1');}catch(e){}return kp;}
+    return{encrypt,decrypt,getOrCreate,reg};
+})();
+window._ECDH=ECDH;
 
-// ── Supabase REST — plain fetch ───────────────
-async function sbGet(path) {
-  const r = await fetch(SU+'/rest/v1'+path, {
-    headers: {apikey:SK, Authorization:'Bearer '+SK}
-  });
-  const t = await r.text();
-  return t ? JSON.parse(t) : [];
-}
-async function sbPost(path, body) {
-  const r = await fetch(SU+'/rest/v1'+path, {
-    method: 'POST',
-    headers: {apikey:SK, Authorization:'Bearer '+SK, 'Content-Type':'application/json', Prefer:'return=representation'},
-    body: JSON.stringify(body)
-  });
-  const t = await r.text();
-  const d = t ? JSON.parse(t) : null;
-  if (!r.ok) { const e = new Error((d&&(d.message||d.code))||'failed'); e.code = d&&d.code; throw e; }
-  return d;
-}
+/* INBOX */
+const INBOX=(()=>{
+    let msgs=[],rid=null,dt=null,pt=null,kp=null;
+    function badge(s){const b=$('inboxBadge');if(b)b.style.display=s?'':'none';}
+    async function getKP(){if(!kp)kp=await ECDH.getOrCreate();return kp;}
+    async function load(){
+        if(IS_GUEST)return;
+        const tok=localStorage.getItem(K.a)||'';if(!tok)return;
+        try{
+            const r=await fetch('/api/whisper?username='+encodeURIComponent(ME),{headers:{'Authorization':'Bearer '+tok}});
+            if(r.status===401||r.status===403){toast('Session expired. Please sign in again.');return;}
+            if(!r.ok)return;
+            const raw=await r.json();
+            if(!Array.isArray(raw)||!raw.length){msgs=[];render();badge(false);return;}
+            const k=await getKP(),now=Date.now();
+            msgs=await Promise.all(raw.map(async m=>{
+                const exp=new Date(m.destroy_at).getTime(),rem=exp-now;
+                const h=Math.floor(rem/3600000),mn=Math.floor((rem%3600000)/60000);
+                const body=await ECDH.decrypt(m.message,k.priv);
+                return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
+            }));
+            render();badge(msgs.length>0);
+        }catch(e){console.warn('[TYST]',e);}
+    }
+    function render(){const el=$('msgList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">○</div><div class="empty-txt">no messages</div></div>';return;}el.innerHTML=msgs.map(m=>`<div class="msg-row" onclick="INBOX.open('${esc(m.id)}')"><div class="msg-meta"><span class="msg-from">${esc(m.from)}</span><span class="msg-ttl">⏳ ${m.ttl}</span></div><div class="msg-prev">${esc(m.prev)}</div></div>`).join('');}
+    async function open(id){const m=msgs.find(x=>x.id===id);if(!m)return;rid=id;$('readFrom').textContent='from: '+m.from;$('readBody').textContent=m.body;$('readCount').textContent='5';$('readCount').style.color='var(--danger)';$('readPanel').classList.add('show');await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});destruct(id);}
+    function destruct(id){clearInterval(dt);let n=5;dt=setInterval(()=>{n--;const el=$('readCount');if(!el){clearInterval(dt);return;}el.textContent=n;if(n<=0){clearInterval(dt);burn(id);}},1000);}
+    function burn(id){const b=$('readBody');if(b)b.classList.add('burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('readPanel').classList.remove('show');if(b){b.classList.remove('burning');b.textContent='';}$('readCount').style.color='var(--danger)';$('inboxPanel').classList.add('show');render();badge(msgs.length>0);},750);}
+    function closeRead(){clearInterval(dt);if(rid&&msgs.find(m=>m.id===rid))burn(rid);rid=null;$('readPanel').classList.remove('show');}
+    function poll(){load();clearInterval(pt);pt=setInterval(load,POLL);}
+    return{open,closeRead,poll,load};
+})();
+window.INBOX=INBOX;
 
-// ── Crypto ────────────────────────────────────
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-async function deviceFP() {
-  const p = [];
-  try {
-    const cv = document.createElement('canvas');
-    cv.width = 100; cv.height = 30;
-    const ctx = cv.getContext('2d');
-    ctx.font = '12px sans-serif';
-    ctx.fillText('jejak_fp', 2, 15);
-    p.push(cv.toDataURL());
-  } catch(e) { p.push('nc'); }
-  p.push(navigator.userAgent, screen.width+'x'+screen.height, navigator.language);
-  return sha256(p.join('|'));
-}
-async function authHash(pin, username) {
-  const fp = await deviceFP();
-  return sha256(pin+':'+username+':'+fp+':jejak_local_v1');
-}
-
-// ── Validasi ──────────────────────────────────
-function validU(v) {
-  v = (v||'').trim().toLowerCase();
-  if (!v.includes('.')) return null;
-  const p = v.split('.');
-  if (p.length !== 2 || p[0].length < 2 || p[1].length < 2) return null;
-  if (!/^[a-z][a-z0-9]*$/.test(p[0]) || !/^[a-z][a-z0-9]*$/.test(p[1])) return null;
-  return v;
-}
-function validP(p) {
-  if (!/^\d{6}$/.test(p)) return false;
-  if (p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5]) return false;
-  if (p==='123456'||p==='654321'||p==='000000'||p==='999999') return false;
-  return true;
-}
-
-// ── Feedback ──────────────────────────────────
-function fb(id, type, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (!type) { el.className='fb'; el.textContent=''; return; }
-  el.className = 'fb show '+type;
-  el.textContent = msg;
-}
-
-// ── Nav ───────────────────────────────────────
-function showReg() {
-  document.getElementById('fLogin').style.display = 'none';
-  document.getElementById('fReg').style.display   = '';
-  document.getElementById('rU').focus();
-}
-function showLogin() {
-  document.getElementById('fReg').style.display   = 'none';
-  document.getElementById('fLogin').style.display = '';
-  document.getElementById('lU').focus();
+/* UI */
+function setupUI(){
+    const sec=$('userSection');
+    if(IS_GUEST){
+        sec.innerHTML='<button class="btn-login" onclick="openLoginModal()">Sign in</button>';
+        $('inboxSect').style.display='none';
+    }else{
+        sec.innerHTML=`<span class="user-chip">@${ME}</span><button class="btn-icon" id="sBtn">⋮</button>`;
+        const dd=document.createElement('div');dd.className='dd';dd.id='sDD';
+        dd.innerHTML='<div class="dd-item" id="loutBtn">Sign out</div>';
+        document.querySelector('.app').appendChild(dd);
+        const sb=$('sBtn'),sd=$('sDD');
+        if(sb&&sd){sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});}
+        const lb=$('loutBtn');if(lb)lb.onclick=()=>{localStorage.removeItem(K.l);localStorage.removeItem(K.a);toast('Signed out.');setTimeout(()=>window.location.reload(),900);};
+        $('inboxSect').style.display='block';
+    }
 }
 
-// ── Button enable logic ───────────────────────
-function chkLogin() {
-  document.getElementById('lBtn').disabled =
-    !(validU(document.getElementById('lU').value) && validP(document.getElementById('lP').value));
-}
-function chkReg() {
-  const pin = document.getElementById('rP').value;
-  document.getElementById('rBtn').disabled = !(
-    validU(document.getElementById('rU').value) &&
-    validP(pin) &&
-    pin === document.getElementById('rP2').value &&
-    document.getElementById('rAg').checked
-  );
-}
-
-// ── LOGIN ─────────────────────────────────────
-document.getElementById('fLogin').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const username = validU(document.getElementById('lU').value);
-  const pin      = document.getElementById('lP').value;
-  fb('lFb','','');
-  if (!username) { fb('lFb','e','Format username: kata.kata'); return; }
-  if (!validP(pin)) { fb('lFb','e','PIN: 6 digit angka'); return; }
-  const btn = document.getElementById('lBtn');
-  btn.disabled = true; btn.textContent = 'VERIFIKASI...';
-  try {
-    const data = await sbGet('/profiles?username=eq.'+encodeURIComponent(username)+'&select=id,username&limit=1');
-    const user = Array.isArray(data) ? data[0] : null;
-    if (!user) throw new Error('Username tidak ditemukan');
-    const stored = localStorage.getItem(LS.a);
-    if (!stored) throw new Error('Akun belum terdaftar di device ini');
-    const hash = await authHash(pin, username);
-    if (hash !== stored) throw new Error('PIN salah');
-    localStorage.setItem(LS.u, user.username);
-    localStorage.setItem(LS.i, user.id);
-    localStorage.setItem(LS.l, 'true');
-    fb('lFb','s','Login berhasil!');
-    setTimeout(() => window.location.replace('/spill.html'), 600);
-  } catch(err) {
-    fb('lFb','e', err.message||'Login gagal');
-    btn.disabled = false; btn.textContent = 'MASUK';
-  }
+window.addEventListener('load',()=>{
+    setupUI();
+    if(!IS_GUEST){
+        ECDH.reg();INBOX.poll();
+        $('inboxBtn').onclick=()=>{INBOX.load();$('inboxPanel').classList.add('show');};
+    }
+    $('inboxClose').onclick=()=>$('inboxPanel').classList.remove('show');
+    $('readBack').onclick=()=>{INBOX.closeRead();$('inboxPanel').classList.add('show');};
 });
+})();
 
-// ── REGISTER ─────────────────────────────────
-document.getElementById('fReg').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const username = validU(document.getElementById('rU').value);
-  const pin      = document.getElementById('rP').value;
-  fb('rFb','','');
-  if (!username) { fb('rFb','e','Format username: kata.kata'); return; }
-  if (!validP(pin)) { fb('rFb','e','PIN terlalu lemah'); return; }
-  const btn = document.getElementById('rBtn');
-  btn.disabled = true; btn.textContent = 'PROSES...';
-  try {
-    const data = await sbPost('/profiles?select=id,username', {username});
-    const user = Array.isArray(data) ? data[0] : data;
-    if (!user||!user.id) throw new Error('Tidak ada data returned');
-    const hash = await authHash(pin, username);
-    localStorage.setItem(LS.u, user.username);
-    localStorage.setItem(LS.i, user.id);
-    localStorage.setItem(LS.l, 'true');
-    localStorage.setItem(LS.a, hash);
-    fb('rFb','s','Akun dibuat!');
-    setTimeout(() => {
-      alert('Akun dibuat!\n\nUsername: '+user.username+'\n\nSIMPAN PIN — tidak bisa dipulihkan!');
-      window.location.replace('/spill.html');
-    }, 800);
-  } catch(err) {
-    const isDupe = err.code==='23505'||(err.message||'').includes('duplicate');
-    fb('rFb','e', isDupe ? 'Username sudah dipakai' : (err.message||'Gagal'));
-    btn.disabled = false; btn.textContent = 'DAFTAR';
-  }
-});
+/* SEND */
+function layerShow(id){['lProc','lSent','lNoPub'].forEach(l=>{const el=document.getElementById(l);if(el)el.classList.toggle('show',l===id);});}
+function closeProcOv(){document.getElementById('procOv').classList.remove('show');document.getElementById('tystTo').value='';document.getElementById('tystMsg').value='';const c=document.getElementById('charN');if(c)c.textContent='0';const b=document.getElementById('sendBtn');if(b)b.disabled=true;setTimeout(()=>layerShow(null),300);}
+function tystValidate(){const to=(document.getElementById('tystTo').value||'').trim().replace('@','');const msg=(document.getElementById('tystMsg').value||'').trim();const ok=/^[a-z0-9_.]{2,24}$/.test(to)&&msg.length>0;const btn=document.getElementById('sendBtn');if(btn)btn.disabled=!ok;}
+function tystChar(){const el=document.getElementById('tystMsg'),c=document.getElementById('charN');if(el&&c)c.textContent=el.value.length;}
+function showHow(){document.getElementById('howOv').classList.add('show');}
+function hideHow(){document.getElementById('howOv').classList.remove('show');}
+function setStep(n){['ps1','ps2','ps3'].forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;el.className='proc-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
+async function tystSend(){
+    const to=(document.getElementById('tystTo').value||'').trim().replace('@','').toLowerCase();
+    const msg=(document.getElementById('tystMsg').value||'').trim();
+    if(!to||!msg)return;
+    document.getElementById('procOv').classList.add('show');
+    layerShow('lProc');setStep(0);
+    try{
+        await new Promise(r=>setTimeout(r,300));setStep(1);
+        const pk=await fetch('/api/pubkey?username='+encodeURIComponent(to));
+        if(!pk.ok){layerShow('lNoPub');return;}
+        const pkd=await pk.json();if(!pkd.pubkey){layerShow('lNoPub');return;}
+        setStep(2);
+        const enc=await window._ECDH.encrypt(msg,pkd.pubkey);
+        await new Promise(r=>setTimeout(r,200));
+        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc:enc})});
+        if(r.ok||r.status===202){const s=document.getElementById('sentSub');if(s)s.textContent=`No one can retrieve it. It will vanish 5 seconds after ${to} reads it.`;layerShow('lSent');}
+        else{closeProcOv();toast('Failed. Please try again.');}
+    }catch(err){console.error('[TYST]',err);closeProcOv();}
+}
 
-// ── Wire inputs ───────────────────────────────
-function wireText(id, fn) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.addEventListener('input', function() {
-    let v = this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');
-    const dot = v.indexOf('.');
-    if (dot !== -1) v = v.slice(0,dot+1) + v.slice(dot+1).replace(/\./g,'');
-    if (v !== this.value) this.value = v;
-    fn();
-  });
+/* LOGIN */
+const LM={
+    SU:'https://fuovfrdicdhnlymnacpz.supabase.co',
+    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
+    LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
+    async get(p){const r=await fetch(this.SU+'/rest/v1'+p,{headers:{apikey:this.SK,Authorization:'Bearer '+this.SK}});const t=await r.text();return t?JSON.parse(t):[];},
+    async post(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'POST',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(b)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
+    async patch(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'PATCH',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json'},body:JSON.stringify(b)});const t=await r.text();return t?JSON.parse(t):null;},
+    async sha256(s){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
+    async fp(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('tyst_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
+    async hash(pin,u){const f=await this.fp();return this.sha256(pin+':'+u+':'+f+':jejak_local_v1');},
+    vu(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const p=v.split('.');if(p.length!==2)return null;if(p[0].length<2||p[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(p[0])||!/^[a-z][a-z0-9]*$/.test(p[1]))return null;return v;},
+    vp(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(['123456','654321','000000','999999'].includes(p))return false;return true;}
+};
+function openLoginModal(){document.getElementById('lmBg').classList.add('show');lmSwitch('login');setTimeout(()=>document.getElementById('lmU').focus(),120);}
+function closeLM(){document.getElementById('lmBg').classList.remove('show');}
+function lmSwitch(to){document.getElementById('lmLogin').style.display=to==='login'?'':'none';document.getElementById('lmReg').style.display=to==='reg'?'':'none';setTimeout(()=>document.getElementById(to==='login'?'lmU':'lmRU').focus(),100);}
+function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
+function lmUpdateLogin(){const ok=LM.vu(document.getElementById('lmU').value)&&LM.vp(document.getElementById('lmP').value);document.getElementById('lmBtnL').disabled=!ok;}
+function lmUpdateReg(){const p=document.getElementById('lmRP').value,p2=document.getElementById('lmRP2').value;const ok=LM.vu(document.getElementById('lmRU').value)&&LM.vp(p)&&p===p2&&document.getElementById('lmAg').checked;document.getElementById('lmBtnR').disabled=!ok;}
+async function lmDoLogin(){
+    const u=LM.vu(document.getElementById('lmU').value),p=document.getElementById('lmP').value;
+    lmFb('lmFbL','','');
+    if(!u){lmFb('lmFbL','e','Username format: word.word');return;}
+    if(!LM.vp(p)){lmFb('lmFbL','e','PIN must be 6 digits');return;}
+    const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='Verifying…';
+    try{
+        const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username,auth_hash&limit=1');
+        const user=Array.isArray(data)?data[0]:null;if(!user)throw new Error('Username not found');
+        const h=await LM.hash(p,u);
+        if(!user.auth_hash)await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:h});
+        else if(user.auth_hash!==h)throw new Error('Wrong PIN or unrecognised device');
+        localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
+        localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,h);
+        lmFb('lmFbL','s','✓ Signed in!');setTimeout(()=>window.location.reload(),700);
+    }catch(err){lmFb('lmFbL','e',err.message||'Sign in failed');btn.disabled=false;btn.textContent='Sign in →';}
 }
-function wirePin(id, fn) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.addEventListener('input', function() {
-    this.value = this.value.replace(/[^0-9]/g,'').slice(0,6);
-    fn();
-  });
+async function lmDoReg(){
+    const u=LM.vu(document.getElementById('lmRU').value),p=document.getElementById('lmRP').value,p2=document.getElementById('lmRP2').value;
+    lmFb('lmFbR','','');
+    if(!u){lmFb('lmFbR','e','Username format: word.word');return;}
+    if(!LM.vp(p)){lmFb('lmFbR','e','PIN is too weak');return;}
+    if(p!==p2){lmFb('lmFbR','e','PINs do not match');return;}
+    const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent='Processing…';
+    try{
+        const data=await LM.post('/profiles?select=id,username',{username:u});
+        const user=Array.isArray(data)?data[0]:data;if(!user||!user.id)throw new Error('No data returned');
+        const h=await LM.hash(p,u);
+        localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
+        localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,h);
+        await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:h});
+        lmFb('lmFbR','s','Account created!');
+        setTimeout(()=>{alert('Account created!\n\nUsername: '+user.username+'\n\nSave your PIN — it cannot be recovered.');window.location.reload();},800);
+    }catch(err){
+        const d=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');
+        lmFb('lmFbR','e',d?'Username already taken':(err.message||'Failed'));
+        btn.disabled=false;btn.textContent='Register →';
+    }
 }
-wireText('lU',  chkLogin);
-wirePin ('lP',  chkLogin);
-wireText('rU',  chkReg);
-wirePin ('rP',  chkReg);
-wirePin ('rP2', chkReg);
-document.getElementById('rAg').addEventListener('change', chkReg);
+(function wire(){
+    function toU(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const di=v.indexOf('.');if(di!==-1)v=v.slice(0,di+1)+v.slice(di+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
+    function toP(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
+    function w(id,fn,up){const el=document.getElementById(id);if(!el)return;fn(el);el.addEventListener('input',up);}
+    w('lmU',toU,lmUpdateLogin);w('lmP',toP,lmUpdateLogin);
+    w('lmRU',toU,lmUpdateReg);w('lmRP',toP,lmUpdateReg);w('lmRP2',toP,lmUpdateReg);
+    const ag=document.getElementById('lmAg');if(ag)ag.addEventListener('change',lmUpdateReg);
+})();
 </script>
 </body>
 </html>
