@@ -2,23 +2,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/spill.html"
-    },
-    {
-      "source": "/login",
-      "destination": "/login.html"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/login.html",
-      "destination": "/login",
-      "permanent": true
-    },
-    {
-      "source": "/index.html",
-      "destination": "/",
-      "permanent": true
+      "destination": "/index.html"
     }
   ],
   "headers": [
