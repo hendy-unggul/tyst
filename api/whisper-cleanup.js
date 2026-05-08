@@ -1,33 +1,51 @@
-// ============================================
-// API: CLEANUP (DIPANGGIL CRON TIAP MENIT)
-// ============================================
-import { createClient } from '@supabase/supabase-js';
+// api/whisper-cleanup.js
+// Dipanggil otomatis via Vercel Cron
+//
+// ENV:
+//   SUPABASE_URL         = https://xxxx.supabase.co
+//   SUPABASE_SERVICE_KEY = service_role key
+//   CRON_SECRET          = secret token untuk proteksi endpoint
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
+const SUPA_URL = process.env.SUPABASE_URL;
+const SUPA_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+async function sb(method, path, body) {
+  const opts = {
+    method,
+    headers: {
+      apikey: SUPA_KEY,
+      Authorization: `Bearer ${SUPA_KEY}`,
+      'Content-Type': 'application/json',
+    },
+  };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  const r = await fetch(`${SUPA_URL}/rest/v1${path}`, opts);
+  const text = await r.text();
+  return { status: r.status, data: text ? JSON.parse(text) : null };
+}
 
 export default async function handler(req, res) {
-  // Proteksi dengan secret key (biar gak sembarang orang panggil)
+  // Proteksi endpoint
   const authHeader = req.headers.authorization;
-  const expectedToken = process.env.CRON_SECRET || 'rahasia_local';
-  
-  if (authHeader !== `Bearer ${expectedToken}`) {
+  const expected = `Bearer ${process.env.CRON_SECRET || 'tyst_cron_local'}`;
+  if (authHeader !== expected) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  
-  // Panggil fungsi cleanup di database
-  const { error } = await supabase.rpc('fn_cleanup_whispers');
-  
-  if (error) {
-    console.error('Cleanup error:', error);
-    return res.status(500).json({ error: 'Gagal cleanup' });
-  }
-  
-  return res.status(200).json({ 
-    ok: true, 
-    message: '🧹 Cleanup berhasil',
-    waktu: new Date().toISOString()
+
+  const now = new Date().toISOString();
+
+  // Hapus whisper expired
+  const { status: s1 } = await sb('DELETE', `/whispers?destroy_at=lt.${encodeURIComponent(now)}`);
+
+  // Hapus whisper yang sudah destroyed
+  const { status: s2 } = await sb('DELETE', `/whispers?status=eq.destroyed`);
+
+  // Hapus rate limit entries expired
+  const { status: s3 } = await sb('DELETE', `/whisper_ratelimit?expires_at=lt.${encodeURIComponent(now)}`);
+
+  return res.status(200).json({
+    ok: true,
+    cleaned: { expired: s1, destroyed: s2, ratelimit: s3 },
+    at: now
   });
 }
