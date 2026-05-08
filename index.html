@@ -329,8 +329,8 @@
 <script>
 (function(){
 'use strict';
-const SU='https://fuovfrdicdhnlymnacpz.supabase.co';
-const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0';
+const SU='YOUR_SUPABASE_URL';
+const SK='YOUR_SUPABASE_ANON_KEY';
 const POLL=60000,LP='tyst_priv_v1',LPU='tyst_pub_v1';
 const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'};
 const IS_GUEST=localStorage.getItem(K.l)!=='true';
@@ -453,8 +453,8 @@ async function tystSend(){
 
 /* LOGIN */
 const LM={
-    SU:'https://fuovfrdicdhnlymnacpz.supabase.co',
-    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ1b3ZmcmRpY2Robmx5bW5hY3B6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcwMjYxMzEsImV4cCI6MjA4MjYwMjEzMX0.oX4fVTEIWiRG2NaNJJKOV8dTnSHWhicLVMIFzZUl1o0',
+    SU:'YOUR_SUPABASE_URL',
+    SK:'YOUR_SUPABASE_ANON_KEY',
     LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
     async get(p){const r=await fetch(this.SU+'/rest/v1'+p,{headers:{apikey:this.SK,Authorization:'Bearer '+this.SK}});const t=await r.text();return t?JSON.parse(t):[];},
     async post(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'POST',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(b)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
