@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TYST — Warrant Canary</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#040d0a;--bg2:#071210;--c0:#00ff9d;--c1:#00d4ff;--c5:#ff3b6f;--txt:#b8f0d0;--txt2:#7abf9a;--txt3:#3a6a4a;--dim:#1a3a2a;--mono:'Share Tech Mono',monospace}
+body{background:var(--bg);color:var(--txt);font-family:var(--mono);font-size:13px;min-height:100svh;padding:40px 20px;line-height:1.9}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,157,.012) 2px,rgba(0,255,157,.012) 4px);pointer-events:none}
+.wrap{max-width:640px;margin:0 auto;position:relative;z-index:1}
+.logo{font-size:11px;color:var(--txt3);letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
+.logo span{color:var(--c0)}
+h1{font-size:28px;color:var(--c0);letter-spacing:4px;margin-bottom:8px;text-shadow:0 0 20px rgba(0,255,157,.3)}
+.subtitle{font-size:11px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:48px}
+.block{border:1px solid var(--dim);border-left:2px solid var(--c0);padding:20px 22px;margin-bottom:24px;background:rgba(0,255,157,.02)}
+.block-label{font-size:10px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.status-line{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--c0);box-shadow:0 0 6px var(--c0);animation:pulse 3s ease-in-out infinite}
+.dot-red{background:var(--c5)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.status-text{color:var(--txt);font-size:13px}
+.status-text.ok{color:var(--c0)}
+.status-text.warn{color:var(--c5)}
+.date-block{background:var(--bg2);border:1px solid var(--dim);padding:14px 18px;margin-bottom:24px;font-size:12px;color:var(--txt3)}
+.date-row{display:flex;justify-content:space-between;margin-bottom:4px}
+.date-row:last-child{margin-bottom:0}
+.date-val{color:var(--txt2)}
+.pgp-block{background:var(--bg2);border:1px solid var(--dim);padding:14px 18px;margin-bottom:24px;font-size:11px;color:var(--txt3);word-break:break-all;line-height:2}
+.pgp-label{color:var(--txt3);margin-bottom:6px;font-size:10px;letter-spacing:1px}
+.pgp-key{color:var(--c1);font-size:10px}
+.warning{border:1px solid rgba(255,59,111,.3);border-left:2px solid var(--c5);padding:16px 20px;margin-bottom:24px;background:rgba(255,59,111,.04)}
+.warning-title{color:var(--c5);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.warning-text{font-size:12px;color:var(--txt3);line-height:2}
+.verify{font-size:11px;color:var(--txt3);margin-top:40px;padding-top:20px;border-top:1px solid var(--dim)}
+.verify a{color:var(--c1);text-decoration:none}
+.verify a:hover{text-decoration:underline}
+.footer{margin-top:48px;font-size:10px;color:var(--txt3);letter-spacing:1px}
+.footer a{color:var(--txt3);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo"><span>TYST</span> · tyst.site/canary</div>
+
+  <h1>CANARY</h1>
+  <div class="subtitle">warrant canary · updated monthly</div>
+
+  <div class="block">
+    <div class="block-label">current status</div>
+    <div class="status-line">
+      <div class="dot dot-green"></div>
+      <span class="status-text ok">we have NOT received any legal demands</span>
+    </div>
+    <div class="status-line">
+      <div class="dot dot-green"></div>
+      <span class="status-text ok">we have NOT been compelled to install backdoors</span>
+    </div>
+    <div class="status-line">
+      <div class="dot dot-green"></div>
+      <span class="status-text ok">we have NOT been subject to any gag orders</span>
+    </div>
+    <div class="status-line">
+      <div class="dot dot-green"></div>
+      <span class="status-text ok">we have NOT been compromised or seized</span>
+    </div>
+    <div class="status-line">
+      <div class="dot dot-green"></div>
+      <span class="status-text ok">encryption keys have NOT been disclosed to any party</span>
+    </div>
+    <div class="status-line">
+      <div class="dot dot-green"></div>
+      <span class="status-text ok">no user data has been handed to any authority</span>
+    </div>
+  </div>
+
+  <div class="date-block">
+    <div class="date-row"><span>last updated</span><span class="date-val" id="lastUpdate">2026-05-08</span></div>
+    <div class="date-row"><span>next update due</span><span class="date-val" id="nextUpdate">2026-06-08</span></div>
+    <div class="date-row"><span>hosting jurisdiction</span><span class="date-val">Finland · Hetzner Helsinki · AS24940</span></div>
+    <div class="date-row"><span>legal framework</span><span class="date-val">Finnish law · EU GDPR · not Five Eyes</span></div>
+    <div class="date-row"><span>server data stored</span><span class="date-val">ciphertext only · no plaintext ever</span></div>
+    <div class="date-row"><span>identity collected</span><span class="date-val">none · no phone · no email · no ip log</span></div>
+  </div>
+
+  <div class="warning">
+    <div class="warning-title">⚠ dead canary protocol</div>
+    <div class="warning-text">
+      If this page has not been updated within 35 days of the date above,
+      assume the canary is dead.<br><br>
+      A dead canary means one or more of the statements above may no longer be true.
+      We cannot tell you why — but we can stop updating this page.<br><br>
+      If the canary dies: stop using TYST immediately. Assume compromise.
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-label">what we can hand over if legally compelled</div>
+    <div class="status-line">
+      <div class="dot" style="background:var(--txt3)"></div>
+      <span class="status-text" style="color:var(--txt3)">ciphertext — unreadable without recipient private key</span>
+    </div>
+    <div class="status-line">
+      <div class="dot" style="background:var(--txt3)"></div>
+      <span class="status-text" style="color:var(--txt3)">usernames — not linked to any real identity</span>
+    </div>
+    <div class="status-line">
+      <div class="dot" style="background:var(--txt3)"></div>
+      <span class="status-text" style="color:var(--txt3)">message timestamps — approximate only</span>
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--txt3);border-top:1px solid var(--dim);padding-top:12px">
+      what we cannot hand over: sender identity · message content · IP addresses · 
+      private keys · read receipts · anything that does not exist on our server
+    </div>
+  </div>
+
+  <div class="pgp-block">
+    <div class="pgp-label">pgp fingerprint — verify this page is signed by us</div>
+    <div class="pgp-key">[ ADD YOUR PGP FINGERPRINT HERE AFTER KEYGEN ]</div>
+    <div style="margin-top:10px;font-size:10px;color:var(--txt3)">
+      generate key: gpg --gen-key<br>
+      sign this file monthly: gpg --clearsign canary.txt<br>
+      publish signature: tyst.site/canary.txt.asc
+    </div>
+  </div>
+
+  <div class="verify">
+    verify independently:<br>
+    · <a href="https://keys.openpgp.org">keys.openpgp.org</a> — pgp key lookup<br>
+    · <a href="https://web.archive.org/web/*/tyst.site/canary">archive.org</a> — historical snapshots<br>
+    · <a href="/canary.txt">canary.txt</a> — plain text version for scripted monitoring<br>
+    · <a href="https://github.com/hendy-unggul/tyst">github source</a> — audit the code
+  </div>
+
+  <div class="footer">
+    <a href="/">← tyst.site</a> &nbsp;·&nbsp;
+    <a href="/threat-model">threat model</a> &nbsp;·&nbsp;
+    <a href="https://github.com/hendy-unggul/tyst">source code</a>
+  </div>
+
+</div>
+<script>
+// Auto-calculate dates
+const now = new Date();
+const last = now.toISOString().slice(0,10);
+const next = new Date(now.setMonth(now.getMonth()+1)).toISOString().slice(0,10);
+document.getElementById('lastUpdate').textContent = last;
+document.getElementById('nextUpdate').textContent = next;
+</script>
+</body>
+</html>
