@@ -1,290 +1,359 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>TYST — send without a trace</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=Syne+Mono&display=swap" rel="stylesheet">
-    <style>
-        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        :root{
-            --bg:#F5F4F0;--bg2:#EEECEA;--bg3:#E4E2DE;
-            --ink:#1A1916;--ink2:#6B6860;--ink3:#A8A69F;--rule:#D8D6D0;
-            --accent:#2D5A3D;--accent2:#4A8A5E;--accent-bg:#EBF2ED;
-            --danger:#C0392B;
-            --ff:'Syne',sans-serif;--ffm:'Syne Mono',monospace;--r:4px;
-        }
-        body{background:var(--bg);color:var(--ink);font-family:var(--ff);min-height:100svh;display:flex;flex-direction:column}
-        body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5}
-        .app{max-width:480px;margin:0 auto;width:100%;min-height:100svh;display:flex;flex-direction:column;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
-        /* HEADER */
-        .hd{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--rule);background:var(--bg);position:sticky;top:0;z-index:100}
-        .logo{font-weight:800;font-size:20px;letter-spacing:-0.5px}
-        .logo sup{font-size:8px;font-weight:400;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;vertical-align:super;margin-left:3px;font-family:var(--ffm)}
-        .hd-r{display:flex;align-items:center;gap:10px}
-        .btn-login{font-family:var(--ffm);font-size:11px;color:var(--accent);background:var(--accent-bg);border:1px solid rgba(45,90,61,.25);padding:7px 14px;cursor:pointer;letter-spacing:.3px;border-radius:var(--r);transition:background .15s}
-        .btn-login:hover{background:#ddeee3}
-        .user-chip{font-family:var(--ffm);font-size:11px;color:var(--ink2);background:var(--bg2);border:1px solid var(--rule);padding:5px 10px;border-radius:var(--r)}
-        .btn-icon{width:32px;height:32px;background:0 0;border:1px solid var(--rule);color:var(--ink2);cursor:pointer;border-radius:var(--r);font-size:16px;display:flex;align-items:center;justify-content:center;transition:border-color .15s}
-        .btn-icon:hover{border-color:var(--ink3)}
-        .dd{position:absolute;top:65px;right:24px;background:var(--bg);border:1px solid var(--rule);box-shadow:0 8px 32px rgba(0,0,0,.08);z-index:200;min-width:150px;border-radius:var(--r);display:none;overflow:hidden}
-        .dd.show{display:block}
-        .dd-item{padding:11px 16px;font-family:var(--ffm);font-size:12px;color:var(--ink);cursor:pointer;transition:background .1s}
-        .dd-item:hover{background:var(--bg2)}
-        /* HERO */
-        .hero{padding:44px 24px 36px;border-bottom:1px solid var(--rule);position:relative;overflow:hidden}
-        .hero::after{content:'TYST';position:absolute;right:-14px;bottom:-28px;font-size:120px;font-weight:800;color:var(--bg3);letter-spacing:-6px;line-height:1;pointer-events:none;user-select:none}
-        .hero-tag{display:inline-flex;align-items:center;gap:7px;font-family:var(--ffm);font-size:10px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
-        .tag-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulse 3s ease-in-out infinite}
-        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
-        .hero-h{font-size:36px;font-weight:800;letter-spacing:-1.5px;line-height:1.06;margin-bottom:12px;position:relative;z-index:1}
-        .hero-h em{font-style:normal;color:var(--accent)}
-        .hero-sub{font-family:var(--ffm);font-size:11px;color:var(--ink3);line-height:2;position:relative;z-index:1}
-        /* FORM */
-        .form-sect{padding:30px 24px;border-bottom:1px solid var(--rule)}
-        .eyebrow{font-family:var(--ffm);font-size:10px;color:var(--ink3);letter-spacing:2px;text-transform:uppercase;margin-bottom:22px}
-        .field{margin-bottom:18px}
-        .f-label{font-family:var(--ffm);font-size:10px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;display:block}
-        .f-input{width:100%;padding:13px 15px;background:var(--bg);border:1px solid var(--rule);color:var(--ink);font-size:14px;font-family:var(--ff);border-radius:var(--r);outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none}
-        .f-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,90,61,.07)}
-        .f-input::placeholder{color:var(--ink3)}
-        .f-ta{resize:none;line-height:1.65;min-height:110px}
-        .char{font-family:var(--ffm);font-size:10px;color:var(--ink3);text-align:right;margin-top:5px}
-        .trust{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--accent-bg);border:1px solid rgba(45,90,61,.14);border-radius:var(--r);margin-bottom:18px}
-        .trust-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0}
-        .trust-txt{font-family:var(--ffm);font-size:11px;color:var(--accent);flex:1;opacity:.85}
-        .trust-lnk{font-family:var(--ffm);font-size:10px;color:var(--accent);opacity:.5;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:opacity .15s}
-        .trust-lnk:hover{opacity:.9}
-        .btn-send{width:100%;padding:14px;background:var(--ink);color:var(--bg);border:none;font-family:var(--ff);font-weight:700;font-size:14px;letter-spacing:.3px;border-radius:var(--r);cursor:pointer;transition:background .15s,transform .1s}
-        .btn-send:hover{background:#2e2b27}
-        .btn-send:active{transform:scale(.99)}
-        .btn-send:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed;transform:none}
-        /* INBOX */
-        .inbox-sect{padding:14px 24px;border-bottom:1px solid var(--rule);display:none}
-        .btn-inbox{width:100%;padding:13px 16px;background:0 0;border:1px dashed var(--rule);font-family:var(--ffm);font-size:12px;color:var(--ink2);cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-radius:var(--r);transition:border-color .15s,color .15s}
-        .btn-inbox:hover{border-color:var(--ink3);color:var(--ink)}
-        .inbox-badge{background:var(--danger);color:#fff;font-size:9px;padding:2px 7px;border-radius:20px;display:none;font-family:var(--ffm)}
-        /* FOOTER */
-        .proto{padding:22px 24px;margin-top:auto}
-        .proto-txt{font-family:var(--ffm);font-size:9px;color:var(--ink3);line-height:2.1}
-        .proto-txt b{color:var(--ink2)}
-        /* PROCESSING OVERLAY */
-        .proc-ov{display:none;position:fixed;inset:0;background:rgba(245,244,240,.78);backdrop-filter:blur(10px);z-index:1500;align-items:flex-end;justify-content:center}
-        .proc-ov.show{display:flex}
-        .proc-sheet{background:var(--bg);border:1px solid var(--rule);border-bottom:none;max-width:480px;width:100%;border-radius:16px 16px 0 0;overflow:hidden;position:relative;min-height:220px;box-shadow:0 -8px 40px rgba(0,0,0,.07)}
-        .p-layer{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px}
-        .p-layer.show{display:flex}
-        .spinner{width:26px;height:26px;border:1.5px solid var(--rule);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        .proc-lbl{font-family:var(--ffm);font-size:10px;color:var(--ink3);letter-spacing:2px;text-transform:uppercase}
-        .proc-steps{display:flex;flex-direction:column;gap:5px;align-items:center}
-        .proc-step{font-family:var(--ffm);font-size:11px;color:var(--rule);transition:color .25s}
-        .proc-step.act{color:var(--ink2)}
-        .proc-step.done{color:var(--accent)}
-        .sent-circle{width:50px;height:50px;border-radius:50%;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;animation:pop .4s cubic-bezier(.2,.9,.4,1.1) both}
-        @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
-        .sent-inner{width:18px;height:18px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent)}
-        .sent-title{font-size:18px;font-weight:700;letter-spacing:-.5px;color:var(--ink);text-align:center}
-        .sent-sub{font-family:var(--ffm);font-size:11px;color:var(--ink3);line-height:1.85;text-align:center;max-width:240px}
-        .btn-dismiss{background:0 0;border:1px solid var(--rule);color:var(--ink2);font-family:var(--ffm);font-size:11px;padding:9px 22px;border-radius:var(--r);cursor:pointer;transition:border-color .15s,color .15s;margin-top:4px}
-        .btn-dismiss:hover{border-color:var(--ink3);color:var(--ink)}
-        .nopub-icon{width:40px;height:40px;border:1px solid var(--rule);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink3);font-size:18px}
-        .nopub-title{font-size:15px;font-weight:700;color:var(--ink)}
-        .nopub-sub{font-family:var(--ffm);font-size:11px;color:var(--ink3);line-height:1.85;text-align:center;max-width:210px}
-        /* INBOX PANEL */
-        .inbox-panel{position:fixed;inset:0;background:var(--bg);z-index:1600;display:none;flex-direction:column;max-width:480px;margin:0 auto;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
-        .inbox-panel.show{display:flex}
-        .panel-hd{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--rule);background:var(--bg)}
-        .panel-title{font-family:var(--ffm);font-size:11px;color:var(--ink2);letter-spacing:2px;text-transform:uppercase}
-        .btn-close{background:0 0;border:1px solid var(--rule);color:var(--ink2);width:28px;height:28px;border-radius:var(--r);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:border-color .15s}
-        .btn-close:hover{border-color:var(--ink3)}
-        .msg-list{flex:1;overflow-y:auto}
-        .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--ink3)}
-        .empty-icon{font-size:26px;opacity:.2}
-        .empty-txt{font-family:var(--ffm);font-size:11px}
-        .msg-row{padding:16px 24px;border-bottom:1px solid var(--rule);cursor:pointer;transition:background .1s;position:relative}
-        .msg-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent);opacity:0;transition:opacity .15s}
-        .msg-row:hover{background:var(--bg2)}
-        .msg-row:hover::before{opacity:1}
-        .msg-meta{display:flex;justify-content:space-between;margin-bottom:4px}
-        .msg-from{font-family:var(--ffm);font-size:10px;color:var(--accent);letter-spacing:.5px}
-        .msg-ttl{font-family:var(--ffm);font-size:10px;color:var(--danger)}
-        .msg-prev{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        /* READ PANEL */
-        .read-panel{position:fixed;inset:0;background:var(--bg);z-index:1700;display:none;flex-direction:column;max-width:480px;margin:0 auto;border-left:1px solid var(--rule);border-right:1px solid var(--rule)}
-        .read-panel.show{display:flex}
-        .read-hd{display:flex;align-items:center;gap:12px;padding:18px 24px;border-bottom:1px solid var(--rule)}
-        .btn-back{background:0 0;border:1px solid var(--rule);color:var(--ink2);padding:4px 10px;border-radius:var(--r);cursor:pointer;font-family:var(--ffm);font-size:11px;transition:border-color .15s}
-        .btn-back:hover{border-color:var(--ink3)}
-        .read-from{font-family:var(--ffm);font-size:11px;color:var(--ink2);flex:1}
-        .read-count{font-weight:800;font-size:24px;color:var(--danger);line-height:1;letter-spacing:-1px}
-        .read-body{flex:1;padding:28px 24px;font-size:15px;line-height:1.75;color:var(--ink);overflow-y:auto}
-        .read-foot{border-top:1px solid var(--rule);padding:10px 24px;display:flex;justify-content:space-between}
-        .read-foot span{font-family:var(--ffm);font-size:9px;color:var(--ink3);letter-spacing:.5px;text-transform:uppercase}
-        @keyframes burn{0%{opacity:1;transform:translateY(0)}60%{opacity:.4;transform:translateY(-12px);filter:brightness(1.4)}100%{opacity:0;transform:translateY(-28px)}}
-        .burning{animation:burn .7s ease-in forwards}
-        /* HOW */
-        .how-ov{display:none;position:fixed;inset:0;background:rgba(245,244,240,.82);backdrop-filter:blur(10px);z-index:2000;align-items:flex-end;justify-content:center}
-        .how-ov.show{display:flex}
-        .how-sheet{background:var(--bg);border:1px solid var(--rule);border-bottom:none;max-width:480px;width:100%;border-radius:16px 16px 0 0;padding:28px 24px 40px;max-height:80svh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.06)}
-        .how-title{font-size:17px;font-weight:700;letter-spacing:-.5px;margin-bottom:22px}
-        .how-row{display:flex;gap:14px;margin-bottom:20px}
-        .how-num{width:24px;height:24px;border-radius:50%;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:var(--ffm);font-size:10px;color:var(--ink3);flex-shrink:0;margin-top:2px}
-        .how-h{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px}
-        .how-p{font-family:var(--ffm);font-size:11px;color:var(--ink3);line-height:1.85}
-        .how-tech{background:var(--bg2);border:1px solid var(--rule);border-radius:var(--r);padding:14px 16px;margin-top:4px;font-family:var(--ffm);font-size:10px;color:var(--ink3);line-height:2.1}
-        .how-tech b{color:var(--ink2)}
-        .btn-how-close{width:100%;margin-top:22px;padding:13px;background:0 0;border:1px solid var(--rule);color:var(--ink2);font-family:var(--ffm);font-size:11px;border-radius:var(--r);cursor:pointer;transition:border-color .15s,color .15s}
-        .btn-how-close:hover{border-color:var(--ink3);color:var(--ink)}
-        /* TOAST */
-        .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:20px;font-family:var(--ffm);font-size:12px;z-index:9998;display:none;white-space:nowrap}
-        .toast.show{display:block}
-        /* LOGIN */
-        .lm-bg{position:fixed;inset:0;background:rgba(245,244,240,.9);backdrop-filter:blur(12px);z-index:9997;display:none;align-items:center;justify-content:center;padding:20px}
-        .lm-bg.show{display:flex}
-        .lm-card{background:var(--bg);border:1px solid var(--rule);max-width:360px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 16px 64px rgba(0,0,0,.09)}
-        .lm-top{padding:22px 24px 18px;border-bottom:1px solid var(--rule);background:var(--bg2)}
-        .lm-wordmark{font-size:18px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
-        .lm-disc{font-family:var(--ffm);font-size:10px;color:var(--ink3);line-height:1.9}
-        .lm-body{padding:22px;position:relative}
-        .lm-x{position:absolute;top:14px;right:14px;background:0 0;border:1px solid var(--rule);color:var(--ink3);width:26px;height:26px;border-radius:var(--r);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:border-color .15s}
-        .lm-x:hover{border-color:var(--ink3)}
-        .lm-title{font-size:17px;font-weight:700;letter-spacing:-.5px;margin-bottom:18px}
-        .lm-label{font-family:var(--ffm);font-size:10px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;display:block}
-        .lm-input{width:100%;background:var(--bg);border:1px solid var(--rule);padding:11px 13px;color:var(--ink);font-family:var(--ffm);font-size:13px;outline:none;margin-bottom:13px;border-radius:var(--r);transition:border-color .15s,box-shadow .15s}
-        .lm-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,90,61,.07)}
-        .lm-input::placeholder{color:var(--ink3)}
-        .lm-pin{text-align:center;letter-spacing:.7em;font-size:18px;-webkit-text-security:disc}
-        .lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:12px}
-        .lm-fb{font-family:var(--ffm);font-size:10px;padding:8px 10px;border:1px solid;border-radius:var(--r);margin-bottom:11px;display:none;line-height:1.5}
-        .lm-fb.show{display:block}
-        .lm-fb.e{border-color:var(--danger);color:var(--danger);background:#fdf0ef}
-        .lm-fb.s{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
-        .lm-btn{width:100%;background:var(--ink);color:var(--bg);border:none;padding:13px;font-family:var(--ff);font-weight:700;font-size:14px;letter-spacing:.3px;cursor:pointer;border-radius:var(--r);transition:background .15s}
-        .lm-btn:hover{background:#2e2b27}
-        .lm-btn:disabled{background:var(--bg3);color:var(--ink3);cursor:not-allowed}
-        .lm-sw{text-align:center;margin-top:11px;font-family:var(--ffm);font-size:10px;color:var(--ink3)}
-        .lm-sw button{background:0 0;border:none;color:var(--accent);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-family:var(--ffm);font-size:10px}
-        .lm-note{font-family:var(--ffm);font-size:9px;color:var(--ink3);text-align:center;margin-top:8px}
-        .lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
-        .lm-agree input{margin-top:2px;width:14px;height:14px;accent-color:var(--accent)}
-        .lm-agree label{font-family:var(--ffm);font-size:10px;color:var(--ink3);line-height:1.6;cursor:pointer}
-        .lm-agree label b{color:var(--danger)}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TYST</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#040d0a;--bg2:#071210;--bg3:#0a1a14;--bg4:#0d2018;
+  --c0:#00ff9d;--c1:#00b8ff;--c2:#ff6b35;--c3:#ffd700;--c4:#bf5fff;--c5:#ff3b6f;
+  --dim:#1a3a2a;--dim2:#0f2a1e;
+  --txt:#b8f0d0;--txt2:#7abf9a;--txt3:#3a6a4a;
+  --mono:'Share Tech Mono',monospace;--display:'VT323',monospace;
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,157,.015) 2px,rgba(0,255,157,.015) 4px);
+  --r:2px;
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--txt);font-family:var(--mono);font-size:13px;min-height:100svh;display:flex;flex-direction:column;background-image:var(--scan)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,255,157,.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.3) 1px,rgba(0,0,0,.3) 2px);pointer-events:none;z-index:1;opacity:.4}
+
+.app{max-width:520px;margin:0 auto;width:100%;min-height:100svh;display:flex;flex-direction:column;position:relative;z-index:2;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
+
+/* HEADER */
+.hd{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--dim);background:var(--bg2);position:sticky;top:0;z-index:100}
+.logo{font-family:var(--display);font-size:32px;letter-spacing:4px;color:var(--c0);text-shadow:0 0 20px rgba(0,255,157,.6),0 0 40px rgba(0,255,157,.3);line-height:1}
+.logo-sub{font-size:9px;color:var(--txt3);letter-spacing:3px;font-family:var(--mono);margin-top:-4px}
+.hd-r{display:flex;align-items:center;gap:8px}
+.btn-login{font-family:var(--mono);font-size:11px;color:var(--c0);background:transparent;border:1px solid var(--c0);padding:5px 12px;cursor:pointer;letter-spacing:1px;transition:all .15s;text-transform:uppercase}
+.btn-login:hover{background:rgba(0,255,157,.08);box-shadow:0 0 8px rgba(0,255,157,.3)}
+.user-chip{font-family:var(--mono);font-size:11px;color:var(--c1);border:1px solid rgba(0,184,255,.3);padding:4px 10px;background:rgba(0,184,255,.05)}
+.btn-icon{width:28px;height:28px;background:transparent;border:1px solid var(--dim);color:var(--txt3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-icon:hover{border-color:var(--c0);color:var(--c0)}
+.dd{position:absolute;top:58px;right:18px;background:var(--bg3);border:1px solid var(--dim);z-index:200;min-width:160px;display:none}
+.dd.show{display:block}
+.dd-item{padding:10px 16px;font-family:var(--mono);font-size:11px;color:var(--txt);cursor:pointer;border-bottom:1px solid var(--dim);letter-spacing:.5px;transition:background .1s}
+.dd-item:hover{background:rgba(0,255,157,.05);color:var(--c0)}
+
+/* TERMINAL HEADER STRIP */
+.term-strip{padding:8px 18px;border-bottom:1px solid var(--dim);background:var(--bg3);display:flex;align-items:center;gap:8px;font-size:10px;color:var(--txt3);letter-spacing:1px}
+.term-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);animation:blink 2s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.term-status{color:var(--c0)}
+
+/* CONSOLE OUTPUT — HERO */
+.console-sect{padding:20px 18px;border-bottom:1px solid var(--dim);background:var(--bg2);position:relative;overflow:hidden;min-height:140px}
+.console-sect::before{content:'';position:absolute;inset:0;background:var(--scan);pointer-events:none}
+.c-line{font-family:var(--mono);font-size:12px;line-height:1.9;white-space:pre;overflow:hidden}
+.c-prompt{color:var(--c0)}
+.c-cmd{color:var(--txt)}
+.c-out1{color:var(--c1)}
+.c-out2{color:var(--c3)}
+.c-out3{color:var(--c4)}
+.c-out4{color:var(--c2)}
+.c-out5{color:var(--c0)}
+.c-dim{color:var(--txt3)}
+.c-err{color:var(--c5)}
+.c-ok{color:var(--c0)}
+.cursor{display:inline-block;width:8px;height:14px;background:var(--c0);animation:cursor-blink .9s step-end infinite;vertical-align:middle;margin-left:2px;box-shadow:0 0 6px rgba(0,255,157,.8)}
+@keyframes cursor-blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* COMPOSE SECTION */
+.compose-sect{padding:20px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
+.sect-head{font-size:10px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sect-head::before{content:'>';color:var(--c0)}
+.field{margin-bottom:14px}
+.f-label{font-size:10px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.f-label::before{content:'//';color:var(--dim);font-size:9px}
+.f-input{width:100%;padding:10px 13px;background:var(--bg3);border:1px solid var(--dim);border-left:2px solid var(--c1);color:var(--txt);font-size:13px;font-family:var(--mono);outline:none;transition:all .15s;-webkit-appearance:none;caret-color:var(--c0)}
+.f-input:focus{border-color:var(--c0);border-left-color:var(--c0);background:var(--bg4);box-shadow:0 0 0 1px rgba(0,255,157,.1) inset}
+.f-input::placeholder{color:var(--txt3)}
+.f-ta{resize:none;line-height:1.65;min-height:90px}
+.char{font-size:10px;color:var(--txt3);text-align:right;margin-top:4px}
+.char span{color:var(--c1)}
+
+/* TRUST STRIP */
+.trust{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(0,255,157,.03);border:1px solid rgba(0,255,157,.1);border-left:2px solid var(--c0);margin-bottom:16px}
+.trust-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);flex-shrink:0;box-shadow:0 0 4px var(--c0);animation:blink 2s ease-in-out infinite}
+.trust-txt{font-size:11px;color:var(--txt2);flex:1;letter-spacing:.3px}
+.trust-lnk{font-size:10px;color:var(--c0);opacity:.5;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:opacity .15s;letter-spacing:.5px}
+.trust-lnk:hover{opacity:1}
+
+/* SEND BUTTON */
+.btn-send{width:100%;padding:13px;background:transparent;border:1px solid var(--c0);color:var(--c0);font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.btn-send::before{content:'';position:absolute;inset:0;background:var(--c0);transform:translateX(-100%);transition:transform .2s;z-index:0}
+.btn-send:hover::before{transform:translateX(0)}
+.btn-send:hover{color:var(--bg);box-shadow:0 0 20px rgba(0,255,157,.3)}
+.btn-send span{position:relative;z-index:1}
+.btn-send:active{transform:scale(.99)}
+.btn-send:disabled{border-color:var(--dim);color:var(--txt3);cursor:not-allowed}
+.btn-send:disabled::before{display:none}
+
+/* INBOX BUTTON */
+.inbox-sect{padding:12px 18px;border-bottom:1px solid var(--dim);display:none}
+.btn-inbox{width:100%;padding:11px 14px;background:transparent;border:1px solid var(--dim);font-family:var(--mono);font-size:11px;color:var(--txt3);cursor:pointer;display:flex;justify-content:space-between;align-items:center;letter-spacing:1px;transition:all .15s}
+.btn-inbox:hover{border-color:var(--c1);color:var(--c1)}
+.inbox-badge{background:var(--c5);color:#fff;font-size:9px;padding:2px 7px;display:none;font-family:var(--mono);letter-spacing:1px}
+
+/* PROTOCOL FOOTER */
+.proto{padding:16px 18px;margin-top:auto;border-top:1px solid var(--dim)}
+.proto-txt{font-size:10px;color:var(--txt3);line-height:2.2;letter-spacing:.3px}
+.proto-txt b{color:var(--txt2)}
+
+/* PROCESSING OVERLAY */
+.proc-ov{display:none;position:fixed;inset:0;background:rgba(2,8,5,.92);z-index:1500;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.proc-ov.show{display:flex}
+.proc-sheet{background:var(--bg2);border:1px solid var(--dim);border-left:2px solid var(--c0);border-bottom:none;max-width:520px;width:100%;position:relative;min-height:200px;box-shadow:0 -4px 40px rgba(0,255,157,.1)}
+.p-layer{position:absolute;inset:0;background:var(--bg2);display:none;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:32px 28px}
+.p-layer.show{display:flex}
+.proc-console{font-size:12px;line-height:2;width:100%}
+.proc-step{color:var(--txt3);transition:color .3s;font-size:11px;letter-spacing:.5px}
+.proc-step::before{content:'[ ] ';color:var(--txt3);transition:color .3s}
+.proc-step.act{color:var(--c3)}
+.proc-step.act::before{content:'[~] ';color:var(--c3)}
+.proc-step.done{color:var(--c0)}
+.proc-step.done::before{content:'[✓] ';color:var(--c0)}
+.sent-head{font-family:var(--display);font-size:38px;color:var(--c0);letter-spacing:3px;text-shadow:0 0 20px rgba(0,255,157,.5);line-height:1;margin-bottom:4px}
+.sent-sub{font-size:11px;color:var(--txt3);line-height:1.8;max-width:320px;letter-spacing:.3px}
+.btn-dismiss{background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:11px;padding:8px 20px;cursor:pointer;letter-spacing:1px;transition:all .15s;margin-top:8px}
+.btn-dismiss:hover{border-color:var(--c0);color:var(--c0)}
+.nopub-head{font-family:var(--display);font-size:28px;color:var(--c2);letter-spacing:2px;text-shadow:0 0 12px rgba(255,107,53,.4)}
+.nopub-sub{font-size:11px;color:var(--txt3);line-height:1.8;max-width:280px;letter-spacing:.3px}
+
+/* INBOX PANEL */
+.inbox-panel{position:fixed;inset:0;background:var(--bg);z-index:1600;display:none;flex-direction:column;max-width:520px;margin:0 auto;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
+.inbox-panel.show{display:flex}
+.panel-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
+.panel-title{font-family:var(--mono);font-size:10px;color:var(--c0);letter-spacing:3px;text-transform:uppercase}
+.btn-close{background:transparent;border:1px solid var(--dim);color:var(--txt3);width:26px;height:26px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-close:hover{border-color:var(--c5);color:var(--c5)}
+.msg-list{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--dim) transparent}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--txt3);font-size:11px;letter-spacing:2px}
+.empty-icon{font-family:var(--display);font-size:48px;color:var(--dim);line-height:1}
+.msg-row{padding:14px 18px;border-bottom:1px solid var(--dim);cursor:pointer;transition:background .1s;position:relative}
+.msg-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--c1);opacity:0;transition:opacity .15s;box-shadow:0 0 6px var(--c1)}
+.msg-row:hover{background:rgba(0,184,255,.04)}
+.msg-row:hover::before{opacity:1}
+.msg-meta{display:flex;justify-content:space-between;margin-bottom:4px}
+.msg-from{font-size:10px;color:var(--c1);letter-spacing:1px}
+.msg-ttl{font-size:10px;color:var(--c5)}
+.msg-prev{font-size:11px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px}
+
+/* READ PANEL */
+.read-panel{position:fixed;inset:0;background:var(--bg);z-index:1700;display:none;flex-direction:column;max-width:520px;margin:0 auto;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
+.read-panel.show{display:flex}
+.read-hd{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
+.btn-back{background:transparent;border:1px solid var(--dim);color:var(--txt3);padding:4px 10px;cursor:pointer;font-family:var(--mono);font-size:11px;transition:all .15s;letter-spacing:.5px}
+.btn-back:hover{border-color:var(--c0);color:var(--c0)}
+.read-from{font-size:10px;color:var(--c1);flex:1;letter-spacing:1px}
+.read-count{font-family:var(--display);font-weight:400;font-size:36px;color:var(--c5);line-height:1;text-shadow:0 0 12px rgba(255,59,111,.5)}
+
+/* MESSAGE BODY — hacker multicolor lines */
+.read-body{flex:1;padding:22px 18px;overflow-y:auto;background:var(--bg);font-size:13px;line-height:1.9;letter-spacing:.3px;background-image:var(--scan)}
+.read-body .ml0{color:var(--c0)}
+.read-body .ml1{color:var(--c1)}
+.read-body .ml2{color:var(--c3)}
+.read-body .ml3{color:var(--c4)}
+.read-body .ml4{color:var(--c2)}
+.read-body .ml5{color:var(--txt)}
+.read-body .ml6{color:var(--txt2)}
+.read-body .mhdr{color:var(--txt3);font-size:10px;letter-spacing:2px;margin-bottom:4px}
+.read-foot{border-top:1px solid var(--dim);padding:8px 18px;display:flex;justify-content:space-between;background:var(--bg2)}
+.read-foot span{font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase}
+@keyframes burn{0%{opacity:1;filter:brightness(1)}40%{opacity:.8;filter:brightness(2) hue-rotate(40deg)}100%{opacity:0;filter:brightness(4) blur(4px);transform:translateY(-8px)}}
+.burning{animation:burn .6s ease-in forwards}
+
+/* HOW OVERLAY */
+.how-ov{display:none;position:fixed;inset:0;background:rgba(2,8,5,.92);backdrop-filter:blur(4px);z-index:2000;align-items:flex-end;justify-content:center}
+.how-ov.show{display:flex}
+.how-sheet{background:var(--bg2);border:1px solid var(--dim);border-left:2px solid var(--c4);border-bottom:none;max-width:520px;width:100%;padding:24px 22px 36px;max-height:80svh;overflow-y:auto;box-shadow:0 -4px 30px rgba(191,95,255,.1)}
+.how-title{font-family:var(--display);font-size:26px;color:var(--c4);letter-spacing:3px;margin-bottom:20px;text-shadow:0 0 14px rgba(191,95,255,.4)}
+.how-row{display:flex;gap:14px;margin-bottom:18px}
+.how-num{width:22px;height:22px;border:1px solid var(--c4);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--c4);flex-shrink:0;margin-top:2px}
+.how-h{font-size:12px;color:var(--txt);margin-bottom:4px;letter-spacing:.5px}
+.how-p{font-size:11px;color:var(--txt3);line-height:1.85;letter-spacing:.3px}
+.how-tech{background:var(--bg3);border:1px solid var(--dim);padding:12px 14px;margin-top:4px;font-size:10px;color:var(--txt3);line-height:2.2;letter-spacing:.3px}
+.how-tech b{color:var(--txt2)}
+.btn-how-close{width:100%;margin-top:18px;padding:11px;background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:1px;transition:all .15s}
+.btn-how-close:hover{border-color:var(--c4);color:var(--c4)}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--c0);padding:9px 18px;border:1px solid var(--c0);font-family:var(--mono);font-size:11px;z-index:9998;display:none;white-space:nowrap;letter-spacing:.5px;box-shadow:0 0 16px rgba(0,255,157,.2)}
+.toast.show{display:block}
+
+/* LOGIN MODAL */
+.lm-bg{position:fixed;inset:0;background:rgba(2,8,5,.94);backdrop-filter:blur(6px);z-index:9997;display:none;align-items:center;justify-content:center;padding:20px}
+.lm-bg.show{display:flex}
+.lm-card{background:var(--bg2);border:1px solid var(--dim);border-top:2px solid var(--c0);max-width:360px;width:100%;box-shadow:0 0 40px rgba(0,255,157,.08)}
+.lm-top{padding:18px 22px 14px;border-bottom:1px solid var(--dim);background:var(--bg3)}
+.lm-wordmark{font-family:var(--display);font-size:30px;letter-spacing:4px;color:var(--c0);text-shadow:0 0 16px rgba(0,255,157,.5);line-height:1;margin-bottom:6px}
+.lm-disc{font-size:10px;color:var(--txt3);line-height:1.9;letter-spacing:.3px}
+.lm-body{padding:20px 22px;position:relative}
+.lm-x{position:absolute;top:12px;right:12px;background:transparent;border:1px solid var(--dim);color:var(--txt3);width:24px;height:24px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.lm-x:hover{border-color:var(--c5);color:var(--c5)}
+.lm-title{font-family:var(--display);font-size:22px;letter-spacing:3px;color:var(--txt);margin-bottom:16px}
+.lm-label{font-size:10px;color:var(--txt3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;display:block}
+.lm-input{width:100%;background:var(--bg3);border:1px solid var(--dim);border-left:2px solid var(--c1);padding:10px 12px;color:var(--txt);font-family:var(--mono);font-size:13px;outline:none;margin-bottom:11px;transition:all .15s;caret-color:var(--c0)}
+.lm-input:focus{border-color:var(--c0);border-left-color:var(--c0);background:var(--bg4)}
+.lm-input::placeholder{color:var(--txt3)}
+.lm-pin{text-align:center;letter-spacing:.7em;font-size:18px;-webkit-text-security:disc}
+.lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:12px}
+.lm-fb{font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:10px;display:none;line-height:1.5;letter-spacing:.3px}
+.lm-fb.show{display:block}
+.lm-fb.e{border-color:var(--c5);color:var(--c5);background:rgba(255,59,111,.05)}
+.lm-fb.s{border-color:var(--c0);color:var(--c0);background:rgba(0,255,157,.05)}
+.lm-btn{width:100%;background:transparent;color:var(--c0);border:1px solid var(--c0);padding:12px;font-family:var(--mono);font-size:13px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase;position:relative;overflow:hidden}
+.lm-btn::before{content:'';position:absolute;inset:0;background:var(--c0);transform:translateX(-100%);transition:transform .2s;z-index:0}
+.lm-btn:hover::before{transform:translateX(0)}
+.lm-btn:hover{color:var(--bg)}
+.lm-btn span{position:relative;z-index:1}
+.lm-btn:disabled{border-color:var(--dim);color:var(--txt3);cursor:not-allowed}
+.lm-btn:disabled::before{display:none}
+.lm-sw{text-align:center;margin-top:10px;font-size:10px;color:var(--txt3);letter-spacing:.3px}
+.lm-sw button{background:transparent;border:none;color:var(--c1);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:.3px}
+.lm-note{font-size:9px;color:var(--txt3);text-align:center;margin-top:7px;letter-spacing:.3px}
+.lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
+.lm-agree input{margin-top:2px;width:13px;height:13px;accent-color:var(--c0);flex-shrink:0}
+.lm-agree label{font-size:10px;color:var(--txt3);line-height:1.6;cursor:pointer;letter-spacing:.3px}
+.lm-agree label b{color:var(--c5)}
+</style>
 </head>
 <body>
 <div class="app">
-    <header class="hd">
-        <div class="logo">TYST<sup>beta</sup></div>
-        <div class="hd-r" id="userSection"></div>
-    </header>
+  <header class="hd">
+    <div>
+      <div class="logo">TYST</div>
+      <div class="logo-sub">v2.1 · secure channel</div>
+    </div>
+    <div class="hd-r" id="userSection"></div>
+  </header>
 
-    <section class="hero">
-        <div class="hero-tag"><span class="tag-dot"></span>encrypted · ephemeral · anonymous</div>
-        <h1 class="hero-h">Send without<br>a <em>trace.</em></h1>
-        <p class="hero-sub">sender is untraceable · encrypted on your device<br>destroyed 5 s after reading · no logs kept</p>
-    </section>
+  <div class="term-strip">
+    <span class="term-dot"></span>
+    <span class="term-status">CHANNEL ACTIVE</span>
+    <span style="margin-left:auto;font-size:9px" id="termClock"></span>
+  </div>
 
-    <section class="form-sect">
-        <div class="eyebrow">compose</div>
-        <div class="field">
-            <label class="f-label" for="tystTo">recipient</label>
-            <input type="text" class="f-input" id="tystTo" placeholder="username"
-                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="tystValidate()">
-        </div>
-        <div class="field">
-            <label class="f-label" for="tystMsg">message</label>
-            <textarea class="f-input f-ta" id="tystMsg" placeholder="Write anything…"
-                maxlength="500" oninput="tystValidate();tystChar()"></textarea>
-            <div class="char"><span id="charN">0</span> / 500</div>
-        </div>
-        <div class="trust">
-            <div class="trust-dot"></div>
-            <span class="trust-txt">sender identity is unknown to anyone</span>
-            <span class="trust-lnk" onclick="showHow()">how it works ↗</span>
-        </div>
-        <button class="btn-send" id="sendBtn" disabled onclick="tystSend()">Send Anonymously</button>
-    </section>
+  <!-- CONSOLE OUTPUT -->
+  <div class="console-sect" id="consoleSect">
+    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">init --protocol ecdh-p256</span></div>
+    <div class="c-line"><span class="c-out1">[ OK ]</span> <span class="c-dim">ephemeral keypair generation ready</span></div>
+    <div class="c-line"><span class="c-out2">[ OK ]</span> <span class="c-dim">aes-gcm-256 cipher loaded</span></div>
+    <div class="c-line"><span class="c-out3">[ OK ]</span> <span class="c-dim">anonymous relay configured · delay 2–47s</span></div>
+    <div class="c-line"><span class="c-out5">[ OK ]</span> <span class="c-dim">self-destruct timer armed · ttl 5s post-read</span></div>
+    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">await input<span class="cursor"></span></span></div>
+  </div>
 
-    <section class="inbox-sect" id="inboxSect">
-        <button class="btn-inbox" id="inboxBtn">
-            <span>↓ Open inbox</span>
-            <span class="inbox-badge" id="inboxBadge">new</span>
-        </button>
-    </section>
+  <!-- COMPOSE -->
+  <section class="compose-sect">
+    <div class="sect-head">compose encrypted message</div>
+    <div class="field">
+      <label class="f-label" for="tystTo">recipient</label>
+      <input type="text" class="f-input" id="tystTo" placeholder="target.username"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="tystValidate()">
+    </div>
+    <div class="field">
+      <label class="f-label" for="tystMsg">payload</label>
+      <textarea class="f-input f-ta" id="tystMsg" placeholder="// enter message..."
+        maxlength="500" oninput="tystValidate();tystChar()"></textarea>
+      <div class="char"><span id="charN">0</span> / 500 bytes</div>
+    </div>
+    <div class="trust">
+      <div class="trust-dot"></div>
+      <span class="trust-txt">origin is unknown to anyone, including the server</span>
+      <span class="trust-lnk" onclick="showHow()">protocol ↗</span>
+    </div>
+    <button class="btn-send" id="sendBtn" disabled onclick="tystSend()">
+      <span>&#x25B6; transmit encrypted</span>
+    </button>
+  </section>
 
-    <footer class="proto">
-        <div class="proto-txt">
-            <b>protocol</b> · ECDH P-256 · AES-GCM 256-bit · HKDF-SHA256<br>
-            <b>padding</b> · 256-byte blocks — message size does not leak<br>
-            <b>relay</b> · strips all identifying headers before forwarding<br>
-            <b>storage</b> · private key stays on your device, never sent
-        </div>
-    </footer>
+  <!-- INBOX -->
+  <section class="inbox-sect" id="inboxSect">
+    <button class="btn-inbox" id="inboxBtn">
+      <span>&#x25BC; open secure inbox</span>
+      <span class="inbox-badge" id="inboxBadge">new</span>
+    </button>
+  </section>
+
+  <footer class="proto">
+    <div class="proto-txt">
+      <b>enc</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256 &nbsp;|&nbsp;
+      <b>pad</b> · 256-byte blocks &nbsp;|&nbsp;
+      <b>relay</b> · header-stripped · timing-randomised &nbsp;|&nbsp;
+      <b>key</b> · device-only · never transmitted
+    </div>
+  </footer>
 </div>
 
-<!-- PROCESSING -->
+<!-- PROCESSING OVERLAY -->
 <div class="proc-ov" id="procOv">
-    <div class="proc-sheet">
-        <div class="p-layer" id="lProc">
-            <div class="spinner"></div>
-            <div class="proc-lbl">encrypting</div>
-            <div class="proc-steps">
-                <div class="proc-step" id="ps1">generating ephemeral keypair</div>
-                <div class="proc-step" id="ps2">encrypting message</div>
-                <div class="proc-step" id="ps3">sending via relay</div>
-            </div>
-        </div>
-        <div class="p-layer" id="lSent">
-            <div class="sent-circle"><div class="sent-inner"></div></div>
-            <div class="sent-title">Message released.</div>
-            <div class="sent-sub" id="sentSub">No one can retrieve it. It will vanish after being read.</div>
-            <button class="btn-dismiss" onclick="closeProcOv()">close</button>
-        </div>
-        <div class="p-layer" id="lNoPub">
-            <div class="nopub-icon">○</div>
-            <div class="nopub-title">Recipient not active</div>
-            <div class="nopub-sub">This user needs to sign in once before they can receive messages.</div>
-            <button class="btn-dismiss" onclick="closeProcOv()">go back</button>
-        </div>
+  <div class="proc-sheet">
+    <div class="p-layer" id="lProc">
+      <div class="proc-console">
+        <div class="c-line" style="margin-bottom:8px"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">encrypt --send</span></div>
+        <div class="proc-step" id="ps1">generating ephemeral keypair</div>
+        <div class="proc-step" id="ps2">encrypting message payload</div>
+        <div class="proc-step" id="ps3">routing via anonymous relay</div>
+      </div>
     </div>
+    <div class="p-layer" id="lSent">
+      <div class="sent-head">TRANSMITTED</div>
+      <div class="c-line" style="margin-bottom:8px"><span class="c-ok">[ OK ]</span> <span class="c-dim">message released · origin unknown</span></div>
+      <div class="sent-sub" id="sentSub">payload is in transit. will be destroyed 5s after recipient opens it.</div>
+      <button class="btn-dismiss" onclick="closeProcOv()">[ close ]</button>
+    </div>
+    <div class="p-layer" id="lNoPub">
+      <div class="nopub-head">NO PUBKEY</div>
+      <div class="c-line" style="margin-bottom:8px"><span class="c-err">[ ERR ]</span> <span class="c-dim">recipient has no registered key</span></div>
+      <div class="nopub-sub">this user must sign in at least once to receive encrypted messages.</div>
+      <button class="btn-dismiss" onclick="closeProcOv()">[ go back ]</button>
+    </div>
+  </div>
 </div>
 
-<!-- INBOX -->
+<!-- INBOX PANEL -->
 <div class="inbox-panel" id="inboxPanel">
-    <div class="panel-hd">
-        <span class="panel-title">inbox</span>
-        <button class="btn-close" id="inboxClose">✕</button>
+  <div class="panel-hd">
+    <span class="panel-title">&#x25C6; secure inbox</span>
+    <button class="btn-close" id="inboxClose">&#x2715;</button>
+  </div>
+  <div class="msg-list" id="msgList">
+    <div class="empty-state">
+      <div class="empty-icon">&#x25CB;</div>
+      <div>no messages</div>
     </div>
-    <div class="msg-list" id="msgList">
-        <div class="empty-state"><div class="empty-icon">○</div><div class="empty-txt">no messages</div></div>
-    </div>
+  </div>
 </div>
 
-<!-- READ -->
+<!-- READ PANEL -->
 <div class="read-panel" id="readPanel">
-    <div class="read-hd">
-        <button class="btn-back" id="readBack">← back</button>
-        <span class="read-from" id="readFrom">anonymous</span>
-        <span class="read-count" id="readCount">5</span>
-    </div>
-    <div class="read-body" id="readBody"></div>
-    <div class="read-foot"><span>this message will self-destruct</span><span>no record kept</span></div>
+  <div class="read-hd">
+    <button class="btn-back" id="readBack">&#x2190; back</button>
+    <span class="read-from" id="readFrom">anonymous</span>
+    <span class="read-count" id="readCount">5</span>
+  </div>
+  <div class="read-body" id="readBody"></div>
+  <div class="read-foot">
+    <span>self-destruct armed</span>
+    <span>no record kept</span>
+  </div>
 </div>
 
-<!-- HOW -->
+<!-- HOW IT WORKS -->
 <div class="how-ov" id="howOv">
-    <div class="how-sheet">
-        <div class="how-title">How TYST protects you</div>
-        <div class="how-row"><div class="how-num">1</div><div><div class="how-h">Sender identity is unknown to anyone</div><div class="how-p">Messages are sent through an anonymous relay. Our server only sees the relay's IP, not yours. Even if the server is compromised, your identity is not there.</div></div></div>
-        <div class="how-row"><div class="how-num">2</div><div><div class="how-h">We cannot read your message</div><div class="how-p">Encryption happens on your device before the message leaves. Your private key never leaves your device — we have no access to it.</div></div></div>
-        <div class="how-row"><div class="how-num">3</div><div><div class="how-h">Delivery time is randomised</div><div class="how-p">A random delay of 2–47 seconds is added so timing patterns cannot be used to trace you.</div></div></div>
-        <div class="how-row"><div class="how-num">4</div><div><div class="how-h">Destroyed after reading</div><div class="how-p">5 seconds after the recipient opens the message, it is permanently deleted. No backup, no log.</div></div></div>
-        <div class="how-tech"><b>protocol</b> · ECDH P-256 · AES-GCM 256-bit · HKDF-SHA256<br><b>padding</b> · 256-byte blocks — message size does not leak<br><b>relay</b> · strips all identifying headers before forwarding<br><b>storage</b> · private key stays on your device, never sent</div>
-        <button class="btn-how-close" onclick="hideHow()">close</button>
-    </div>
+  <div class="how-sheet">
+    <div class="how-title">PROTOCOL</div>
+    <div class="how-row"><div class="how-num">1</div><div><div class="how-h">sender identity is untraceable</div><div class="how-p">messages route through an anonymous relay. the server only sees the relay IP, never yours. even if the server is seized, your identity is not there.</div></div></div>
+    <div class="how-row"><div class="how-num">2</div><div><div class="how-h">server cannot read your message</div><div class="how-p">encryption runs on your device before transmission. your private key never leaves your device — the server holds ciphertext only.</div></div></div>
+    <div class="how-row"><div class="how-num">3</div><div><div class="how-h">timing is randomised</div><div class="how-p">a random 2–47 second delay is injected so timing correlation attacks cannot identify the sender.</div></div></div>
+    <div class="how-row"><div class="how-num">4</div><div><div class="how-h">destroyed after reading</div><div class="how-p">5 seconds after the recipient opens the message it is permanently purged from the server. no backup. no log.</div></div></div>
+    <div class="how-tech"><b>protocol</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>padding</b> · 256-byte blocks — payload size does not leak<br><b>relay</b> · all identifying headers stripped before forwarding<br><b>storage</b> · private key is device-only, never transmitted</div>
+    <button class="btn-how-close" onclick="hideHow()">[ close ]</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -294,33 +363,33 @@
   <div class="lm-card">
     <div class="lm-top">
       <div class="lm-wordmark">TYST</div>
-      <div class="lm-disc">an open anonymous space. we do not verify your identity.<br>by signing in you confirm you are 17+ and take full<br>responsibility for what you write here.</div>
+      <div class="lm-disc">anonymous channel. identity unverified.<br>by connecting you confirm you are 17+ and accept full responsibility for transmitted content.</div>
     </div>
     <div class="lm-body">
-      <button class="lm-x" onclick="closeLM()">✕</button>
+      <button class="lm-x" onclick="closeLM()">&#x2715;</button>
       <div id="lmLogin">
-        <div class="lm-title">Sign in</div>
+        <div class="lm-title">CONNECT</div>
         <label class="lm-label">username</label>
-        <input class="lm-input" id="lmU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+        <input class="lm-input" id="lmU" placeholder="word.word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
         <label class="lm-label">6-digit PIN</label>
-        <input class="lm-input lm-pin" id="lmP" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <input class="lm-input lm-pin" id="lmP" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
         <div class="lm-fb" id="lmFbL"></div>
-        <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()">Sign in →</button>
-        <div class="lm-sw"><button onclick="lmSwitch('reg')">No account yet? Register</button></div>
-        <div class="lm-note">forgot your PIN? it cannot be recovered — create a new account.</div>
+        <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()"><span>connect &#x2192;</span></button>
+        <div class="lm-sw"><button onclick="lmSwitch('reg')">no account? register</button></div>
+        <div class="lm-note">lost PIN = lost account · no recovery possible</div>
       </div>
       <div id="lmReg" style="display:none">
-        <div class="lm-title">Register</div>
-        <label class="lm-label">username — format <span style="color:var(--accent);font-family:var(--ffm)">word.word</span></label>
-        <input class="lm-input" id="lmRU" placeholder="over.thinker" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+        <div class="lm-title">REGISTER</div>
+        <label class="lm-label">username — format <span style="color:var(--c1)">word.word</span></label>
+        <input class="lm-input" id="lmRU" placeholder="word.word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
         <label class="lm-label">6-digit PIN</label>
-        <input class="lm-input lm-pin" id="lmRP" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <input class="lm-input lm-pin" id="lmRP" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
         <label class="lm-label">confirm PIN</label>
-        <input class="lm-input lm-pin" id="lmRP2" placeholder="● ● ● ● ● ●" autocomplete="off" maxlength="6" inputmode="numeric">
+        <input class="lm-input lm-pin" id="lmRP2" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
         <div class="lm-fb" id="lmFbR"></div>
-        <div class="lm-agree"><input type="checkbox" id="lmAg" onchange="lmUpdateReg()"><label for="lmAg">Lost PIN = lost account — <b>PERMANENT</b>, no recovery</label></div>
-        <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px">Register →</button>
-        <div class="lm-sw"><button onclick="lmSwitch('login')">Already have an account? Sign in</button></div>
+        <div class="lm-agree"><input type="checkbox" id="lmAg" onchange="lmUpdateReg()"><label for="lmAg">lost PIN = lost account — <b>PERMANENT</b>, no recovery</label></div>
+        <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px"><span>register &#x2192;</span></button>
+        <div class="lm-sw"><button onclick="lmSwitch('login')">already registered? connect</button></div>
       </div>
     </div>
   </div>
@@ -332,7 +401,7 @@
 const SU='https://buskhlxllsswmismvgdb.supabase.co';
 const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1c2tobHhsbHNzd21pc212Z2RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMDUzMDUsImV4cCI6MjA5Mzc4MTMwNX0.JLH-glmDg5e37ZiX2uue8o3pi-6w_W-JerKFdufe114';
 const POLL=60000,LP='tyst_priv_v1',LPU='tyst_pub_v1';
-const K={u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'};
+const K={u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'};
 const IS_GUEST=localStorage.getItem(K.l)!=='true';
 const ME=IS_GUEST?null:localStorage.getItem(K.u);
 const UID=IS_GUEST?null:localStorage.getItem(K.i);
@@ -455,13 +524,13 @@ async function tystSend(){
 const LM={
     SU:'https://buskhlxllsswmismvgdb.supabase.co',
     SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1c2tobHhsbHNzd21pc212Z2RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMDUzMDUsImV4cCI6MjA5Mzc4MTMwNX0.JLH-glmDg5e37ZiX2uue8o3pi-6w_W-JerKFdufe114',
-    LS:{u:'jejak_username',i:'jejak_uid',l:'jejak_logged_in',a:'jejak_auth_v1'},
+    LS:{u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'},
     async get(p){const r=await fetch(this.SU+'/rest/v1'+p,{headers:{apikey:this.SK,Authorization:'Bearer '+this.SK}});const t=await r.text();return t?JSON.parse(t):[];},
     async post(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'POST',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(b)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
     async patch(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'PATCH',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json'},body:JSON.stringify(b)});const t=await r.text();return t?JSON.parse(t):null;},
     async sha256(s){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
     async fp(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('tyst_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
-    async hash(pin,u){const f=await this.fp();return this.sha256(pin+':'+u+':'+f+':jejak_local_v1');},
+    async hash(pin,u){const f=await this.fp();return this.sha256(pin+':'+u+':'+f+':tyst_local_v1');},
     vu(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const p=v.split('.');if(p.length!==2)return null;if(p[0].length<2||p[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(p[0])||!/^[a-z][a-z0-9]*$/.test(p[1]))return null;return v;},
     vp(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(['123456','654321','000000','999999'].includes(p))return false;return true;}
 };
@@ -517,6 +586,48 @@ async function lmDoReg(){
     w('lmU',toU,lmUpdateLogin);w('lmP',toP,lmUpdateLogin);
     w('lmRU',toU,lmUpdateReg);w('lmRP',toP,lmUpdateReg);w('lmRP2',toP,lmUpdateReg);
     const ag=document.getElementById('lmAg');if(ag)ag.addEventListener('change',lmUpdateReg);
+})();
+</script>
+
+<script>
+// Clock
+(function(){
+  function tick(){
+    const el=document.getElementById('termClock');
+    if(!el)return;
+    const n=new Date();
+    el.textContent=n.toISOString().replace('T',' ').slice(0,19)+' UTC';
+  }
+  tick();setInterval(tick,1000);
+})();
+
+// Render message body as multicolor hacker lines
+(function(){
+  const orig = window.INBOX;
+  if(!orig) return;
+  const origOpen = orig.open;
+  orig.open = async function(id) {
+    await origOpen.call(orig, id);
+    const body = document.getElementById('readBody');
+    if(!body || !body.textContent) return;
+    const text = body.textContent;
+    const words = text.split(/\s+/);
+    const colors = ['ml0','ml1','ml2','ml3','ml4','ml5','ml6','ml5','ml6'];
+    let html = '<div class="mhdr">// decrypted payload · handle with care</div>';
+    let lineWords = [], colorIdx = 0;
+    words.forEach((w,i) => {
+      lineWords.push(w);
+      const isEnd = i === words.length - 1;
+      const lineLen = lineWords.join(' ').length;
+      if(lineLen > 38 || isEnd) {
+        const cls = colors[colorIdx % colors.length];
+        html += \`<div class="\${cls}">\${lineWords.join(' ')}</div>\`;
+        colorIdx++;
+        lineWords = [];
+      }
+    });
+    body.innerHTML = html;
+  };
 })();
 </script>
 </body>
