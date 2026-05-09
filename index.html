@@ -643,8 +643,8 @@ function toggleLang() {
 /* ── CORE APP (unchanged from original) ────────────────────── */
 (function(){
 'use strict';
-const SU='https://buskhlxllsswmismvgdb.supabase.co';
-const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1c2tobHhsbHNzd21pc212Z2RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMDUzMDUsImV4cCI6MjA5Mzc4MTMwNX0.JLH-glmDg5e37ZiX2uue8o3pi-6w_W-JerKFdufe114';
+const SU='https://urljqsszsxrwhhyvpfhr.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODAzNzcsImV4cCI6MjA5Mzg1NjM3N30.SfNa4M6420z-GZPIBFBYezesNlrmnK3FSHUp8FDeP8M';
 const POLL=60000,LP='tyst_priv_v1',LPU='tyst_pub_v1';
 const K={u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'};
 const IS_GUEST=localStorage.getItem(K.l)!=='true';
@@ -768,8 +768,8 @@ async function tystSend(){
 
 /* LOGIN */
 const LM={
-    SU:'https://buskhlxllsswmismvgdb.supabase.co',
-    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1c2tobHhsbHNzd21pc212Z2RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMDUzMDUsImV4cCI6MjA5Mzc4MTMwNX0.JLH-glmDg5e37ZiX2uue8o3pi-6w_W-JerKFdufe114',
+    SU:'https://urljqsszsxrwhhyvpfhr.supabase.co',
+    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODAzNzcsImV4cCI6MjA5Mzg1NjM3N30.SfNa4M6420z-GZPIBFBYezesNlrmnK3FSHUp8FDeP8M',
     LS:{u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'},
     async get(p){const r=await fetch(this.SU+'/rest/v1'+p,{headers:{apikey:this.SK,Authorization:'Bearer '+this.SK}});const tx=await r.text();return tx?JSON.parse(tx):[];},
     async post(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'POST',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(b)});const tx=await r.text();const d=tx?JSON.parse(tx):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
