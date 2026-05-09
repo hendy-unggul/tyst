@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TYST — no phone. no email. no id.</title>
+<meta name="description" content="We cannot betray what we never had. Encrypted. Anonymous. Ephemeral.">
+<meta property="og:title" content="TYST — ghost by design">
+<meta property="og:description" content="No phone. No email. No id. Nothing to subpoena.">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Space+Grotesk:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#03070a;--bg2:#060e12;--bg3:#091418;
+  --g0:#00ff9d;--g1:#00d4ff;--g2:#ffffff;--g3:#7a8a84;--g4:#1a2a22;
+  --mono:'Share Tech Mono',monospace;--disp:'VT323',monospace;--body:'Space Grotesk',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--g2);font-family:var(--body);overflow-x:hidden;cursor:crosshair}
+
+/* SCANLINES */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,157,.012) 2px,rgba(0,255,157,.012) 4px);pointer-events:none;z-index:9998}
+
+/* NOISE */
+body::after{content:'';position:fixed;inset:0;opacity:.035;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:9997}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(0,255,157,.08);background:rgba(3,7,10,.88);backdrop-filter:blur(12px)}
+.nav-logo{font-family:var(--disp);font-size:28px;letter-spacing:5px;color:var(--g0);text-shadow:0 0 20px rgba(0,255,157,.5)}
+.nav-right{display:flex;align-items:center;gap:24px}
+.nav-link{font-family:var(--mono);font-size:11px;color:var(--g3);letter-spacing:1px;text-decoration:none;transition:color .2s}
+.nav-link:hover{color:var(--g0)}
+.nav-cta{font-family:var(--mono);font-size:11px;color:var(--g0);border:1px solid var(--g0);padding:8px 18px;text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s;position:relative;overflow:hidden}
+.nav-cta::before{content:'';position:absolute;inset:0;background:var(--g0);transform:translateX(-100%);transition:transform .2s;z-index:0}
+.nav-cta:hover::before{transform:translateX(0)}
+.nav-cta:hover{color:var(--bg)}
+.nav-cta span{position:relative;z-index:1}
+
+/* HERO */
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:120px 40px 80px;text-align:center;position:relative}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(0,255,157,.06) 0%,transparent 70%);pointer-events:none}
+.hero-glow2{position:absolute;top:40%;left:30%;width:300px;height:300px;background:radial-gradient(circle,rgba(0,212,255,.04) 0%,transparent 70%);pointer-events:none}
+
+/* GLITCH WORDMARK */
+.wordmark{font-family:var(--disp);font-size:clamp(100px,20vw,180px);letter-spacing:20px;color:var(--g0);line-height:1;position:relative;animation:glitch-idle 8s infinite;text-shadow:0 0 40px rgba(0,255,157,.4),0 0 80px rgba(0,255,157,.2)}
+@keyframes glitch-idle{
+  0%,89%,100%{transform:none;text-shadow:0 0 40px rgba(0,255,157,.4),0 0 80px rgba(0,255,157,.2);clip-path:none}
+  90%{transform:translate(-2px,0);text-shadow:-2px 0 rgba(0,212,255,.8),2px 0 rgba(255,59,111,.8)}
+  91%{transform:translate(2px,0);clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%)}
+  92%{transform:none;text-shadow:0 0 40px rgba(0,255,157,.4);clip-path:none}
+  93%{transform:translate(-1px,2px)}
+  94%{transform:none}
+}
+.wordmark::before{content:'TYST';position:absolute;inset:0;color:rgba(0,212,255,.5);animation:glitch-layer1 8s infinite;clip-path:polygon(0 0,100% 0,100% 35%,0 35%)}
+.wordmark::after{content:'TYST';position:absolute;inset:0;color:rgba(255,59,111,.4);animation:glitch-layer2 8s infinite;clip-path:polygon(0 65%,100% 65%,100% 100%,0 100%)}
+@keyframes glitch-layer1{0%,88%,95%,100%{transform:none;opacity:0}89%{transform:translate(3px,-1px);opacity:1}90%{transform:translate(-2px,1px)}91%{transform:none;opacity:0}}
+@keyframes glitch-layer2{0%,88%,95%,100%{transform:none;opacity:0}90%{transform:translate(-3px,2px);opacity:1}92%{transform:translate(1px,-1px)}93%{transform:none;opacity:0}}
+
+.hero-tagline{font-family:var(--mono);font-size:clamp(11px,1.5vw,14px);color:var(--g3);letter-spacing:3px;text-transform:uppercase;margin-top:12px;margin-bottom:48px;animation:fadein 1.2s ease both .4s;opacity:0}
+@keyframes fadein{to{opacity:1}}
+
+/* THREE LINES */
+.hero-lines{margin-bottom:56px;animation:fadein 1.2s ease both .7s;opacity:0}
+.hero-line{font-size:clamp(32px,6vw,64px);font-weight:700;line-height:1.1;letter-spacing:-2px}
+.hero-line.l1{color:var(--g2)}
+.hero-line.l2{color:var(--g2)}
+.hero-line.l3{color:var(--g0);text-shadow:0 0 30px rgba(0,255,157,.3)}
+
+/* SUBTEXT */
+.hero-sub{font-family:var(--mono);font-size:13px;color:var(--g3);line-height:2;letter-spacing:.5px;margin-bottom:56px;animation:fadein 1.2s ease both 1s;opacity:0;max-width:480px}
+.hero-sub span{color:var(--g1)}
+
+/* CTA BLOCK */
+.cta-block{display:flex;flex-direction:column;align-items:center;gap:16px;animation:fadein 1.2s ease both 1.3s;opacity:0}
+.btn-primary{font-family:var(--mono);font-size:14px;color:var(--bg);background:var(--g0);border:none;padding:16px 40px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;box-shadow:0 0 30px rgba(0,255,157,.25);position:relative;overflow:hidden}
+.btn-primary::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);transform:translateX(-100%) skewX(-15deg);transition:transform .3s}
+.btn-primary:hover::after{transform:translateX(120%) skewX(-15deg)}
+.btn-primary:hover{box-shadow:0 0 50px rgba(0,255,157,.5)}
+.cta-note{font-family:var(--mono);font-size:10px;color:var(--g4);letter-spacing:1.5px;text-transform:uppercase}
+.cta-note span{color:var(--g3)}
+
+/* SCROLL INDICATOR */
+.scroll-ind{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--g4);letter-spacing:2px;display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadein 2s ease both 2s;opacity:0}
+.scroll-arrow{width:1px;height:40px;background:linear-gradient(to bottom,transparent,var(--g0));animation:scroll-pulse 2s ease-in-out infinite}
+@keyframes scroll-pulse{0%,100%{opacity:.3;transform:scaleY(.5);transform-origin:top}50%{opacity:1;transform:scaleY(1)}}
+
+/* MANIFESTO */
+.manifesto{padding:120px 40px;max-width:900px;margin:0 auto;position:relative}
+.manifesto::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--g0) 30%,var(--g0) 70%,transparent);opacity:.2}
+.manif-eyebrow{font-family:var(--mono);font-size:10px;color:var(--g0);letter-spacing:3px;text-transform:uppercase;margin-bottom:48px;padding-left:24px}
+.manif-stmt{font-size:clamp(24px,4vw,42px);font-weight:700;letter-spacing:-1px;line-height:1.2;margin-bottom:24px;padding-left:24px;opacity:0;transform:translateY(20px);transition:opacity .8s ease,transform .8s ease}
+.manif-stmt.visible{opacity:1;transform:translateY(0)}
+.manif-stmt .hi{color:var(--g0)}
+.manif-stmt .dim{color:var(--g3);font-weight:300}
+.manif-note{font-family:var(--mono);font-size:12px;color:var(--g3);line-height:2;padding-left:24px;margin-top:48px;border-left:2px solid rgba(0,255,157,.15);padding:16px 24px;letter-spacing:.3px;opacity:0;transform:translateY(20px);transition:opacity .8s ease .2s,transform .8s ease .2s}
+.manif-note.visible{opacity:1;transform:translateY(0)}
+
+/* PROOF */
+.proof{padding:80px 40px 120px;max-width:900px;margin:0 auto}
+.proof-eyebrow{font-family:var(--mono);font-size:10px;color:var(--g1);letter-spacing:3px;text-transform:uppercase;margin-bottom:48px}
+.proof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.08)}
+.proof-cell{background:var(--bg2);padding:28px;position:relative;overflow:hidden;opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.proof-cell.visible{opacity:1;transform:translateY(0)}
+.proof-cell::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--g0),transparent);opacity:0;transition:opacity .3s}
+.proof-cell:hover::before{opacity:.5}
+.proof-cell:hover{background:var(--bg3)}
+.proof-num{font-family:var(--disp);font-size:48px;color:rgba(0,255,157,.12);line-height:1;margin-bottom:8px}
+.proof-h{font-size:14px;font-weight:700;color:var(--g2);margin-bottom:8px;letter-spacing:-.3px}
+.proof-p{font-family:var(--mono);font-size:11px;color:var(--g3);line-height:1.9;letter-spacing:.3px}
+.proof-tag{display:inline-block;font-family:var(--mono);font-size:9px;color:var(--g0);border:1px solid rgba(0,255,157,.25);padding:3px 8px;letter-spacing:1px;margin-top:12px}
+
+/* COMPARE */
+.compare{padding:80px 40px;max-width:900px;margin:0 auto}
+.compare-eyebrow{font-family:var(--mono);font-size:10px;color:var(--g3);letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
+.compare-table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+.compare-table th{padding:12px 16px;text-align:left;color:var(--g3);letter-spacing:1px;font-weight:400;border-bottom:1px solid rgba(255,255,255,.06);font-size:10px;text-transform:uppercase}
+.compare-table th:first-child{color:var(--g0)}
+.compare-table td{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--g3)}
+.compare-table td:first-child{color:var(--g2);font-weight:700;letter-spacing:.5px}
+.compare-table tr:hover td{background:rgba(0,255,157,.02)}
+.c-yes{color:var(--g0)}
+.c-no{color:rgba(255,59,111,.7)}
+.c-na{color:rgba(255,255,255,.15)}
+.compare-table tr.tyst-row td{background:rgba(0,255,157,.03)}
+.compare-table tr.tyst-row td:first-child{color:var(--g0)}
+
+/* PRICING */
+.pricing{padding:80px 40px 120px;max-width:900px;margin:0 auto}
+.pricing-eyebrow{font-family:var(--mono);font-size:10px;color:var(--g3);letter-spacing:3px;text-transform:uppercase;margin-bottom:48px}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:rgba(0,255,157,.08);border:1px solid rgba(0,255,157,.08)}
+.price-card{background:var(--bg2);padding:32px 28px;position:relative;transition:background .2s}
+.price-card:hover{background:var(--bg3)}
+.price-card.featured{background:rgba(0,255,157,.04);border:1px solid rgba(0,255,157,.2)}
+.price-label{font-family:var(--mono);font-size:10px;color:var(--g3);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.price-label.feat{color:var(--g0)}
+.price-amount{font-family:var(--disp);font-size:72px;color:var(--g2);line-height:1;letter-spacing:-2px}
+.price-amount.feat{color:var(--g0);text-shadow:0 0 20px rgba(0,255,157,.3)}
+.price-per{font-family:var(--mono);font-size:11px;color:var(--g3);margin-bottom:24px;letter-spacing:.5px}
+.price-features{list-style:none;margin-bottom:28px}
+.price-features li{font-family:var(--mono);font-size:11px;color:var(--g3);line-height:2;letter-spacing:.3px}
+.price-features li::before{content:'+ ';color:var(--g0)}
+.price-features li.dim::before{color:var(--g4)}
+.price-features li.dim{color:var(--g4)}
+.price-badge{position:absolute;top:16px;right:16px;font-family:var(--mono);font-size:9px;background:var(--g0);color:var(--bg);padding:3px 8px;letter-spacing:1px}
+.btn-plan{width:100%;padding:12px;background:transparent;border:1px solid rgba(0,255,157,.3);color:var(--g0);font-family:var(--mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-decoration:none;display:block;text-align:center}
+.btn-plan:hover{background:rgba(0,255,157,.08);border-color:var(--g0)}
+.btn-plan.feat{background:var(--g0);color:var(--bg);border-color:var(--g0)}
+.btn-plan.feat:hover{background:#00e088;box-shadow:0 0 20px rgba(0,255,157,.3)}
+.trial-note{font-family:var(--mono);font-size:10px;color:var(--g3);text-align:center;margin-top:20px;letter-spacing:.5px}
+.trial-note span{color:var(--g0)}
+
+/* TERMINAL PROOF */
+.term-proof{padding:80px 40px;max-width:900px;margin:0 auto}
+.term-box{background:var(--bg2);border:1px solid rgba(0,255,157,.12);border-top:2px solid var(--g0);padding:0;overflow:hidden}
+.term-titlebar{background:var(--bg3);padding:10px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(0,255,157,.08)}
+.term-dot-r{width:10px;height:10px;border-radius:50%;background:rgba(255,59,111,.6)}
+.term-dot-y{width:10px;height:10px;border-radius:50%;background:rgba(255,215,0,.4)}
+.term-dot-g{width:10px;height:10px;border-radius:50%;background:rgba(0,255,157,.6)}
+.term-title{font-family:var(--mono);font-size:10px;color:var(--g3);margin-left:auto;letter-spacing:1px}
+.term-body{padding:24px 20px;font-family:var(--mono);font-size:12px;line-height:2.2}
+.tl{display:block}.tc0{color:var(--g3)}.tc1{color:var(--g0)}.tc2{color:var(--g1)}.tc3{color:rgba(255,215,0,.8)}.tc4{color:rgba(191,95,255,.8)}.tc5{color:rgba(255,59,111,.7)}.tc6{color:var(--g2)}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(0,255,157,.06);padding:40px;display:flex;justify-content:space-between;align-items:center;max-width:900px;margin:0 auto;width:100%}
+.foot-logo{font-family:var(--disp);font-size:22px;letter-spacing:4px;color:rgba(0,255,157,.4)}
+.foot-txt{font-family:var(--mono);font-size:10px;color:var(--g4);letter-spacing:.5px}
+.foot-txt a{color:var(--g3);text-decoration:none;transition:color .2s}
+.foot-txt a:hover{color:var(--g0)}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  nav{padding:16px 20px}
+  .nav-link{display:none}
+  .hero{padding:100px 24px 60px}
+  .manifesto,.proof,.compare,.pricing,.term-proof{padding-left:24px;padding-right:24px}
+  .compare-table th:nth-child(3),.compare-table td:nth-child(3){display:none}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:32px 24px}
+}
+
+/* REVEAL ANIMATION */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">TYST</div>
+  <div class="nav-right">
+    <a href="#how" class="nav-link">protocol</a>
+    <a href="#pricing" class="nav-link">pricing</a>
+    <a href="https://tyst.site/app" class="nav-cta"><span>open channel &rarr;</span></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="wordmark">TYST</div>
+  <div class="hero-tagline">no phone &nbsp;&middot;&nbsp; no email &nbsp;&middot;&nbsp; no id</div>
+  <div class="hero-lines">
+    <div class="hero-line l1">We cannot betray</div>
+    <div class="hero-line l2">what we</div>
+    <div class="hero-line l3">never had.</div>
+  </div>
+  <div class="hero-sub">
+    Message encrypted on your device.<br>
+    Sent through an anonymous relay.<br>
+    Destroyed after reading.<br><br>
+    <span>The server sees ciphertext. Nothing else.</span>
+  </div>
+  <div class="cta-block">
+    <a href="https://tyst.site/app" class="btn-primary">open channel &rarr;</a>
+    <div class="cta-note">free for <span>30 days</span> &nbsp;&middot;&nbsp; no card required &nbsp;&middot;&nbsp; no account linked to you</div>
+  </div>
+  <div class="scroll-ind">
+    <span>scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="how">
+  <div class="manif-eyebrow">// manifesto</div>
+  <div class="manif-stmt">Every "private" app<br>still <span class="hi">knows who you are.</span></div>
+  <div class="manif-stmt">Signal knows your number.<br>Telegram knows your number.<br><span class="dim">WhatsApp knows everything.</span></div>
+  <div class="manif-stmt">TYST doesn't.<br><span class="hi">Not by policy.</span><br>By architecture.</div>
+  <div class="manif-note">
+    When a company says "we don't share your data" — they still have it.<br>
+    When we say it — we mean we architecturally cannot. There is nothing to share.<br>
+    No subpoena changes that. No breach exposes you. No employee can look you up.<br><br>
+    This is not a promise. It's physics.
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="proof" id="proof">
+  <div class="proof-eyebrow">// how it works</div>
+  <div class="proof-grid">
+    <div class="proof-cell">
+      <div class="proof-num">01</div>
+      <div class="proof-h">Encrypted before it leaves you</div>
+      <div class="proof-p">Your message is encrypted on your device using ECDH P-256 key exchange before it touches any network. Your private key never leaves your device.</div>
+      <div class="proof-tag">AES-GCM 256-bit</div>
+    </div>
+    <div class="proof-cell">
+      <div class="proof-num">02</div>
+      <div class="proof-h">Routed through a blind relay</div>
+      <div class="proof-p">The server only sees the relay's IP address — not yours. All identifying headers are stripped before forwarding. A random 2–47 second delay breaks timing correlation.</div>
+      <div class="proof-tag">header-stripped relay</div>
+    </div>
+    <div class="proof-cell">
+      <div class="proof-num">03</div>
+      <div class="proof-h">Destroyed after reading</div>
+      <div class="proof-p">5 seconds after the recipient opens your message it is permanently purged from the server. No backup. No log. No copy anywhere.</div>
+      <div class="proof-tag">ttl: 5s post-read</div>
+    </div>
+    <div class="proof-cell">
+      <div class="proof-num">04</div>
+      <div class="proof-h">256-byte padding</div>
+      <div class="proof-p">Every message is padded to a multiple of 256 bytes before encryption. Even the length of your message doesn't leak.</div>
+      <div class="proof-tag">size-obfuscated</div>
+    </div>
+  </div>
+</section>
+
+<!-- TERMINAL PROOF -->
+<section class="term-proof">
+  <div class="term-box">
+    <div class="term-titlebar">
+      <div class="term-dot-r"></div>
+      <div class="term-dot-y"></div>
+      <div class="term-dot-g"></div>
+      <div class="term-title">tyst — audit log</div>
+    </div>
+    <div class="term-body">
+      <span class="tl"><span class="tc0">$ </span><span class="tc1">tyst --audit incoming-message</span></span>
+      <span class="tl"><span class="tc3">[ LOG ]</span> <span class="tc0">timestamp ............. 2026-05-08T09:14:22Z</span></span>
+      <span class="tl"><span class="tc3">[ LOG ]</span> <span class="tc0">relay_ip .............. 185.220.101.x (tor exit node)</span></span>
+      <span class="tl"><span class="tc3">[ LOG ]</span> <span class="tc0">origin_ip ............. <span class="tc5">UNKNOWN — stripped by relay</span></span></span>
+      <span class="tl"><span class="tc3">[ LOG ]</span> <span class="tc0">sender_id ............. <span class="tc5">UNKNOWN — anonymous post</span></span></span>
+      <span class="tl"><span class="tc3">[ LOG ]</span> <span class="tc0">message_content ....... <span class="tc4">[CIPHERTEXT — server cannot decrypt]</span></span></span>
+      <span class="tl"><span class="tc3">[ LOG ]</span> <span class="tc0">message_length ........ <span class="tc4">256 bytes (padded — actual size unknown)</span></span></span>
+      <span class="tl"><span class="tc3">[ LOG ]</span> <span class="tc0">destroy_at ............ read_time + 5s</span></span>
+      <span class="tl">&nbsp;</span>
+      <span class="tl"><span class="tc0">$ </span><span class="tc1">tyst --subpoena-response</span></span>
+      <span class="tl"><span class="tc2">[ OUT ]</span> <span class="tc6">querying all available user data...</span></span>
+      <span class="tl"><span class="tc2">[ OUT ]</span> <span class="tc0">sender ................ <span class="tc5">no data</span></span></span>
+      <span class="tl"><span class="tc2">[ OUT ]</span> <span class="tc0">message content ....... <span class="tc5">no data (destroyed)</span></span></span>
+      <span class="tl"><span class="tc2">[ OUT ]</span> <span class="tc0">ip address ............ <span class="tc5">no data</span></span></span>
+      <span class="tl"><span class="tc2">[ OUT ]</span> <span class="tc0">phone / email / id .... <span class="tc5">never collected</span></span></span>
+      <span class="tl"><span class="tc1">[ OK  ]</span> <span class="tc6">subpoena response complete. total data handed over: <span class="tc1">0 bytes</span></span></span>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section class="compare">
+  <div class="compare-eyebrow">// vs. the alternatives</div>
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>app</th>
+        <th>knows your phone</th>
+        <th>end-to-end encrypted</th>
+        <th>message destroyed</th>
+        <th>zero identity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="tyst-row">
+        <td>TYST</td>
+        <td class="c-yes">never collected</td>
+        <td class="c-yes">yes</td>
+        <td class="c-yes">5s after read</td>
+        <td class="c-yes">by architecture</td>
+      </tr>
+      <tr>
+        <td>Signal</td>
+        <td class="c-no">required</td>
+        <td class="c-yes">yes</td>
+        <td class="c-yes">optional</td>
+        <td class="c-no">phone on record</td>
+      </tr>
+      <tr>
+        <td>Telegram</td>
+        <td class="c-no">required</td>
+        <td class="c-no">opt-in only</td>
+        <td class="c-yes">optional</td>
+        <td class="c-no">phone on record</td>
+      </tr>
+      <tr>
+        <td>WhatsApp</td>
+        <td class="c-no">required</td>
+        <td class="c-yes">yes</td>
+        <td class="c-no">no</td>
+        <td class="c-no">meta collects all</td>
+      </tr>
+      <tr>
+        <td>Email</td>
+        <td class="c-na">—</td>
+        <td class="c-no">rarely</td>
+        <td class="c-no">no</td>
+        <td class="c-no">identity required</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-eyebrow">// access tiers</div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-label">ghost</div>
+      <div class="price-amount">$0</div>
+      <div class="price-per">send only · forever free</div>
+      <ul class="price-features">
+        <li>send encrypted messages</li>
+        <li>no account required</li>
+        <li class="dim">cannot receive messages</li>
+        <li class="dim">no inbox</li>
+      </ul>
+      <a href="https://tyst.site/app" class="btn-plan">start sending</a>
+    </div>
+    <div class="price-card">
+      <div class="price-label">trial</div>
+      <div class="price-amount">$0</div>
+      <div class="price-per">full access · first 30 days</div>
+      <ul class="price-features">
+        <li>send &amp; receive</li>
+        <li>secure inbox</li>
+        <li>self-destruct messages</li>
+        <li>username only — no id</li>
+      </ul>
+      <a href="https://tyst.site/app" class="btn-plan">register free</a>
+    </div>
+    <div class="price-card featured">
+      <div class="price-badge">best value</div>
+      <div class="price-label feat">channel</div>
+      <div class="price-amount feat">$5</div>
+      <div class="price-per">per year &nbsp;·&nbsp; <span style="color:rgba(255,255,255,.3);text-decoration:line-through">$12</span></div>
+      <ul class="price-features">
+        <li>everything in trial</li>
+        <li>permanent inbox</li>
+        <li>priority relay routing</li>
+        <li>paid via crypto optional</li>
+      </ul>
+      <a href="https://tyst.site/app" class="btn-plan feat">activate channel</a>
+    </div>
+    <div class="price-card">
+      <div class="price-label">monthly</div>
+      <div class="price-amount">$1</div>
+      <div class="price-per">per month</div>
+      <ul class="price-features">
+        <li>everything in channel</li>
+        <li>cancel anytime</li>
+        <li class="dim">billed monthly</li>
+        <li class="dim">&nbsp;</li>
+      </ul>
+      <a href="https://tyst.site/app" class="btn-plan">go monthly</a>
+    </div>
+  </div>
+  <div class="trial-note">no credit card to start · <span>30 days free</span> · cancel without contacting anyone</div>
+</section>
+
+<footer>
+  <div class="foot-logo">TYST</div>
+  <div class="foot-txt">
+    ghost by design &nbsp;&middot;&nbsp;
+    <a href="https://tyst.site/app">open channel</a> &nbsp;&middot;&nbsp;
+    <a href="https://github.com/hendy-unggul/tyst">source</a>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:.15});
+
+document.querySelectorAll('.manif-stmt,.manif-note,.proof-cell,.reveal').forEach(el => io.observe(el));
+
+document.querySelectorAll('.proof-cell').forEach((el,i) => {
+  el.style.transitionDelay = (i * 0.1) + 's';
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
