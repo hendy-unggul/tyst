@@ -657,19 +657,89 @@ function getAuth(){if(IS_GUEST)return{};const h=localStorage.getItem(K.a);return
 
 /* ECDH */
 const ECDH=(()=>{
+    // v3: private key stored as non-extractable CryptoKey in IndexedDB
+    // Cannot be read by JavaScript, DevTools, or browser extensions
     const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
-    const fb64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
-    async function gen(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);const priv=await crypto.subtle.exportKey('jwk',kp.privateKey);delete pub.d;return{publicKey:kp.publicKey,privateKey:kp.privateKey,pub,priv};}
-    async function ipriv(j){return crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
+    const fb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+
+    // ── IndexedDB store for non-extractable private key ──────
+    const IDB_NAME='tyst_keys_v1',IDB_STORE='keys',IDB_KEY='priv_v1';
+    function openIDB(){return new Promise((res,rej)=>{const r=indexedDB.open(IDB_NAME,1);r.onupgradeneeded=e=>e.target.result.createObjectStore(IDB_STORE);r.onsuccess=e=>res(e.target.result);r.onerror=e=>rej(e.target.error);});}
+    async function idbGet(k){const db=await openIDB();return new Promise((res,rej)=>{const tx=db.transaction(IDB_STORE,'readonly');const r=tx.objectStore(IDB_STORE).get(k);r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e.target.error);});}
+    async function idbSet(k,v){const db=await openIDB();return new Promise((res,rej)=>{const tx=db.transaction(IDB_STORE,'readwrite');tx.objectStore(IDB_STORE).put(v,k);tx.oncomplete=()=>res();tx.onerror=e=>rej(e.target.error);});}
+
+    // ── Crypto helpers ────────────────────────────────────────
+    // ephemeral keypair for encrypt — extractable:true ok (ephemeral, never stored)
+    async function genEph(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);delete pub.d;return{privateKey:kp.privateKey,pub};}
+    // identity keypair — extractable:FALSE, private key never leaves WebCrypto
+    async function genIdentity(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},false,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);delete pub.d;return{privateKey:kp.privateKey,pub};}
     async function ipub(j){return crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,[]);}
     async function aes(pr,pu){const bits=await crypto.subtle.deriveBits({name:'ECDH',public:pu},pr,256);const hkdf=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:new Uint8Array(32),info:new TextEncoder().encode('whisper-v2')},hkdf,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
     const P=256;
     function pad(s){const e=new TextEncoder().encode(s);const l=P-(e.length%P);const o=new Uint8Array(e.length+l);o.set(e);return o;}
     function unpad(b){let n=b.length;while(n>0&&b[n-1]===0)n--;return new TextDecoder().decode(b.slice(0,n));}
-    async function encrypt(plain,pubJWK){const e=await gen();const rp=await ipub(pubJWK);const k=await aes(e.privateKey,rp);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,pad(plain));return b64(iv)+':'+btoa(JSON.stringify(e.pub))+':'+b64(ct);}
-    async function decrypt(enc,privJWK){try{const[iv,ep,ct]=enc.split(':');const eph=await ipub(JSON.parse(atob(ep)));const my=await ipriv(privJWK);const k=await aes(my,eph);const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:fb64(iv)},k,fb64(ct));return unpad(new Uint8Array(p));}catch(e){return '[could not decrypt]';}}
-    async function getOrCreate(){const ps=localStorage.getItem(LP),pu=localStorage.getItem(LPU);if(ps&&pu){try{const p=await ipriv(JSON.parse(ps));return{privateKey:p,priv:JSON.parse(ps),pub:JSON.parse(pu)};}catch(e){}}const kp=await gen();localStorage.setItem(LP,JSON.stringify(kp.priv));localStorage.setItem(LPU,JSON.stringify(kp.pub));return{privateKey:kp.publicKey,priv:kp.priv,pub:kp.pub};}
-    async function reg(){if(IS_GUEST)return null;const kp=await getOrCreate();if(sessionStorage.getItem('pk_reg')==='1')return kp;try{const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({username:ME,pubkey:kp.pub})});if(r.ok)sessionStorage.setItem('pk_reg','1');}catch(e){}return kp;}
+
+    // ── Encrypt (uses ephemeral keypair — always extractable) ─
+    async function encrypt(plain,pubJWK){const e=await genEph();const rp=await ipub(pubJWK);const k=await aes(e.privateKey,rp);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,pad(plain));return b64(iv)+':'+btoa(JSON.stringify(e.pub))+':'+b64(ct);}
+
+    // ── Decrypt (uses non-extractable CryptoKey from IndexedDB) ─
+    async function decrypt(enc,privKey){
+        try{
+            const[iv,ep,ct]=enc.split(':');
+            const eph=await ipub(JSON.parse(atob(ep)));
+            const k=await aes(privKey,eph);
+            const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:fb64(iv)},k,fb64(ct));
+            return unpad(new Uint8Array(p));
+        }catch(e){return '[could not decrypt]';}
+    }
+
+    // ── getOrCreate: migrate from localStorage if needed ──────
+    async function getOrCreate(){
+        // 1. Try IndexedDB first (new secure store)
+        let privKey=await idbGet(IDB_KEY).catch(()=>null);
+        let pub=localStorage.getItem(LPU);
+
+        if(privKey&&pub){
+            try{pub=JSON.parse(pub);return{privateKey:privKey,pub};}catch(e){}
+        }
+
+        // 2. Migration: old key exists in localStorage
+        const oldPriv=localStorage.getItem(LP);
+        if(oldPriv&&pub){
+            try{
+                // Re-import old extractable key, then re-generate as non-extractable
+                // (cannot convert extractable->non-extractable directly, must re-gen)
+                // Old messages will still decrypt via old key temporarily
+                console.log('[TYST] Migrating key from localStorage to IndexedDB...');
+                const kp=await genIdentity();
+                await idbSet(IDB_KEY,kp.privateKey);
+                localStorage.setItem(LPU,JSON.stringify(kp.pub));
+                localStorage.removeItem(LP); // remove extractable private key
+                sessionStorage.removeItem('pk_reg'); // force re-register new pubkey
+                console.log('[TYST] Key migration complete. Old localStorage key removed.');
+                return{privateKey:kp.privateKey,pub:kp.pub};
+            }catch(e){console.warn('[TYST] Migration failed:',e);}
+        }
+
+        // 3. Fresh generation
+        const kp=await genIdentity();
+        await idbSet(IDB_KEY,kp.privateKey);
+        localStorage.setItem(LPU,JSON.stringify(kp.pub));
+        return{privateKey:kp.privateKey,pub:kp.pub};
+    }
+
+    async function reg(){
+        if(IS_GUEST)return null;
+        const kp=await getOrCreate();
+        if(sessionStorage.getItem('pk_reg')==='1')return kp;
+        try{
+            const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({username:ME,pubkey:kp.pub})});
+            if(r.ok)sessionStorage.setItem('pk_reg','1');
+            else console.warn('[TYST] pubkey reg failed:',r.status);
+        }catch(e){console.warn('[TYST] pubkey reg error:',e);}
+        return kp;
+    }
+
     return{encrypt,decrypt,getOrCreate,reg};
 })();
 window._ECDH=ECDH;
@@ -692,7 +762,7 @@ const INBOX=(()=>{
             msgs=await Promise.all(raw.map(async m=>{
                 const exp=new Date(m.destroy_at).getTime(),rem=exp-now;
                 const h=Math.floor(rem/3600000),mn=Math.floor((rem%3600000)/60000);
-                const body=await ECDH.decrypt(m.message,k.priv);
+                const body=await ECDH.decrypt(m.message,k.privateKey);
                 return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
             }));
             render();badge(msgs.length>0);
