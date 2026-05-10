@@ -106,6 +106,13 @@ h1{font-size:26px;color:var(--c0);letter-spacing:4px;margin-bottom:6px;text-shad
     <div class="item">
       <span class="item-icon ok">✓</span>
       <div class="item-content">
+        <div class="item-title ok">one device, one identity — by architecture</div>
+        <div class="item-desc">Authentication is bound to hardware fingerprint (GPU renderer, CPU cores, screen geometry, timezone) combined with PIN. Login from a different device produces a different hash — access denied by cryptographic mismatch, not policy. Private browsing (incognito) is blocked at UI layer before login is attempted. No cross-device session is possible. This is a feature, not a limitation.</div>
+      </div>
+    </div>
+    <div class="item">
+      <span class="item-icon ok">✓</span>
+      <div class="item-content">
         <div class="item-title ok">legal compulsion — content</div>
         <div class="item-desc">If legally compelled to hand over message content, we cannot. We hold only ciphertext. The recipient's private key — which we never have — is required for decryption. Finnish law governs our jurisdiction.</div>
       </div>
@@ -194,6 +201,16 @@ h1{font-size:26px;color:var(--c0);letter-spacing:4px;margin-bottom:6px;text-shad
         <div class="cell">ciphertext + usernames only, no plaintext</div>
       </div>
       <div class="table-row">
+        <div class="cell">cross-device identity theft</div>
+        <div class="cell ok">strong</div>
+        <div class="cell">hardware-bound auth — different device = different hash = access denied</div>
+      </div>
+      <div class="table-row">
+        <div class="cell">incognito / private browsing</div>
+        <div class="cell ok">strong</div>
+        <div class="cell">login blocked at UI level — inbox and keypair require persistent storage</div>
+      </div>
+      <div class="table-row">
         <div class="cell">Finnish law enforcement</div>
         <div class="cell maybe">partial</div>
         <div class="cell">ciphertext handover possible, content unreadable</div>
@@ -225,10 +242,10 @@ h1{font-size:26px;color:var(--c0);letter-spacing:4px;margin-bottom:6px;text-shad
     private key storage · Web Crypto API localStorage (device-side only)<br>
     <br>
     <b>infrastructure</b><br>
-    hosting &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· Hetzner Helsinki HEL1 · AS24940 · Finland<br>
+    hosting &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· Vercel edge (frontend) + Supabase EU (database) · migration to Hetzner Helsinki self-hosted planned<br>
     jurisdiction &nbsp;&nbsp;&nbsp;· Finnish law · EU GDPR · not Five Eyes<br>
     relay &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· centralized · header-stripped · 2–47s random delay<br>
-    database &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· Pocketbase self-hosted · SQLite · no external service<br>
+    database &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· Supabase PostgreSQL · EU region · migration to Hetzner self-hosted planned<br>
     tls &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;· Caddy · auto-renewed Let's Encrypt
   </div>
 
