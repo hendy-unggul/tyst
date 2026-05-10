@@ -780,7 +780,7 @@ const LM={
     vu(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const p=v.split('.');if(p.length!==2)return null;if(p[0].length<2||p[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(p[0])||!/^[a-z][a-z0-9]*$/.test(p[1]))return null;return v;},
     vp(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(['123456','654321','000000','999999'].includes(p))return false;return true;}
 };
-function openLoginModal(){document.getElementById('lmBg').classList.add('show');lmSwitch('login');setTimeout(()=>document.getElementById('lmU').focus(),120);}
+
 function closeLM(){document.getElementById('lmBg').classList.remove('show');}
 function lmSwitch(to){document.getElementById('lmLogin').style.display=to==='login'?'':'none';document.getElementById('lmReg').style.display=to==='reg'?'':'none';setTimeout(()=>document.getElementById(to==='login'?'lmU':'lmRU').focus(),100);}
 function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
@@ -825,6 +825,33 @@ async function lmDoReg(){
         btn.disabled=false;btn.innerHTML=`<span>${t('lmBtnRTxt')}</span>`;
     }
 }
+/* ── INCOGNITO DETECTION ─────────────────────────────────── */
+function detectIncognito(){
+    try{localStorage.setItem('_tyst_chk','1');localStorage.removeItem('_tyst_chk');return false;}
+    catch(e){return true;}
+}
+function showIncognitoWarning(){
+    const existing=document.getElementById('lmIncogWarn');
+    if(existing)return;
+    const warn=document.createElement('div');
+    warn.id='lmIncogWarn';
+    warn.style.cssText='background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.4);border-left:3px solid #ff6b35;padding:10px 12px;margin-bottom:12px;font-size:11px;color:#ff6b35;line-height:1.8;letter-spacing:.3px';
+    warn.innerHTML='⚠ INCOGNITO DETECTED<br><span style="color:var(--txt3)">keypair &amp; inbox require persistent storage.<br>login here will not work — use a regular browser window.</span>';
+    const body=document.querySelector('.lm-body');
+    if(body)body.insertBefore(warn,body.firstChild);
+    // Also disable login/register buttons
+    const bl=document.getElementById('lmBtnL');
+    const br=document.getElementById('lmBtnR');
+    if(bl){bl.disabled=true;bl.title='Not available in incognito';}
+    if(br){br.disabled=true;br.title='Not available in incognito';}
+}
+function openLoginModal(){
+    document.getElementById('lmBg').classList.add('show');
+    lmSwitch('login');
+    if(detectIncognito())showIncognitoWarning();
+    setTimeout(()=>document.getElementById('lmU').focus(),120);
+}
+
 (function wire(){
     function toU(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const di=v.indexOf('.');if(di!==-1)v=v.slice(0,di+1)+v.slice(di+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
     function toP(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
