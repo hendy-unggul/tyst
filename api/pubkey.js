@@ -91,7 +91,7 @@ export default async function handler(req, res) {
     const pubkey = data?.[0]?.pubkey;
     if (!pubkey) return res.status(404).json({ error: 'No pubkey registered for this user' });
 
-    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.setHeader('Cache-Control', 'private, max-age=300');
     return res.status(200).json({ pubkey: JSON.parse(pubkey) });
   }
 
