@@ -775,7 +775,7 @@ const LM={
     async post(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'POST',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(b)});const tx=await r.text();const d=tx?JSON.parse(tx):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
     async patch(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'PATCH',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json'},body:JSON.stringify(b)});const tx=await r.text();return tx?JSON.parse(tx):null;},
     async sha256(s){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
-    async fp(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('tyst_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
+    async fp(){const p=[];try{const gl=document.createElement('canvas').getContext('webgl');const ext=gl&&gl.getExtension('WEBGL_debug_renderer_info');if(ext){p.push(gl.getParameter(ext.UNMASKED_VENDOR_WEBGL));p.push(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL));}}catch(e){p.push('no-gpu');}p.push(screen.width+'x'+screen.height,screen.colorDepth,navigator.hardwareConcurrency||'nc',Intl.DateTimeFormat().resolvedOptions().timeZone);return this.sha256(p.join('|'));}, /* v2: hardware-bound FP */
     async hash(pin,u){const f=await this.fp();return this.sha256(pin+':'+u+':'+f+':tyst_local_v1');},
     vu(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const p=v.split('.');if(p.length!==2)return null;if(p[0].length<2||p[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(p[0])||!/^[a-z][a-z0-9]*$/.test(p[1]))return null;return v;},
     vp(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(['123456','654321','000000','999999'].includes(p))return false;return true;}
@@ -797,7 +797,7 @@ async function lmDoLogin(){
         const user=Array.isArray(data)?data[0]:null;if(!user)throw new Error(lang==='sv'?'Användarnamn hittades inte':'Username not found');
         const h=await LM.hash(p,u);
         if(!user.auth_hash)await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:h});
-        else if(user.auth_hash!==h)throw new Error(lang==='sv'?'Fel PIN eller okänd enhet':'Wrong PIN or unrecognised device');
+        else if(user.auth_hash!==h)throw new Error(lang==='sv'?'Enhet okänd. Data kan inte återställas.':'Device not recognised. Data cannot be recovered.');
         localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
         localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,h);
         lmFb('lmFbL','s',t('signedIn'));setTimeout(()=>window.location.reload(),700);
