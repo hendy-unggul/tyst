@@ -972,5 +972,142 @@ function openLoginModal(){
   };
 })();
 </script>
+<script>
+
+(function(){
+'use strict';
+const OPSEC_KEY='tyst_opsec_v1';
+
+function showOpsecNotice(){
+  if(localStorage.getItem(OPSEC_KEY)==='1')return;
+  const ov=document.createElement('div');
+  ov.id='opsecOv';
+  ov.style.cssText='position:fixed;inset:0;background:#040d0a;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Share Tech Mono",monospace;';
+  ov.innerHTML=`
+    <div style="max-width:340px;width:100%;">
+      <div style="font-size:10px;color:#3d6b4f;letter-spacing:3px;text-transform:uppercase;margin-bottom:32px;">// operational security notice</div>
+      <div style="border-left:2px solid #ff6b35;padding-left:16px;margin-bottom:28px;">
+        <div style="font-size:13px;color:#b8f0d0;line-height:2;letter-spacing:.3px;">
+          this channel is secure.<br>
+          <span style="color:#7abf9a;">how you arrived here may not be.</span>
+        </div>
+      </div>
+      <div style="margin-bottom:28px;">
+        <div style="font-size:9px;color:#3d6b4f;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">// protocol rules</div>
+        <div style="font-size:11px;color:#7abf9a;line-height:2.2;letter-spacing:.3px;">
+          <span style="color:#00ff9d;">01</span> &nbsp;never name this tool on any unsecured channel<br>
+          <span style="color:#00ff9d;">02</span> &nbsp;share access via QR or verbal only — never link<br>
+          <span style="color:#00ff9d;">03</span> &nbsp;if asked, this is a notepad app<br>
+          <span style="color:#00ff9d;">04</span> &nbsp;one device · one identity · no recovery<br>
+          <span style="color:#00ff9d;">05</span> &nbsp;loss of device = loss of identity. by design.
+        </div>
+      </div>
+      <div style="border:1px solid #1a3a2a;padding:12px 14px;margin-bottom:24px;background:rgba(0,255,157,.03);">
+        <div style="font-size:10px;color:#3d6b4f;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">// what this is</div>
+        <div style="font-size:11px;color:#7abf9a;line-height:1.9;letter-spacing:.3px;">
+          a one-way encrypted transmission channel.<br>
+          not a chat room. not a messenger.<br>
+          each payload is a discrete operation.
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <input type="checkbox" id="opsecChk" style="width:13px;height:13px;accent-color:#00ff9d;flex-shrink:0;">
+        <label for="opsecChk" style="font-size:11px;color:#7abf9a;cursor:pointer;letter-spacing:.3px;">
+          i understand and accept operational responsibility
+        </label>
+      </div>
+      <button id="opsecBtn" disabled onclick="window._confirmOpsec()" style="width:100%;padding:14px;background:transparent;border-top:1px solid #1a3a2a;border-right:1px solid #1a3a2a;border-bottom:1px solid #1a3a2a;border-left:3px solid #1a3a2a;color:#3d6b4f;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:not-allowed;transition:all .2s;">
+        proceed to channel
+      </button>
+      <div style="margin-top:14px;font-size:9px;color:#1a3a2a;letter-spacing:.5px;text-align:center;">
+        this notice appears once · it is not logged
+      </div>
+    </div>
+  `;
+  document.body.appendChild(ov);
+  const chk=document.getElementById('opsecChk');
+  const btn=document.getElementById('opsecBtn');
+  chk.addEventListener('change',function(){
+    if(this.checked){
+      btn.disabled=false;
+      btn.style.borderLeftColor='#00ff9d';
+      btn.style.color='#00ff9d';
+      btn.style.cursor='pointer';
+    }else{
+      btn.disabled=true;
+      btn.style.borderLeftColor='#1a3a2a';
+      btn.style.color='#3d6b4f';
+      btn.style.cursor='not-allowed';
+    }
+  });
+}
+
+window._confirmOpsec=function(){
+  localStorage.setItem(OPSEC_KEY,'1');
+  const ov=document.getElementById('opsecOv');
+  if(ov){ov.style.opacity='0';ov.style.transition='opacity .4s';setTimeout(()=>ov.remove(),400);}
+};
+
+/* ── QR INVITE SYSTEM ── */
+function genToken(){
+  const arr=new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+window.showQRInvite=function(){
+  const loggedIn=localStorage.getItem('tyst_logged_in')==='true';
+  if(!loggedIn){
+    const t=document.getElementById('toast');
+    if(t){t.textContent='sign in to generate invite';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+    return;
+  }
+  const token=genToken();
+  const url=window.location.origin+'/app?inv='+token;
+  const ov=document.createElement('div');
+  ov.id='qrOv';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(4,13,10,.96);z-index:9990;display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Share Tech Mono",monospace;backdrop-filter:blur(4px);';
+  ov.innerHTML=`
+    <div style="max-width:300px;width:100%;text-align:center;">
+      <div style="font-size:9px;color:#3d6b4f;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;">// one-time invite · expires in</div>
+      <div id="qrTimer" style="font-family:'VT323',monospace;font-size:56px;color:#00ff9d;line-height:1;margin-bottom:14px;">60</div>
+      <div id="qrCode" style="background:#fff;padding:14px;display:inline-block;margin-bottom:14px;"></div>
+      <div style="font-size:9px;color:#3d6b4f;letter-spacing:1px;margin-bottom:20px;">scan only · never screenshot · never share link</div>
+      <button onclick="document.getElementById('qrOv').remove();clearInterval(window._qrInt);" style="width:100%;padding:11px;background:transparent;border:1px solid #1a3a2a;color:#3d6b4f;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;">[ abort ]</button>
+    </div>
+  `;
+  document.body.appendChild(ov);
+
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+  s.onload=function(){
+    new QRCode(document.getElementById('qrCode'),{
+      text:url,width:176,height:176,
+      colorDark:'#000',colorLight:'#fff',
+      correctLevel:QRCode.CorrectLevel.H
+    });
+  };
+  document.head.appendChild(s);
+
+  let n=60;
+  window._qrInt=setInterval(function(){
+    n--;
+    const el=document.getElementById('qrTimer');
+    if(!el){clearInterval(window._qrInt);return;}
+    el.textContent=n;
+    if(n<=10)el.style.color='#ff3b6f';
+    else if(n<=20)el.style.color='#ff6b35';
+    if(n<=0){
+      clearInterval(window._qrInt);
+      const o=document.getElementById('qrOv');
+      if(o)o.innerHTML='<div style="text-align:center;font-family:\'Share Tech Mono\',monospace;padding:40px 24px;"><div style="font-family:\'VT323\',monospace;font-size:52px;color:#ff3b6f;margin-bottom:12px;">EXPIRED</div><div style="font-size:11px;color:#7abf9a;margin-bottom:24px;letter-spacing:.3px;">token destroyed · generate new invite</div><button style="padding:10px 20px;background:transparent;border:1px solid #1a3a2a;color:#3d6b4f;font-family:\'Share Tech Mono\',monospace;font-size:11px;cursor:pointer;" onclick="document.getElementById(\'qrOv\').remove()">[ close ]</button></div>';
+    }
+  },1000);
+};
+
+document.addEventListener('DOMContentLoaded',showOpsecNotice);
+})();
+
+</script>
 </body>
 </html>

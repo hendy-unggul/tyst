@@ -1,12 +1,11 @@
 {
-  "name": "JEJAK - Spill",
-  "short_name": "SPILL",
-  "description": "Anonymous vibe check & chat platform",
-  "start_url": "/spill.html",
+  "name": "Notepad",
+  "short_name": "Notes",
+  "description": "",
+  "start_url": "/app",
   "display": "standalone",
-  "background_color": "#080808",
-  "theme_color": "#ff2d55",
-  "orientation": "portrait",
+  "background_color": "#040d0a",
+  "theme_color": "#040d0a",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -16,6 +15,11 @@
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png"
     }
   ]
