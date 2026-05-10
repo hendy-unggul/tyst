@@ -232,10 +232,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="logo-sub" id="logoSub">v2.1 · secure channel</div>
     </div>
     <div class="hd-r">
-      <button class="lang-toggle" id="langBtn" onclick="toggleLang()" title="Switch language">
-        <span class="flag" id="langFlag">🇸🇪</span>
-        <span id="langLabel">SV</span>
-      </button>
+
       <div id="userSection"></div>
     </div>
   </header>
@@ -620,10 +617,13 @@ function applyLang() {
   const tystMsg = document.getElementById('tystMsg');
   if (tystMsg) tystMsg.placeholder = t('msgPlaceholder');
 
-  // Lang toggle button
-  document.getElementById('langFlag').textContent = t('langFlag');
-  document.getElementById('langLabel').textContent = t('langLabel');
-  document.getElementById('langBtn').title = t('langTitle');
+  // Lang toggle — header button (jika ada) dan dropdown item
+  const lf=document.getElementById('langFlag');if(lf)lf.textContent=t('langFlag');
+  const ll=document.getElementById('langLabel');if(ll)ll.textContent=t('langLabel');
+  const lb=document.getElementById('langBtn');if(lb)lb.title=t('langTitle');
+  // Dropdown lang item
+  const ddlf=document.getElementById('ddLangFlag');if(ddlf)ddlf.textContent=t('langFlag');
+  const ddll=document.getElementById('ddLangLabel');if(ddll)ddll.textContent=lang==='en'?'switch to SV':'switch to EN';
 
   // User section sign-in button (if guest)
   const signInBtn = document.querySelector('.btn-login');
@@ -787,7 +787,7 @@ function setupUI(){
     }else{
         sec.innerHTML=`<span class="user-chip">@${ME}</span><button class="btn-icon" id="sBtn">⋮</button>`;
         const dd=document.createElement('div');dd.className='dd';dd.id='sDD';
-        dd.innerHTML=`<div class="dd-item" onclick="window.showQRInvite()" id="qrBtn">&#x25A6; invite via QR</div><div class="dd-item" id="loutBtn">${t('signOut')}</div>`;
+        dd.innerHTML=`<div class="dd-item" onclick="toggleLang();document.getElementById('sDD').classList.remove('show')" id="ddLang"><span id="ddLangFlag">🇸🇪</span> &nbsp;<span id="ddLangLabel">switch to SV</span></div><div class="dd-item" onclick="window.showQRInvite()" id="qrBtn">&#x25A6; invite via QR</div><div class="dd-item" id="loutBtn">${t('signOut')}</div>`;
         document.querySelector('.app').appendChild(dd);
         const sb=$('sBtn'),sd=$('sDD');
         if(sb&&sd){sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});}
