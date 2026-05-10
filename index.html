@@ -45,7 +45,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* TERMINAL HEADER STRIP */
 .term-strip{padding:8px 18px;border-bottom:1px solid var(--dim);background:var(--bg3);display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt3);letter-spacing:.5px}
-.term-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);animation:blink 2s step-end infinite}
+.term-dot{width:5px;height:5px;border-radius:50%;background:var(--c0)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .term-status{color:var(--c0)}
 
@@ -250,7 +250,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="c-line"><span class="c-out2">[ OK ]</span> <span class="c-dim" id="cl2">aes-gcm-256 cipher loaded</span></div>
     <div class="c-line"><span class="c-out3">[ OK ]</span> <span class="c-dim" id="cl3">anonymous relay configured · delay 2–47s</span></div>
     <div class="c-line"><span class="c-out5">[ OK ]</span> <span class="c-dim" id="cl4">self-destruct armed · ttl 5s post-read</span></div>
-    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd" id="cl5">await input<span class="cursor"></span></span></div>
+    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd" id="cl5">awaiting transmission</span></div>
   </div>
 
   <!-- COMPOSE -->
@@ -593,7 +593,7 @@ function applyLang() {
 
   // cl5 needs cursor span preserved
   const cl5 = document.getElementById('cl5');
-  if (cl5) cl5.innerHTML = t('cl5') + '<span class="cursor"></span>';
+  if (cl5) cl5.textContent = t('cl5');
 
   // readBack
   const rb = document.getElementById('readBack');
