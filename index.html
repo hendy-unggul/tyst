@@ -802,15 +802,34 @@ window.addEventListener('load',()=>{
     if(!IS_GUEST){
         ECDH.reg();INBOX.poll();
         $('inboxBtn').onclick=()=>{INBOX.load();$('inboxPanel').classList.add('show');};
+        // Auto-focus recipient on load
+        setTimeout(()=>{const r=$('tystTo');if(r)r.focus();},120);
     }
     $('inboxClose').onclick=()=>$('inboxPanel').classList.remove('show');
     $('readBack').onclick=()=>{INBOX.closeRead();$('inboxPanel').classList.add('show');};
+
+    // Keyboard navigation: Enter on recipient → jump to message
+    const toEl=$('tystTo');
+    const msgEl=$('tystMsg');
+    if(toEl&&msgEl){
+        toEl.addEventListener('keydown',function(e){
+            if(e.key==='Enter'){e.preventDefault();msgEl.focus();}
+        });
+        // Ctrl+Enter or Cmd+Enter on textarea → send
+        msgEl.addEventListener('keydown',function(e){
+            if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
+                e.preventDefault();
+                const btn=$('sendBtn');
+                if(btn&&!btn.disabled)tystSend();
+            }
+        });
+    }
 });
 })();
 
 /* SEND */
 function layerShow(id){['lProc','lSent','lNoPub'].forEach(l=>{const el=document.getElementById(l);if(el)el.classList.toggle('show',l===id);});}
-function closeProcOv(){document.getElementById('procOv').classList.remove('show');document.getElementById('tystTo').value='';document.getElementById('tystMsg').value='';const c=document.getElementById('charN');if(c)c.textContent='0';const b=document.getElementById('sendBtn');if(b)b.disabled=true;setTimeout(()=>layerShow(null),300);}
+function closeProcOv(){document.getElementById('procOv').classList.remove('show');document.getElementById('tystTo').value='';document.getElementById('tystMsg').value='';const c=document.getElementById('charN');if(c)c.textContent='0';const b=document.getElementById('sendBtn');if(b)b.disabled=true;setTimeout(()=>{layerShow(null);const r=document.getElementById('tystTo');if(r){r.focus();}},300);}
 function tystValidate(){const to=(document.getElementById('tystTo').value||'').trim().replace('@','');const msg=(document.getElementById('tystMsg').value||'').trim();const ok=/^[a-z0-9_.]{2,24}$/.test(to)&&msg.length>0;const btn=document.getElementById('sendBtn');if(btn)btn.disabled=!ok;}
 function tystChar(){const el=document.getElementById('tystMsg'),c=document.getElementById('charN');if(el&&c)c.textContent=el.value.length;}
 function showHow(){document.getElementById('howOv').classList.add('show');}
