@@ -50,7 +50,7 @@ h1{font-size:26px;color:var(--c0);letter-spacing:4px;margin-bottom:6px;text-shad
   <div class="logo"><span>TYST</span> · tyst.site/threat-model</div>
 
   <h1>THREAT MODEL</h1>
-  <div class="subtitle">what tyst protects against · and what it does not</div>
+  <div class="subtitle">operational security properties · verified, not promised</div>
 
   <div class="honest-box">
     <div class="honest-title">// honest disclaimer</div>
@@ -59,6 +59,8 @@ h1{font-size:26px;color:var(--c0);letter-spacing:4px;margin-bottom:6px;text-shad
       you deserve to know exactly what TYST can and cannot protect you from
       before you use it. If our limitations don't match your threat model,
       don't use TYST. Use something better suited to your needs.<br><br>
+      TYST is designed for operational security, not diplomatic immunity.
+      Know your threat model — and verify ours.<br><br>
       We will update this document when our threat model changes.
       Last updated: <span id="tmDate">2026-05-08</span>
     </div>
@@ -209,7 +211,7 @@ h1{font-size:26px;color:var(--c0);letter-spacing:4px;margin-bottom:6px;text-shad
       <div class="table-row">
         <div class="cell">nation-state adversary</div>
         <div class="cell warn">weak</div>
-        <div class="cell">not designed for this threat level — use Briar + Tor</div>
+        <div class="cell">outside design scope — tools claiming this protection usually lie. use Briar + Tor + air-gap</div>
       </div>
     </div>
   </div>
@@ -269,19 +271,19 @@ h1{font-size:26px;color:var(--c0);letter-spacing:4px;margin-bottom:6px;text-shad
     <div class="item">
       <span class="item-icon warn">✗</span>
       <div class="item-content">
-        <div class="item-desc">Whistleblowers facing nation-state adversaries — use Tor + Briar</div>
+        <div class="item-desc">Whistleblowers facing nation-state adversaries — use Tor + Briar. Any tool claiming nation-state protection is probably lying to you.</div>
       </div>
     </div>
     <div class="item">
       <span class="item-icon warn">✗</span>
       <div class="item-content">
-        <div class="item-desc">Anyone whose device may be compromised or monitored</div>
+        <div class="item-desc">Anyone whose device may be compromised or monitored — TYST secures the channel, not the endpoint</div>
       </div>
     </div>
     <div class="item">
       <span class="item-icon warn">✗</span>
       <div class="item-content">
-        <div class="item-desc">High-stakes communications requiring formally audited cryptography</div>
+        <div class="item-desc">High-stakes communications requiring formally audited cryptography — audit is planned, not yet complete</div>
       </div>
     </div>
   </div>
