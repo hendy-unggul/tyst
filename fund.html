@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TYST — Infrastructure Fund</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#040d0a;--bg2:#071210;--bg3:#0c1a14;
+  --c0:#00ff9d;--c1:#00b8ff;--c2:#ff6b35;--c5:#ff3b6f;
+  --dim:#1a3a2a;--txt:#b8f0d0;--txt2:#7abf9a;--txt3:#3d6b4f;
+  --mono:'Share Tech Mono',monospace;
+}
+body{background:var(--bg);color:var(--txt);font-family:var(--mono);font-size:13px;min-height:100svh;padding:40px 20px;line-height:1.9}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,157,.008) 2px,rgba(0,255,157,.008) 4px);pointer-events:none}
+.wrap{max-width:600px;margin:0 auto;position:relative;z-index:1}
+.logo{font-size:11px;color:var(--txt3);letter-spacing:3px;text-transform:uppercase;margin-bottom:40px}
+.logo span{color:var(--c0)}
+h1{font-size:26px;color:var(--c0);letter-spacing:4px;margin-bottom:6px;text-shadow:0 0 20px rgba(0,255,157,.3)}
+.subtitle{font-size:11px;color:var(--txt3);letter-spacing:2px;margin-bottom:40px;text-transform:uppercase}
+
+/* WHY block */
+.why{border-left:2px solid var(--c2);padding:16px 20px;margin-bottom:32px;background:rgba(255,107,53,.04)}
+.why-label{font-size:9px;color:var(--c2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.why-text{font-size:12px;color:var(--txt3);line-height:2;letter-spacing:.3px}
+.why-text b{color:var(--txt2)}
+
+/* GOAL block */
+.goal{border:1px solid var(--dim);padding:18px 20px;margin-bottom:32px;background:rgba(0,255,157,.02)}
+.goal-label{font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.goal-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--dim)}
+.goal-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.goal-key{color:var(--txt3)}
+.goal-val{color:var(--txt2)}
+.goal-val.ok{color:var(--c0)}
+.goal-val.pending{color:var(--c2)}
+
+/* PROGRESS */
+.progress-wrap{margin-bottom:32px}
+.progress-label{font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between}
+.progress-bar-bg{height:3px;background:var(--dim);width:100%}
+.progress-bar-fill{height:3px;background:var(--c0);width:0%;transition:width 1s ease;box-shadow:0 0 6px var(--c0)}
+.progress-amount{font-size:11px;color:var(--txt3);margin-top:6px;text-align:right}
+.progress-amount span{color:var(--c0)}
+
+/* DONATE block */
+.donate{border:1px solid rgba(0,255,157,.2);border-left:2px solid var(--c0);padding:20px;margin-bottom:24px;background:rgba(0,255,157,.03)}
+.donate-label{font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.donate-inner{display:flex;gap:20px;align-items:flex-start}
+.qr-wrap{flex-shrink:0}
+#qrCode{background:#fff;padding:10px;display:inline-block}
+.address-wrap{flex:1}
+.addr-label{font-size:9px;color:var(--txt3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.addr-string{font-size:11px;color:var(--c0);word-break:break-all;line-height:1.8;letter-spacing:.5px;cursor:pointer;border:1px solid var(--dim);padding:8px 10px;background:var(--bg2)}
+.addr-string:hover{border-color:var(--c0)}
+.addr-copy{font-size:9px;color:var(--txt3);margin-top:6px;letter-spacing:.5px}
+.addr-copy.copied{color:var(--c0)}
+.verify-link{display:block;margin-top:12px;font-size:10px;color:var(--c1);text-decoration:none;letter-spacing:.5px}
+.verify-link:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* COMMITMENT block */
+.commit{border:1px solid var(--dim);padding:18px 20px;margin-bottom:32px}
+.commit-label{font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.commit-item{display:flex;gap:10px;margin-bottom:10px;font-size:11px;color:var(--txt3);line-height:1.8;letter-spacing:.3px}
+.commit-num{color:var(--c0);flex-shrink:0;width:16px}
+
+/* AUDIT block */
+.audit{border:1px solid rgba(0,184,255,.15);border-left:2px solid var(--c1);padding:16px 20px;margin-bottom:32px;background:rgba(0,184,255,.03)}
+.audit-label{font-size:9px;color:var(--c1);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.audit-text{font-size:11px;color:var(--txt3);line-height:2;letter-spacing:.3px}
+.audit-text a{color:var(--c1);text-decoration:none}
+.audit-text a:hover{text-decoration:underline}
+
+.footer{margin-top:40px;font-size:10px;color:var(--txt3);border-top:1px solid var(--dim);padding-top:20px}
+.footer a{color:var(--txt3);text-decoration:none}
+.footer a:hover{color:var(--c0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo"><span>TYST</span> · tyst.site/fund</div>
+  <h1>INFRASTRUCTURE FUND</h1>
+  <div class="subtitle">community-funded · blockchain-verified · no trust required</div>
+
+  <!-- WHY -->
+  <div class="why">
+    <div class="why-label">// why this exists</div>
+    <div class="why-text">
+      TYST currently depends on <b>Supabase</b> as its database provider.
+      Supabase is a third-party service — meaning it could theoretically
+      receive legal requests we cannot disclose.<br><br>
+      Our goal is to eliminate this dependency entirely by migrating to a
+      <b>self-hosted PostgreSQL instance on Hetzner Helsinki</b> — same
+      Finnish jurisdiction, zero third-party intermediary.<br><br>
+      Until that migration is complete, our canary and threat model
+      will continue to reflect this honestly.
+    </div>
+  </div>
+
+  <!-- GOAL -->
+  <div class="goal">
+    <div class="goal-label">// migration target</div>
+    <div class="goal-row">
+      <span class="goal-key">provider</span>
+      <span class="goal-val">Hetzner Helsinki HEL1 · CX23</span>
+    </div>
+    <div class="goal-row">
+      <span class="goal-key">jurisdiction</span>
+      <span class="goal-val">Finland · EU · not Five Eyes</span>
+    </div>
+    <div class="goal-row">
+      <span class="goal-key">stack</span>
+      <span class="goal-val">PostgreSQL self-hosted · no third-party</span>
+    </div>
+    <div class="goal-row">
+      <span class="goal-key">monthly cost</span>
+      <span class="goal-val">€4.49 / month · CX23 3vCPU 4GB RAM</span>
+    </div>
+    <div class="goal-row">
+      <span class="goal-key">funding target</span>
+      <span class="goal-val">€20 deposit + 3 months = ~€35</span>
+    </div>
+    <div class="goal-row">
+      <span class="goal-key">current status</span>
+      <span class="goal-val pending">⏳ Supabase (interim)</span>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>// funding progress</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-amount">
+      <span id="progressAmt">0</span> / 35 EUR equivalent received
+    </div>
+  </div>
+
+  <!-- DONATE -->
+  <div class="donate">
+    <div class="donate-label">// bitcoin donation address</div>
+    <div class="donate-inner">
+      <div class="qr-wrap">
+        <div id="qrCode"></div>
+      </div>
+      <div class="address-wrap">
+        <div class="addr-label">on-chain address</div>
+        <div class="addr-string" id="addrStr" onclick="copyAddr()">bc1q5djzl7e4h6w6s22332sznjs5mlx0u4uuww3pet</div>
+        <div class="addr-copy" id="addrCopy">click to copy</div>
+        <a class="verify-link" href="https://mempool.space/address/bc1q5djzl7e4h6w6s22332sznjs5mlx0u4uuww3pet" target="_blank" rel="noopener">
+          ↗ verify on mempool.space
+        </a>
+        <a class="verify-link" href="https://blockchain.info/address/bc1q5djzl7e4h6w6s22332sznjs5mlx0u4uuww3pet" target="_blank" rel="noopener">
+          ↗ verify on blockchain.info
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMITMENT -->
+  <div class="commit">
+    <div class="commit-label">// public commitment</div>
+    <div class="commit-item">
+      <span class="commit-num">01</span>
+      <span>when funding target is reached, Hetzner server will be provisioned within 48 hours</span>
+    </div>
+    <div class="commit-item">
+      <span class="commit-num">02</span>
+      <span>migration from Supabase to self-hosted will be executed as public GitHub commits — visible to anyone</span>
+    </div>
+    <div class="commit-item">
+      <span class="commit-num">03</span>
+      <span>Supabase will be decommissioned after verified migration — no parallel running</span>
+    </div>
+    <div class="commit-item">
+      <span class="commit-num">04</span>
+      <span>canary and threat model will be updated to reflect "no third-party dependencies"</span>
+    </div>
+    <div class="commit-item">
+      <span class="commit-num">05</span>
+      <span>all on-chain transactions are public — no trust required, only verification</span>
+    </div>
+  </div>
+
+  <!-- AUDIT -->
+  <div class="audit">
+    <div class="audit-label">// how to verify</div>
+    <div class="audit-text">
+      every donation to this address is permanently recorded on the Bitcoin blockchain.
+      you do not need to trust us — verify independently:<br><br>
+      · <a href="https://mempool.space/address/bc1q5djzl7e4h6w6s22332sznjs5mlx0u4uuww3pet" target="_blank" rel="noopener">mempool.space</a> — real-time transaction monitor<br>
+      · <a href="https://blockchain.info/address/bc1q5djzl7e4h6w6s22332sznjs5mlx0u4uuww3pet" target="_blank" rel="noopener">blockchain.info</a> — historical record<br>
+      · <a href="https://github.com/hendy-unggul/tyst" target="_blank" rel="noopener">github.com/hendy-unggul/tyst</a> — migration commits will appear here<br><br>
+      when migration is complete, the GitHub commit hash will be posted here
+      as cryptographic proof that funds were used for infrastructure.
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="/">← tyst.site</a> &nbsp;·&nbsp;
+    <a href="/canary">warrant canary</a> &nbsp;·&nbsp;
+    <a href="/threat-model">threat model</a> &nbsp;·&nbsp;
+    <a href="https://github.com/hendy-unggul/tyst">source code</a>
+  </div>
+</div>
+
+<script>
+// Generate QR code
+new QRCode(document.getElementById('qrCode'), {
+  text: 'bitcoin:bc1q5djzl7e4h6w6s22332sznjs5mlx0u4uuww3pet',
+  width: 128,
+  height: 128,
+  colorDark: '#000000',
+  colorLight: '#ffffff',
+  correctLevel: QRCode.CorrectLevel.H
+});
+
+// Copy address
+function copyAddr() {
+  navigator.clipboard.writeText('bc1q5djzl7e4h6w6s22332sznjs5mlx0u4uuww3pet').then(() => {
+    const el = document.getElementById('addrCopy');
+    el.textContent = '✓ copied';
+    el.classList.add('copied');
+    setTimeout(() => {
+      el.textContent = 'click to copy';
+      el.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// Animate progress bar on load (starts at 0 — update manually when donations arrive)
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const pct = 0; // update ini manual saat ada donasi
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('progressAmt').textContent = '0';
+  }, 300);
+});
+
+// Date
+</script>
+</body>
+</html>
