@@ -5,6 +5,7 @@
     { "source": "/canary", "destination": "/canary.html" },
     { "source": "/threat-model", "destination": "/threat-model.html" },
     { "source": "/", "destination": "/landing.html" }
+    { "source": "/fund", "destination": "/fund.html" },
   ],
   "crons": [
     {
