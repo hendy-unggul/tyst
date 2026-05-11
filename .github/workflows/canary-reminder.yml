@@ -1,0 +1,56 @@
+name: Canary Reminder
+
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-canary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check canary deadline
+        id: canary
+        run: |
+          LAST=$(grep "const LAST_UPDATED" canary.html | grep -oP "\\d{4}-\\d{2}-\\d{2}")
+          NEXT=$(grep "const NEXT_DUE" canary.html | grep -oP "\\d{4}-\\d{2}-\\d{2}")
+          TODAY=$(date +%Y-%m-%d)
+          DAYS_LEFT=$(( ($(date -d "$NEXT" +%s) - $(date -d "$TODAY" +%s)) / 86400 ))
+          echo "days_left=$DAYS_LEFT" >> $GITHUB_OUTPUT
+          echo "next_due=$NEXT" >> $GITHUB_OUTPUT
+          echo "Last: $LAST | Next: $NEXT | Days left: $DAYS_LEFT"
+
+      - name: Send Tuta email reminder
+        if: steps.canary.outputs.days_left <= 7
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: mail.tutanota.com
+          server_port: 587
+          secure: true
+          username: ${{ secrets.TUTA_EMAIL }}
+          password: ${{ secrets.TUTA_PASS }}
+          to: ${{ secrets.TUTA_EMAIL }}
+          from: TYST Canary <${{ secrets.TUTA_EMAIL }}>
+          subject: "TYST Canary — update required in ${{ steps.canary.outputs.days_left }} days"
+          body: |
+            TYST Warrant Canary needs to be updated.
+
+            Days remaining : ${{ steps.canary.outputs.days_left }}
+            Update due by  : ${{ steps.canary.outputs.next_due }}
+
+            HOW TO UPDATE:
+            1. Open canary.html
+            2. Update LAST_UPDATED to today's date
+            3. Update NEXT_DUE to +30 days from today
+            4. Run:
+               git add canary.html
+               git commit -m "canary: update YYYY-MM-DD"
+               git push
+
+            Repo: https://github.com/hendy-unggul/tyst
+            Canary: https://tyst.site/canary
+
+            -- TYST automated reminder
+            -- this email was sent because the canary deadline is approaching
