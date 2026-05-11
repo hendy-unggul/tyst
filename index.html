@@ -561,7 +561,155 @@ const T = {
     sendFailed: 'Misslyckades. Försök igen.',
     signedOut: 'Utloggad.',
     accountCreatedAlert: (u) => `Konto skapat!\n\nAnvändarnamn: ${u}\n\nSpara din PIN — den kan inte återställas.`,
-  }
+  },
+  ru: {
+    logoSub: 'v2.2 · защищённый канал',
+    termStatus: 'КАНАЛ АКТИВЕН',
+    cl1: 'генерация эфемерной пары ключей готова',
+    cl2: 'шифр aes-gcm-256 загружен',
+    cl3: 'анонимный ретранслятор настроен · задержка 2–47с',
+    cl4: 'самоуничтожение вооружено · ttl 5с после прочтения',
+    cl5: 'ожидание передачи',
+    sectCompose: 'составить зашифрованное сообщение',
+    labelTo: 'получатель',
+    labelMsg: 'сообщение',
+    toPlaceholder: 'имя пользователя',
+    msgPlaceholder: 'введите сообщение...',
+    trustTxt: 'ваша личность никогда не раскрывается — даже серверу',
+    trustLnk: 'как это работает ↗',
+    sendTxt: '▶ передать зашифрованное',
+    inboxTxt: '▼ открыть защищённый входящий',
+    inboxBadge: 'новое',
+    inboxTitle: '◆ защищённый входящий',
+    emptyTxt: 'нет сообщений',
+    readFoot1: 'самоуничтожение вооружено',
+    readFoot2: 'записи не ведутся',
+    readBack: '← назад',
+    howTitle: 'ПРОТОКОЛ',
+    how1h: 'личность отправителя не отслеживается',
+    how1p: 'сообщения проходят через анонимный ретранслятор. сервер видит только IP ретранслятора, не ваш.',
+    how2h: 'сервер не может читать ваши сообщения',
+    how2p: 'шифрование выполняется на вашем устройстве. закрытый ключ никогда не покидает устройство.',
+    how3h: 'временные метки рандомизированы',
+    how3p: 'случайная задержка 2–47 секунд исключает корреляционные атаки по времени.',
+    how4h: 'уничтожается после прочтения',
+    how4p: 'через 5 секунд после открытия сообщение безвозвратно удаляется с сервера.',
+    howTech: '<b>протокол</b> · ecdh p-256 · aes-gcm 256-бит · hkdf-sha256<br><b>дополнение</b> · блоки по 256 байт<br><b>ретранслятор</b> · заголовки удалены<br><b>хранение</b> · ключ только на устройстве',
+    howClose: '[ закрыть ]',
+    ps1: 'генерация эфемерной пары ключей',
+    ps2: 'шифрование сообщения',
+    ps3: 'маршрутизация через анонимный ретранслятор',
+    sentTransmitted: 'ПЕРЕДАНО',
+    sentOk: 'сообщение отправлено · источник неизвестен',
+    sentSub: 'данные в пути. уничтожатся через 5с после прочтения получателем.',
+    btnClose1: '[ закрыть ]',
+    noPubHead: 'НЕТ КЛЮЧА',
+    noPubErr: 'у получателя нет зарегистрированного ключа',
+    noPubSub: 'пользователь должен войти хотя бы один раз для получения зашифрованных сообщений.',
+    btnClose2: '[ назад ]',
+    lmDisc: 'анонимный канал. личность не верифицирована.<br>подключаясь, вы подтверждаете что вам 17+ и принимаете полную ответственность.',
+    lmLoginTitle: 'ПОДКЛЮЧИТЬСЯ',
+    lmLabelU1: 'имя пользователя',
+    lmLabelP1: '6-значный PIN',
+    lmBtnLTxt: 'подключиться →',
+    lmSwToReg: 'нет аккаунта? зарегистрироваться',
+    lmNote1: 'потеря PIN = потеря аккаунта · восстановление невозможно',
+    lmRegTitle: 'РЕГИСТРАЦИЯ',
+    lmLabelU2: 'имя пользователя — формат <span style="color:var(--c1)">слово.слово</span>',
+    lmLabelP2: '6-значный PIN',
+    lmLabelP3: 'подтвердить PIN',
+    lmAgLabel: 'потеря PIN = потеря аккаунта — <b>НАВСЕГДА</b>, без восстановления',
+    lmBtnRTxt: 'зарегистрироваться →',
+    lmSwToLogin: 'уже зарегистрированы? подключиться',
+    signIn: 'Войти',
+    signOut: 'Выйти',
+    mhdr: '// расшифровано · обращаться осторожно',
+    langFlag: '🇪🇸', langLabel: 'ES', langTitle: 'Cambiar a español',
+    protoTxt: '<b>шифр</b> · ecdh p-256 · aes-gcm 256-бит · hkdf-sha256 &nbsp;|&nbsp;<b>дополн.</b> · блоки 256 байт &nbsp;|&nbsp;<b>ретранслятор</b> · заголовки удалены &nbsp;|&nbsp;<b>ключ</b> · только устройство',
+    verifying: 'Проверка…', processing: 'Обработка…',
+    signedIn: 'Вход выполнен!', accountCreated: 'Аккаунт создан!',
+    sessionExpired: 'Сессия истекла. Войдите снова.',
+    sendFailed: 'Ошибка. Попробуйте снова.', signedOut: 'Выход выполнен.',
+    accountCreatedAlert: (u) => `Аккаунт создан!
+
+Имя пользователя: ${u}
+
+Сохраните PIN — восстановление невозможно.`,
+  },
+  es: {
+    logoSub: 'v2.2 · canal seguro',
+    termStatus: 'CANAL ACTIVO',
+    cl1: 'generación de par de claves efímero lista',
+    cl2: 'cifrado aes-gcm-256 cargado',
+    cl3: 'retransmisor anónimo configurado · retardo 2–47s',
+    cl4: 'autodestrucción armada · ttl 5s tras lectura',
+    cl5: 'esperando transmisión',
+    sectCompose: 'redactar mensaje cifrado',
+    labelTo: 'destinatario',
+    labelMsg: 'mensaje',
+    toPlaceholder: 'nombre de usuario',
+    msgPlaceholder: 'escribe tu mensaje aquí...',
+    trustTxt: 'tu identidad nunca se revela — ni siquiera al servidor',
+    trustLnk: 'cómo funciona ↗',
+    sendTxt: '▶ transmitir cifrado',
+    inboxTxt: '▼ abrir bandeja segura',
+    inboxBadge: 'nuevo',
+    inboxTitle: '◆ bandeja segura',
+    emptyTxt: 'sin mensajes',
+    readFoot1: 'autodestrucción armada',
+    readFoot2: 'sin registro',
+    readBack: '← volver',
+    howTitle: 'PROTOCOLO',
+    how1h: 'la identidad del remitente es inrastreable',
+    how1p: 'los mensajes se enrutan a través de un retransmisor anónimo. el servidor solo ve la IP del retransmisor, nunca la tuya.',
+    how2h: 'el servidor no puede leer tu mensaje',
+    how2p: 'el cifrado se ejecuta en tu dispositivo. tu clave privada nunca sale del dispositivo.',
+    how3h: 'el tiempo es aleatorio',
+    how3p: 'se inyecta un retardo aleatorio de 2–47 segundos contra ataques de correlación temporal.',
+    how4h: 'destruido tras la lectura',
+    how4p: '5 segundos después de que el destinatario abra el mensaje se elimina permanentemente del servidor.',
+    howTech: '<b>protocolo</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>relleno</b> · bloques de 256 bytes<br><b>retransmisor</b> · cabeceras eliminadas<br><b>almacenamiento</b> · clave privada solo en dispositivo',
+    howClose: '[ cerrar ]',
+    ps1: 'generando par de claves efímero',
+    ps2: 'cifrando mensaje',
+    ps3: 'enrutando vía retransmisor anónimo',
+    sentTransmitted: 'TRANSMITIDO',
+    sentOk: 'mensaje enviado · origen desconocido',
+    sentSub: 'el payload está en tránsito. se destruirá 5s después de que el destinatario lo abra.',
+    btnClose1: '[ cerrar ]',
+    noPubHead: 'SIN CLAVE',
+    noPubErr: 'el destinatario no tiene clave registrada',
+    noPubSub: 'este usuario debe iniciar sesión al menos una vez para recibir mensajes cifrados.',
+    btnClose2: '[ volver ]',
+    lmDisc: 'canal anónimo. identidad no verificada.<br>al conectarte confirmas que tienes 17+ y aceptas plena responsabilidad.',
+    lmLoginTitle: 'CONECTAR',
+    lmLabelU1: 'nombre de usuario',
+    lmLabelP1: 'PIN de 6 dígitos',
+    lmBtnLTxt: 'conectar →',
+    lmSwToReg: 'sin cuenta? registrarse',
+    lmNote1: 'PIN perdido = cuenta perdida · sin recuperación posible',
+    lmRegTitle: 'REGISTRO',
+    lmLabelU2: 'nombre de usuario — formato <span style="color:var(--c1)">palabra.palabra</span>',
+    lmLabelP2: 'PIN de 6 dígitos',
+    lmLabelP3: 'confirmar PIN',
+    lmAgLabel: 'PIN perdido = cuenta perdida — <b>PERMANENTE</b>, sin recuperación',
+    lmBtnRTxt: 'registrarse →',
+    lmSwToLogin: 'ya registrado? conectar',
+    signIn: 'Entrar',
+    signOut: 'Salir',
+    mhdr: '// descifrado · manejar con cuidado',
+    langFlag: '🇬🇧', langLabel: 'EN', langTitle: 'Switch to English',
+    protoTxt: '<b>cifr</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256 &nbsp;|&nbsp;<b>relleno</b> · bloques 256 bytes &nbsp;|&nbsp;<b>retrans.</b> · cabeceras eliminadas &nbsp;|&nbsp;<b>clave</b> · solo dispositivo',
+    verifying: 'Verificando…', processing: 'Procesando…',
+    signedIn: 'Sesión iniciada!', accountCreated: 'Cuenta creada!',
+    sessionExpired: 'Sesión expirada. Inicia sesión de nuevo.',
+    sendFailed: 'Error. Inténtalo de nuevo.', signedOut: 'Sesión cerrada.',
+    accountCreatedAlert: (u) => `¡Cuenta creada!
+
+Nombre de usuario: ${u}
+
+Guarda tu PIN — no hay recuperación posible.`,
+  },
 };
 
 let lang = localStorage.getItem('tyst_lang') || 'en';
@@ -623,7 +771,7 @@ function applyLang() {
   const lb=document.getElementById('langBtn');if(lb)lb.title=t('langTitle');
   // Dropdown lang item
   const ddlf=document.getElementById('ddLangFlag');if(ddlf)ddlf.textContent=t('langFlag');
-  const ddll=document.getElementById('ddLangLabel');if(ddll)ddll.textContent=lang==='en'?'switch to SV':'switch to EN';
+  const ddll=document.getElementById('ddLangLabel');const _ln={'en':'switch to SV','sv':'switch to RU','ru':'switch to ES','es':'switch to EN'};if(ddll)ddll.textContent=_ln[lang]||'switch to EN';
 
   // User section sign-in button (if guest)
   const signInBtn = document.querySelector('.btn-login');
@@ -635,7 +783,9 @@ function applyLang() {
 }
 
 function toggleLang() {
-  lang = lang === 'en' ? 'sv' : 'en';
+  const cycle = ['en','sv','ru','es'];
+  const idx = cycle.indexOf(lang);
+  lang = cycle[(idx + 1) % cycle.length];
   localStorage.setItem('tyst_lang', lang);
   applyLang();
 }
