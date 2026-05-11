@@ -148,12 +148,31 @@ h1{font-size:28px;color:var(--c0);letter-spacing:4px;margin-bottom:8px;text-shad
 
 </div>
 <script>
-// Auto-calculate dates
-const now = new Date();
-const last = now.toISOString().slice(0,10);
-const next = new Date(now.setMonth(now.getMonth()+1)).toISOString().slice(0,10);
-document.getElementById('lastUpdate').textContent = last;
-document.getElementById('nextUpdate').textContent = next;
+// CANARY UPDATE INSTRUCTIONS:
+// 1. Update LAST_UPDATED dan NEXT_DUE di bawah ini
+// 2. git add canary.html
+// 3. git commit -m "canary: update YYYY-MM-DD"
+// 4. git push
+// Lakukan sebelum tanggal NEXT_DUE — jangan sampai lewat 35 hari
+const LAST_UPDATED = '2026-05-11';
+const NEXT_DUE = '2026-06-11';
+const HARD_DEADLINE = '2026-06-15'; // 35 hari dari last update
+
+document.getElementById('lastUpdate').textContent = LAST_UPDATED;
+document.getElementById('nextUpdate').textContent = NEXT_DUE;
+
+// Warning kalau sudah dekat deadline
+const today = new Date().toISOString().slice(0,10);
+const daysLeft = Math.ceil((new Date(NEXT_DUE) - new Date(today)) / 86400000);
+if (daysLeft <= 7 && daysLeft > 0) {
+    const warn = document.createElement('div');
+    warn.style.cssText = 'background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.4);border-left:2px solid #ff6b35;padding:10px 14px;margin-top:16px;font-size:11px;color:#ff6b35;letter-spacing:.3px;';
+    warn.innerHTML = '⚠ canary update due in ' + daysLeft + ' day' + (daysLeft===1?'':'s') + ' · commit to github before ' + NEXT_DUE;
+    document.querySelector('.wrap').appendChild(warn);
+}
+if (today > HARD_DEADLINE) {
+    document.querySelector('.block').style.borderLeftColor = '#ff3b6f';
+}
 </script>
 </body>
 </html>
