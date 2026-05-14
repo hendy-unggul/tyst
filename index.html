@@ -11,99 +11,96 @@
   --bg:#040d0a;--bg2:#071210;--bg3:#0a1a14;--bg4:#0d2018;
   --c0:#00ff9d;--c1:#00b8ff;--c2:#ff6b35;--c3:#ffd700;--c4:#bf5fff;--c5:#ff3b6f;
   --dim:#1a3a2a;--dim2:#0f2a1e;
-  --txt:#b8f0d0;--txt2:#8ecfa8;--txt3:#5a9a72;
+  --txt:#b8f0d0;--txt2:#7abf9a;--txt3:#3a6a4a;
   --mono:'Share Tech Mono',monospace;--display:'VT323',monospace;
-  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,157,.012) 2px,rgba(0,255,157,.012) 4px);
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,157,.015) 2px,rgba(0,255,157,.015) 4px);
   --r:2px;
 }
 html{background:var(--bg)}
 body{background:var(--bg);color:var(--txt);font-family:var(--mono);font-size:13px;min-height:100svh;display:flex;flex-direction:column;background-image:var(--scan)}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,255,157,.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.3) 1px,rgba(0,0,0,.3) 2px);pointer-events:none;z-index:1;opacity:.4}
 
 .app{max-width:520px;margin:0 auto;width:100%;min-height:100svh;display:flex;flex-direction:column;position:relative;z-index:2;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
 
 /* HEADER */
 .hd{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--dim);background:var(--bg2);position:sticky;top:0;z-index:100}
-.logo{font-family:var(--display);font-size:32px;letter-spacing:4px;color:var(--c0);text-shadow:0 0 20px rgba(0,255,157,.6),0 0 40px rgba(0,255,157,.3);line-height:1}
-.logo-sub{font-size:11px;color:var(--txt3);letter-spacing:1px;font-family:var(--mono);margin-top:-2px}
+.logo{font-family:var(--display);font-size:26px;letter-spacing:5px;color:var(--c0);text-shadow:0 0 16px rgba(0,255,157,.5),0 0 32px rgba(0,255,157,.2);line-height:1}
+.logo-sub{font-size:10px;color:var(--txt2);letter-spacing:2.5px;font-family:var(--mono);margin-top:3px;opacity:.7}
 .hd-r{display:flex;align-items:center;gap:8px}
-
-/* LANGUAGE TOGGLE */
-.lang-toggle{font-family:var(--mono);font-size:11px;color:var(--txt3);background:transparent;border:1px solid var(--dim);padding:4px 9px;cursor:pointer;letter-spacing:.5px;transition:all .15s;display:flex;align-items:center;gap:5px}
-.lang-toggle:hover{border-color:var(--c0);color:var(--c0)}
-.lang-toggle .flag{font-size:13px;line-height:1}
-
-.btn-login{font-family:var(--mono);font-size:12px;color:var(--c0);background:transparent;border:1px solid var(--c0);padding:6px 14px;cursor:pointer;letter-spacing:.5px;transition:all .15s;text-transform:uppercase}
+.btn-login{font-family:var(--mono);font-size:11px;color:var(--c0);background:transparent;border:1px solid var(--c0);padding:5px 12px;cursor:pointer;letter-spacing:1px;transition:all .15s;text-transform:uppercase}
 .btn-login:hover{background:rgba(0,255,157,.08);box-shadow:0 0 8px rgba(0,255,157,.3)}
-.user-chip{font-family:var(--mono);font-size:12px;color:var(--c1);border:1px solid rgba(0,184,255,.3);padding:4px 10px;background:rgba(0,184,255,.05)}
-.btn-icon{width:30px;height:30px;background:transparent;border:1px solid var(--dim);color:var(--txt3);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.user-chip{font-family:var(--mono);font-size:11px;color:var(--c1);border:1px solid rgba(0,184,255,.3);padding:4px 10px;background:rgba(0,184,255,.05)}
+.btn-icon{width:28px;height:28px;background:transparent;border:1px solid var(--dim);color:var(--txt3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .btn-icon:hover{border-color:var(--c0);color:var(--c0)}
-.dd{position:absolute;top:60px;right:18px;background:var(--bg3);border:1px solid var(--dim);z-index:200;min-width:160px;display:none}
+.dd{position:absolute;top:58px;right:18px;background:var(--bg3);border:1px solid var(--dim);z-index:200;min-width:160px;display:none}
 .dd.show{display:block}
-.dd-item{padding:11px 16px;font-family:var(--mono);font-size:12px;color:var(--txt);cursor:pointer;border-bottom:1px solid var(--dim);letter-spacing:.3px;transition:background .1s}
+.dd-item{padding:10px 16px;font-family:var(--mono);font-size:11px;color:var(--txt);cursor:pointer;border-bottom:1px solid var(--dim);letter-spacing:.5px;transition:background .1s}
 .dd-item:hover{background:rgba(0,255,157,.05);color:var(--c0)}
 
 /* TERMINAL HEADER STRIP */
-.term-strip{padding:8px 18px;border-bottom:1px solid var(--dim);background:var(--bg3);display:flex;align-items:center;gap:8px;font-size:11px;color:var(--txt3);letter-spacing:.5px}
-.term-dot{width:5px;height:5px;border-radius:50%;background:var(--c0)}
+.term-strip{padding:8px 18px;border-bottom:1px solid var(--dim);background:var(--bg3);display:flex;align-items:center;gap:8px;font-size:10px;color:var(--txt3);letter-spacing:1px}
+.term-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);animation:blink 2s step-end infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .term-status{color:var(--c0)}
 
 /* CONSOLE OUTPUT — HERO */
-.console-sect{padding:18px 18px;border-bottom:1px solid var(--dim);background:var(--bg2);position:relative;overflow:hidden;min-height:120px}
-.c-line{font-family:var(--mono);font-size:12px;line-height:2;white-space:pre;overflow:hidden}
+.console-sect{padding:20px 18px;border-bottom:1px solid var(--dim);background:var(--bg2);position:relative;overflow:hidden;min-height:140px}
+.console-sect::before{content:'';position:absolute;inset:0;background:var(--scan);pointer-events:none}
+.c-line{font-family:var(--mono);font-size:12px;line-height:1.9;white-space:pre;overflow:hidden}
 .c-prompt{color:var(--c0)}
 .c-cmd{color:var(--txt)}
 .c-out1{color:var(--c1)}
 .c-out2{color:var(--c3)}
 .c-out3{color:var(--c4)}
+.c-out4{color:var(--c2)}
 .c-out5{color:var(--c0)}
 .c-dim{color:var(--txt3)}
 .c-err{color:var(--c5)}
 .c-ok{color:var(--c0)}
-.cursor{display:inline-block;width:8px;height:14px;background:var(--c0);animation:cursor-blink .9s step-end infinite;vertical-align:middle;margin-left:2px;box-shadow:0 0 6px rgba(0,255,157,.8)}
-@keyframes cursor-blink{0%,100%{opacity:1}50%{opacity:0}}
+        /* single green caret on recipient input only */
+        /* single green caret on recipient input only */
 
 /* COMPOSE SECTION */
-.compose-sect{padding:22px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
-.sect-head{font-size:11px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.compose-sect{padding:20px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
+.sect-head{font-size:10px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .sect-head::before{content:'>';color:var(--c0)}
-.field{margin-bottom:16px}
-.f-label{font-size:12px;color:var(--txt2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.f-label::before{content:'//';color:var(--dim);font-size:10px}
-.f-input{width:100%;padding:11px 13px;background:var(--bg3);border:1px solid var(--dim);border-left:2px solid var(--c1);color:var(--txt);font-size:13px;font-family:var(--mono);outline:none;transition:all .15s;-webkit-appearance:none;caret-color:var(--c0)}
+.field{margin-bottom:14px}
+.f-label{font-size:10px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.f-label::before{content:'//';color:var(--dim);font-size:9px}
+.f-input{width:100%;padding:10px 13px;background:var(--bg3);border:1px solid var(--dim);border-left:2px solid var(--c1);color:var(--txt);font-size:13px;font-family:var(--mono);outline:none;transition:all .15s;-webkit-appearance:none;caret-color:var(--c0)}
 .f-input:focus{border-color:var(--c0);border-left-color:var(--c0);background:var(--bg4);box-shadow:0 0 0 1px rgba(0,255,157,.1) inset}
 .f-input::placeholder{color:var(--txt3)}
-.f-ta{resize:none;line-height:1.7;min-height:90px}
-.char{font-size:11px;color:var(--txt3);text-align:right;margin-top:5px}
+.f-ta{resize:none;line-height:1.65;min-height:90px}
+.char{font-size:10px;color:var(--txt3);text-align:right;margin-top:4px}
 .char span{color:var(--c1)}
 
-/* TRUST STRIP — upgraded prominence */
-.trust{display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(0,255,157,.04);border:1px solid rgba(0,255,157,.18);border-left:3px solid var(--c0);margin-bottom:18px}
-.trust-dot{width:6px;height:6px;border-radius:50%;background:var(--c0);flex-shrink:0;box-shadow:0 0 6px var(--c0);animation:blink 2s ease-in-out infinite}
-.trust-txt{font-size:12px;color:var(--txt);flex:1;letter-spacing:.3px}
-.trust-lnk{font-size:11px;color:var(--c0);opacity:.6;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:opacity .15s;letter-spacing:.3px}
+/* TRUST STRIP */
+.trust{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(0,255,157,.03);border:1px solid rgba(0,255,157,.1);border-left:2px solid var(--c0);margin-bottom:16px}
+.trust-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);flex-shrink:0;box-shadow:0 0 4px var(--c0);animation:blink 2s ease-in-out infinite}
+.trust-txt{font-size:11px;color:var(--txt2);flex:1;letter-spacing:.3px}
+.trust-lnk{font-size:10px;color:var(--c0);opacity:.5;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:opacity .15s;letter-spacing:.5px}
 .trust-lnk:hover{opacity:1}
 
-/* SEND BUTTON — solid fill, stronger CTA */
-.btn-send{width:100%;padding:14px;background:rgba(0,255,157,.08);border:1px solid var(--c0);color:var(--c0);font-family:var(--mono);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+/* SEND BUTTON */
+.btn-send{width:100%;padding:13px;background:transparent;border:1px solid var(--c0);color:var(--c0);font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
 .btn-send::before{content:'';position:absolute;inset:0;background:var(--c0);transform:translateX(-100%);transition:transform .2s;z-index:0}
 .btn-send:hover::before{transform:translateX(0)}
-.btn-send:hover{color:var(--bg);box-shadow:0 0 24px rgba(0,255,157,.35)}
+.btn-send:hover{color:var(--bg);box-shadow:0 0 20px rgba(0,255,157,.3)}
 .btn-send span{position:relative;z-index:1}
 .btn-send:active{transform:scale(.99)}
-.btn-send:disabled{border-color:var(--dim);color:var(--txt3);background:transparent;cursor:not-allowed}
+.btn-send:disabled{border-color:var(--dim);color:var(--txt3);cursor:not-allowed}
 .btn-send:disabled::before{display:none}
 
 /* INBOX BUTTON */
 .inbox-sect{padding:12px 18px;border-bottom:1px solid var(--dim);display:none}
-.btn-inbox{width:100%;padding:12px 14px;background:transparent;border:1px solid var(--dim);font-family:var(--mono);font-size:12px;color:var(--txt3);cursor:pointer;display:flex;justify-content:space-between;align-items:center;letter-spacing:.5px;transition:all .15s}
+.btn-inbox{width:100%;padding:11px 14px;background:transparent;border:1px solid var(--dim);font-family:var(--mono);font-size:11px;color:var(--txt3);cursor:pointer;display:flex;justify-content:space-between;align-items:center;letter-spacing:1px;transition:all .15s}
 .btn-inbox:hover{border-color:var(--c1);color:var(--c1)}
-.inbox-badge{background:var(--c5);color:#fff;font-size:10px;padding:2px 7px;display:none;font-family:var(--mono);letter-spacing:.5px}
+.inbox-badge{background:var(--c5);color:#fff;font-size:9px;padding:2px 7px;display:none;font-family:var(--mono);letter-spacing:1px}
 
 /* PROTOCOL FOOTER */
 .proto{padding:16px 18px;margin-top:auto;border-top:1px solid var(--dim)}
-.proto-txt{font-size:11px;color:var(--txt3);line-height:2.2;letter-spacing:.3px}
+.proto-txt{font-size:10px;color:var(--txt3);line-height:2.2;letter-spacing:.3px}
 .proto-txt b{color:var(--txt2)}
 
 /* PROCESSING OVERLAY */
@@ -113,49 +110,49 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .p-layer{position:absolute;inset:0;background:var(--bg2);display:none;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:32px 28px}
 .p-layer.show{display:flex}
 .proc-console{font-size:12px;line-height:2;width:100%}
-.proc-step{color:var(--txt3);transition:color .3s;font-size:12px;letter-spacing:.3px}
+.proc-step{color:var(--txt3);transition:color .3s;font-size:11px;letter-spacing:.5px}
 .proc-step::before{content:'[ ] ';color:var(--txt3);transition:color .3s}
 .proc-step.act{color:var(--c3)}
 .proc-step.act::before{content:'[~] ';color:var(--c3)}
 .proc-step.done{color:var(--c0)}
 .proc-step.done::before{content:'[✓] ';color:var(--c0)}
 .sent-head{font-family:var(--display);font-size:38px;color:var(--c0);letter-spacing:3px;text-shadow:0 0 20px rgba(0,255,157,.5);line-height:1;margin-bottom:4px}
-.sent-sub{font-size:12px;color:var(--txt3);line-height:1.8;max-width:320px;letter-spacing:.3px}
-.btn-dismiss{background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:12px;padding:9px 20px;cursor:pointer;letter-spacing:.5px;transition:all .15s;margin-top:8px}
+.sent-sub{font-size:11px;color:var(--txt3);line-height:1.8;max-width:320px;letter-spacing:.3px}
+.btn-dismiss{background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:11px;padding:8px 20px;cursor:pointer;letter-spacing:1px;transition:all .15s;margin-top:8px}
 .btn-dismiss:hover{border-color:var(--c0);color:var(--c0)}
 .nopub-head{font-family:var(--display);font-size:28px;color:var(--c2);letter-spacing:2px;text-shadow:0 0 12px rgba(255,107,53,.4)}
-.nopub-sub{font-size:12px;color:var(--txt3);line-height:1.8;max-width:280px;letter-spacing:.3px}
+.nopub-sub{font-size:11px;color:var(--txt3);line-height:1.8;max-width:280px;letter-spacing:.3px}
 
 /* INBOX PANEL */
 .inbox-panel{position:fixed;inset:0;background:var(--bg);z-index:1600;display:none;flex-direction:column;max-width:520px;margin:0 auto;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
 .inbox-panel.show{display:flex}
 .panel-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
-.panel-title{font-family:var(--mono);font-size:12px;color:var(--c0);letter-spacing:1.5px;text-transform:uppercase}
-.btn-close{background:transparent;border:1px solid var(--dim);color:var(--txt3);width:28px;height:28px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.panel-title{font-family:var(--mono);font-size:10px;color:var(--c0);letter-spacing:3px;text-transform:uppercase}
+.btn-close{background:transparent;border:1px solid var(--dim);color:var(--txt3);width:26px;height:26px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .btn-close:hover{border-color:var(--c5);color:var(--c5)}
 .msg-list{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--dim) transparent}
-.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--txt3);font-size:12px;letter-spacing:1px}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--txt3);font-size:11px;letter-spacing:2px}
 .empty-icon{font-family:var(--display);font-size:48px;color:var(--dim);line-height:1}
 .msg-row{padding:14px 18px;border-bottom:1px solid var(--dim);cursor:pointer;transition:background .1s;position:relative}
 .msg-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--c1);opacity:0;transition:opacity .15s;box-shadow:0 0 6px var(--c1)}
 .msg-row:hover{background:rgba(0,184,255,.04)}
 .msg-row:hover::before{opacity:1}
 .msg-meta{display:flex;justify-content:space-between;margin-bottom:4px}
-.msg-from{font-size:11px;color:var(--c1);letter-spacing:.5px}
-.msg-ttl{font-size:11px;color:var(--c5)}
-.msg-prev{font-size:12px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px}
+.msg-from{font-size:10px;color:var(--c1);letter-spacing:1px}
+.msg-ttl{font-size:10px;color:var(--c5)}
+.msg-prev{font-size:11px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px}
 
 /* READ PANEL */
 .read-panel{position:fixed;inset:0;background:var(--bg);z-index:1700;display:none;flex-direction:column;max-width:520px;margin:0 auto;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
 .read-panel.show{display:flex}
 .read-hd{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
-.btn-back{background:transparent;border:1px solid var(--dim);color:var(--txt3);padding:5px 12px;cursor:pointer;font-family:var(--mono);font-size:12px;transition:all .15s;letter-spacing:.3px}
+.btn-back{background:transparent;border:1px solid var(--dim);color:var(--txt3);padding:4px 10px;cursor:pointer;font-family:var(--mono);font-size:11px;transition:all .15s;letter-spacing:.5px}
 .btn-back:hover{border-color:var(--c0);color:var(--c0)}
-.read-from{font-size:11px;color:var(--c1);flex:1;letter-spacing:.5px}
+.read-from{font-size:10px;color:var(--c1);flex:1;letter-spacing:1px}
 .read-count{font-family:var(--display);font-weight:400;font-size:36px;color:var(--c5);line-height:1;text-shadow:0 0 12px rgba(255,59,111,.5)}
 
-/* MESSAGE BODY */
-.read-body{flex:1;padding:22px 18px;overflow-y:auto;background:var(--bg);font-size:13px;line-height:2;letter-spacing:.3px;background-image:var(--scan)}
+/* MESSAGE BODY — hacker multicolor lines */
+.read-body{flex:1;padding:22px 18px;overflow-y:auto;background:var(--bg);font-size:13px;line-height:1.9;letter-spacing:.3px;background-image:var(--scan)}
 .read-body .ml0{color:var(--c0)}
 .read-body .ml1{color:var(--c1)}
 .read-body .ml2{color:var(--c3)}
@@ -163,9 +160,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .read-body .ml4{color:var(--c2)}
 .read-body .ml5{color:var(--txt)}
 .read-body .ml6{color:var(--txt2)}
-.read-body .mhdr{color:var(--txt3);font-size:11px;letter-spacing:1px;margin-bottom:6px}
-.read-foot{border-top:1px solid var(--dim);padding:9px 18px;display:flex;justify-content:space-between;background:var(--bg2)}
-.read-foot span{font-size:11px;color:var(--txt3);letter-spacing:.5px;text-transform:uppercase}
+.read-body .mhdr{color:var(--txt3);font-size:10px;letter-spacing:2px;margin-bottom:4px}
+.read-foot{border-top:1px solid var(--dim);padding:8px 18px;display:flex;justify-content:space-between;background:var(--bg2)}
+.read-foot span{font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase}
 @keyframes burn{0%{opacity:1;filter:brightness(1)}40%{opacity:.8;filter:brightness(2) hue-rotate(40deg)}100%{opacity:0;filter:brightness(4) blur(4px);transform:translateY(-8px)}}
 .burning{animation:burn .6s ease-in forwards}
 
@@ -175,16 +172,16 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .how-sheet{background:var(--bg2);border:1px solid var(--dim);border-left:2px solid var(--c4);border-bottom:none;max-width:520px;width:100%;padding:24px 22px 36px;max-height:80svh;overflow-y:auto;box-shadow:0 -4px 30px rgba(191,95,255,.1)}
 .how-title{font-family:var(--display);font-size:26px;color:var(--c4);letter-spacing:3px;margin-bottom:20px;text-shadow:0 0 14px rgba(191,95,255,.4)}
 .how-row{display:flex;gap:14px;margin-bottom:18px}
-.how-num{width:22px;height:22px;border:1px solid var(--c4);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--c4);flex-shrink:0;margin-top:2px}
-.how-h{font-size:13px;color:var(--txt);margin-bottom:4px;letter-spacing:.3px}
-.how-p{font-size:12px;color:var(--txt3);line-height:1.85;letter-spacing:.3px}
-.how-tech{background:var(--bg3);border:1px solid var(--dim);padding:12px 14px;margin-top:4px;font-size:11px;color:var(--txt3);line-height:2.2;letter-spacing:.3px}
+.how-num{width:22px;height:22px;border:1px solid var(--c4);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--c4);flex-shrink:0;margin-top:2px}
+.how-h{font-size:12px;color:var(--txt);margin-bottom:4px;letter-spacing:.5px}
+.how-p{font-size:11px;color:var(--txt3);line-height:1.85;letter-spacing:.3px}
+.how-tech{background:var(--bg3);border:1px solid var(--dim);padding:12px 14px;margin-top:4px;font-size:10px;color:var(--txt3);line-height:2.2;letter-spacing:.3px}
 .how-tech b{color:var(--txt2)}
-.btn-how-close{width:100%;margin-top:18px;padding:12px;background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:12px;cursor:pointer;letter-spacing:.5px;transition:all .15s}
+.btn-how-close{width:100%;margin-top:18px;padding:11px;background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:1px;transition:all .15s}
 .btn-how-close:hover{border-color:var(--c4);color:var(--c4)}
 
 /* TOAST */
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--c0);padding:10px 20px;border:1px solid var(--c0);font-family:var(--mono);font-size:12px;z-index:9998;display:none;white-space:nowrap;letter-spacing:.3px;box-shadow:0 0 16px rgba(0,255,157,.2)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--c0);padding:9px 18px;border:1px solid var(--c0);font-family:var(--mono);font-size:11px;z-index:9998;display:none;white-space:nowrap;letter-spacing:.5px;box-shadow:0 0 16px rgba(0,255,157,.2)}
 .toast.show{display:block}
 
 /* LOGIN MODAL */
@@ -193,35 +190,42 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .lm-card{background:var(--bg2);border:1px solid var(--dim);border-top:2px solid var(--c0);max-width:360px;width:100%;box-shadow:0 0 40px rgba(0,255,157,.08)}
 .lm-top{padding:18px 22px 14px;border-bottom:1px solid var(--dim);background:var(--bg3)}
 .lm-wordmark{font-family:var(--display);font-size:30px;letter-spacing:4px;color:var(--c0);text-shadow:0 0 16px rgba(0,255,157,.5);line-height:1;margin-bottom:6px}
-.lm-disc{font-size:12px;color:var(--txt3);line-height:1.9;letter-spacing:.3px}
+.lm-disc{font-size:10px;color:var(--txt3);line-height:1.9;letter-spacing:.3px}
 .lm-body{padding:20px 22px;position:relative}
-.lm-x{position:absolute;top:12px;right:12px;background:transparent;border:1px solid var(--dim);color:var(--txt3);width:26px;height:26px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.lm-x{position:absolute;top:12px;right:12px;background:transparent;border:1px solid var(--dim);color:var(--txt3);width:24px;height:24px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .lm-x:hover{border-color:var(--c5);color:var(--c5)}
 .lm-title{font-family:var(--display);font-size:22px;letter-spacing:3px;color:var(--txt);margin-bottom:16px}
-.lm-label{font-size:12px;color:var(--txt3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px;display:block}
+.lm-label{font-size:10px;color:var(--txt3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;display:block}
 .lm-input{width:100%;background:var(--bg3);border:1px solid var(--dim);border-left:2px solid var(--c1);padding:10px 12px;color:var(--txt);font-family:var(--mono);font-size:13px;outline:none;margin-bottom:11px;transition:all .15s;caret-color:var(--c0)}
 .lm-input:focus{border-color:var(--c0);border-left-color:var(--c0);background:var(--bg4)}
 .lm-input::placeholder{color:var(--txt3)}
 .lm-pin{text-align:center;letter-spacing:.7em;font-size:18px;-webkit-text-security:disc}
 .lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:12px}
-.lm-fb{font-size:12px;padding:8px 10px;border:1px solid;margin-bottom:10px;display:none;line-height:1.5;letter-spacing:.3px}
+.lm-fb{font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:10px;display:none;line-height:1.5;letter-spacing:.3px}
 .lm-fb.show{display:block}
 .lm-fb.e{border-color:var(--c5);color:var(--c5);background:rgba(255,59,111,.05)}
 .lm-fb.s{border-color:var(--c0);color:var(--c0);background:rgba(0,255,157,.05)}
-.lm-btn{width:100%;background:transparent;color:var(--c0);border:1px solid var(--c0);padding:12px;font-family:var(--mono);font-size:13px;letter-spacing:1.5px;cursor:pointer;transition:all .2s;text-transform:uppercase;position:relative;overflow:hidden}
+.lm-btn{width:100%;background:transparent;color:var(--c0);border:1px solid var(--c0);padding:12px;font-family:var(--mono);font-size:13px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase;position:relative;overflow:hidden}
 .lm-btn::before{content:'';position:absolute;inset:0;background:var(--c0);transform:translateX(-100%);transition:transform .2s;z-index:0}
 .lm-btn:hover::before{transform:translateX(0)}
 .lm-btn:hover{color:var(--bg)}
 .lm-btn span{position:relative;z-index:1}
 .lm-btn:disabled{border-color:var(--dim);color:var(--txt3);cursor:not-allowed}
 .lm-btn:disabled::before{display:none}
-.lm-sw{text-align:center;margin-top:10px;font-size:12px;color:var(--txt3);letter-spacing:.3px}
-.lm-sw button{background:transparent;border:none;color:var(--c1);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-family:var(--mono);font-size:12px;letter-spacing:.3px}
-.lm-note{font-size:11px;color:var(--txt3);text-align:center;margin-top:7px;letter-spacing:.3px}
+.lm-sw{text-align:center;margin-top:10px;font-size:10px;color:var(--txt3);letter-spacing:.3px}
+.lm-sw button{background:transparent;border:none;color:var(--c1);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:.3px}
+.lm-note{font-size:9px;color:var(--txt3);text-align:center;margin-top:7px;letter-spacing:.3px}
 .lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
 .lm-agree input{margin-top:2px;width:13px;height:13px;accent-color:var(--c0);flex-shrink:0}
-.lm-agree label{font-size:12px;color:var(--txt3);line-height:1.6;cursor:pointer;letter-spacing:.3px}
+.lm-agree label{font-size:10px;color:var(--txt3);line-height:1.6;cursor:pointer;letter-spacing:.3px}
 .lm-agree label b{color:var(--c5)}
+
+        /* LANGUAGE FLAGS */
+        .lang-switcher{display:flex;align-items:center;gap:2px;margin-left:10px}
+        .lang-flag{width:18px;height:13px;cursor:pointer;opacity:.3;transition:opacity .15s,transform .15s;border-radius:1px;overflow:hidden;flex-shrink:0;background-size:cover;background-position:center}
+        .lang-flag:hover{opacity:.75;transform:scale(1.1)}
+        .lang-flag.active{opacity:1;transform:scale(1.1);box-shadow:0 0 4px rgba(0,255,157,.5)}
+
 </style>
 </head>
 <body>
@@ -229,64 +233,62 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <header class="hd">
     <div>
       <div class="logo">TYST</div>
-      <div class="logo-sub" id="logoSub">v2.1 · secure channel</div>
+      <div class="logo-sub">SECURE CHANNEL</div>
     </div>
-    <div class="hd-r">
-
-      <div id="userSection"></div>
-    </div>
+    <div class="hd-r" id="userSection"></div>
   </header>
 
   <div class="term-strip">
     <span class="term-dot"></span>
-    <span class="term-status" id="termStatus">CHANNEL ACTIVE</span>
-    <span style="margin-left:auto;font-size:11px" id="termClock"></span>
+    <span class="term-status">CHANNEL ACTIVE</span>
+    <span style="margin-left:auto;font-size:9px" id="termClock"></span>
+    <div class="lang-switcher" id="langSwitcher"></div>
   </div>
 
   <!-- CONSOLE OUTPUT -->
   <div class="console-sect" id="consoleSect">
     <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">init --protocol ecdh-p256</span></div>
-    <div class="c-line"><span class="c-out1">[ OK ]</span> <span class="c-dim" id="cl1">ephemeral keypair generation ready</span></div>
-    <div class="c-line"><span class="c-out2">[ OK ]</span> <span class="c-dim" id="cl2">aes-gcm-256 cipher loaded</span></div>
-    <div class="c-line"><span class="c-out3">[ OK ]</span> <span class="c-dim" id="cl3">anonymous relay configured · delay 2–47s</span></div>
-    <div class="c-line"><span class="c-out5">[ OK ]</span> <span class="c-dim" id="cl4">self-destruct armed · ttl 5s post-read</span></div>
-    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd" id="cl5">awaiting transmission</span></div>
+    <div class="c-line"><span class="c-out1">[ OK ]</span> <span class="c-dim">ephemeral keypair generation ready</span></div>
+    <div class="c-line"><span class="c-out2">[ OK ]</span> <span class="c-dim">aes-gcm-256 cipher loaded</span></div>
+    <div class="c-line"><span class="c-out3">[ OK ]</span> <span class="c-dim">anonymous relay configured · delay 2–47s</span></div>
+    <div class="c-line"><span class="c-out5">[ OK ]</span> <span class="c-dim">self-destruct timer armed · ttl 5s post-read</span></div>
+    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">await input</span></div>
   </div>
 
   <!-- COMPOSE -->
   <section class="compose-sect">
-    <div class="sect-head" id="sectCompose">compose encrypted message</div>
+    <div class="sect-head">compose encrypted message</div>
     <div class="field">
-      <label class="f-label" for="tystTo" id="labelTo">recipient</label>
-      <input type="text" class="f-input" id="tystTo" placeholder="username"
+      <label class="f-label" for="tystTo">recipient</label>
+      <input type="text" class="f-input" id="tystTo" placeholder="target.username"
         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="tystValidate()">
     </div>
     <div class="field">
-      <label class="f-label" for="tystMsg" id="labelMsg">message</label>
-      <textarea class="f-input f-ta" id="tystMsg" placeholder="write your message here..."
+      <label class="f-label" for="tystMsg">payload</label>
+      <textarea class="f-input f-ta" id="tystMsg" placeholder="// enter message..."
         maxlength="500" oninput="tystValidate();tystChar()"></textarea>
-      <div class="char"><span id="charN">0</span> / 500</div>
+      <div class="char"><span id="charN">0</span> / 500 bytes</div>
     </div>
     <div class="trust">
       <div class="trust-dot"></div>
-      <span class="trust-txt" id="trustTxt">your identity is never revealed — not even to the server</span>
-      <span class="trust-lnk" onclick="showHow()" id="trustLnk">how it works ↗</span>
+      <span class="trust-txt">origin is unknown to anyone, including the server</span>
+      <span class="trust-lnk" onclick="showHow()">protocol ↗</span>
     </div>
     <button class="btn-send" id="sendBtn" disabled onclick="tystSend()">
-      <span id="sendTxt">&#x25B6; send encrypted</span>
+      <span>&#x25B6; transmit encrypted</span>
     </button>
   </section>
 
   <!-- INBOX -->
   <section class="inbox-sect" id="inboxSect">
     <button class="btn-inbox" id="inboxBtn">
-      <span id="inboxTxt">&#x25BC; open secure inbox</span>
-      <span class="inbox-badge" id="inboxBadge" data-en="new" data-sv="ny">new</span>
+      <span>&#x25BC; open secure inbox</span>
+      <span class="inbox-badge" id="inboxBadge">new</span>
     </button>
   </section>
 
   <footer class="proto">
-    <div class="proto-txt" id="protoTxt">
+    <div class="proto-txt">
       <b>enc</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256 &nbsp;|&nbsp;
       <b>pad</b> · 256-byte blocks &nbsp;|&nbsp;
       <b>relay</b> · header-stripped · timing-randomised &nbsp;|&nbsp;
@@ -301,22 +303,22 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="p-layer" id="lProc">
       <div class="proc-console">
         <div class="c-line" style="margin-bottom:8px"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">encrypt --send</span></div>
-        <div class="proc-step" id="ps1" data-en="generating ephemeral keypair" data-sv="genererar efemärt nyckelpar">generating ephemeral keypair</div>
-        <div class="proc-step" id="ps2" data-en="encrypting message" data-sv="krypterar meddelandet">encrypting message</div>
-        <div class="proc-step" id="ps3" data-en="routing via anonymous relay" data-sv="dirigerar via anonym relä">routing via anonymous relay</div>
+        <div class="proc-step" id="ps1">generating ephemeral keypair</div>
+        <div class="proc-step" id="ps2">encrypting message payload</div>
+        <div class="proc-step" id="ps3">routing via anonymous relay</div>
       </div>
     </div>
     <div class="p-layer" id="lSent">
-      <div class="sent-head" data-en="TRANSMITTED" data-sv="SKICKAT">TRANSMITTED</div>
-      <div class="c-line" style="margin-bottom:8px"><span class="c-ok">[ OK ]</span> <span class="c-dim" id="sentOk" data-en="message released · origin unknown" data-sv="meddelande skickat · ursprung okänt">message released · origin unknown</span></div>
+      <div class="sent-head">TRANSMITTED</div>
+      <div class="c-line" style="margin-bottom:8px"><span class="c-ok">[ OK ]</span> <span class="c-dim">message released · origin unknown</span></div>
       <div class="sent-sub" id="sentSub">payload is in transit. will be destroyed 5s after recipient opens it.</div>
-      <button class="btn-dismiss" onclick="closeProcOv()" id="btnClose1">[ close ]</button>
+      <button class="btn-dismiss" onclick="closeProcOv()">[ close ]</button>
     </div>
     <div class="p-layer" id="lNoPub">
-      <div class="nopub-head" data-en="NO PUBKEY" data-sv="INGEN NYCKEL">NO PUBKEY</div>
-      <div class="c-line" style="margin-bottom:8px"><span class="c-err">[ ERR ]</span> <span class="c-dim" id="noPubErr" data-en="recipient has no registered key" data-sv="mottagaren har ingen registrerad nyckel">recipient has no registered key</span></div>
-      <div class="nopub-sub" id="noPubSub">this user must sign in at least once to receive encrypted messages.</div>
-      <button class="btn-dismiss" onclick="closeProcOv()" id="btnClose2">[ go back ]</button>
+      <div class="nopub-head">NO PUBKEY</div>
+      <div class="c-line" style="margin-bottom:8px"><span class="c-err">[ ERR ]</span> <span class="c-dim">recipient has no registered key</span></div>
+      <div class="nopub-sub">this user must sign in at least once to receive encrypted messages.</div>
+      <button class="btn-dismiss" onclick="closeProcOv()">[ go back ]</button>
     </div>
   </div>
 </div>
@@ -324,13 +326,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <!-- INBOX PANEL -->
 <div class="inbox-panel" id="inboxPanel">
   <div class="panel-hd">
-    <span class="panel-title" id="inboxTitle">&#x25C6; secure inbox</span>
+    <span class="panel-title">&#x25C6; secure inbox</span>
     <button class="btn-close" id="inboxClose">&#x2715;</button>
   </div>
   <div class="msg-list" id="msgList">
     <div class="empty-state">
-      <div class="empty-icon">○</div>
-      <div id="emptyTxt">no messages</div>
+      <div class="empty-icon">&#x25CB;</div>
+      <div>no messages</div>
     </div>
   </div>
 </div>
@@ -344,33 +346,21 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
   <div class="read-body" id="readBody"></div>
   <div class="read-foot">
-    <span id="readFoot1">self-destruct armed</span>
-    <span id="readFoot2">no record kept</span>
+    <span>self-destruct armed</span>
+    <span>no record kept</span>
   </div>
 </div>
 
 <!-- HOW IT WORKS -->
 <div class="how-ov" id="howOv">
   <div class="how-sheet">
-    <div class="how-title" id="howTitle">PROTOCOL</div>
-    <div class="how-row"><div class="how-num">1</div><div>
-      <div class="how-h" id="how1h">sender identity is untraceable</div>
-      <div class="how-p" id="how1p">messages route through an anonymous relay. the server only sees the relay IP, never yours. even if the server is seized, your identity is not there.</div>
-    </div></div>
-    <div class="how-row"><div class="how-num">2</div><div>
-      <div class="how-h" id="how2h">server cannot read your message</div>
-      <div class="how-p" id="how2p">encryption runs on your device before transmission. your private key never leaves your device — the server holds ciphertext only.</div>
-    </div></div>
-    <div class="how-row"><div class="how-num">3</div><div>
-      <div class="how-h" id="how3h">timing is randomised</div>
-      <div class="how-p" id="how3p">a random 2–47 second delay is injected so timing correlation attacks cannot identify the sender.</div>
-    </div></div>
-    <div class="how-row"><div class="how-num">4</div><div>
-      <div class="how-h" id="how4h">destroyed after reading</div>
-      <div class="how-p" id="how4p">5 seconds after the recipient opens the message it is permanently purged from the server. no backup. no log.</div>
-    </div></div>
-    <div class="how-tech" id="howTech"><b>protocol</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>padding</b> · 256-byte blocks — payload size does not leak<br><b>relay</b> · all identifying headers stripped before forwarding<br><b>storage</b> · private key is device-only, never transmitted</div>
-    <button class="btn-how-close" onclick="hideHow()" id="howClose">[ close ]</button>
+    <div class="how-title">PROTOCOL</div>
+    <div class="how-row"><div class="how-num">1</div><div><div class="how-h">sender identity is untraceable</div><div class="how-p">messages route through an anonymous relay. the server only sees the relay IP, never yours. even if the server is seized, your identity is not there.</div></div></div>
+    <div class="how-row"><div class="how-num">2</div><div><div class="how-h">server cannot read your message</div><div class="how-p">encryption runs on your device before transmission. your private key never leaves your device — the server holds ciphertext only.</div></div></div>
+    <div class="how-row"><div class="how-num">3</div><div><div class="how-h">timing is randomised</div><div class="how-p">a random 2–47 second delay is injected so timing correlation attacks cannot identify the sender.</div></div></div>
+    <div class="how-row"><div class="how-num">4</div><div><div class="how-h">destroyed after reading</div><div class="how-p">5 seconds after the recipient opens the message it is permanently purged from the server. no backup. no log.</div></div></div>
+    <div class="how-tech"><b>protocol</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>padding</b> · 256-byte blocks — payload size does not leak<br><b>relay</b> · all identifying headers stripped before forwarding<br><b>storage</b> · private key is device-only, never transmitted</div>
+    <button class="btn-how-close" onclick="hideHow()">[ close ]</button>
   </div>
 </div>
 
@@ -381,420 +371,267 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="lm-card">
     <div class="lm-top">
       <div class="lm-wordmark">TYST</div>
-      <div class="lm-disc" id="lmDisc">anonymous channel. identity unverified.<br>by connecting you confirm you are 17+ and accept full responsibility for transmitted content.</div>
+      <div class="lm-disc">anonymous channel. identity unverified.<br>by connecting you confirm you are 17+ and accept full responsibility for transmitted content.</div>
     </div>
     <div class="lm-body">
       <button class="lm-x" onclick="closeLM()">&#x2715;</button>
       <div id="lmLogin">
-        <div class="lm-title" id="lmLoginTitle">CONNECT</div>
-        <label class="lm-label" id="lmLabelU1">username</label>
+        <div class="lm-title">CONNECT</div>
+        <label class="lm-label">username</label>
         <input class="lm-input" id="lmU" placeholder="word.word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
-        <label class="lm-label" id="lmLabelP1">6-digit PIN</label>
+        <label class="lm-label">6-digit PIN</label>
         <input class="lm-input lm-pin" id="lmP" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
         <div class="lm-fb" id="lmFbL"></div>
-        <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()"><span id="lmBtnLTxt">connect &#x2192;</span></button>
-        <div class="lm-sw"><button onclick="lmSwitch('reg')" id="lmSwToReg">no account? register</button></div>
-        <div class="lm-note" id="lmNote1">lost PIN = lost account · no recovery possible</div>
+        <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()"><span>connect &#x2192;</span></button>
+        <div class="lm-sw"><button onclick="lmSwitch('reg')">no account? register</button></div>
+        <div class="lm-note">lost PIN = lost account · no recovery possible</div>
       </div>
       <div id="lmReg" style="display:none">
-        <div class="lm-title" id="lmRegTitle">REGISTER</div>
-        <label class="lm-label" id="lmLabelU2">username — format <span style="color:var(--c1)">word.word</span></label>
+        <div class="lm-title">REGISTER</div>
+        <label class="lm-label">username — format <span style="color:var(--c1)">word.word</span></label>
         <input class="lm-input" id="lmRU" placeholder="word.word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
-        <label class="lm-label" id="lmLabelP2">6-digit PIN</label>
+        <label class="lm-label">6-digit PIN</label>
         <input class="lm-input lm-pin" id="lmRP" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
-        <label class="lm-label" id="lmLabelP3">confirm PIN</label>
+        <label class="lm-label">confirm PIN</label>
         <input class="lm-input lm-pin" id="lmRP2" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
         <div class="lm-fb" id="lmFbR"></div>
-        <div class="lm-agree"><input type="checkbox" id="lmAg" onchange="lmUpdateReg()"><label for="lmAg" id="lmAgLabel">lost PIN = lost account — <b>PERMANENT</b>, no recovery</label></div>
-        <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px"><span id="lmBtnRTxt">register &#x2192;</span></button>
-        <div class="lm-sw"><button onclick="lmSwitch('login')" id="lmSwToLogin">already registered? connect</button></div>
+        <div class="lm-agree"><input type="checkbox" id="lmAg" onchange="lmUpdateReg()"><label for="lmAg">lost PIN = lost account — <b>PERMANENT</b>, no recovery</label></div>
+        <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px"><span>register &#x2192;</span></button>
+        <div class="lm-sw"><button onclick="lmSwitch('login')">already registered? connect</button></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-/* ── TRANSLATIONS ─────────────────────────────────────────── */
-const T = {
+
+/* ── i18n ─────────────────────────────────────────────── */
+const LANGS = {
   en: {
-    logoSub: 'v2.1 · secure channel',
-    termStatus: 'CHANNEL ACTIVE',
-    cl1: 'ephemeral keypair generation ready',
-    cl2: 'aes-gcm-256 cipher loaded',
-    cl3: 'anonymous relay configured · delay 2–47s',
-    cl4: 'self-destruct armed · ttl 5s post-read',
-    cl5: 'await input',
-    sectCompose: 'compose encrypted message',
-    labelTo: 'recipient',
-    labelMsg: 'message',
-    toPlaceholder: 'username',
-    msgPlaceholder: 'write your message here...',
-    trustTxt: 'your identity is never revealed — not even to the server',
-    trustLnk: 'how it works ↗',
-    sendTxt: '▶ send encrypted',
-    inboxTxt: '▼ open secure inbox',
-    inboxBadge: 'new',
-    inboxTitle: '◆ secure inbox',
-    emptyTxt: 'no messages',
-    readFoot1: 'self-destruct armed',
-    readFoot2: 'no record kept',
-    readBack: '← back',
-    howTitle: 'PROTOCOL',
-    how1h: 'sender identity is untraceable',
-    how1p: 'messages route through an anonymous relay. the server only sees the relay IP, never yours. even if the server is seized, your identity is not there.',
-    how2h: 'server cannot read your message',
-    how2p: 'encryption runs on your device before transmission. your private key never leaves your device — the server holds ciphertext only.',
-    how3h: 'timing is randomised',
-    how3p: 'a random 2–47 second delay is injected so timing correlation attacks cannot identify the sender.',
-    how4h: 'destroyed after reading',
-    how4p: '5 seconds after the recipient opens the message it is permanently purged from the server. no backup. no log.',
-    howTech: '<b>protocol</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>padding</b> · 256-byte blocks — payload size does not leak<br><b>relay</b> · all identifying headers stripped before forwarding<br><b>storage</b> · private key is device-only, never transmitted',
-    howClose: '[ close ]',
-    ps1: 'generating ephemeral keypair',
-    ps2: 'encrypting message',
-    ps3: 'routing via anonymous relay',
-    sentTransmitted: 'TRANSMITTED',
-    sentOk: 'message released · origin unknown',
-    sentSub: 'payload is in transit. will be destroyed 5s after recipient opens it.',
-    btnClose1: '[ close ]',
-    noPubHead: 'NO PUBKEY',
-    noPubErr: 'recipient has no registered key',
-    noPubSub: 'this user must sign in at least once to receive encrypted messages.',
-    btnClose2: '[ go back ]',
-    lmDisc: 'anonymous channel. identity unverified.<br>by connecting you confirm you are 17+ and accept full responsibility for transmitted content.',
-    lmLoginTitle: 'CONNECT',
-    lmLabelU1: 'username',
-    lmLabelP1: '6-digit PIN',
-    lmBtnLTxt: 'connect →',
-    lmSwToReg: 'no account? register',
-    lmNote1: 'lost PIN = lost account · no recovery possible',
-    lmRegTitle: 'REGISTER',
-    lmLabelU2: 'username — format <span style="color:var(--c1)">word.word</span>',
-    lmLabelP2: '6-digit PIN',
-    lmLabelP3: 'confirm PIN',
-    lmAgLabel: 'lost PIN = lost account — <b>PERMANENT</b>, no recovery',
-    lmBtnRTxt: 'register →',
-    lmSwToLogin: 'already registered? connect',
-    signIn: 'Sign in',
-    signOut: 'Sign out',
-    mhdr: '// decrypted · handle with care',
-    langFlag: '🇸🇪', langLabel: 'SV', langTitle: 'Byt till svenska',
-    protoTxt: '<b>enc</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256 &nbsp;|&nbsp;<b>pad</b> · 256-byte blocks &nbsp;|&nbsp;<b>relay</b> · header-stripped · timing-randomised &nbsp;|&nbsp;<b>key</b> · device-only · never transmitted',
-    verifying: 'Verifying…',
-    processing: 'Processing…',
-    signedIn: '✓ Signed in!',
-    accountCreated: 'Account created!',
-    sessionExpired: 'Session expired. Please sign in again.',
-    sendFailed: 'Failed. Please try again.',
-    signedOut: 'Signed out.',
-    accountCreatedAlert: (u) => `Account created!\n\nUsername: ${u}\n\nSave your PIN — it cannot be recovered.`,
+    flag:'🇬🇧', name:'EN',
+    compose:'compose', recipient:'recipient', message:'payload',
+    msgPlaceholder:'Write anything…', recipPlaceholder:'target.username',
+    trust:'sender identity is unknown to anyone',
+    protocol:'protocol ↗', sendBtn:'▶ transmit encrypted',
+    inboxBtn:'↓ open secure inbox', secureInbox:'◆ secure inbox',
+    back:'← back', selfDestruct:'this message will self-destruct',
+    noRecord:'no record kept', howTitle:'How TYST protects you',
+    howClose:'[ close ]', signIn:'Sign in', register:'Register',
+    connect:'connect →', registerBtn:'register →',
+    username:'username', pin:'6-digit PIN', confirmPin:'confirm PIN',
+    noAccount:'no account? register', hasAccount:'already registered? connect',
+    recNotActive:'Recipient not active', recNotActiveSub:'This user must sign in at least once to receive encrypted messages.',
+    transmitted:'TRANSMITTED', goBack:'[ go back ]', close:'[ close ]',
+    signOut:'Sign out', channelActive:'CHANNEL ACTIVE',
+    secureChannel:'SECURE CHANNEL', noMessages:'no messages',
+    lostPin:'lost PIN = lost account · no recovery possible',
+    msgSelf:'this message will self-destruct',
   },
   sv: {
-    logoSub: 'v2.1 · säker kanal',
-    termStatus: 'KANAL AKTIV',
-    cl1: 'genererar efemärt nyckelpar',
-    cl2: 'aes-gcm-256 laddad',
-    cl3: 'anonym relä konfigurerat · fördröjning 2–47s',
-    cl4: 'självförstöring aktiverad · ttl 5s efter läsning',
-    cl5: 'väntar på inmatning',
-    sectCompose: 'skriv krypterat meddelande',
-    labelTo: 'mottagare',
-    labelMsg: 'meddelande',
-    toPlaceholder: 'användarnamn',
-    msgPlaceholder: 'skriv ditt meddelande här...',
-    trustTxt: 'din identitet avslöjas aldrig — inte ens för servern',
-    trustLnk: 'hur det fungerar ↗',
-    sendTxt: '▶ skicka krypterat',
-    inboxTxt: '▼ öppna säker inkorg',
-    inboxBadge: 'ny',
-    inboxTitle: '◆ säker inkorg',
-    emptyTxt: 'inga meddelanden',
-    readFoot1: 'självförstöring aktiverad',
-    readFoot2: 'inget sparas',
-    readBack: '← tillbaka',
-    howTitle: 'PROTOKOLL',
-    how1h: 'avsändarens identitet är ospårbar',
-    how1p: 'meddelanden dirigeras via ett anonymt relä. servern ser bara reläets IP, aldrig ditt. även om servern beslagtas finns inte din identitet där.',
-    how2h: 'servern kan inte läsa ditt meddelande',
-    how2p: 'kryptering sker på din enhet innan överföring. din privata nyckel lämnar aldrig din enhet — servern lagrar bara kryptotext.',
-    how3h: 'timing är slumpmässig',
-    how3p: 'en slumpmässig fördröjning på 2–47 sekunder injiceras så att tidkorrelationsattacker inte kan identifiera avsändaren.',
-    how4h: 'förstörs efter läsning',
-    how4p: '5 sekunder efter att mottagaren öppnar meddelandet raderas det permanent från servern. ingen backup. ingen logg.',
-    howTech: '<b>protokoll</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>utfyllnad</b> · 256-byte block — meddelandestorlek läcker inte<br><b>relä</b> · alla identifierande headers tas bort innan vidarebefordran<br><b>lagring</b> · privat nyckel finns bara på enheten, skickas aldrig',
-    howClose: '[ stäng ]',
-    ps1: 'genererar efemärt nyckelpar',
-    ps2: 'krypterar meddelandet',
-    ps3: 'dirigerar via anonym relä',
-    sentTransmitted: 'SKICKAT',
-    sentOk: 'meddelande skickat · ursprung okänt',
-    sentSub: 'meddelandet är på väg. förstörs 5s efter att mottagaren öppnar det.',
-    btnClose1: '[ stäng ]',
-    noPubHead: 'INGEN NYCKEL',
-    noPubErr: 'mottagaren har ingen registrerad nyckel',
-    noPubSub: 'denna användare måste logga in minst en gång för att kunna ta emot krypterade meddelanden.',
-    btnClose2: '[ gå tillbaka ]',
-    lmDisc: 'anonym kanal. identitet overifierad.<br>genom att ansluta bekräftar du att du är 17+ och accepterar fullt ansvar för skickat innehåll.',
-    lmLoginTitle: 'ANSLUT',
-    lmLabelU1: 'användarnamn',
-    lmLabelP1: '6-siffrig PIN',
-    lmBtnLTxt: 'anslut →',
-    lmSwToReg: 'inget konto? registrera',
-    lmNote1: 'borttappad PIN = borttappat konto · ingen återställning möjlig',
-    lmRegTitle: 'REGISTRERA',
-    lmLabelU2: 'användarnamn — format <span style="color:var(--c1)">ord.ord</span>',
-    lmLabelP2: '6-siffrig PIN',
-    lmLabelP3: 'bekräfta PIN',
-    lmAgLabel: 'borttappad PIN = borttappat konto — <b>PERMANENT</b>, ingen återställning',
-    lmBtnRTxt: 'registrera →',
-    lmSwToLogin: 'redan registrerad? anslut',
-    signIn: 'Logga in',
-    signOut: 'Logga ut',
-    mhdr: '// dekrypterat · hantera varsamt',
-    langFlag: '🇬🇧', langLabel: 'EN', langTitle: 'Switch to English',
-    protoTxt: '<b>kryp</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256 &nbsp;|&nbsp;<b>utfyllnad</b> · 256-byte block &nbsp;|&nbsp;<b>relä</b> · headers raderade · timing-slumpmässig &nbsp;|&nbsp;<b>nyckel</b> · bara på enheten · skickas aldrig',
-    verifying: 'Verifierar…',
-    processing: 'Bearbetar…',
-    signedIn: '✓ Inloggad!',
-    accountCreated: 'Konto skapat!',
-    sessionExpired: 'Sessionen utgången. Vänligen logga in igen.',
-    sendFailed: 'Misslyckades. Försök igen.',
-    signedOut: 'Utloggad.',
-    accountCreatedAlert: (u) => `Konto skapat!\n\nAnvändarnamn: ${u}\n\nSpara din PIN — den kan inte återställas.`,
+    flag:'🇸🇪', name:'SV',
+    compose:'skriv', recipient:'mottagare', message:'meddelande',
+    msgPlaceholder:'Skriv vad som helst…', recipPlaceholder:'användarnamn',
+    trust:'avsändarens identitet är okänd för alla',
+    protocol:'protokoll ↗', sendBtn:'▶ skicka krypterat',
+    inboxBtn:'↓ öppna säker inkorg', secureInbox:'◆ säker inkorg',
+    back:'← tillbaka', selfDestruct:'detta meddelande förstörs',
+    noRecord:'inget spår kvar', howTitle:'Hur TYST skyddar dig',
+    howClose:'[ stäng ]', signIn:'Logga in', register:'Registrera',
+    connect:'anslut →', registerBtn:'registrera →',
+    username:'användarnamn', pin:'6-siffrig PIN', confirmPin:'bekräfta PIN',
+    noAccount:'inget konto? registrera', hasAccount:'har konto? logga in',
+    recNotActive:'Mottagaren är inte aktiv', recNotActiveSub:'Användaren måste logga in minst en gång för att ta emot meddelanden.',
+    transmitted:'SKICKAT', goBack:'[ gå tillbaka ]', close:'[ stäng ]',
+    signOut:'Logga ut', channelActive:'KANAL AKTIV',
+    secureChannel:'SÄKER KANAL', noMessages:'inga meddelanden',
+    lostPin:'förlorad PIN = förlorat konto · ingen återhämtning',
+    msgSelf:'detta meddelande förstörs',
   },
   ru: {
-    logoSub: 'v2.2 · защищённый канал',
-    termStatus: 'КАНАЛ АКТИВЕН',
-    cl1: 'генерация эфемерной пары ключей готова',
-    cl2: 'шифр aes-gcm-256 загружен',
-    cl3: 'анонимный ретранслятор настроен · задержка 2–47с',
-    cl4: 'самоуничтожение вооружено · ttl 5с после прочтения',
-    cl5: 'ожидание передачи',
-    sectCompose: 'составить зашифрованное сообщение',
-    labelTo: 'получатель',
-    labelMsg: 'сообщение',
-    toPlaceholder: 'имя пользователя',
-    msgPlaceholder: 'введите сообщение...',
-    trustTxt: 'ваша личность никогда не раскрывается — даже серверу',
-    trustLnk: 'как это работает ↗',
-    sendTxt: '▶ передать зашифрованное',
-    inboxTxt: '▼ открыть защищённый входящий',
-    inboxBadge: 'новое',
-    inboxTitle: '◆ защищённый входящий',
-    emptyTxt: 'нет сообщений',
-    readFoot1: 'самоуничтожение вооружено',
-    readFoot2: 'записи не ведутся',
-    readBack: '← назад',
-    howTitle: 'ПРОТОКОЛ',
-    how1h: 'личность отправителя не отслеживается',
-    how1p: 'сообщения проходят через анонимный ретранслятор. сервер видит только IP ретранслятора, не ваш.',
-    how2h: 'сервер не может читать ваши сообщения',
-    how2p: 'шифрование выполняется на вашем устройстве. закрытый ключ никогда не покидает устройство.',
-    how3h: 'временные метки рандомизированы',
-    how3p: 'случайная задержка 2–47 секунд исключает корреляционные атаки по времени.',
-    how4h: 'уничтожается после прочтения',
-    how4p: 'через 5 секунд после открытия сообщение безвозвратно удаляется с сервера.',
-    howTech: '<b>протокол</b> · ecdh p-256 · aes-gcm 256-бит · hkdf-sha256<br><b>дополнение</b> · блоки по 256 байт<br><b>ретранслятор</b> · заголовки удалены<br><b>хранение</b> · ключ только на устройстве',
-    howClose: '[ закрыть ]',
-    ps1: 'генерация эфемерной пары ключей',
-    ps2: 'шифрование сообщения',
-    ps3: 'маршрутизация через анонимный ретранслятор',
-    sentTransmitted: 'ПЕРЕДАНО',
-    sentOk: 'сообщение отправлено · источник неизвестен',
-    sentSub: 'данные в пути. уничтожатся через 5с после прочтения получателем.',
-    btnClose1: '[ закрыть ]',
-    noPubHead: 'НЕТ КЛЮЧА',
-    noPubErr: 'у получателя нет зарегистрированного ключа',
-    noPubSub: 'пользователь должен войти хотя бы один раз для получения зашифрованных сообщений.',
-    btnClose2: '[ назад ]',
-    lmDisc: 'анонимный канал. личность не верифицирована.<br>подключаясь, вы подтверждаете что вам 17+ и принимаете полную ответственность.',
-    lmLoginTitle: 'ПОДКЛЮЧИТЬСЯ',
-    lmLabelU1: 'имя пользователя',
-    lmLabelP1: '6-значный PIN',
-    lmBtnLTxt: 'подключиться →',
-    lmSwToReg: 'нет аккаунта? зарегистрироваться',
-    lmNote1: 'потеря PIN = потеря аккаунта · восстановление невозможно',
-    lmRegTitle: 'РЕГИСТРАЦИЯ',
-    lmLabelU2: 'имя пользователя — формат <span style="color:var(--c1)">слово.слово</span>',
-    lmLabelP2: '6-значный PIN',
-    lmLabelP3: 'подтвердить PIN',
-    lmAgLabel: 'потеря PIN = потеря аккаунта — <b>НАВСЕГДА</b>, без восстановления',
-    lmBtnRTxt: 'зарегистрироваться →',
-    lmSwToLogin: 'уже зарегистрированы? подключиться',
-    signIn: 'Войти',
-    signOut: 'Выйти',
-    mhdr: '// расшифровано · обращаться осторожно',
-    langFlag: '🇪🇸', langLabel: 'ES', langTitle: 'Cambiar a español',
-    protoTxt: '<b>шифр</b> · ecdh p-256 · aes-gcm 256-бит · hkdf-sha256 &nbsp;|&nbsp;<b>дополн.</b> · блоки 256 байт &nbsp;|&nbsp;<b>ретранслятор</b> · заголовки удалены &nbsp;|&nbsp;<b>ключ</b> · только устройство',
-    verifying: 'Проверка…', processing: 'Обработка…',
-    signedIn: 'Вход выполнен!', accountCreated: 'Аккаунт создан!',
-    sessionExpired: 'Сессия истекла. Войдите снова.',
-    sendFailed: 'Ошибка. Попробуйте снова.', signedOut: 'Выход выполнен.',
-    accountCreatedAlert: (u) => `Аккаунт создан!
-
-Имя пользователя: ${u}
-
-Сохраните PIN — восстановление невозможно.`,
+    flag:'🇷🇺', name:'RU',
+    compose:'написать', recipient:'получатель', message:'сообщение',
+    msgPlaceholder:'Напишите что угодно…', recipPlaceholder:'имя пользователя',
+    trust:'личность отправителя никому не известна',
+    protocol:'протокол ↗', sendBtn:'▶ отправить зашифрованно',
+    inboxBtn:'↓ открыть защищённый ящик', secureInbox:'◆ защищённый ящик',
+    back:'← назад', selfDestruct:'сообщение будет уничтожено',
+    noRecord:'записей не сохранено', howTitle:'Как TYST защищает вас',
+    howClose:'[ закрыть ]', signIn:'Войти', register:'Регистрация',
+    connect:'войти →', registerBtn:'зарегистрироваться →',
+    username:'имя пользователя', pin:'6-значный PIN', confirmPin:'подтвердите PIN',
+    noAccount:'нет аккаунта? зарегистрируйтесь', hasAccount:'уже есть аккаунт? войдите',
+    recNotActive:'Получатель не активен', recNotActiveSub:'Пользователь должен войти хотя бы раз для получения сообщений.',
+    transmitted:'ОТПРАВЛЕНО', goBack:'[ назад ]', close:'[ закрыть ]',
+    signOut:'Выйти', channelActive:'КАНАЛ АКТИВЕН',
+    secureChannel:'ЗАЩИЩЁННЫЙ КАНАЛ', noMessages:'нет сообщений',
+    lostPin:'потеря PIN = потеря аккаунта · восстановление невозможно',
+    msgSelf:'сообщение будет уничтожено',
   },
   es: {
-    logoSub: 'v2.2 · canal seguro',
-    termStatus: 'CANAL ACTIVO',
-    cl1: 'generación de par de claves efímero lista',
-    cl2: 'cifrado aes-gcm-256 cargado',
-    cl3: 'retransmisor anónimo configurado · retardo 2–47s',
-    cl4: 'autodestrucción armada · ttl 5s tras lectura',
-    cl5: 'esperando transmisión',
-    sectCompose: 'redactar mensaje cifrado',
-    labelTo: 'destinatario',
-    labelMsg: 'mensaje',
-    toPlaceholder: 'nombre de usuario',
-    msgPlaceholder: 'escribe tu mensaje aquí...',
-    trustTxt: 'tu identidad nunca se revela — ni siquiera al servidor',
-    trustLnk: 'cómo funciona ↗',
-    sendTxt: '▶ transmitir cifrado',
-    inboxTxt: '▼ abrir bandeja segura',
-    inboxBadge: 'nuevo',
-    inboxTitle: '◆ bandeja segura',
-    emptyTxt: 'sin mensajes',
-    readFoot1: 'autodestrucción armada',
-    readFoot2: 'sin registro',
-    readBack: '← volver',
-    howTitle: 'PROTOCOLO',
-    how1h: 'la identidad del remitente es inrastreable',
-    how1p: 'los mensajes se enrutan a través de un retransmisor anónimo. el servidor solo ve la IP del retransmisor, nunca la tuya.',
-    how2h: 'el servidor no puede leer tu mensaje',
-    how2p: 'el cifrado se ejecuta en tu dispositivo. tu clave privada nunca sale del dispositivo.',
-    how3h: 'el tiempo es aleatorio',
-    how3p: 'se inyecta un retardo aleatorio de 2–47 segundos contra ataques de correlación temporal.',
-    how4h: 'destruido tras la lectura',
-    how4p: '5 segundos después de que el destinatario abra el mensaje se elimina permanentemente del servidor.',
-    howTech: '<b>protocolo</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>relleno</b> · bloques de 256 bytes<br><b>retransmisor</b> · cabeceras eliminadas<br><b>almacenamiento</b> · clave privada solo en dispositivo',
-    howClose: '[ cerrar ]',
-    ps1: 'generando par de claves efímero',
-    ps2: 'cifrando mensaje',
-    ps3: 'enrutando vía retransmisor anónimo',
-    sentTransmitted: 'TRANSMITIDO',
-    sentOk: 'mensaje enviado · origen desconocido',
-    sentSub: 'el payload está en tránsito. se destruirá 5s después de que el destinatario lo abra.',
-    btnClose1: '[ cerrar ]',
-    noPubHead: 'SIN CLAVE',
-    noPubErr: 'el destinatario no tiene clave registrada',
-    noPubSub: 'este usuario debe iniciar sesión al menos una vez para recibir mensajes cifrados.',
-    btnClose2: '[ volver ]',
-    lmDisc: 'canal anónimo. identidad no verificada.<br>al conectarte confirmas que tienes 17+ y aceptas plena responsabilidad.',
-    lmLoginTitle: 'CONECTAR',
-    lmLabelU1: 'nombre de usuario',
-    lmLabelP1: 'PIN de 6 dígitos',
-    lmBtnLTxt: 'conectar →',
-    lmSwToReg: 'sin cuenta? registrarse',
-    lmNote1: 'PIN perdido = cuenta perdida · sin recuperación posible',
-    lmRegTitle: 'REGISTRO',
-    lmLabelU2: 'nombre de usuario — formato <span style="color:var(--c1)">palabra.palabra</span>',
-    lmLabelP2: 'PIN de 6 dígitos',
-    lmLabelP3: 'confirmar PIN',
-    lmAgLabel: 'PIN perdido = cuenta perdida — <b>PERMANENTE</b>, sin recuperación',
-    lmBtnRTxt: 'registrarse →',
-    lmSwToLogin: 'ya registrado? conectar',
-    signIn: 'Entrar',
-    signOut: 'Salir',
-    mhdr: '// descifrado · manejar con cuidado',
-    langFlag: '🇬🇧', langLabel: 'EN', langTitle: 'Switch to English',
-    protoTxt: '<b>cifr</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256 &nbsp;|&nbsp;<b>relleno</b> · bloques 256 bytes &nbsp;|&nbsp;<b>retrans.</b> · cabeceras eliminadas &nbsp;|&nbsp;<b>clave</b> · solo dispositivo',
-    verifying: 'Verificando…', processing: 'Procesando…',
-    signedIn: 'Sesión iniciada!', accountCreated: 'Cuenta creada!',
-    sessionExpired: 'Sesión expirada. Inicia sesión de nuevo.',
-    sendFailed: 'Error. Inténtalo de nuevo.', signedOut: 'Sesión cerrada.',
-    accountCreatedAlert: (u) => `¡Cuenta creada!
-
-Nombre de usuario: ${u}
-
-Guarda tu PIN — no hay recuperación posible.`,
+    flag:'🇪🇸', name:'ES',
+    compose:'redactar', recipient:'destinatario', message:'mensaje',
+    msgPlaceholder:'Escribe lo que quieras…', recipPlaceholder:'nombre.usuario',
+    trust:'la identidad del remitente es desconocida para todos',
+    protocol:'protocolo ↗', sendBtn:'▶ transmitir cifrado',
+    inboxBtn:'↓ abrir bandeja segura', secureInbox:'◆ bandeja segura',
+    back:'← volver', selfDestruct:'este mensaje se autodestruirá',
+    noRecord:'sin registros', howTitle:'Cómo TYST te protege',
+    howClose:'[ cerrar ]', signIn:'Iniciar sesión', register:'Registrarse',
+    connect:'conectar →', registerBtn:'registrarse →',
+    username:'usuario', pin:'PIN de 6 dígitos', confirmPin:'confirmar PIN',
+    noAccount:'¿sin cuenta? regístrate', hasAccount:'¿ya tienes cuenta? entra',
+    recNotActive:'Destinatario inactivo', recNotActiveSub:'Este usuario debe iniciar sesión al menos una vez para recibir mensajes.',
+    transmitted:'TRANSMITIDO', goBack:'[ volver ]', close:'[ cerrar ]',
+    signOut:'Cerrar sesión', channelActive:'CANAL ACTIVO',
+    secureChannel:'CANAL SEGURO', noMessages:'sin mensajes',
+    lostPin:'PIN perdido = cuenta perdida · sin recuperación',
+    msgSelf:'este mensaje se autodestruirá',
   },
+  de: {
+    flag:'🇩🇪', name:'DE',
+    compose:'verfassen', recipient:'empfänger', message:'nachricht',
+    msgPlaceholder:'Schreib was du willst…', recipPlaceholder:'benutzername',
+    trust:'die Identität des Absenders ist niemandem bekannt',
+    protocol:'protokoll ↗', sendBtn:'▶ verschlüsselt senden',
+    inboxBtn:'↓ sicheren posteingang öffnen', secureInbox:'◆ sicherer posteingang',
+    back:'← zurück', selfDestruct:'diese nachricht wird zerstört',
+    noRecord:'keine aufzeichnungen', howTitle:'Wie TYST dich schützt',
+    howClose:'[ schließen ]', signIn:'Anmelden', register:'Registrieren',
+    connect:'verbinden →', registerBtn:'registrieren →',
+    username:'benutzername', pin:'6-stellige PIN', confirmPin:'PIN bestätigen',
+    noAccount:'kein konto? registrieren', hasAccount:'konto vorhanden? anmelden',
+    recNotActive:'Empfänger nicht aktiv', recNotActiveSub:'Dieser Benutzer muss sich mindestens einmal anmelden, um Nachrichten zu empfangen.',
+    transmitted:'GESENDET', goBack:'[ zurück ]', close:'[ schließen ]',
+    signOut:'Abmelden', channelActive:'KANAL AKTIV',
+    secureChannel:'SICHERER KANAL', noMessages:'keine nachrichten',
+    lostPin:'PIN verloren = konto verloren · keine wiederherstellung',
+    msgSelf:'diese nachricht wird zerstört',
+  }
 };
 
-let lang = localStorage.getItem('tyst_lang') || 'en';
+let currentLang = localStorage.getItem('tyst_lang') || 'en';
 
-function t(key) { return T[lang][key] || T.en[key] || key; }
-
-function applyLang() {
-  document.documentElement.lang = lang;
-  const keys = [
-    'logoSub','termStatus','cl1','cl2','cl3','cl4','sectCompose',
-    'labelTo','labelMsg','trustTxt','trustLnk','sendTxt','inboxTxt',
-    'inboxBadge','inboxTitle','emptyTxt','readFoot1','readFoot2',
-    'howTitle','how1h','how1p','how2h','how2p','how3h','how3p',
-    'how4h','how4p','howClose','ps1','ps2','ps3',
-    'sentOk','sentSub','btnClose1','noPubErr','noPubSub','btnClose2',
-    'lmNote1','lmBtnLTxt','lmSwToReg','lmBtnRTxt','lmSwToLogin','emptyTxt'
-  ];
-  keys.forEach(k => {
-    const el = document.getElementById(k);
-    if (el) el.textContent = t(k);
-  });
-
-  // innerHTML fields (contain HTML)
-  const htmlKeys = ['howTech','lmDisc','lmLabelU2','lmAgLabel','protoTxt'];
-  htmlKeys.forEach(k => {
-    const el = document.getElementById(k);
-    if (el) el.innerHTML = t(k);
-  });
-
-  // cl5 needs cursor span preserved
-  const cl5 = document.getElementById('cl5');
-  if (cl5) cl5.textContent = t('cl5');
-
-  // readBack
-  const rb = document.getElementById('readBack');
-  if (rb) rb.textContent = t('readBack');
-
-  // Sent head (display font, not id'd simply)
-  const sh = document.querySelector('#lSent .sent-head');
-  if (sh) sh.textContent = t('sentTransmitted');
-  const nh = document.querySelector('#lNoPub .nopub-head');
-  if (nh) nh.textContent = t('noPubHead');
-
-  // Login modal labels (innerHTML for the format hint)
-  ['lmLoginTitle','lmRegTitle','lmLabelU1','lmLabelP1','lmLabelP2','lmLabelP3'].forEach(k => {
-    const el = document.getElementById(k);
-    if (el) el.innerHTML = t(k);
-  });
-
-  // Placeholders
-  const tystTo = document.getElementById('tystTo');
-  if (tystTo) tystTo.placeholder = t('toPlaceholder');
-  const tystMsg = document.getElementById('tystMsg');
-  if (tystMsg) tystMsg.placeholder = t('msgPlaceholder');
-
-  // Lang toggle — header button (jika ada) dan dropdown item
-  const lf=document.getElementById('langFlag');if(lf)lf.textContent=t('langFlag');
-  const ll=document.getElementById('langLabel');if(ll)ll.textContent=t('langLabel');
-  const lb=document.getElementById('langBtn');if(lb)lb.title=t('langTitle');
-  // Dropdown lang item
-  const ddlf=document.getElementById('ddLangFlag');if(ddlf)ddlf.textContent=t('langFlag');
-  const ddll=document.getElementById('ddLangLabel');const _ln={'en':'switch to SV','sv':'switch to RU','ru':'switch to ES','es':'switch to EN'};if(ddll)ddll.textContent=_ln[lang]||'switch to EN';
-
-  // User section sign-in button (if guest)
-  const signInBtn = document.querySelector('.btn-login');
-  if (signInBtn) signInBtn.textContent = t('signIn');
-
-  // Sign out dropdown item
-  const loutBtn = document.getElementById('loutBtn');
-  if (loutBtn) loutBtn.textContent = t('signOut');
-}
-
-function toggleLang() {
-  const cycle = ['en','sv','ru','es'];
-  const idx = cycle.indexOf(lang);
-  lang = cycle[(idx + 1) % cycle.length];
+function applyLang(lang) {
+  currentLang = lang;
   localStorage.setItem('tyst_lang', lang);
-  applyLang();
+  const t = LANGS[lang];
+  if(!t) return;
+
+  // Update flags
+  document.querySelectorAll('.lang-flag').forEach(f => {
+    const isActive = f.dataset.lang === lang;
+    f.classList.toggle('active', isActive);
+    f.style.opacity = isActive ? '1' : '.3';
+    f.style.transform = isActive ? 'scale(1.1)' : 'scale(1)';
+  });
+
+  // Labels
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  const setPlaceholder = (id, val) => { const el = document.getElementById(id); if(el) el.placeholder = val; };
+  const setHtml = (id, val) => { const el = document.getElementById(id); if(el) el.innerHTML = val; };
+
+  // Header
+  document.querySelectorAll('.logo-sub').forEach(el => el.textContent = t.secureChannel);
+  document.querySelectorAll('.term-status').forEach(el => el.textContent = t.channelActive);
+
+  // Compose section
+  document.querySelectorAll('.eyebrow').forEach(el => el.textContent = t.compose);
+  const recipLabel = document.querySelector('label[for="tystTo"]');
+  if(recipLabel) recipLabel.childNodes[recipLabel.childNodes.length-1].textContent = t.recipient;
+  const msgLabel = document.querySelector('label[for="tystMsg"]');
+  if(msgLabel) msgLabel.childNodes[msgLabel.childNodes.length-1].textContent = t.message;
+  setPlaceholder('tystTo', t.recipPlaceholder);
+  setPlaceholder('tystMsg', t.msgPlaceholder);
+  document.querySelectorAll('.trust-txt').forEach(el => el.textContent = t.trust);
+  document.querySelectorAll('.trust-lnk').forEach(el => el.textContent = t.protocol);
+  const sendBtn = document.getElementById('sendBtn');
+  if(sendBtn) sendBtn.innerHTML = '<span>' + t.sendBtn + '</span>';
+
+  // Inbox button
+  const inboxBtn = document.getElementById('inboxBtn');
+  if(inboxBtn) {
+    const badge = document.getElementById('inboxBadge');
+    const badgeHtml = badge ? badge.outerHTML : '';
+    inboxBtn.innerHTML = '<span>' + t.inboxBtn + '</span>' + badgeHtml;
+  }
+
+  // Inbox panel
+  document.querySelectorAll('.panel-title').forEach(el => el.textContent = t.secureInbox);
+  document.querySelectorAll('.empty-txt').forEach(el => el.textContent = t.noMessages);
+
+  // Read panel
+  document.querySelectorAll('.read-foot span:first-child').forEach(el => el.textContent = t.msgSelf);
+  document.querySelectorAll('.read-foot span:last-child').forEach(el => el.textContent = t.noRecord);
+  const readBack = document.getElementById('readBack');
+  if(readBack) readBack.textContent = t.back;
+
+  // How overlay title
+  document.querySelectorAll('.how-title').forEach(el => el.textContent = t.howTitle);
+  document.querySelectorAll('.btn-how-close').forEach(el => el.textContent = t.howClose);
+
+  // Processing layers
+  const lSentTitle = document.querySelector('#lSent .sent-title');
+  if(lSentTitle) lSentTitle.textContent = t.transmitted;
+  document.querySelectorAll('#lNoPub .nopub-title').forEach(el => el.textContent = t.recNotActive);
+  document.querySelectorAll('#lNoPub .nopub-sub').forEach(el => el.textContent = t.recNotActiveSub);
+  document.querySelectorAll('.btn-dismiss').forEach((el,i) => {
+    el.textContent = i === 0 ? t.close : t.goBack;
+  });
+
+  // Login modal
+  document.querySelectorAll('.lm-disc').forEach(el => {
+    if(lang === 'en') el.textContent = 'anonymous channel. identity unverified. by signing in you confirm you are 17+ and accept full responsibility for transmitted content.';
+    else if(lang === 'sv') el.textContent = 'anonymt kanal. identitet overifierad. genom att logga in bekräftar du att du är 17+ och tar fullt ansvar.';
+    else if(lang === 'ru') el.textContent = 'анонимный канал. личность не подтверждена. входя, вы подтверждаете, что вам 17+ и принимаете ответственность.';
+    else if(lang === 'es') el.textContent = 'canal anónimo. identidad no verificada. al entrar confirmas que tienes 17+ y aceptas responsabilidad total.';
+    else if(lang === 'de') el.textContent = 'anonymer kanal. identität ungeprüft. durch anmelden bestätigst du, dass du 17+ bist und volle verantwortung übernimmst.';
+  });
+
+  // Login/Register buttons & labels
+  const lmBtnL = document.getElementById('lmBtnL');
+  if(lmBtnL) lmBtnL.innerHTML = '<span>' + t.connect + '</span>';
+  const lmBtnR = document.getElementById('lmBtnR');
+  if(lmBtnR) lmBtnR.innerHTML = '<span>' + t.registerBtn + '</span>';
+
+  document.querySelectorAll('#lmLogin .lm-title').forEach(el => el.textContent = t.signIn);
+  document.querySelectorAll('#lmReg .lm-title').forEach(el => el.textContent = t.register);
+  document.querySelectorAll('.lm-note').forEach(el => el.textContent = t.lostPin);
+
+  // Sign out
+  const loutBtn = document.getElementById('loutBtn');
+  if(loutBtn) loutBtn.textContent = t.signOut;
 }
 
-/* ── CORE APP (unchanged from original) ────────────────────── */
+const FLAG_URLS = {
+  en: 'https://flagcdn.com/w20/gb.png',
+  sv: 'https://flagcdn.com/w20/se.png',
+  ru: 'https://flagcdn.com/w20/ru.png',
+  es: 'https://flagcdn.com/w20/es.png',
+  de: 'https://flagcdn.com/w20/de.png',
+};
+
+function initLangSwitcher() {
+  const switcher = document.getElementById('langSwitcher');
+  if(!switcher) return;
+  Object.entries(LANGS).forEach(([code, data]) => {
+    const img = document.createElement('img');
+    img.className = 'lang-flag' + (code === currentLang ? ' active' : '');
+    img.src = FLAG_URLS[code];
+    img.title = data.name;
+    img.width = 18;
+    img.height = 13;
+    img.dataset.lang = code;
+    img.style.cssText = 'border-radius:1px;cursor:pointer;opacity:' + (code === currentLang ? '1' : '.3') + ';transition:opacity .15s,transform .15s;margin-left:2px';
+    img.onclick = () => applyLang(code);
+    switcher.appendChild(img);
+  });
+  applyLang(currentLang);
+}
+
 (function(){
 'use strict';
-const SU='https://urljqsszsxrwhhyvpfhr.supabase.co';
-const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODAzNzcsImV4cCI6MjA5Mzg1NjM3N30.SfNa4M6420z-GZPIBFBYezesNlrmnK3FSHUp8FDeP8M';
+const SU='https://buskhlxllsswmismvgdb.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1c2tobHhsbHNzd21pc212Z2RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMDUzMDUsImV4cCI6MjA5Mzc4MTMwNX0.JLH-glmDg5e37ZiX2uue8o3pi-6w_W-JerKFdufe114';
 const POLL=60000,LP='tyst_priv_v1',LPU='tyst_pub_v1';
 const K={u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'};
 const IS_GUEST=localStorage.getItem(K.l)!=='true';
@@ -807,89 +644,19 @@ function getAuth(){if(IS_GUEST)return{};const h=localStorage.getItem(K.a);return
 
 /* ECDH */
 const ECDH=(()=>{
-    // v3: private key stored as non-extractable CryptoKey in IndexedDB
-    // Cannot be read by JavaScript, DevTools, or browser extensions
     const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
-    const fb64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-
-    // ── IndexedDB store for non-extractable private key ──────
-    const IDB_NAME='tyst_keys_v1',IDB_STORE='keys',IDB_KEY='priv_v1';
-    function openIDB(){return new Promise((res,rej)=>{const r=indexedDB.open(IDB_NAME,1);r.onupgradeneeded=e=>e.target.result.createObjectStore(IDB_STORE);r.onsuccess=e=>res(e.target.result);r.onerror=e=>rej(e.target.error);});}
-    async function idbGet(k){const db=await openIDB();return new Promise((res,rej)=>{const tx=db.transaction(IDB_STORE,'readonly');const r=tx.objectStore(IDB_STORE).get(k);r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e.target.error);});}
-    async function idbSet(k,v){const db=await openIDB();return new Promise((res,rej)=>{const tx=db.transaction(IDB_STORE,'readwrite');tx.objectStore(IDB_STORE).put(v,k);tx.oncomplete=()=>res();tx.onerror=e=>rej(e.target.error);});}
-
-    // ── Crypto helpers ────────────────────────────────────────
-    // ephemeral keypair for encrypt — extractable:true ok (ephemeral, never stored)
-    async function genEph(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);delete pub.d;return{privateKey:kp.privateKey,pub};}
-    // identity keypair — extractable:FALSE, private key never leaves WebCrypto
-    async function genIdentity(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},false,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);delete pub.d;return{privateKey:kp.privateKey,pub};}
+    const fb64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+    async function gen(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);const priv=await crypto.subtle.exportKey('jwk',kp.privateKey);delete pub.d;return{publicKey:kp.publicKey,privateKey:kp.privateKey,pub,priv};}
+    async function ipriv(j){return crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
     async function ipub(j){return crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,[]);}
     async function aes(pr,pu){const bits=await crypto.subtle.deriveBits({name:'ECDH',public:pu},pr,256);const hkdf=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:new Uint8Array(32),info:new TextEncoder().encode('whisper-v2')},hkdf,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
     const P=256;
     function pad(s){const e=new TextEncoder().encode(s);const l=P-(e.length%P);const o=new Uint8Array(e.length+l);o.set(e);return o;}
     function unpad(b){let n=b.length;while(n>0&&b[n-1]===0)n--;return new TextDecoder().decode(b.slice(0,n));}
-
-    // ── Encrypt (uses ephemeral keypair — always extractable) ─
-    async function encrypt(plain,pubJWK){const e=await genEph();const rp=await ipub(pubJWK);const k=await aes(e.privateKey,rp);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,pad(plain));return b64(iv)+':'+btoa(JSON.stringify(e.pub))+':'+b64(ct);}
-
-    // ── Decrypt (uses non-extractable CryptoKey from IndexedDB) ─
-    async function decrypt(enc,privKey){
-        try{
-            const[iv,ep,ct]=enc.split(':');
-            const eph=await ipub(JSON.parse(atob(ep)));
-            const k=await aes(privKey,eph);
-            const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:fb64(iv)},k,fb64(ct));
-            return unpad(new Uint8Array(p));
-        }catch(e){return '[could not decrypt]';}
-    }
-
-    // ── getOrCreate: migrate from localStorage if needed ──────
-    async function getOrCreate(){
-        // 1. Try IndexedDB first (new secure store)
-        let privKey=await idbGet(IDB_KEY).catch(()=>null);
-        let pub=localStorage.getItem(LPU);
-
-        if(privKey&&pub){
-            try{pub=JSON.parse(pub);return{privateKey:privKey,pub};}catch(e){}
-        }
-
-        // 2. Migration: old key exists in localStorage
-        const oldPriv=localStorage.getItem(LP);
-        if(oldPriv&&pub){
-            try{
-                // Re-import old extractable key, then re-generate as non-extractable
-                // (cannot convert extractable->non-extractable directly, must re-gen)
-                // Old messages will still decrypt via old key temporarily
-                console.log('[TYST] Migrating key from localStorage to IndexedDB...');
-                const kp=await genIdentity();
-                await idbSet(IDB_KEY,kp.privateKey);
-                localStorage.setItem(LPU,JSON.stringify(kp.pub));
-                localStorage.removeItem(LP); // remove extractable private key
-                sessionStorage.removeItem('pk_reg'); // force re-register new pubkey
-                console.log('[TYST] Key migration complete. Old localStorage key removed.');
-                return{privateKey:kp.privateKey,pub:kp.pub};
-            }catch(e){console.warn('[TYST] Migration failed:',e);}
-        }
-
-        // 3. Fresh generation
-        const kp=await genIdentity();
-        await idbSet(IDB_KEY,kp.privateKey);
-        localStorage.setItem(LPU,JSON.stringify(kp.pub));
-        return{privateKey:kp.privateKey,pub:kp.pub};
-    }
-
-    async function reg(){
-        if(IS_GUEST)return null;
-        const kp=await getOrCreate();
-        if(sessionStorage.getItem('pk_reg')==='1')return kp;
-        try{
-            const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({username:ME,pubkey:kp.pub})});
-            if(r.ok)sessionStorage.setItem('pk_reg','1');
-            else console.warn('[TYST] pubkey reg failed:',r.status);
-        }catch(e){console.warn('[TYST] pubkey reg error:',e);}
-        return kp;
-    }
-
+    async function encrypt(plain,pubJWK){const e=await gen();const rp=await ipub(pubJWK);const k=await aes(e.privateKey,rp);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,pad(plain));return b64(iv)+':'+btoa(JSON.stringify(e.pub))+':'+b64(ct);}
+    async function decrypt(enc,privJWK){try{const[iv,ep,ct]=enc.split(':');const eph=await ipub(JSON.parse(atob(ep)));const my=await ipriv(privJWK);const k=await aes(my,eph);const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:fb64(iv)},k,fb64(ct));return unpad(new Uint8Array(p));}catch(e){return '[could not decrypt]';}}
+    async function getOrCreate(){const ps=localStorage.getItem(LP),pu=localStorage.getItem(LPU);if(ps&&pu){try{const p=await ipriv(JSON.parse(ps));return{privateKey:p,priv:JSON.parse(ps),pub:JSON.parse(pu)};}catch(e){}}const kp=await gen();localStorage.setItem(LP,JSON.stringify(kp.priv));localStorage.setItem(LPU,JSON.stringify(kp.pub));return{privateKey:kp.publicKey,priv:kp.priv,pub:kp.pub};}
+    async function reg(){if(IS_GUEST)return null;const kp=await getOrCreate();if(sessionStorage.getItem('pk_reg')==='1')return kp;try{const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({username:ME,userId:UID,pubkey:kp.pub})});if(r.ok)sessionStorage.setItem('pk_reg','1');}catch(e){}return kp;}
     return{encrypt,decrypt,getOrCreate,reg};
 })();
 window._ECDH=ECDH;
@@ -904,7 +671,7 @@ const INBOX=(()=>{
         const tok=localStorage.getItem(K.a)||'';if(!tok)return;
         try{
             const r=await fetch('/api/whisper?username='+encodeURIComponent(ME),{headers:{'Authorization':'Bearer '+tok}});
-            if(r.status===401||r.status===403){toast(t('sessionExpired'));return;}
+            if(r.status===401||r.status===403){toast('Session expired. Please sign in again.');return;}
             if(!r.ok)return;
             const raw=await r.json();
             if(!Array.isArray(raw)||!raw.length){msgs=[];render();badge(false);return;}
@@ -912,16 +679,16 @@ const INBOX=(()=>{
             msgs=await Promise.all(raw.map(async m=>{
                 const exp=new Date(m.destroy_at).getTime(),rem=exp-now;
                 const h=Math.floor(rem/3600000),mn=Math.floor((rem%3600000)/60000);
-                const body=await ECDH.decrypt(m.message,k.privateKey);
+                const body=await ECDH.decrypt(m.message,k.priv);
                 return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
             }));
             render();badge(msgs.length>0);
         }catch(e){console.warn('[TYST]',e);}
     }
-    function render(){const el=$('msgList');if(!el)return;if(!msgs.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">○</div><div>${esc(t('emptyTxt'))}</div></div>`;return;}el.innerHTML=msgs.map(m=>`<div class="msg-row" onclick="INBOX.open('${esc(m.id)}')"><div class="msg-meta"><span class="msg-from">${esc(m.from)}</span><span class="msg-ttl">⏳ ${m.ttl}</span></div><div class="msg-prev">${esc(m.prev)}</div></div>`).join('');}
-    async function open(id){const m=msgs.find(x=>x.id===id);if(!m)return;rid=id;$('readFrom').textContent='from: '+m.from;$('readBody').textContent=m.body;$('readCount').textContent='5';$('readCount').style.color='var(--c5)';$('readPanel').classList.add('show');await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});destruct(id);}
+    function render(){const el=$('msgList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">○</div><div class="empty-txt">no messages</div></div>';return;}el.innerHTML=msgs.map(m=>`<div class="msg-row" onclick="INBOX.open('${esc(m.id)}')"><div class="msg-meta"><span class="msg-from">${esc(m.from)}</span><span class="msg-ttl">⏳ ${m.ttl}</span></div><div class="msg-prev">${esc(m.prev)}</div></div>`).join('');}
+    async function open(id){const m=msgs.find(x=>x.id===id);if(!m)return;rid=id;$('readFrom').textContent='from: '+m.from;$('readBody').textContent=m.body;$('readCount').textContent='5';$('readCount').style.color='var(--danger)';$('readPanel').classList.add('show');await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});destruct(id);}
     function destruct(id){clearInterval(dt);let n=5;dt=setInterval(()=>{n--;const el=$('readCount');if(!el){clearInterval(dt);return;}el.textContent=n;if(n<=0){clearInterval(dt);burn(id);}},1000);}
-    function burn(id){const b=$('readBody');if(b)b.classList.add('burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('readPanel').classList.remove('show');if(b){b.classList.remove('burning');b.textContent='';}$('readCount').style.color='var(--c5)';$('inboxPanel').classList.add('show');render();badge(msgs.length>0);},750);}
+    function burn(id){const b=$('readBody');if(b)b.classList.add('burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('readPanel').classList.remove('show');if(b){b.classList.remove('burning');b.textContent='';}$('readCount').style.color='var(--danger)';$('inboxPanel').classList.add('show');render();badge(msgs.length>0);},750);}
     function closeRead(){clearInterval(dt);if(rid&&msgs.find(m=>m.id===rid))burn(rid);rid=null;$('readPanel').classList.remove('show');}
     function poll(){load();clearInterval(pt);pt=setInterval(load,POLL);}
     return{open,closeRead,poll,load};
@@ -932,54 +699,35 @@ window.INBOX=INBOX;
 function setupUI(){
     const sec=$('userSection');
     if(IS_GUEST){
-        sec.innerHTML=`<button class="btn-login" onclick="openLoginModal()">${t('signIn')}</button>`;
+        sec.innerHTML='<button class="btn-login" onclick="openLoginModal()">Sign in</button>';
         $('inboxSect').style.display='none';
     }else{
         sec.innerHTML=`<span class="user-chip">@${ME}</span><button class="btn-icon" id="sBtn">⋮</button>`;
         const dd=document.createElement('div');dd.className='dd';dd.id='sDD';
-        dd.innerHTML=`<div class="dd-item" onclick="toggleLang();document.getElementById('sDD').classList.remove('show')" id="ddLang"><span id="ddLangFlag">🇸🇪</span> &nbsp;<span id="ddLangLabel">switch to SV</span></div><div class="dd-item" onclick="window.showQRInvite()" id="qrBtn">&#x25A6; invite via QR</div><div class="dd-item" id="loutBtn">${t('signOut')}</div>`;
+        dd.innerHTML='<div class="dd-item" id="loutBtn">Sign out</div>';
         document.querySelector('.app').appendChild(dd);
         const sb=$('sBtn'),sd=$('sDD');
         if(sb&&sd){sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});}
-        const lb=$('loutBtn');if(lb)lb.onclick=()=>{localStorage.removeItem(K.l);localStorage.removeItem(K.a);toast(t('signedOut'));setTimeout(()=>window.location.reload(),900);};
+        const lb=$('loutBtn');if(lb)lb.onclick=()=>{localStorage.removeItem(K.l);localStorage.removeItem(K.a);toast('Signed out.');setTimeout(()=>window.location.reload(),900);};
         $('inboxSect').style.display='block';
     }
 }
 
 window.addEventListener('load',()=>{
-    applyLang();
+    initLangSwitcher();
     setupUI();
     if(!IS_GUEST){
         ECDH.reg();INBOX.poll();
         $('inboxBtn').onclick=()=>{INBOX.load();$('inboxPanel').classList.add('show');};
-        // Auto-focus recipient on load
-        setTimeout(()=>{const r=$('tystTo');if(r)r.focus();},120);
     }
     $('inboxClose').onclick=()=>$('inboxPanel').classList.remove('show');
     $('readBack').onclick=()=>{INBOX.closeRead();$('inboxPanel').classList.add('show');};
-
-    // Keyboard navigation: Enter on recipient → jump to message
-    const toEl=$('tystTo');
-    const msgEl=$('tystMsg');
-    if(toEl&&msgEl){
-        toEl.addEventListener('keydown',function(e){
-            if(e.key==='Enter'){e.preventDefault();msgEl.focus();}
-        });
-        // Ctrl+Enter or Cmd+Enter on textarea → send
-        msgEl.addEventListener('keydown',function(e){
-            if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){
-                e.preventDefault();
-                const btn=$('sendBtn');
-                if(btn&&!btn.disabled)tystSend();
-            }
-        });
-    }
 });
 })();
 
 /* SEND */
 function layerShow(id){['lProc','lSent','lNoPub'].forEach(l=>{const el=document.getElementById(l);if(el)el.classList.toggle('show',l===id);});}
-function closeProcOv(){document.getElementById('procOv').classList.remove('show');document.getElementById('tystTo').value='';document.getElementById('tystMsg').value='';const c=document.getElementById('charN');if(c)c.textContent='0';const b=document.getElementById('sendBtn');if(b)b.disabled=true;setTimeout(()=>{layerShow(null);const r=document.getElementById('tystTo');if(r){r.focus();}},300);}
+function closeProcOv(){document.getElementById('procOv').classList.remove('show');document.getElementById('tystTo').value='';document.getElementById('tystMsg').value='';const c=document.getElementById('charN');if(c)c.textContent='0';const b=document.getElementById('sendBtn');if(b)b.disabled=true;setTimeout(()=>layerShow(null),300);}
 function tystValidate(){const to=(document.getElementById('tystTo').value||'').trim().replace('@','');const msg=(document.getElementById('tystMsg').value||'').trim();const ok=/^[a-z0-9_.]{2,24}$/.test(to)&&msg.length>0;const btn=document.getElementById('sendBtn');if(btn)btn.disabled=!ok;}
 function tystChar(){const el=document.getElementById('tystMsg'),c=document.getElementById('charN');if(el&&c)c.textContent=el.value.length;}
 function showHow(){document.getElementById('howOv').classList.add('show');}
@@ -1000,26 +748,26 @@ async function tystSend(){
         const enc=await window._ECDH.encrypt(msg,pkd.pubkey);
         await new Promise(r=>setTimeout(r,200));
         const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc:enc})});
-        if(r.ok||r.status===202){const s=document.getElementById('sentSub');if(s)s.textContent=lang==='sv'?`Ingen kan hämta det. Det försvinner 5 sekunder efter att ${to} läser det.`:`No one can retrieve it. It will vanish 5 seconds after ${to} reads it.`;layerShow('lSent');}
-        else{closeProcOv();alert(t('sendFailed'));}
+        if(r.ok||r.status===202){const s=document.getElementById('sentSub');if(s)s.textContent=`No one can retrieve it. It will vanish 5 seconds after ${to} reads it.`;layerShow('lSent');}
+        else{closeProcOv();toast('Failed. Please try again.');}
     }catch(err){console.error('[TYST]',err);closeProcOv();}
 }
 
 /* LOGIN */
 const LM={
-    SU:'https://urljqsszsxrwhhyvpfhr.supabase.co',
-    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODAzNzcsImV4cCI6MjA5Mzg1NjM3N30.SfNa4M6420z-GZPIBFBYezesNlrmnK3FSHUp8FDeP8M',
+    SU:'https://buskhlxllsswmismvgdb.supabase.co',
+    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ1c2tobHhsbHNzd21pc212Z2RiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyMDUzMDUsImV4cCI6MjA5Mzc4MTMwNX0.JLH-glmDg5e37ZiX2uue8o3pi-6w_W-JerKFdufe114',
     LS:{u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'},
-    async get(p){const r=await fetch(this.SU+'/rest/v1'+p,{headers:{apikey:this.SK,Authorization:'Bearer '+this.SK}});const tx=await r.text();return tx?JSON.parse(tx):[];},
-    async post(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'POST',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(b)});const tx=await r.text();const d=tx?JSON.parse(tx):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
-    async patch(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'PATCH',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json'},body:JSON.stringify(b)});const tx=await r.text();return tx?JSON.parse(tx):null;},
+    async get(p){const r=await fetch(this.SU+'/rest/v1'+p,{headers:{apikey:this.SK,Authorization:'Bearer '+this.SK}});const t=await r.text();return t?JSON.parse(t):[];},
+    async post(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'POST',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(b)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
+    async patch(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'PATCH',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json'},body:JSON.stringify(b)});const t=await r.text();return t?JSON.parse(t):null;},
     async sha256(s){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
-    async fp(){const p=[];try{const gl=document.createElement('canvas').getContext('webgl');const ext=gl&&gl.getExtension('WEBGL_debug_renderer_info');if(ext){p.push(gl.getParameter(ext.UNMASKED_VENDOR_WEBGL));p.push(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL));}}catch(e){p.push('no-gpu');}p.push(screen.width+'x'+screen.height,screen.colorDepth,navigator.hardwareConcurrency||'nc',Intl.DateTimeFormat().resolvedOptions().timeZone);return this.sha256(p.join('|'));}, /* v2: hardware-bound FP */
+    async fp(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('tyst_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
     async hash(pin,u){const f=await this.fp();return this.sha256(pin+':'+u+':'+f+':tyst_local_v1');},
     vu(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const p=v.split('.');if(p.length!==2)return null;if(p[0].length<2||p[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(p[0])||!/^[a-z][a-z0-9]*$/.test(p[1]))return null;return v;},
     vp(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(['123456','654321','000000','999999'].includes(p))return false;return true;}
 };
-
+function openLoginModal(){document.getElementById('lmBg').classList.add('show');lmSwitch('login');setTimeout(()=>document.getElementById('lmU').focus(),120);}
 function closeLM(){document.getElementById('lmBg').classList.remove('show');}
 function lmSwitch(to){document.getElementById('lmLogin').style.display=to==='login'?'':'none';document.getElementById('lmReg').style.display=to==='reg'?'':'none';setTimeout(()=>document.getElementById(to==='login'?'lmU':'lmRU').focus(),100);}
 function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
@@ -1028,27 +776,27 @@ function lmUpdateReg(){const p=document.getElementById('lmRP').value,p2=document
 async function lmDoLogin(){
     const u=LM.vu(document.getElementById('lmU').value),p=document.getElementById('lmP').value;
     lmFb('lmFbL','','');
-    if(!u){lmFb('lmFbL','e',lang==='sv'?'Användarnamnsformat: ord.ord':'Username format: word.word');return;}
-    if(!LM.vp(p)){lmFb('lmFbL','e',lang==='sv'?'PIN måste vara 6 siffror':'PIN must be 6 digits');return;}
-    const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent=t('verifying');
+    if(!u){lmFb('lmFbL','e','Username format: word.word');return;}
+    if(!LM.vp(p)){lmFb('lmFbL','e','PIN must be 6 digits');return;}
+    const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='Verifying…';
     try{
         const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username,auth_hash&limit=1');
-        const user=Array.isArray(data)?data[0]:null;if(!user)throw new Error(lang==='sv'?'Användarnamn hittades inte':'Username not found');
+        const user=Array.isArray(data)?data[0]:null;if(!user)throw new Error('Username not found');
         const h=await LM.hash(p,u);
         if(!user.auth_hash)await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:h});
-        else if(user.auth_hash!==h)throw new Error(lang==='sv'?'Enhet okänd. Data kan inte återställas.':'Device not recognised. Data cannot be recovered.');
+        else if(user.auth_hash!==h)throw new Error('Wrong PIN or unrecognised device');
         localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
         localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,h);
-        lmFb('lmFbL','s',t('signedIn'));setTimeout(()=>window.location.reload(),700);
-    }catch(err){lmFb('lmFbL','e',err.message||t('sendFailed'));btn.disabled=false;btn.innerHTML=`<span>${t('lmBtnLTxt')}</span>`;}
+        lmFb('lmFbL','s','✓ Signed in!');setTimeout(()=>window.location.reload(),700);
+    }catch(err){lmFb('lmFbL','e',err.message||'Sign in failed');btn.disabled=false;btn.textContent='Sign in →';}
 }
 async function lmDoReg(){
     const u=LM.vu(document.getElementById('lmRU').value),p=document.getElementById('lmRP').value,p2=document.getElementById('lmRP2').value;
     lmFb('lmFbR','','');
-    if(!u){lmFb('lmFbR','e',lang==='sv'?'Användarnamnsformat: ord.ord':'Username format: word.word');return;}
-    if(!LM.vp(p)){lmFb('lmFbR','e',lang==='sv'?'PIN är för svag':'PIN is too weak');return;}
-    if(p!==p2){lmFb('lmFbR','e',lang==='sv'?'PIN-koderna matchar inte':'PINs do not match');return;}
-    const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent=t('processing');
+    if(!u){lmFb('lmFbR','e','Username format: word.word');return;}
+    if(!LM.vp(p)){lmFb('lmFbR','e','PIN is too weak');return;}
+    if(p!==p2){lmFb('lmFbR','e','PINs do not match');return;}
+    const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent='Processing…';
     try{
         const data=await LM.post('/profiles?select=id,username',{username:u});
         const user=Array.isArray(data)?data[0]:data;if(!user||!user.id)throw new Error('No data returned');
@@ -1056,41 +804,14 @@ async function lmDoReg(){
         localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
         localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,h);
         await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:h});
-        lmFb('lmFbR','s',t('accountCreated'));
-        setTimeout(()=>{alert(t('accountCreatedAlert')(user.username));window.location.reload();},800);
+        lmFb('lmFbR','s','Account created!');
+        setTimeout(()=>{alert('Account created!\n\nUsername: '+user.username+'\n\nSave your PIN — it cannot be recovered.');window.location.reload();},800);
     }catch(err){
         const d=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');
-        lmFb('lmFbR','e',d?(lang==='sv'?'Användarnamnet är redan taget':'Username already taken'):(err.message||t('sendFailed')));
-        btn.disabled=false;btn.innerHTML=`<span>${t('lmBtnRTxt')}</span>`;
+        lmFb('lmFbR','e',d?'Username already taken':(err.message||'Failed'));
+        btn.disabled=false;btn.textContent='Register →';
     }
 }
-/* ── INCOGNITO DETECTION ─────────────────────────────────── */
-function detectIncognito(){
-    try{localStorage.setItem('_tyst_chk','1');localStorage.removeItem('_tyst_chk');return false;}
-    catch(e){return true;}
-}
-function showIncognitoWarning(){
-    const existing=document.getElementById('lmIncogWarn');
-    if(existing)return;
-    const warn=document.createElement('div');
-    warn.id='lmIncogWarn';
-    warn.style.cssText='background:rgba(255,107,53,.08);border:1px solid rgba(255,107,53,.4);border-left:3px solid #ff6b35;padding:10px 12px;margin-bottom:12px;font-size:11px;color:#ff6b35;line-height:1.8;letter-spacing:.3px';
-    warn.innerHTML='⚠ INCOGNITO DETECTED<br><span style="color:var(--txt3)">keypair &amp; inbox require persistent storage.<br>login here will not work — use a regular browser window.</span>';
-    const body=document.querySelector('.lm-body');
-    if(body)body.insertBefore(warn,body.firstChild);
-    // Also disable login/register buttons
-    const bl=document.getElementById('lmBtnL');
-    const br=document.getElementById('lmBtnR');
-    if(bl){bl.disabled=true;bl.title='Not available in incognito';}
-    if(br){br.disabled=true;br.title='Not available in incognito';}
-}
-function openLoginModal(){
-    document.getElementById('lmBg').classList.add('show');
-    lmSwitch('login');
-    if(detectIncognito())showIncognitoWarning();
-    setTimeout(()=>document.getElementById('lmU').focus(),120);
-}
-
 (function wire(){
     function toU(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const di=v.indexOf('.');if(di!==-1)v=v.slice(0,di+1)+v.slice(di+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
     function toP(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
@@ -1113,171 +834,59 @@ function openLoginModal(){
   tick();setInterval(tick,1000);
 })();
 
+/* ── Input cursor focus effect ─────────────────────────── */
+(function(){
+  const inp = document.getElementById('tystTo');
+  if(!inp) return;
+  // Buat fake cursor yang muncul sebelum user klik
+  inp.addEventListener('focus', () => {
+    inp.style.caretColor = 'var(--c0)';
+    inp.style.boxShadow = '0 0 0 1px rgba(0,255,157,.15) inset, 0 0 8px rgba(0,255,157,.08)';
+  });
+  inp.addEventListener('blur', () => {
+    inp.style.boxShadow = '';
+  });
+  // Auto-pulse border saat halaman load — menarik perhatian ke input
+  setTimeout(() => {
+    inp.style.transition = 'border-color .3s, box-shadow .3s';
+    inp.style.borderColor = 'rgba(0,255,157,.4)';
+    inp.style.borderLeft = '2px solid var(--c0)';
+    setTimeout(() => {
+      inp.style.borderColor = '';
+      inp.style.borderLeft = '';
+    }, 1800);
+  }, 1200);
+})();
+
+
 // Render message body as multicolor hacker lines
 (function(){
-  const orig=window.INBOX;
-  if(!orig)return;
-  const origOpen=orig.open;
-  orig.open=async function(id){
-    await origOpen.call(orig,id);
-    const body=document.getElementById('readBody');
-    if(!body||!body.textContent)return;
-    const text=body.textContent;
-    const words=text.split(/\s+/);
-    const colors=['ml0','ml1','ml2','ml3','ml4','ml5','ml6','ml5','ml6'];
-    let html=`<div class="mhdr">${t('mhdr')}</div>`;
-    let lineWords=[],colorIdx=0;
-    words.forEach((w,i)=>{
+  const orig = window.INBOX;
+  if(!orig) return;
+  const origOpen = orig.open;
+  orig.open = async function(id) {
+    await origOpen.call(orig, id);
+    const body = document.getElementById('readBody');
+    if(!body || !body.textContent) return;
+    const text = body.textContent;
+    const words = text.split(/\s+/);
+    const colors = ['ml0','ml1','ml2','ml3','ml4','ml5','ml6','ml5','ml6'];
+    let html = '<div class="mhdr">// decrypted payload · handle with care</div>';
+    let lineWords = [], colorIdx = 0;
+    words.forEach((w,i) => {
       lineWords.push(w);
-      const isEnd=i===words.length-1;
-      const lineLen=lineWords.join(' ').length;
-      if(lineLen>38||isEnd){
-        const cls=colors[colorIdx%colors.length];
-        html+=`<div class="${cls}">${lineWords.join(' ')}</div>`;
-        colorIdx++;lineWords=[];
+      const isEnd = i === words.length - 1;
+      const lineLen = lineWords.join(' ').length;
+      if(lineLen > 38 || isEnd) {
+        const cls = colors[colorIdx % colors.length];
+        html += \`<div class="\${cls}">\${lineWords.join(' ')}</div>\`;
+        colorIdx++;
+        lineWords = [];
       }
     });
-    body.innerHTML=html;
+    body.innerHTML = html;
   };
 })();
-</script>
-<script>
-
-(function(){
-'use strict';
-const OPSEC_KEY='tyst_opsec_v1';
-
-function showOpsecNotice(){
-  if(localStorage.getItem(OPSEC_KEY)==='1')return;
-  const ov=document.createElement('div');
-  ov.id='opsecOv';
-  ov.style.cssText='position:fixed;inset:0;background:#040d0a;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Share Tech Mono",monospace;';
-  ov.innerHTML=`
-    <div style="max-width:340px;width:100%;">
-      <div style="font-size:10px;color:#3d6b4f;letter-spacing:3px;text-transform:uppercase;margin-bottom:32px;">// operational security notice</div>
-      <div style="border-left:2px solid #ff6b35;padding-left:16px;margin-bottom:28px;">
-        <div style="font-size:13px;color:#b8f0d0;line-height:2;letter-spacing:.3px;">
-          this channel is secure.<br>
-          <span style="color:#7abf9a;">how you arrived here may not be.</span>
-        </div>
-      </div>
-      <div style="margin-bottom:28px;">
-        <div style="font-size:9px;color:#3d6b4f;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;">// protocol rules</div>
-        <div style="font-size:11px;color:#7abf9a;line-height:2.2;letter-spacing:.3px;">
-          <span style="color:#00ff9d;">01</span> &nbsp;never name this tool on any unsecured channel<br>
-          <span style="color:#00ff9d;">02</span> &nbsp;share access via QR or verbal only — never link<br>
-          <span style="color:#00ff9d;">03</span> &nbsp;if asked, this is a notepad app<br>
-          <span style="color:#00ff9d;">04</span> &nbsp;one device · one identity · no recovery<br>
-          <span style="color:#00ff9d;">05</span> &nbsp;loss of device = loss of identity. by design.<br>
-          <span style="color:#00ff9d;">06</span> &nbsp;text only — files carry metadata that cannot be purged
-        </div>
-      </div>
-      <div style="border:1px solid #1a3a2a;padding:12px 14px;margin-bottom:24px;background:rgba(0,255,157,.03);">
-        <div style="font-size:10px;color:#3d6b4f;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">// what this is</div>
-        <div style="font-size:11px;color:#7abf9a;line-height:1.9;letter-spacing:.3px;">
-          a one-way encrypted transmission channel.<br>
-          not a chat room. not a messenger.<br>
-          each payload is a discrete operation.
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-        <input type="checkbox" id="opsecChk" style="width:13px;height:13px;accent-color:#00ff9d;flex-shrink:0;">
-        <label for="opsecChk" style="font-size:11px;color:#7abf9a;cursor:pointer;letter-spacing:.3px;">
-          i understand and accept operational responsibility
-        </label>
-      </div>
-      <button id="opsecBtn" disabled onclick="window._confirmOpsec()" style="width:100%;padding:14px;background:transparent;border-top:1px solid #1a3a2a;border-right:1px solid #1a3a2a;border-bottom:1px solid #1a3a2a;border-left:3px solid #1a3a2a;color:#3d6b4f;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:not-allowed;transition:all .2s;">
-        proceed to channel
-      </button>
-      <div style="margin-top:14px;font-size:9px;color:#1a3a2a;letter-spacing:.5px;text-align:center;">
-        this notice appears once · it is not logged
-      </div>
-    </div>
-  `;
-  document.body.appendChild(ov);
-  const chk=document.getElementById('opsecChk');
-  const btn=document.getElementById('opsecBtn');
-  chk.addEventListener('change',function(){
-    if(this.checked){
-      btn.disabled=false;
-      btn.style.borderLeftColor='#00ff9d';
-      btn.style.color='#00ff9d';
-      btn.style.cursor='pointer';
-    }else{
-      btn.disabled=true;
-      btn.style.borderLeftColor='#1a3a2a';
-      btn.style.color='#3d6b4f';
-      btn.style.cursor='not-allowed';
-    }
-  });
-}
-
-window._confirmOpsec=function(){
-  localStorage.setItem(OPSEC_KEY,'1');
-  const ov=document.getElementById('opsecOv');
-  if(ov){ov.style.opacity='0';ov.style.transition='opacity .4s';setTimeout(()=>ov.remove(),400);}
-};
-
-/* ── QR INVITE SYSTEM ── */
-function genToken(){
-  const arr=new Uint8Array(16);
-  crypto.getRandomValues(arr);
-  return Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-window.showQRInvite=function(){
-  const loggedIn=localStorage.getItem('tyst_logged_in')==='true';
-  if(!loggedIn){
-    const t=document.getElementById('toast');
-    if(t){t.textContent='sign in to generate invite';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
-    return;
-  }
-  const token=genToken();
-  const url=window.location.origin+'/app?inv='+token;
-  const ov=document.createElement('div');
-  ov.id='qrOv';
-  ov.style.cssText='position:fixed;inset:0;background:rgba(4,13,10,.96);z-index:9990;display:flex;align-items:center;justify-content:center;padding:24px;font-family:"Share Tech Mono",monospace;backdrop-filter:blur(4px);';
-  ov.innerHTML=`
-    <div style="max-width:300px;width:100%;text-align:center;">
-      <div style="font-size:9px;color:#3d6b4f;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;">// one-time invite · expires in</div>
-      <div id="qrTimer" style="font-family:'VT323',monospace;font-size:56px;color:#00ff9d;line-height:1;margin-bottom:14px;">60</div>
-      <div id="qrCode" style="background:#fff;padding:14px;display:inline-block;margin-bottom:14px;"></div>
-      <div style="font-size:9px;color:#3d6b4f;letter-spacing:1px;margin-bottom:20px;">scan only · never screenshot · never share link</div>
-      <button onclick="document.getElementById('qrOv').remove();clearInterval(window._qrInt);" style="width:100%;padding:11px;background:transparent;border:1px solid #1a3a2a;color:#3d6b4f;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;">[ abort ]</button>
-    </div>
-  `;
-  document.body.appendChild(ov);
-
-  const s=document.createElement('script');
-  s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
-  s.onload=function(){
-    new QRCode(document.getElementById('qrCode'),{
-      text:url,width:176,height:176,
-      colorDark:'#000',colorLight:'#fff',
-      correctLevel:QRCode.CorrectLevel.H
-    });
-  };
-  document.head.appendChild(s);
-
-  let n=60;
-  window._qrInt=setInterval(function(){
-    n--;
-    const el=document.getElementById('qrTimer');
-    if(!el){clearInterval(window._qrInt);return;}
-    el.textContent=n;
-    if(n<=10)el.style.color='#ff3b6f';
-    else if(n<=20)el.style.color='#ff6b35';
-    if(n<=0){
-      clearInterval(window._qrInt);
-      const o=document.getElementById('qrOv');
-      if(o)o.innerHTML='<div style="text-align:center;font-family:\'Share Tech Mono\',monospace;padding:40px 24px;"><div style="font-family:\'VT323\',monospace;font-size:52px;color:#ff3b6f;margin-bottom:12px;">EXPIRED</div><div style="font-size:11px;color:#7abf9a;margin-bottom:24px;letter-spacing:.3px;">token destroyed · generate new invite</div><button style="padding:10px 20px;background:transparent;border:1px solid #1a3a2a;color:#3d6b4f;font-family:\'Share Tech Mono\',monospace;font-size:11px;cursor:pointer;" onclick="document.getElementById(\'qrOv\').remove()">[ close ]</button></div>';
-    }
-  },1000);
-};
-
-document.addEventListener('DOMContentLoaded',showOpsecNotice);
-})();
-
 </script>
 </body>
 </html>
