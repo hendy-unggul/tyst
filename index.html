@@ -39,7 +39,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .dd-item:hover{background:rgba(0,255,157,.05);color:var(--c0)}
 
 /* TERMINAL HEADER STRIP */
-.term-strip{padding:8px 18px;border-bottom:1px solid var(--dim);background:var(--bg3);display:flex;align-items:center;gap:8px;font-size:10px;color:var(--txt3);letter-spacing:1px}
+.term-strip{padding:8px 18px;border-bottom:1px solid var(--dim);background:var(--bg3);display:flex;align-items:center;font-size:10px;color:var(--txt3);letter-spacing:1px}
 .term-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);animation:blink 2s step-end infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 .term-status{color:var(--c0)}
@@ -241,7 +241,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="term-strip">
     <span class="term-dot"></span>
     <span class="term-status">CHANNEL ACTIVE</span>
-    <span style="margin-left:auto;font-size:9px" id="termClock"></span>
+    <span style="flex:1;text-align:center;font-size:9px" id="termClock"></span>
     <div class="lang-switcher" id="langSwitcher"></div>
   </div>
 
