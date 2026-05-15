@@ -261,7 +261,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="field">
       <label class="f-label" for="tystTo">recipient</label>
       <input type="text" class="f-input" id="tystTo" placeholder="target.username"
-        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="tystValidate()">
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="tystValidate()" autofocus>
     </div>
     <div class="field">
       <label class="f-label" for="tystMsg">payload</label>
@@ -716,6 +716,24 @@ function setupUI(){
 window.addEventListener('load',()=>{
     initLangSwitcher();
     setupUI();
+
+    // Auto-focus recipient input on load
+    const toInp = document.getElementById('tystTo');
+    const msgInp = document.getElementById('tystMsg');
+    if(toInp) setTimeout(() => toInp.focus(), 300);
+
+    // Enter on tystTo → jump to tystMsg
+    if(toInp && msgInp) {
+      toInp.addEventListener('keydown', e => {
+        if(e.key === 'Enter') {
+          e.preventDefault();
+          msgInp.focus();
+          // Move caret to end if there's text
+          const len = msgInp.value.length;
+          msgInp.setSelectionRange(len, len);
+        }
+      });
+    }
     if(!IS_GUEST){
         ECDH.reg();INBOX.poll();
         $('inboxBtn').onclick=()=>{INBOX.load();$('inboxPanel').classList.add('show');};
