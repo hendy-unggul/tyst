@@ -702,7 +702,8 @@ function setupUI(){
         sec.innerHTML='<button class="btn-login" onclick="openLoginModal()">Sign in</button>';
         $('inboxSect').style.display='none';
     }else{
-        sec.innerHTML=`<span class="user-chip">@${ME}</span><button class="btn-icon" id="sBtn">⋮</button>`;
+        const safeMe = ME ? ME.replace(/[^a-z0-9_.]/gi,'') : '';
+        sec.innerHTML='<span class="user-chip">@'+safeMe+'</span><button class="btn-icon" id="sBtn">⋮</button>';
         const dd=document.createElement('div');dd.className='dd';dd.id='sDD';
         dd.innerHTML='<div class="dd-item" id="loutBtn">Sign out</div>';
         document.querySelector('.app').appendChild(dd);
@@ -887,7 +888,9 @@ async function lmDoReg(){
     const body = document.getElementById('readBody');
     if(!body || !body.textContent) return;
     const text = body.textContent;
-    const words = text.split(/\s+/);
+    // Escape message content before rendering as colored lines
+    const escapeHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    const words = text.split(/\s+/).map(escapeHtml);
     const colors = ['ml0','ml1','ml2','ml3','ml4','ml5','ml6','ml5','ml6'];
     let html = '<div class="mhdr">// decrypted payload · handle with care</div>';
     let lineWords = [], colorIdx = 0;
@@ -897,7 +900,7 @@ async function lmDoReg(){
       const lineLen = lineWords.join(' ').length;
       if(lineLen > 38 || isEnd) {
         const cls = colors[colorIdx % colors.length];
-        html += \`<div class="\${cls}">\${lineWords.join(' ')}</div>\`;
+        html += '<div class="'+cls+'">'+lineWords.join(' ')+'</div>';
         colorIdx++;
         lineWords = [];
       }
