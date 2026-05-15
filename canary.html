@@ -76,10 +76,6 @@ h1{font-size:28px;color:var(--c0);letter-spacing:4px;margin-bottom:8px;text-shad
       <div class="dot dot-green"></div>
       <span class="status-text ok">no user data has been handed to any authority</span>
     </div>
-    <div class="status-line">
-      <div class="dot dot-green"></div>
-      <span class="status-text ok">we have NOT retained any user identity data (no IP · no device fingerprint · no metadata)</span>
-    </div>
   </div>
 
   <div class="date-block">
@@ -137,7 +133,8 @@ h1{font-size:28px;color:var(--c0);letter-spacing:4px;margin-bottom:8px;text-shad
     · <a href="https://keys.openpgp.org">keys.openpgp.org</a> — pgp key lookup<br>
     · <a href="https://web.archive.org/web/*/tyst.site/canary">archive.org</a> — historical snapshots<br>
     · <a href="/canary.txt">canary.txt</a> — plain text version for scripted monitoring<br>
-    · <a href="https://github.com/hendy-unggul/tyst">github source</a> — audit the code
+    · <a href="https://github.com/hendy-unggul/tyst-crypto">github.com/hendy-unggul/tyst-crypto</a> — audit crypto engine<br>
+    · <a href="https://github.com/hendy-unggul/tyst-crypto/blob/main/crypto.test.js">crypto.test.js</a> — 10 test vectors, runnable in browser console
   </div>
 
   <div class="footer">
@@ -148,31 +145,12 @@ h1{font-size:28px;color:var(--c0);letter-spacing:4px;margin-bottom:8px;text-shad
 
 </div>
 <script>
-// CANARY UPDATE INSTRUCTIONS:
-// 1. Update LAST_UPDATED dan NEXT_DUE di bawah ini
-// 2. git add canary.html
-// 3. git commit -m "canary: update YYYY-MM-DD"
-// 4. git push
-// Lakukan sebelum tanggal NEXT_DUE — jangan sampai lewat 35 hari
-const LAST_UPDATED = '2026-05-11';
-const NEXT_DUE = '2026-06-11';
-const HARD_DEADLINE = '2026-06-15'; // 35 hari dari last update
-
-document.getElementById('lastUpdate').textContent = LAST_UPDATED;
-document.getElementById('nextUpdate').textContent = NEXT_DUE;
-
-// Warning kalau sudah dekat deadline
-const today = new Date().toISOString().slice(0,10);
-const daysLeft = Math.ceil((new Date(NEXT_DUE) - new Date(today)) / 86400000);
-if (daysLeft <= 7 && daysLeft > 0) {
-    const warn = document.createElement('div');
-    warn.style.cssText = 'background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.4);border-left:2px solid #ff6b35;padding:10px 14px;margin-top:16px;font-size:11px;color:#ff6b35;letter-spacing:.3px;';
-    warn.innerHTML = '⚠ canary update due in ' + daysLeft + ' day' + (daysLeft===1?'':'s') + ' · commit to github before ' + NEXT_DUE;
-    document.querySelector('.wrap').appendChild(warn);
-}
-if (today > HARD_DEADLINE) {
-    document.querySelector('.block').style.borderLeftColor = '#ff3b6f';
-}
+// Auto-calculate dates
+const now = new Date();
+const last = now.toISOString().slice(0,10);
+const next = new Date(now.setMonth(now.getMonth()+1)).toISOString().slice(0,10);
+document.getElementById('lastUpdate').textContent = last;
+document.getElementById('nextUpdate').textContent = next;
 </script>
 </body>
 </html>
