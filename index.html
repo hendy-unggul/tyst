@@ -222,7 +222,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
         /* LANGUAGE FLAGS */
         .lang-switcher{display:flex;align-items:center;gap:2px;margin-left:10px}
-        .lang-flag{width:18px;height:13px;cursor:pointer;opacity:.3;transition:opacity .15s,transform .15s;border-radius:1px;overflow:hidden;flex-shrink:0;background-size:cover;background-position:center}
+        .lang-flag{cursor:pointer;opacity:.3;transition:opacity .15s,transform .15s;flex-shrink:0;font-size:14px;line-height:1;padding:3px}
         .lang-flag:hover{opacity:.75;transform:scale(1.1)}
         .lang-flag.active{opacity:1;transform:scale(1.1);box-shadow:0 0 4px rgba(0,255,157,.5)}
 
@@ -581,7 +581,7 @@ function applyLang(lang) {
     const isActive = f.dataset.lang === lang;
     f.classList.toggle('active', isActive);
     f.style.opacity = isActive ? '1' : '.3';
-    f.style.transform = isActive ? 'scale(1.1)' : 'scale(1)';
+    f.style.transform = isActive ? 'scale(1.15)' : 'scale(1)';
   });
 
   // Labels
@@ -662,28 +662,22 @@ function applyLang(lang) {
   if(loutBtn) loutBtn.textContent = t.signOut;
 }
 
-const FLAG_URLS = {
-  en: 'https://flagcdn.com/w20/gb.png',
-  sv: 'https://flagcdn.com/w20/se.png',
-  ru: 'https://flagcdn.com/w20/ru.png',
-  es: 'https://flagcdn.com/w20/es.png',
-  de: 'https://flagcdn.com/w20/de.png',
+const FLAG_EMOJI = {
+  en: '🇬🇧', sv: '🇸🇪', ru: '🇷🇺', es: '🇪🇸', de: '🇩🇪'
 };
 
 function initLangSwitcher() {
   const switcher = document.getElementById('langSwitcher');
   if(!switcher) return;
   Object.entries(LANGS).forEach(([code, data]) => {
-    const img = document.createElement('img');
-    img.className = 'lang-flag' + (code === currentLang ? ' active' : '');
-    img.src = FLAG_URLS[code];
-    img.title = data.name;
-    img.width = 18;
-    img.height = 13;
-    img.dataset.lang = code;
-    img.style.cssText = 'border-radius:1px;cursor:pointer;opacity:' + (code === currentLang ? '1' : '.3') + ';transition:opacity .15s,transform .15s;margin-left:2px;padding:5px 3px;';
-    img.onclick = () => applyLang(code);
-    switcher.appendChild(img);
+    const span = document.createElement('span');
+    span.className = 'lang-flag' + (code === currentLang ? ' active' : '');
+    span.textContent = FLAG_EMOJI[code];
+    span.title = data.name;
+    span.dataset.lang = code;
+    span.style.cssText = 'font-size:14px;cursor:pointer;opacity:' + (code === currentLang ? '1' : '.3') + ';transition:opacity .15s,transform .15s;padding:3px 3px;line-height:1;display:inline-block';
+    span.onclick = () => applyLang(code);
+    switcher.appendChild(span);
   });
   applyLang(currentLang);
 }
@@ -774,10 +768,10 @@ function setupUI(){
     const sec=$('userSection');
     if(IS_GUEST){
         sec.innerHTML='<button class="btn-login" onclick="openLoginModal()">Sign in</button>';
-    const gh=document.getElementById('guestHint');if(gh)gh.style.display='block';
-    const gcta=document.getElementById('guestCTA');if(gcta)gcta.style.display='block';
-    const cs=document.querySelector('.compose-sect');if(cs)cs.classList.add('compose-locked');
-        $('inboxSect').style.display='none';
+        const gh=document.getElementById('guestHint');if(gh)gh.style.display='block';
+        const gcta=document.getElementById('guestCTA');if(gcta)gcta.style.display='block';
+        const cs=document.querySelector('.compose-sect');if(cs)cs.classList.add('compose-locked');
+        document.getElementById('inboxSect').style.display='none';
     }else{
         const safeMe = ME ? ME.replace(/[^a-z0-9_.]/gi,'') : '';
         sec.innerHTML='<span class="user-chip">@'+safeMe+'</span><button class="btn-icon" id="sBtn">⋮</button>';
