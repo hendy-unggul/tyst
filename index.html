@@ -832,6 +832,21 @@ window.addEventListener('load',()=>{
 /* SEND */
 function layerShow(id){['lProc','lSent','lNoPub'].forEach(l=>{const el=document.getElementById(l);if(el)el.classList.toggle('show',l===id);});}
 function closeProcOv(){document.getElementById('procOv').classList.remove('show');document.getElementById('tystTo').value='';document.getElementById('tystMsg').value='';const c=document.getElementById('charN');if(c)c.textContent='0';const b=document.getElementById('sendBtn');if(b)b.disabled=true;setTimeout(()=>layerShow(null),300);}
+
+function toast(msg, duration=2500){
+  let t=document.getElementById('toast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='toast';
+    t.style.cssText='position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--dim);color:var(--txt);font-family:var(--mono);font-size:11px;padding:8px 16px;letter-spacing:.5px;z-index:9999;transition:opacity .3s;pointer-events:none;opacity:0';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.opacity='1';
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.style.opacity='0', duration);
+}
+
 function tystValidate(){
     const hint=document.getElementById('tystToHint');
     if(hint){
@@ -878,13 +893,13 @@ async function tystSend(){
         closeProcOv();
         toast('Failed. Please try again.');
         const b=document.getElementById('sendBtn');
-        if(b){b.disabled=false;b.innerHTML='<span>▶ transmit encrypted</span>';}
+        if(b){b.disabled=false;b.innerHTML='<span>▶ pass note</span>';}
       }
     }catch(err){
         console.error('[TYST]',err);
         closeProcOv();
         const b=document.getElementById('sendBtn');
-        if(b){b.disabled=false;b.innerHTML='<span>▶ transmit encrypted</span>';}
+        if(b){b.disabled=false;b.innerHTML='<span>▶ pass note</span>';}
       }
 }
 
