@@ -883,7 +883,7 @@ function setupUI(){
         sec.innerHTML='<span class="user-chip">@'+safeMe+'</span><button class="btn-icon" id="sBtn">⋮</button>';
         const dd=document.createElement('div');dd.className='dd';dd.id='sDD';
         dd.innerHTML=
-          '<div class="dd-item" onclick="showQR()">// my QR address</div>'+
+          '<div class="dd-item" onclick="showQR()">// share TYST</div>'+
           '<div class="dd-item" id="addHomeBtn" onclick="promptAddToHome()">// save to home screen</div>'+
           '<div class="dd-item" id="loutBtn">Sign out</div>';
         document.querySelector('.app').appendChild(dd);
@@ -1109,11 +1109,8 @@ function showQR() {
   const dd = document.getElementById('sDD');
   if(dd) dd.classList.remove('show');
 
-  // Set username display
-  if(usernameEl) usernameEl.textContent = '@' + username;
-
-  // URL to encode — deep link to send note
-  const url = 'https://tyst.site/app?to=' + encodeURIComponent(username);
+  // URL to encode — app only, zero identity
+  const url = 'https://tyst.site/app';
 
   // Draw QR using canvas
   drawQRCanvas(canvas, url, 200);
@@ -1130,7 +1127,7 @@ function downloadQR() {
   const username = localStorage.getItem('tyst_username') || 'tyst';
   if(!canvas) return;
   const a = document.createElement('a');
-  a.download = 'tyst-' + username + '.png';
+  a.download = 'tyst-app-qr.png';
   a.href = canvas.toDataURL('image/png');
   a.click();
   toast('// QR saved');
@@ -1464,13 +1461,13 @@ if('serviceWorker' in navigator){
   <!-- QR CODE PANEL -->
   <div class="qr-panel" id="qrPanel">
     <div class="qr-box">
-      <div class="qr-title">your tyst address</div>
-      <div class="qr-username" id="qrUsername"></div>
+      <div class="qr-title">// install tyst</div>
+      <div class="qr-username" style="font-size:11px;color:var(--txt3);letter-spacing:1px">tyst.site/app</div>
       <canvas class="qr-canvas" id="qrCanvas" width="200" height="200"></canvas>
       <div class="qr-hint">
-        <span>// scan to send an anonymous note</span><br>
-        bots cannot read this · search engines cannot index this<br>
-        only works if someone points a camera at it
+        <span>// scan to install TYST</span><br>
+        zero identity encoded · scan → install → send anonymously<br>
+        share freely — this QR reveals nothing about you
       </div>
       <div class="qr-actions">
         <button class="btn-qr" onclick="downloadQR()">↓ save</button>
