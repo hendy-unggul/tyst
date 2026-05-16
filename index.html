@@ -314,6 +314,22 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         }
         .console-toggle:hover{color:var(--c0);background:rgba(0,255,157,.03)}
 
+
+        /* QR PANEL */
+        .qr-panel{position:fixed;inset:0;background:rgba(4,13,10,.96);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+        .qr-panel.show{display:flex}
+        .qr-box{background:var(--bg2);border:1px solid var(--dim);border-radius:var(--border-radius-lg);padding:28px;text-align:center;max-width:320px;width:100%}
+        .qr-title{font-size:10px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+        .qr-username{font-size:16px;color:var(--c0);letter-spacing:2px;margin-bottom:20px}
+        .qr-canvas{border:8px solid #fff;border-radius:4px;display:block;margin:0 auto 20px}
+        .qr-hint{font-size:10px;color:var(--txt3);line-height:1.8;letter-spacing:.3px;margin-bottom:20px}
+        .qr-hint span{color:var(--txt2)}
+        .qr-actions{display:flex;gap:8px;justify-content:center}
+        .btn-qr{font-family:var(--mono);font-size:10px;padding:8px 16px;cursor:pointer;letter-spacing:.5px;border:1px solid var(--dim);background:transparent;color:var(--txt3);transition:all .15s}
+        .btn-qr:hover{border-color:var(--c0);color:var(--c0)}
+        .btn-qr.primary{background:var(--c0);color:var(--bg);border-color:var(--c0)}
+        .btn-qr.primary:hover{opacity:.85}
+
 </style>
 </head>
 <body>
@@ -851,6 +867,7 @@ function setupUI(){
         sec.innerHTML='<span class="user-chip">@'+safeMe+'</span><button class="btn-icon" id="sBtn">⋮</button>';
         const dd=document.createElement('div');dd.className='dd';dd.id='sDD';
         dd.innerHTML=
+          '<div class="dd-item" onclick="showQR()">// my QR address</div>'+
           '<div class="dd-item" id="addHomeBtn" onclick="promptAddToHome()">// save to home screen</div>'+
           '<div class="dd-item" id="loutBtn">Sign out</div>';
         document.querySelector('.app').appendChild(dd);
@@ -1056,6 +1073,135 @@ async function lmDoReg(){
   tick();setInterval(tick,1000);
 })();
 
+
+
+/* ── QR Code Generator ──────────────────────────────────── */
+// Minimal QR encoder — encodes URL to canvas
+// Uses qrcode-generator (loaded from cdnjs if available)
+// Falls back to link display if library not loaded
+
+function showQR() {
+  const panel = document.getElementById('qrPanel');
+  const usernameEl = document.getElementById('qrUsername');
+  const canvas = document.getElementById('qrCanvas');
+  if(!panel || !canvas) return;
+
+  const username = localStorage.getItem('tyst_username') || '';
+  if(!username) return;
+
+  // Close dropdown
+  const dd = document.getElementById('sDD');
+  if(dd) dd.classList.remove('show');
+
+  // Set username display
+  if(usernameEl) usernameEl.textContent = '@' + username;
+
+  // URL to encode — deep link to send note
+  const url = 'https://tyst.site/app?to=' + encodeURIComponent(username);
+
+  // Draw QR using canvas
+  drawQRCanvas(canvas, url, 200);
+  panel.classList.add('show');
+}
+
+function closeQR() {
+  const panel = document.getElementById('qrPanel');
+  if(panel) panel.classList.remove('show');
+}
+
+function downloadQR() {
+  const canvas = document.getElementById('qrCanvas');
+  const username = localStorage.getItem('tyst_username') || 'tyst';
+  if(!canvas) return;
+  const a = document.createElement('a');
+  a.download = 'tyst-' + username + '.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+  toast('// QR saved');
+}
+
+// Close on backdrop click
+document.addEventListener('click', e => {
+  const panel = document.getElementById('qrPanel');
+  if(panel && panel.classList.contains('show') && e.target === panel) {
+    closeQR();
+  }
+});
+
+// Escape to close QR panel
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') {
+    const panel = document.getElementById('qrPanel');
+    if(panel && panel.classList.contains('show')) closeQR();
+  }
+});
+
+/* QR canvas drawing — uses qr.js loaded below */
+function drawQRCanvas(canvas, text, size) {
+  const ctx = canvas.getContext('2d');
+  canvas.width = size;
+  canvas.height = size;
+
+  // Background white (QR needs white background)
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+
+  if(typeof qrcode !== 'undefined') {
+    // Use qrcode-generator library
+    try {
+      const qr = qrcode(0, 'M');
+      qr.addData(text);
+      qr.make();
+      const count = qr.getModuleCount();
+      const cellSize = Math.floor((size - 32) / count);
+      const offset = Math.floor((size - cellSize * count) / 2);
+
+      ctx.fillStyle = '#040d0a';
+      for(let row = 0; row < count; row++) {
+        for(let col = 0; col < count; col++) {
+          if(qr.isDark(row, col)) {
+            ctx.fillRect(
+              offset + col * cellSize,
+              offset + row * cellSize,
+              cellSize, cellSize
+            );
+          }
+        }
+      }
+
+      // Add subtle TYST branding in center
+      const centerSize = cellSize * 5;
+      const cx = size/2 - centerSize/2;
+      const cy = size/2 - centerSize/2;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(cx-2, cy-2, centerSize+4, centerSize+4);
+      ctx.fillStyle = '#040d0a';
+      ctx.font = 'bold ' + Math.floor(cellSize*2.5) + 'px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#00ff9d';
+      ctx.fillText('T', size/2, size/2);
+    } catch(e) {
+      drawQRFallback(ctx, text, size);
+    }
+  } else {
+    drawQRFallback(ctx, text, size);
+  }
+}
+
+function drawQRFallback(ctx, text, size) {
+  // Fallback: styled text display if QR library not loaded
+  ctx.fillStyle = '#040d0a';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#00ff9d';
+  ctx.font = '11px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('scan not available', size/2, size/2-10);
+  ctx.fillStyle = '#3a6a4a';
+  ctx.font = '9px monospace';
+  ctx.fillText('open in mobile browser', size/2, size/2+10);
+}
 
 /* ── Add to Home Screen ─────────────────────────────────── */
 let _deferredPrompt = null;
@@ -1298,5 +1444,25 @@ if('serviceWorker' in navigator){
     </button>
   </div>
 
+
+  <!-- QR CODE PANEL -->
+  <div class="qr-panel" id="qrPanel">
+    <div class="qr-box">
+      <div class="qr-title">your tyst address</div>
+      <div class="qr-username" id="qrUsername"></div>
+      <canvas class="qr-canvas" id="qrCanvas" width="200" height="200"></canvas>
+      <div class="qr-hint">
+        <span>// scan to send an anonymous note</span><br>
+        bots cannot read this · search engines cannot index this<br>
+        only works if someone points a camera at it
+      </div>
+      <div class="qr-actions">
+        <button class="btn-qr" onclick="downloadQR()">↓ save</button>
+        <button class="btn-qr primary" onclick="closeQR()">close</button>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qr.min.js"></script>
 </body>
 </html>
