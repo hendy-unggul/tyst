@@ -247,6 +247,26 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         /* SENDER REVEAL */
         .sender-reveal{padding:8px 0}
 
+
+        /* GUEST CTA */
+        .guest-cta{padding:16px 18px;border-bottom:1px solid var(--dim);background:rgba(0,255,157,.03);display:none}
+        .guest-cta-inner{border:1px solid rgba(0,255,157,.15);border-left:2px solid var(--c0);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .guest-cta-text{font-family:var(--mono);font-size:11px;color:var(--txt2);line-height:1.8;letter-spacing:.3px}
+        .guest-cta-text span{color:var(--c0)}
+        .guest-cta-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+        .btn-cta-primary{font-family:var(--mono);font-size:11px;color:var(--bg);background:var(--c0);border:none;padding:8px 16px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;transition:opacity .15s}
+        .btn-cta-primary:hover{opacity:.85}
+        .btn-cta-secondary{font-family:var(--mono);font-size:10px;color:var(--txt3);background:transparent;border:1px solid var(--dim);padding:6px 16px;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:border-color .15s,color .15s}
+        .btn-cta-secondary:hover{border-color:var(--c0);color:var(--c0)}
+
+
+        /* COMPOSE LOCKED for guest */
+        .compose-locked{position:relative}
+        .compose-locked::after{content:'';position:absolute;inset:0;background:rgba(4,13,10,.6);z-index:10;pointer-events:none}
+        .compose-locked .f-input{pointer-events:none;opacity:.4}
+        .compose-locked .btn-send{pointer-events:none;opacity:.3}
+        .compose-locked .trust{opacity:.3}
+
 </style>
 </head>
 <body>
@@ -277,6 +297,21 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   </div>
 
   <div class="console-toggle" id="consoleToggle" onclick="toggleConsole()">// hide ▲</div>
+
+  <!-- GUEST CTA — only visible when not logged in -->
+  <div class="guest-cta" id="guestCTA">
+    <div class="guest-cta-inner">
+      <div class="guest-cta-text">
+        <span>// free account required to pass notes</span><br>
+        no phone · no email · no id · 60 seconds
+      </div>
+      <div class="guest-cta-actions">
+        <button class="btn-cta-primary" onclick="openLoginModal();lmSwitch('reg')">register free</button>
+        <button class="btn-cta-secondary" onclick="openLoginModal();lmSwitch('login')">sign in</button>
+      </div>
+    </div>
+  </div>
+
   <!-- COMPOSE -->
   <section class="compose-sect">
     <div class="sect-head">compose encrypted message</div>
@@ -740,6 +775,8 @@ function setupUI(){
     if(IS_GUEST){
         sec.innerHTML='<button class="btn-login" onclick="openLoginModal()">Sign in</button>';
     const gh=document.getElementById('guestHint');if(gh)gh.style.display='block';
+    const gcta=document.getElementById('guestCTA');if(gcta)gcta.style.display='block';
+    const cs=document.querySelector('.compose-sect');if(cs)cs.classList.add('compose-locked');
         $('inboxSect').style.display='none';
     }else{
         const safeMe = ME ? ME.replace(/[^a-z0-9_.]/gi,'') : '';
@@ -752,6 +789,8 @@ function setupUI(){
         const lb=$('loutBtn');if(lb)lb.onclick=()=>{localStorage.removeItem(K.l);localStorage.removeItem(K.a);toast('Signed out.');setTimeout(()=>window.location.reload(),900);};
         $('inboxSect').style.display='block';
         const srw=document.getElementById('senderRevealWrap');if(srw)srw.style.display='block';
+        const cs2=document.querySelector('.compose-sect');if(cs2)cs2.classList.remove('compose-locked');
+        const gcta2=document.getElementById('guestCTA');if(gcta2)gcta2.style.display='none';
     }
 }
 
