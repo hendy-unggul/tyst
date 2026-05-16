@@ -566,7 +566,20 @@ const LANGS = {
   }
 };
 
-let currentLang = localStorage.getItem('tyst_lang') || 'en';
+// Auto-detect language from browser/device locale
+function detectLang() {
+  const saved = localStorage.getItem('tyst_lang');
+  if (saved && LANGS[saved]) return saved;
+  
+  const browser = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  
+  if (browser.startsWith('sv') || browser.startsWith('fi')) return 'sv';
+  if (browser.startsWith('ru') || browser.startsWith('uk') || browser.startsWith('be')) return 'ru';
+  if (browser.startsWith('es') || browser.startsWith('ca') || browser.startsWith('gl')) return 'es';
+  if (browser.startsWith('de') || browser.startsWith('at') || browser.startsWith('ch')) return 'de';
+  return 'en';
+}
+let currentLang = detectLang();
 
 function applyLang(lang) {
   currentLang = lang;
