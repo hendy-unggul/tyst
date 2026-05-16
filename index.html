@@ -850,7 +850,9 @@ function setupUI(){
         const safeMe = ME ? ME.replace(/[^a-z0-9_.]/gi,'') : '';
         sec.innerHTML='<span class="user-chip">@'+safeMe+'</span><button class="btn-icon" id="sBtn">⋮</button>';
         const dd=document.createElement('div');dd.className='dd';dd.id='sDD';
-        dd.innerHTML='<div class="dd-item" id="loutBtn">Sign out</div>';
+        dd.innerHTML=
+          '<div class="dd-item" id="addHomeBtn" onclick="promptAddToHome()">// save to home screen</div>'+
+          '<div class="dd-item" id="loutBtn">Sign out</div>';
         document.querySelector('.app').appendChild(dd);
         const sb=$('sBtn'),sd=$('sDD');
         if(sb&&sd){sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});}
@@ -905,7 +907,7 @@ window.addEventListener('load',()=>{
 function layerShow(id){['lProc','lSent','lNoPub'].forEach(l=>{const el=document.getElementById(l);if(el)el.classList.toggle('show',l===id);});}
 function closeProcOv(){document.getElementById('procOv').classList.remove('show');document.getElementById('tystTo').value='';document.getElementById('tystMsg').value='';const c=document.getElementById('charN');if(c)c.textContent='0';const b=document.getElementById('sendBtn');if(b)b.disabled=true;setTimeout(()=>layerShow(null),300);}
 
-function toast(msg, duration=2500){
+function toast(msg, duration=2800){
   let t=document.getElementById('toast');
   if(!t){
     t=document.createElement('div');
@@ -1053,6 +1055,40 @@ async function lmDoReg(){
   }
   tick();setInterval(tick,1000);
 })();
+
+
+/* ── Add to Home Screen ─────────────────────────────────── */
+let _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredPrompt = e;
+});
+
+function promptAddToHome() {
+  // Close dropdown
+  const dd = document.getElementById('sDD');
+  if(dd) dd.classList.remove('show');
+
+  if (_deferredPrompt) {
+    // Chrome/Android — native prompt
+    _deferredPrompt.prompt();
+    _deferredPrompt.userChoice.then(r => {
+      if(r.outcome === 'accepted') toast('// TYST added to home screen');
+      _deferredPrompt = null;
+    });
+  } else {
+    // iOS Safari / already installed — show instructions
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isAndroid = /android/i.test(navigator.userAgent);
+    if(isIOS) {
+      toast('// tap Share → Add to Home Screen', 4000);
+    } else if(isAndroid) {
+      toast('// tap ⋮ menu → Add to Home Screen', 4000);
+    } else {
+      toast('// open in mobile browser to install', 4000);
+    }
+  }
+}
 
 /* ── Bottom Nav Tab Switching ──────────────────────────── */
 function switchTab(tab) {
