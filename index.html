@@ -683,7 +683,7 @@ function initLangSwitcher() {
 (function(){
 'use strict';
 const SU='https://urljqsszsxrwhhyvpfhr.supabase.co';
-const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MTcxNDAsImV4cCI6MjA2MDE5MzE0MH0.MKBjlCTSoGbCJsTpNwt2JqaQwqpAMVuD6TAqUq3DAJY';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODAzNzcsImV4cCI6MjA5Mzg1NjM3N30.SfNa4M6420z-GZPIBFBYezesNlrmnK3FSHUp8FDeP8M';
 const POLL=15000,POLL_INACTIVE=60000,LP='tyst_priv_v1',LPU='tyst_pub_v1';
 const K={u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'};
 const IS_GUEST=localStorage.getItem(K.l)!=='true';
@@ -891,7 +891,7 @@ async function tystSend(){
 /* LOGIN */
 const LM={
     SU:'https://urljqsszsxrwhhyvpfhr.supabase.co',
-    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2MTcxNDAsImV4cCI6MjA2MDE5MzE0MH0.MKBjlCTSoGbCJsTpNwt2JqaQwqpAMVuD6TAqUq3DAJY',
+    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODAzNzcsImV4cCI6MjA5Mzg1NjM3N30.SfNa4M6420z-GZPIBFBYezesNlrmnK3FSHUp8FDeP8M',
     LS:{u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'},
     async get(p){const r=await fetch(this.SU+'/rest/v1'+p,{headers:{apikey:this.SK,Authorization:'Bearer '+this.SK}});const t=await r.text();return t?JSON.parse(t):[];},
     async post(p,b){const r=await fetch(this.SU+'/rest/v1'+p,{method:'POST',headers:{apikey:this.SK,Authorization:'Bearer '+this.SK,'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(b)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
