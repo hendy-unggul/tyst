@@ -272,6 +272,24 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         /* COMPOSE LOCKED for guest — hidden */
         .compose-locked{display:none!important}
 
+
+        /* BOTTOM NAV */
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bg2);border-top:1px solid var(--dim);display:none;grid-template-columns:1fr 1fr;height:56px}
+        .nav-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .15s;border:none;background:transparent;color:var(--txt3);font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:8px}
+        .nav-tab.active{color:var(--c0)}
+        .nav-tab.active .nav-icon{color:var(--c0);text-shadow:0 0 8px rgba(0,255,157,.4)}
+        .nav-tab:hover{color:var(--txt2)}
+        .nav-icon{font-size:18px;line-height:1;transition:all .15s}
+        .nav-badge{background:var(--c0);color:var(--bg);font-size:8px;font-weight:bold;padding:1px 4px;border-radius:4px;min-width:14px;text-align:center;display:none;position:absolute;top:6px;right:calc(50% - 20px)}
+        .nav-tab{position:relative}
+        
+        /* Push content above bottom nav */
+        .main-content{padding-bottom:56px}
+        
+        /* Console auto-collapse transition */
+        .console-sect{transition:max-height .4s ease, opacity .4s ease, padding .4s ease;overflow:hidden}
+        .console-sect.collapsed{max-height:0!important;opacity:0;padding-top:0!important;padding-bottom:0!important;border-bottom:none}
+
 </style>
 </head>
 <body>
@@ -304,6 +322,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="console-toggle" id="consoleToggle" onclick="toggleConsole()">// hide ▲</div>
 
   <!-- GUEST CTA — only visible when not logged in -->
+  <div class="main-content">
   <div class="guest-cta" id="guestCTA">
     <div class="guest-cta-inner">
       <div class="guest-cta-text">
@@ -816,12 +835,21 @@ function setupUI(){
         const srw=document.getElementById('senderRevealWrap');if(srw)srw.style.display='block';
         const cs2=document.querySelector('.compose-sect');if(cs2)cs2.classList.remove('compose-locked');
         const gcta2=document.getElementById('guestCTA');if(gcta2)gcta2.style.display='none';
+        // Show bottom nav
+        const bn=document.getElementById('bottomNav');if(bn)bn.style.display='grid';
+        // Hide old inline inbox button
+        const ib2=document.getElementById('inboxSect');if(ib2)ib2.style.display='none';
+        // Init console visibility
+        initConsoleVisibility();
+        // Wrap content for bottom nav padding
+        const mc=document.querySelector('.main-content');
     }
 }
 
 window.addEventListener('load',()=>{
     initLangSwitcher();
     setupUI();
+    initConsoleVisibility();
 
     // Auto-focus recipient input on load
     const toInp = document.getElementById('tystTo');
@@ -1002,6 +1030,68 @@ async function lmDoReg(){
   tick();setInterval(tick,1000);
 })();
 
+/* ── Bottom Nav Tab Switching ──────────────────────────── */
+function switchTab(tab) {
+  const compose = document.getElementById('composeSect');
+  const inbox   = document.getElementById('inboxPanel');
+  const navC    = document.getElementById('navCompose');
+  const navI    = document.getElementById('navInbox');
+
+  if (tab === 'compose') {
+    if(compose) compose.style.display = 'block';
+    if(inbox)   inbox.classList.remove('show');
+    if(navC)    navC.classList.add('active');
+    if(navI)    navI.classList.remove('active');
+    // Update nav icon
+    if(navC)    navC.querySelector('.nav-icon').textContent = '✎';
+  } else {
+    if(compose) compose.style.display = 'none';
+    if(inbox)   inbox.classList.add('show');
+    if(navC)    navC.classList.remove('active');
+    if(navI)    navI.classList.add('active');
+    if(navI)    navI.querySelector('.nav-icon').textContent = '●';
+    // Clear badge
+    const badge = document.getElementById('navBadge');
+    if(badge) badge.style.display = 'none';
+    // Trigger inbox load
+    if(typeof INBOX !== 'undefined') INBOX.load();
+  }
+}
+
+function updateNavBadge(count) {
+  const badge = document.getElementById('navBadge');
+  const navI  = document.getElementById('navInbox');
+  if(!badge) return;
+  if(count > 0) {
+    badge.textContent = count > 9 ? '9+' : count;
+    badge.style.display = 'block';
+    if(navI) navI.querySelector('.nav-icon').textContent = '●';
+  } else {
+    badge.style.display = 'none';
+    if(navI) navI.querySelector('.nav-icon').textContent = '○';
+  }
+}
+
+/* ── Console smart show/hide ────────────────────────────── */
+function initConsoleVisibility() {
+  const sect = document.getElementById('consoleSect');
+  const btn  = document.getElementById('consoleToggle');
+  const isReturning = localStorage.getItem('tyst_returning') === '1';
+  const isLoggedIn  = localStorage.getItem('tyst_logged_in') === 'true';
+
+  if (isReturning && isLoggedIn) {
+    // Returning logged-in user — collapse console
+    if(sect) sect.classList.add('collapsed');
+    if(btn)  btn.textContent = '// show init log ▼';
+  } else if (!isReturning) {
+    // First visit — show console, mark as returning after 5s
+    setTimeout(() => {
+      localStorage.setItem('tyst_returning', '1');
+    }, 5000);
+  }
+}
+
+
 function toggleConsole(){
   const sect=document.getElementById('consoleSect');
   const btn=document.getElementById('consoleToggle');
@@ -1111,5 +1201,20 @@ if('serviceWorker' in navigator){
   });
 }
 </script>
+
+</div><!-- end main-content -->
+  <!-- BOTTOM NAV — visible when logged in -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="nav-tab active" id="navCompose" onclick="switchTab('compose')">
+      <span class="nav-icon">✎</span>
+      <span>compose</span>
+    </button>
+    <button class="nav-tab" id="navInbox" onclick="switchTab('inbox')">
+      <span class="nav-icon">○</span>
+      <span>inbox</span>
+      <span class="nav-badge" id="navBadge"></span>
+    </button>
+  </div>
+
 </body>
 </html>
