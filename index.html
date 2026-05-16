@@ -286,9 +286,33 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         /* Push content above bottom nav */
         .main-content{padding-bottom:56px}
         
-        /* Console auto-collapse transition */
-        .console-sect{transition:max-height .4s ease, opacity .4s ease, padding .4s ease;overflow:hidden}
-        .console-sect.collapsed{max-height:0!important;opacity:0;padding-top:0!important;padding-bottom:0!important;border-bottom:none}
+        /* Console smooth collapse */
+        .console-sect{
+          max-height:400px;
+          overflow:hidden;
+          transition:max-height .45s cubic-bezier(.4,0,.2,1),
+                     opacity .35s ease,
+                     padding .35s ease;
+          opacity:1;
+        }
+        .console-sect.collapsed{
+          max-height:0!important;
+          opacity:0;
+          padding-top:0!important;
+          padding-bottom:0!important;
+          border-bottom:none!important;
+        }
+        /* Console toggle pill */
+        .console-toggle{
+          font-size:9px;color:var(--txt3);letter-spacing:1px;
+          cursor:pointer;padding:5px 18px;
+          background:var(--bg3);
+          border-bottom:1px solid var(--dim);
+          text-align:right;
+          transition:color .15s, background .15s;
+          user-select:none;
+        }
+        .console-toggle:hover{color:var(--c0);background:rgba(0,255,157,.03)}
 
 </style>
 </head>
@@ -1080,14 +1104,25 @@ function initConsoleVisibility() {
   const isLoggedIn  = localStorage.getItem('tyst_logged_in') === 'true';
 
   if (isReturning && isLoggedIn) {
-    // Returning logged-in user — collapse console
-    if(sect) sect.classList.add('collapsed');
-    if(btn)  btn.textContent = '// show init log ▼';
+    // Returning logged-in user — collapse instantly (no animation on load)
+    if(sect){
+      sect.style.transition='none'; // no animation on initial load
+      sect.classList.add('collapsed');
+      // Re-enable animation after paint
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+          sect.style.transition='';
+        });
+      });
+    }
+    if(btn) btn.textContent = '// show init log ▼';
   } else if (!isReturning) {
-    // First visit — show console, mark as returning after 5s
+    // First visit — auto-collapse after 4s with smooth animation
     setTimeout(() => {
       localStorage.setItem('tyst_returning', '1');
-    }, 5000);
+      if(sect) sect.classList.add('collapsed');
+      if(btn)  btn.textContent = '// show init log ▼';
+    }, 4000);
   }
 }
 
@@ -1096,9 +1131,20 @@ function toggleConsole(){
   const sect=document.getElementById('consoleSect');
   const btn=document.getElementById('consoleToggle');
   if(!sect||!btn)return;
-  const collapsed=sect.classList.toggle('collapsed');
-  btn.textContent=collapsed?'// show init log ▼':'// hide ▲';
-  localStorage.setItem('tyst_console_hidden',collapsed?'1':'0');
+  const willCollapse=!sect.classList.contains('collapsed');
+  if(willCollapse){
+    // Collapse: set explicit height first for smooth animation
+    sect.style.maxHeight=sect.scrollHeight+'px';
+    requestAnimationFrame(()=>{
+      sect.classList.add('collapsed');
+      btn.textContent='// show init log ▼';
+    });
+  } else {
+    // Expand: remove collapsed, let CSS transition handle it
+    sect.classList.remove('collapsed');
+    btn.textContent='// hide ▲';
+  }
+  localStorage.setItem('tyst_console_hidden',willCollapse?'1':'0');
 }
 (function initConsole(){
   if(localStorage.getItem('tyst_console_hidden')==='1'){
