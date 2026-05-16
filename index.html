@@ -238,6 +238,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           .console-sect{padding:14px 14px}
         }
 
+
+        /* MSG ACTIONS — mute/block */
+        .msg-actions{display:flex;gap:4px;margin-left:auto}
+        .msg-actions button{background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:11px;padding:2px 4px;transition:color .15s;font-family:var(--mono)}
+        .msg-actions button:hover{color:var(--c5)}
+
+        /* SENDER REVEAL */
+        .sender-reveal{padding:8px 0}
+
 </style>
 </head>
 <body>
@@ -259,7 +268,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
   <!-- CONSOLE OUTPUT -->
   <div class="console-sect" id="consoleSect">
-    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">init --protocol ecdh-p256</span></div>
+    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">init --mode passing-note</span></div>
     <div class="c-line"><span class="c-out1">[ OK ]</span> <span class="c-dim">ephemeral keypair generation ready</span></div>
     <div class="c-line"><span class="c-out2">[ OK ]</span> <span class="c-dim">aes-gcm-256 cipher loaded</span></div>
     <div class="c-line"><span class="c-out3">[ OK ]</span> <span class="c-dim">anonymous relay configured · delay 2–47s</span></div>
@@ -317,15 +326,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="p-layer" id="lProc">
       <div class="proc-console">
         <div class="c-line" style="margin-bottom:8px"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">encrypt --send</span></div>
-        <div class="proc-step" id="ps1">generating ephemeral keypair</div>
-        <div class="proc-step" id="ps2">encrypting message payload</div>
-        <div class="proc-step" id="ps3">routing via anonymous relay</div>
+        <div class="proc-step" id="ps1">generating ephemeral key · single use</div>
+        <div class="proc-step" id="ps2">sealing note · forward secrecy</div>
+        <div class="proc-step" id="ps3">passing via anonymous relay</div>
       </div>
     </div>
     <div class="p-layer" id="lSent">
-      <div class="sent-head">TRANSMITTED</div>
-      <div class="c-line" style="margin-bottom:8px"><span class="c-ok">[ OK ]</span> <span class="c-dim">message released · origin unknown</span></div>
-      <div class="sent-sub" id="sentSub">payload is in transit. will be destroyed 5s after recipient opens it.</div>
+      <div class="sent-head">NOTE PASSED</div>
+      <div class="c-line" style="margin-bottom:8px"><span class="c-ok">[ OK ]</span> <span class="c-dim">note passed · origin unknown · key discarded</span></div>
+      <div class="sent-sub" id="sentSub">note is passing. will be destroyed 5 seconds after they read it.</div>
       <button class="btn-dismiss" onclick="closeProcOv()">[ close ]</button>
     </div>
     <div class="p-layer" id="lNoPub">
@@ -361,6 +370,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="read-body" id="readBody"></div>
   <div class="read-foot">
     <span>self-destruct armed</span>
+    <button id="replyBtn" style="display:none;background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:10px;padding:4px 12px;cursor:pointer;letter-spacing:.5px;transition:border-color .15s,color .15s" onmouseover="this.style.borderColor='var(--c0)';this.style.color='var(--c0)'" onmouseout="this.style.borderColor='var(--dim)';this.style.color='var(--txt3)'">↩ reply</button>
     <span>no record kept</span>
   </div>
 </div>
@@ -423,10 +433,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 const LANGS = {
   en: {
     flag:'🇬🇧', name:'EN',
-    compose:'compose', recipient:'recipient', message:'payload',
+    compose:'pass a note', recipient:'recipient', message:'payload',
     msgPlaceholder:'Write anything…', recipPlaceholder:'target.username',
     trust:'sender identity is unknown to anyone',
-    protocol:'protocol ↗', sendBtn:'▶ transmit encrypted',
+    protocol:'protocol ↗', sendBtn:'▶ pass note',
     inboxBtn:'↓ open secure inbox', secureInbox:'◆ secure inbox',
     back:'← back', selfDestruct:'this message will self-destruct',
     noRecord:'no record kept', howTitle:'How TYST protects you',
@@ -443,10 +453,10 @@ const LANGS = {
   },
   sv: {
     flag:'🇸🇪', name:'SV',
-    compose:'skriv', recipient:'mottagare', message:'meddelande',
+    compose:'skicka en not', recipient:'mottagare', message:'meddelande',
     msgPlaceholder:'Skriv vad som helst…', recipPlaceholder:'användarnamn',
     trust:'avsändarens identitet är okänd för alla',
-    protocol:'protokoll ↗', sendBtn:'▶ skicka krypterat',
+    protocol:'protokoll ↗', sendBtn:'▶ skicka not',
     inboxBtn:'↓ öppna säker inkorg', secureInbox:'◆ säker inkorg',
     back:'← tillbaka', selfDestruct:'detta meddelande förstörs',
     noRecord:'inget spår kvar', howTitle:'Hur TYST skyddar dig',
@@ -463,10 +473,10 @@ const LANGS = {
   },
   ru: {
     flag:'🇷🇺', name:'RU',
-    compose:'написать', recipient:'получатель', message:'сообщение',
+    compose:'передать записку', recipient:'получатель', message:'сообщение',
     msgPlaceholder:'Напишите что угодно…', recipPlaceholder:'имя пользователя',
     trust:'личность отправителя никому не известна',
-    protocol:'протокол ↗', sendBtn:'▶ отправить зашифрованно',
+    protocol:'протокол ↗', sendBtn:'▶ передать записку',
     inboxBtn:'↓ открыть защищённый ящик', secureInbox:'◆ защищённый ящик',
     back:'← назад', selfDestruct:'сообщение будет уничтожено',
     noRecord:'записей не сохранено', howTitle:'Как TYST защищает вас',
@@ -483,10 +493,10 @@ const LANGS = {
   },
   es: {
     flag:'🇪🇸', name:'ES',
-    compose:'redactar', recipient:'destinatario', message:'mensaje',
+    compose:'pasar una nota', recipient:'destinatario', message:'mensaje',
     msgPlaceholder:'Escribe lo que quieras…', recipPlaceholder:'nombre.usuario',
     trust:'la identidad del remitente es desconocida para todos',
-    protocol:'protocolo ↗', sendBtn:'▶ transmitir cifrado',
+    protocol:'protocolo ↗', sendBtn:'▶ pasar nota',
     inboxBtn:'↓ abrir bandeja segura', secureInbox:'◆ bandeja segura',
     back:'← volver', selfDestruct:'este mensaje se autodestruirá',
     noRecord:'sin registros', howTitle:'Cómo TYST te protege',
@@ -503,10 +513,10 @@ const LANGS = {
   },
   de: {
     flag:'🇩🇪', name:'DE',
-    compose:'verfassen', recipient:'empfänger', message:'nachricht',
+    compose:'notiz übergeben', recipient:'empfänger', message:'nachricht',
     msgPlaceholder:'Schreib was du willst…', recipPlaceholder:'benutzername',
     trust:'die Identität des Absenders ist niemandem bekannt',
-    protocol:'protokoll ↗', sendBtn:'▶ verschlüsselt senden',
+    protocol:'protokoll ↗', sendBtn:'▶ notiz übergeben',
     inboxBtn:'↓ sicheren posteingang öffnen', secureInbox:'◆ sicherer posteingang',
     back:'← zurück', selfDestruct:'diese nachricht wird zerstört',
     noRecord:'keine aufzeichnungen', howTitle:'Wie TYST dich schützt',
@@ -550,6 +560,7 @@ function applyLang(lang) {
 
   // Compose section
   document.querySelectorAll('.eyebrow').forEach(el => el.textContent = t.compose);
+  const ce=document.getElementById('composeEyebrow');if(ce)ce.textContent=t.compose;
   const recipLabel = document.querySelector('label[for="tystTo"]');
   if(recipLabel) recipLabel.childNodes[recipLabel.childNodes.length-1].textContent = t.recipient;
   const msgLabel = document.querySelector('label[for="tystMsg"]');
@@ -699,7 +710,13 @@ const INBOX=(()=>{
             render();badge(msgs.length>0);
         }catch(e){console.warn('[TYST]',e);}
     }
-    function render(){const el=$('msgList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">○</div><div class="empty-txt">no messages</div></div>';return;}el.innerHTML=msgs.map(m=>`<div class="msg-row" onclick="INBOX.open('${esc(m.id)}')"><div class="msg-meta"><span class="msg-from">${esc(m.from)}</span><span class="msg-ttl">⏳ ${m.ttl}</span></div><div class="msg-prev">${esc(m.prev)}</div></div>`).join('');}
+    function render(){const el=$('msgList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">○</div><div class="empty-txt">no messages</div></div>';return;}el.innerHTML=msgs.map(m=>{
+      const hasFrom = m.senderUsername && m.senderUsername !== 'anonymous';
+      const actionBtn = hasFrom
+        ? '<div class="msg-actions"><button onclick="event.stopPropagation();INBOX.muteUser(''+esc(m.senderUsername)+'')" title="mute">◌</button><button onclick="event.stopPropagation();INBOX.blockUser(''+esc(m.senderUsername)+'')" title="block">✕</button></div>'
+        : '';
+      return '<div class="msg-row" onclick="INBOX.open(''+esc(m.id)+'')"><div class="msg-meta"><span class="msg-from">'+(hasFrom?'@'+esc(m.senderUsername):esc(m.from))+'</span><span class="msg-ttl">⏳ '+m.ttl+'</span>'+actionBtn+'</div><div class="msg-prev">'+esc(m.prev)+'</div></div>';
+    }).join('');}
     async function open(id){const m=msgs.find(x=>x.id===id);if(!m)return;rid=id;$('readFrom').textContent='from: '+m.from;$('readBody').textContent=m.body;$('readCount').textContent='5';$('readCount').style.color='var(--danger)';$('readPanel').classList.add('show');await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});destruct(id);}
     function destruct(id){clearInterval(dt);let n=5;dt=setInterval(()=>{n--;const el=$('readCount');if(!el){clearInterval(dt);return;}el.textContent=n;if(n<=0){clearInterval(dt);burn(id);}},1000);}
     function burn(id){const b=$('readBody');if(b)b.classList.add('burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('readPanel').classList.remove('show');if(b){b.classList.remove('burning');b.textContent='';}$('readCount').style.color='var(--danger)';$('inboxPanel').classList.add('show');render();badge(msgs.length>0);},750);}
@@ -734,6 +751,7 @@ function setupUI(){
         if(sb&&sd){sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});}
         const lb=$('loutBtn');if(lb)lb.onclick=()=>{localStorage.removeItem(K.l);localStorage.removeItem(K.a);toast('Signed out.');setTimeout(()=>window.location.reload(),900);};
         $('inboxSect').style.display='block';
+        const srw=document.getElementById('senderRevealWrap');if(srw)srw.style.display='block';
     }
 }
 
@@ -782,6 +800,17 @@ function showHow(){document.getElementById('howOv').classList.add('show');}
 function hideHow(){document.getElementById('howOv').classList.remove('show');}
 function setStep(n){['ps1','ps2','ps3'].forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;el.className='proc-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
 async function tystSend(){
+    // TYST-to-TYST: require account to send
+    const isGuest = localStorage.getItem('tyst_logged_in') !== 'true';
+    if(isGuest){
+      openLoginModal();
+      const hint = document.getElementById('guestHint');
+      if(hint){
+        hint.textContent='// create a free account to send notes';
+        hint.style.color='var(--c2)';
+      }
+      return;
+    }
     const btn=document.getElementById('sendBtn');
     if(btn){btn.disabled=true;btn.innerHTML='<span>// encrypting...</span>';}
     const to=(document.getElementById('tystTo').value||'').trim().replace('@','').toLowerCase();
@@ -797,7 +826,9 @@ async function tystSend(){
         setStep(2);
         const enc=await window._ECDH.encrypt(msg,pkd.pubkey);
         await new Promise(r=>setTimeout(r,200));
-        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc:enc})});
+        const revealCheck=document.getElementById('revealSender');
+        const senderUsername=revealCheck&&revealCheck.checked?localStorage.getItem('tyst_username'):null;
+        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc:enc,senderUsername})});
         if(r.ok||r.status===202){const s=document.getElementById('sentSub');if(s)s.textContent=`No one can retrieve it. It will vanish 5 seconds after ${to} reads it.`;layerShow('lSent');}
         else{
         closeProcOv();
