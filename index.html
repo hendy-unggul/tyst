@@ -885,9 +885,7 @@ async function tystSend(){
         setStep(2);
         const enc=await window._ECDH.encrypt(msg,pkd.pubkey);
         await new Promise(r=>setTimeout(r,200));
-        const revealCheck=document.getElementById('revealSender');
-        const senderUsername=revealCheck&&revealCheck.checked?localStorage.getItem('tyst_username'):null;
-        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc:enc,senderUsername})});
+        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc:enc})});
         if(r.ok||r.status===202){const s=document.getElementById('sentSub');if(s)s.textContent=`No one can retrieve it. It will vanish 5 seconds after ${to} reads it.`;layerShow('lSent');}
         else{
         closeProcOv();
