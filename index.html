@@ -52,7 +52,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .term-status{color:var(--c0)}
 
 /* CONSOLE OUTPUT — HERO */
-.console-sect{padding:20px 18px;border-bottom:1px solid var(--dim);background:var(--bg2);position:relative;overflow:hidden;min-height:140px}
+
 .console-sect::before{content:'';position:absolute;inset:0;background:var(--scan);pointer-events:none}
 .c-line{font-family:var(--mono);font-size:12px;line-height:1.9;white-space:pre;overflow:hidden}
 .c-prompt{color:var(--c0)}
@@ -234,15 +234,45 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         .lang-flag.active{opacity:1;transform:scale(1.1);box-shadow:0 0 4px rgba(0,255,157,.5)}
 
 
-        .console-sect{transition:max-height .3s ease,padding .3s ease;overflow:hidden}
+        
         .console-sect.collapsed{max-height:0!important;padding-top:0!important;padding-bottom:0!important;border-bottom:none}
         .console-toggle{font-size:9px;color:var(--txt3);letter-spacing:1px;cursor:pointer;padding:5px 18px;background:var(--bg3);border-bottom:1px solid var(--dim);text-align:right;transition:color .15s}
         .console-toggle:hover{color:var(--c0)}
 
 
+        .console-sect{
+          padding:20px 18px;
+          border-bottom:1px solid var(--dim);
+          background:var(--bg2);
+          overflow:hidden;
+          max-height:400px;
+          opacity:1;
+          transition:max-height .45s cubic-bezier(.4,0,.2,1),
+                     opacity .3s ease,
+                     padding .3s ease,
+                     border .3s ease;
+        }
+        .console-sect.collapsed{
+          max-height:0!important;
+          opacity:0!important;
+          padding:0!important;
+          border:none!important;
+          pointer-events:none;
+        }
+        /* Hide toggle when console collapsed — toggle moves up */
+        .console-toggle{
+          font-size:9px;color:var(--txt3);letter-spacing:1px;
+          cursor:pointer;padding:5px 18px;
+          background:var(--bg3);
+          border-bottom:1px solid var(--dim);
+          text-align:right;
+          transition:color .15s, background .15s;
+          user-select:none;
+        }
+        .console-toggle:hover{color:var(--c0);background:rgba(0,255,157,.03)}
         @media(max-width:400px){
           .c-line{font-size:11px;line-height:1.7}
-          .console-sect{padding:14px 14px}
+          
         }
 
 
@@ -287,21 +317,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         .main-content{padding-bottom:56px}
         
         /* Console smooth collapse */
-        .console-sect{
-          max-height:400px;
-          overflow:hidden;
-          transition:max-height .45s cubic-bezier(.4,0,.2,1),
-                     opacity .35s ease,
-                     padding .35s ease;
-          opacity:1;
-        }
-        .console-sect.collapsed{
-          max-height:0!important;
-          opacity:0;
-          padding-top:0!important;
-          padding-bottom:0!important;
-          border-bottom:none!important;
-        }
+        
         /* Console toggle pill */
         .console-toggle{
           font-size:9px;color:var(--txt3);letter-spacing:1px;
