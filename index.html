@@ -741,10 +741,23 @@ const INBOX=(()=>{
     }
     function render(){const el=$('msgList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">○</div><div class="empty-txt">no messages</div></div>';return;}el.innerHTML=msgs.map(m=>{
       const hasFrom = m.senderUsername && m.senderUsername !== 'anonymous';
+      const safeId = esc(m.id);
+      const safeSender = hasFrom ? esc(m.senderUsername) : '';
       const actionBtn = hasFrom
-        ? '<div class="msg-actions"><button onclick="event.stopPropagation();INBOX.muteUser(''+esc(m.senderUsername)+'')" title="mute">◌</button><button onclick="event.stopPropagation();INBOX.blockUser(''+esc(m.senderUsername)+'')" title="block">✕</button></div>'
+        ? '<div class="msg-actions">'
+          + '<button onclick="event.stopPropagation();INBOX.muteUser(\'' + safeSender + '\')" title="mute">◌</button>'
+          + '<button onclick="event.stopPropagation();INBOX.blockUser(\'' + safeSender + '\')" title="block">✕</button>'
+          + '</div>'
         : '';
-      return '<div class="msg-row" onclick="INBOX.open(''+esc(m.id)+'')"><div class="msg-meta"><span class="msg-from">'+(hasFrom?'@'+esc(m.senderUsername):esc(m.from))+'</span><span class="msg-ttl">⏳ '+m.ttl+'</span>'+actionBtn+'</div><div class="msg-prev">'+esc(m.prev)+'</div></div>';
+      const fromLabel = hasFrom ? '@' + safeSender : esc(m.from);
+      return '<div class="msg-row" onclick="INBOX.open(\'' + safeId + '\')">'
+        + '<div class="msg-meta">'
+        + '<span class="msg-from">' + fromLabel + '</span>'
+        + '<span class="msg-ttl">⏳ ' + m.ttl + '</span>'
+        + actionBtn
+        + '</div>'
+        + '<div class="msg-prev">' + esc(m.prev) + '</div>'
+        + '</div>';
     }).join('');}
     async function open(id){const m=msgs.find(x=>x.id===id);if(!m)return;rid=id;$('readFrom').textContent='from: '+m.from;$('readBody').textContent=m.body;$('readCount').textContent='5';$('readCount').style.color='var(--danger)';$('readPanel').classList.add('show');await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});destruct(id);}
     function destruct(id){clearInterval(dt);let n=5;dt=setInterval(()=>{n--;const el=$('readCount');if(!el){clearInterval(dt);return;}el.textContent=n;if(n<=0){clearInterval(dt);burn(id);}},1000);}
