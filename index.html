@@ -248,6 +248,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         .sender-reveal{padding:8px 0}
 
 
+        /* GUEST STATUS */
+        .guest-status{font-family:var(--mono);font-size:10px;color:var(--txt3);letter-spacing:1px}
         /* GUEST CTA */
         .guest-cta{padding:16px 18px;border-bottom:1px solid var(--dim);background:rgba(0,255,157,.03);display:none}
         .guest-cta-inner{border:1px solid rgba(0,255,157,.15);border-left:2px solid var(--c0);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -256,16 +258,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         .guest-cta-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
         .btn-cta-primary{font-family:var(--mono);font-size:11px;color:var(--bg);background:var(--c0);border:none;padding:8px 16px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;transition:opacity .15s}
         .btn-cta-primary:hover{opacity:.85}
-        .btn-cta-secondary{font-family:var(--mono);font-size:10px;color:var(--txt3);background:transparent;border:1px solid var(--dim);padding:6px 16px;cursor:pointer;letter-spacing:.5px;white-space:nowrap;transition:border-color .15s,color .15s}
-        .btn-cta-secondary:hover{border-color:var(--c0);color:var(--c0)}
+        .guest-signin-link{font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;text-align:center;margin-top:4px;letter-spacing:.3px;text-decoration:underline;text-underline-offset:2px;transition:color .15s}
+        .guest-signin-link:hover{color:var(--c0)}
 
 
-        /* COMPOSE LOCKED for guest */
-        .compose-locked{position:relative}
-        .compose-locked::after{content:'';position:absolute;inset:0;background:rgba(4,13,10,.6);z-index:10;pointer-events:none}
-        .compose-locked .f-input{pointer-events:none;opacity:.4}
-        .compose-locked .btn-send{pointer-events:none;opacity:.3}
-        .compose-locked .trust{opacity:.3}
+        /* COMPOSE LOCKED for guest — hidden */
+        .compose-locked{display:none!important}
 
 </style>
 </head>
@@ -303,11 +301,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="guest-cta-inner">
       <div class="guest-cta-text">
         <span>// free account required to pass notes</span><br>
-        no phone · no email · no id · 60 seconds
+        no phone &nbsp;·&nbsp; no email &nbsp;·&nbsp; no id &nbsp;·&nbsp; 60 seconds
       </div>
       <div class="guest-cta-actions">
-        <button class="btn-cta-primary" onclick="openLoginModal();lmSwitch('reg')">register free</button>
-        <button class="btn-cta-secondary" onclick="openLoginModal();lmSwitch('login')">sign in</button>
+        <button class="btn-cta-primary" onclick="openLoginModal();lmSwitch('reg')">register free →</button>
+        <div class="guest-signin-link" onclick="openLoginModal();lmSwitch('login')">already have an account? sign in</div>
       </div>
     </div>
   </div>
@@ -780,7 +778,7 @@ window.INBOX=INBOX;
 function setupUI(){
     const sec=$('userSection');
     if(IS_GUEST){
-        sec.innerHTML='<button class="btn-login" onclick="openLoginModal()">Sign in</button>';
+        sec.innerHTML='<span class="guest-status">// guest</span>';
         const gh=document.getElementById('guestHint');if(gh)gh.style.display='block';
         const gcta=document.getElementById('guestCTA');if(gcta)gcta.style.display='block';
         const cs=document.querySelector('.compose-sect');if(cs)cs.classList.add('compose-locked');
