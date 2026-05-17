@@ -102,7 +102,7 @@ TYST:      username ← nothing
 
 A TYST username is a name. Nothing more. No phone. No email. No device fingerprint. No IP log.
 
-If you receive unwanted messages, abandon your username and create a new one in 60 seconds. Nothing follows you. Nothing is lost. There is nothing to lose.
+If you receive unwanted messages, abandon your username. Create a new one in 60 seconds. Your subscription transfers with you — one transfer code, instant, no repayment. Nothing follows you except what you choose to carry.
 
 ---
 
@@ -203,6 +203,72 @@ INBOX — $3/year (standard, after 5,000):
 **Send is always free. Inbox is $1–3/year.**
 
 Guest send is not supported. All senders must have a free TYST account. This is intentional — a free account costs 60 seconds to create, which is enough friction to make spam economically worthless, while adding zero real-world identity requirements.
+
+---
+
+
+## How trust works
+
+TYST separates distribution from identity into two distinct layers.
+
+**Layer 1 — Public (TYST handles this):**
+
+Anyone can share a TYST link or QR code freely — via WhatsApp, Twitter, a billboard, a business card, anywhere. Every link and QR code is identical. They point to the app. Nothing more. No username. No identity. No trace of who shared it.
+
+The wider it spreads, the better. Distribution has no privacy cost.
+
+**Layer 2 — Private (humans handle this):**
+
+Username exchange happens outside TYST — face to face, on paper, through a trusted channel, however two people choose. TYST does not facilitate this. TYST does not need to know. TYST cannot know.
+
+```
+"username saya: over.joy"
+— said in person, written on paper,
+  sent via Signal, or whispered.
+  
+TYST has no record of this exchange.
+No server does.
+```
+
+This is not a limitation. It is the architecture.
+
+**Why this wall is strong:**
+
+To read someone's messages, an attacker must break both layers simultaneously:
+
+```
+Layer 1:  nothing to extract — QR encodes only tyst.site/app
+Layer 2:  outside all technology — no server, no subpoena,
+          no jurisdiction covers a conversation that
+          was never digitized
+Layer 3:  ciphertext only on server — unreadable without
+          recipient's private key
+Layer 4:  message destroyed 5 seconds after reading —
+          nothing left to seize
+```
+
+The strongest encryption is a secret that was never digitized. TYST encrypts what is digital. Layer 2 protects what never was.
+
+> **Share the door, not the key.**
+> The door is public. The key is yours.
+
+## Subscription portability
+
+A TYST subscription is not tied to a username. It is tied to you.
+
+If you need to abandon a username — because of unwanted messages, or simply because you want a fresh start — your subscription moves with you:
+
+```
+1. Settings → "transfer subscription"
+2. System generates a one-time transfer code
+3. Register new username
+4. Enter transfer code → subscription transfers instantly
+5. Old username expires
+6. New username inherits remaining subscription period
+```
+
+No repayment. No support ticket. No identity verification.
+Your subscription follows you the same way your private key does — silently, on your terms.
 
 ---
 
