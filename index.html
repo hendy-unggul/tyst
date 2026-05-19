@@ -86,6 +86,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .trust{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(0,255,157,.03);border:1px solid rgba(0,255,157,.1);border-left:2px solid var(--c0);margin-bottom:16px}
 .trust-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);flex-shrink:0;box-shadow:0 0 4px var(--c0);animation:blink 2s ease-in-out infinite}
 .trust-txt{font-size:11px;color:var(--txt2);flex:1;letter-spacing:.3px}
+.protocol-inline{margin:8px 0;padding:10px 14px;background:var(--bg3);border-left:2px solid var(--c0);border-radius:2px;font-size:11px;}
 .trust-lnk{font-size:10px;color:var(--c0);opacity:.5;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:opacity .15s;letter-spacing:.5px}
 .trust-lnk:hover{opacity:1}
 
@@ -410,7 +411,14 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="trust">
       <div class="trust-dot"></div>
       <span class="trust-txt">origin is unknown to anyone, including the server</span>
-      <span class="trust-lnk" onclick="showHow()">protocol ↗</span>
+      <span class="trust-lnk" onclick="toggleProtocol()" id="protocolToggle">protocol ▼</span>
+    </div>
+    <div class="protocol-inline" id="protocolInline" style="display:none">
+      <div class="how-row"><div class="how-num">1</div><div><div class="how-h">sender identity is untraceable</div><div class="how-p">messages route through an anonymous relay. the server only sees the relay IP, never yours.</div></div></div>
+      <div class="how-row"><div class="how-num">2</div><div><div class="how-h">server cannot read your message</div><div class="how-p">encryption runs on your device before transmission. your private key never leaves your device.</div></div></div>
+      <div class="how-row"><div class="how-num">3</div><div><div class="how-h">timing is randomised</div><div class="how-p">a random 2–47 second delay is injected so timing correlation attacks cannot identify the sender.</div></div></div>
+      <div class="how-row"><div class="how-num">4</div><div><div class="how-h">destroyed after reading</div><div class="how-p">5 seconds after the recipient opens the message it is permanently purged. no backup. no log.</div></div></div>
+      <div class="how-tech"><b>protocol</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>padding</b> · 256-byte blocks — payload size does not leak</div>
     </div>
     <button class="btn-send" id="sendBtn" disabled onclick="tystSend()">
       <span>&#x25B6; transmit encrypted</span>
@@ -854,7 +862,7 @@ const INBOX=(()=>{
     }).join('');}
     async function open(id){const m=msgs.find(x=>x.id===id);if(!m)return;rid=id;$('readFrom').textContent='from: '+m.from;$('readBody').textContent=m.body;$('readCount').textContent='5';$('readCount').style.color='var(--danger)';$('readPanel').classList.add('show');await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});destruct(id);}
     function destruct(id){clearInterval(dt);let n=5;dt=setInterval(()=>{n--;const el=$('readCount');if(!el){clearInterval(dt);return;}el.textContent=n;if(n<=0){clearInterval(dt);burn(id);}},1000);}
-    function burn(id){const b=$('readBody');if(b)b.classList.add('burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('readPanel').classList.remove('show');if(b){b.classList.remove('burning');b.textContent='';}$('readCount').style.color='var(--danger)';$('inboxPanel').classList.add('show');render();badge(msgs.length>0);},750);}
+    function burn(id){const b=$('readBody');if(b)b.classList.add('burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('readPanel').classList.remove('show');if(b){b.classList.remove('burning');b.textContent='';}$('readCount').style.color='var(--danger)';$('inboxPanel').classList.add('show');render();badge(msgs.length>0);if(msgs.length===0){setTimeout(()=>{$('inboxPanel').classList.remove('show');},5000);}},750);}
     function closeRead(){clearInterval(dt);if(rid&&msgs.find(m=>m.id===rid))burn(rid);rid=null;$('readPanel').classList.remove('show');}
     function poll(){
     load();clearInterval(pt);
@@ -963,6 +971,7 @@ function tystValidate(){
     const to=(document.getElementById('tystTo').value||'').trim().replace('@','');const msg=(document.getElementById('tystMsg').value||'').trim();const ok=/^[a-z0-9_.]{2,24}$/.test(to)&&msg.length>0;const btn=document.getElementById('sendBtn');if(btn)btn.disabled=!ok;}
 function tystChar(){const el=document.getElementById('tystMsg'),c=document.getElementById('charN');if(el&&c)c.textContent=el.value.length;}
 function showHow(){document.getElementById('howOv').classList.add('show');}
+function toggleProtocol(){const el=document.getElementById('protocolInline');const btn=document.getElementById('protocolToggle');if(!el||!btn)return;const visible=el.style.display!=='none';el.style.display=visible?'none':'block';btn.textContent=visible?'protocol ▼':'protocol ▲';}
 function hideHow(){document.getElementById('howOv').classList.remove('show');}
 function setStep(n){['ps1','ps2','ps3'].forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;el.className='proc-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
 async function tystSend(){
