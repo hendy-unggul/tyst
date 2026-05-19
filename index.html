@@ -408,6 +408,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         maxlength="500" oninput="tystValidate();tystChar()"></textarea>
       <div class="char"><span id="charN">0</span> / 500</div>
     </div>
+    <div class="sender-tag-row" id="senderTagRow" style="display:none;margin:6px 0;align-items:center;gap:8px;">
+      <input type="checkbox" id="senderTag" style="accent-color:var(--c0);">
+      <label for="senderTag" style="font-size:10px;color:var(--txt3);letter-spacing:.5px;cursor:pointer;">// include sender username</label>
+    </div>
     <div class="trust">
       <div class="trust-dot"></div>
       <span class="trust-txt">origin is unknown to anyone, including the server</span>
@@ -839,7 +843,11 @@ const INBOX=(()=>{
             msgs=await Promise.all(raw.map(async m=>{
                 const exp=new Date(m.destroy_at).getTime(),rem=exp-now;
                 const h=Math.floor(rem/3600000),mn=Math.floor((rem%3600000)/60000);
-                const body=await ECDH.decrypt(m.message,k.priv);
+                const raw=await ECDH.decrypt(m.message,k.priv);
+                const fromMatch=raw&&raw.startsWith('from:')&&raw.includes('|');
+                const body=fromMatch?raw.slice(raw.indexOf('|')+1):raw;
+                const sender=fromMatch?raw.slice(5,raw.indexOf('|')):'anonymous';
+                m.from=sender;
                 return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
             }));
             render();badge(msgs.length>0);
@@ -942,6 +950,7 @@ window.addEventListener('load',()=>{
     }
     if(!IS_GUEST){
         ECDH.reg();INBOX.poll();
+        const str=document.getElementById('senderTagRow');if(str)str.style.display='flex';
         $('inboxBtn').onclick=()=>{INBOX.load();$('inboxPanel').classList.add('show');};
     }
     $('inboxClose').onclick=()=>$('inboxPanel').classList.remove('show');
@@ -1017,7 +1026,10 @@ async function tystSend(){
         if(!pk.ok){layerShow('lNoPub');return;}
         const pkd=await pk.json();if(!pkd.pubkey){layerShow('lNoPub');return;}
         setStep(2);
-        const enc=await window._ECDH.encrypt(msg,pkd.pubkey);
+        const includeSender=document.getElementById('senderTag')&&document.getElementById('senderTag').checked;
+        const ME=localStorage.getItem('tyst_username')||'';
+        const payload=includeSender&&ME?'from:'+ME+'|'+msg:msg;
+        const enc=await window._ECDH.encrypt(payload,pkd.pubkey);
         await new Promise(r=>setTimeout(r,200));
         const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc:enc})});
         if(r.ok||r.status===202){const s=document.getElementById('sentSub');if(s)s.textContent=`No one can retrieve it. It will vanish 5 seconds after ${to} reads it.`;layerShow('lSent');setTimeout(()=>closeProcOv(),3000);}
