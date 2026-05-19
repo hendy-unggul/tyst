@@ -848,7 +848,7 @@ const INBOX=(()=>{
                 const body=fromMatch?raw.slice(raw.indexOf('|')+1):raw;
                 const sender=fromMatch?raw.slice(5,raw.indexOf('|')):'anonymous';
                 m.from=sender;
-                return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
+                return{id:m.id,from:sender,body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
             }));
             render();badge(msgs.length>0);
         }catch(e){console.warn('[TYST]',e);}
