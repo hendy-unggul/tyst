@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TYST // ADMIN</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+
+  :root {
+    --bg: #040d0a;
+    --bg2: #071510;
+    --bg3: #0a1e14;
+    --c0: #00ff9d;
+    --c1: #00cc7a;
+    --c2: #ff4444;
+    --c3: #ffaa00;
+    --txt: #dce6e1;
+    --txt2: #8aada0;
+    --txt3: #3a6a4a;
+    --dim: #1a3a28;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg);
+    color: var(--txt);
+    min-height: 100vh;
+  }
+
+  /* AUTH */
+  #authScreen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+
+  .auth-box {
+    border: 1px solid var(--txt3);
+    padding: 40px; width: 360px;
+    background: var(--bg2);
+  }
+
+  .auth-title { font-size: 28px; color: var(--c0); font-weight: 700; margin-bottom: 4px; }
+  .auth-sub { font-size: 10px; color: var(--txt3); letter-spacing: 2px; margin-bottom: 32px; }
+
+  .auth-input {
+    width: 100%; padding: 12px 16px;
+    background: var(--bg); border: 1px solid var(--txt3);
+    color: var(--c0); font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; outline: none; letter-spacing: 4px; margin-bottom: 16px;
+  }
+  .auth-input:focus { border-color: var(--c0); }
+
+  .auth-btn {
+    width: 100%; padding: 12px;
+    background: var(--c0); color: var(--bg);
+    border: none; font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; cursor: pointer;
+  }
+  .auth-btn:hover { background: var(--c1); }
+  .auth-err { font-size: 11px; color: var(--c2); margin-top: 12px; display: none; }
+
+  /* DASHBOARD */
+  #dashboard { display: none; }
+
+  .hdr {
+    border-bottom: 1px solid var(--dim);
+    padding: 16px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; background: var(--bg); z-index: 10;
+  }
+  .hdr-left { display: flex; align-items: center; gap: 16px; }
+  .hdr-logo { font-size: 20px; font-weight: 700; color: var(--c0); }
+  .hdr-tag { font-size: 9px; color: var(--txt3); letter-spacing: 2px; padding: 3px 8px; border: 1px solid var(--txt3); }
+  .hdr-right { display: flex; align-items: center; gap: 16px; }
+  .hdr-time { font-size: 11px; color: var(--txt3); }
+  .hdr-btn { font-size: 11px; color: var(--c0); cursor: pointer; border: none; background: none; font-family: inherit; }
+  .hdr-btn:hover { color: var(--c1); }
+  .hdr-out { font-size: 11px; color: var(--txt3); cursor: pointer; }
+  .hdr-out:hover { color: var(--c2); }
+
+  .status-bar {
+    padding: 10px 32px; background: var(--bg2);
+    border-bottom: 1px solid var(--dim);
+    display: flex; gap: 32px; align-items: center; font-size: 11px;
+  }
+  .status-item { display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .status-dot.ok { background: var(--c0); box-shadow: 0 0 6px var(--c0); animation: pulse 2s infinite; }
+  .status-dot.err { background: var(--c2); box-shadow: 0 0 6px var(--c2); }
+  .status-dot.warn { background: var(--c3); }
+  .status-dot.loading { background: var(--txt3); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .alert-banner {
+    margin: 16px 32px 0; padding: 12px 20px;
+    border-left: 3px solid var(--c2);
+    background: rgba(255,68,68,0.06);
+    font-size: 12px; color: var(--c2);
+    display: none; align-items: center; gap: 12px;
+  }
+  .alert-banner.show { display: flex; }
+
+  .grid {
+    padding: 24px 32px;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+
+  .card {
+    background: var(--bg2); border: 1px solid var(--dim);
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px; background: var(--c0);
+  }
+  .card.warn::before { background: var(--c3); }
+  .card.err::before { background: var(--c2); }
+
+  .card-label { font-size: 9px; color: var(--txt3); letter-spacing: 2px; margin-bottom: 12px; }
+  .card-val { font-size: 36px; font-weight: 700; color: var(--c0); line-height: 1; }
+  .card.warn .card-val { color: var(--c3); }
+  .card.err .card-val { color: var(--c2); }
+  .card-sub { font-size: 10px; color: var(--txt3); margin-top: 8px; }
+  .card-delta { font-size: 11px; margin-top: 6px; }
+  .card-delta.up { color: var(--c0); }
+  .card-delta.neutral { color: var(--txt3); }
+
+  .chart-section {
+    margin: 0 32px 24px;
+    display: grid; grid-template-columns: 2fr 1fr; gap: 16px;
+  }
+  .chart-box { background: var(--bg2); border: 1px solid var(--dim); padding: 20px; }
+  .chart-title { font-size: 10px; color: var(--txt3); letter-spacing: 2px; margin-bottom: 16px; }
+
+  .bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 80px; }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .bar { width: 100%; background: var(--dim); min-height: 2px; transition: height .3s; }
+  .bar.fill { background: var(--c0); }
+  .bar.today { background: var(--c0); box-shadow: 0 0 8px var(--c0); }
+  .bar-lbl { font-size: 7px; color: var(--txt3); }
+  .bar-num { font-size: 8px; color: var(--c0); min-height: 12px; }
+
+  .list-section { margin: 0 32px 24px; background: var(--bg2); border: 1px solid var(--dim); }
+  .list-hdr {
+    padding: 14px 20px; border-bottom: 1px solid var(--dim);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .list-hdr-title { font-size: 10px; color: var(--txt3); letter-spacing: 2px; }
+  .list-hdr-count { font-size: 11px; color: var(--c0); }
+
+  .user-row {
+    padding: 10px 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(26,58,40,0.5); font-size: 12px;
+  }
+  .user-row:last-child { border-bottom: none; }
+  .user-name { color: var(--txt); }
+  .user-name span { color: var(--c0); }
+  .user-time { color: var(--txt3); font-size: 10px; }
+  .user-badge { font-size: 9px; padding: 2px 8px; border: 1px solid var(--c0); color: var(--c0); letter-spacing: 1px; background: rgba(0,255,157,0.08); }
+
+  .log-section { margin: 0 32px 32px; background: var(--bg2); border: 1px solid var(--dim); }
+  .log-entry {
+    padding: 8px 20px; font-size: 11px;
+    border-bottom: 1px solid rgba(26,58,40,0.3);
+    display: flex; gap: 16px;
+  }
+  .log-time { color: var(--txt3); min-width: 140px; }
+  .log-msg { color: var(--txt2); }
+  .log-entry.ok .log-msg { color: var(--c0); }
+  .log-entry.err .log-msg { color: var(--c2); }
+  .log-entry.warn .log-msg { color: var(--c3); }
+
+  .loading { color: var(--txt3); font-size: 12px; padding: 20px; text-align: center; }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-section { grid-template-columns: 1fr; }
+    .hdr { padding: 12px 16px; }
+    .grid { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-title">TYST</div>
+    <div class="auth-sub">// ADMIN ACCESS</div>
+    <input class="auth-input" type="password" id="authPin" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')doAuth()">
+    <button class="auth-btn" onclick="doAuth()">// AUTHENTICATE →</button>
+    <div class="auth-err" id="authErr">// ACCESS DENIED</div>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="hdr-logo">TYST</div>
+      <div class="hdr-tag">ADMIN // MONITOR</div>
+    </div>
+    <div class="hdr-right">
+      <div class="hdr-time" id="hdrTime">--:--:-- UTC</div>
+      <button class="hdr-btn" onclick="loadAll()">// refresh ↺</button>
+      <span class="hdr-out" onclick="logout()">// sign out</span>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-item">
+      <div class="status-dot loading" id="dotApi"></div>
+      <span id="lblApi">API checking...</span>
+    </div>
+    <div class="status-item">
+      <div class="status-dot loading" id="dotPb"></div>
+      <span id="lblPb">PocketBase checking...</span>
+    </div>
+    <div class="status-item">
+      <div class="status-dot loading" id="dotCaddy"></div>
+      <span id="lblCaddy">Caddy checking...</span>
+    </div>
+    <div style="margin-left:auto;font-size:10px;color:var(--txt3)" id="lastCheck">Last check: —</div>
+  </div>
+
+  <div class="alert-banner" id="alertBanner">
+    <span>⚠</span>
+    <span id="alertMsg">System alert</span>
+  </div>
+
+  <div class="grid">
+    <div class="card" id="cardTotal">
+      <div class="card-label">// TOTAL USERS</div>
+      <div class="card-val" id="valTotal">—</div>
+      <div class="card-sub">registered accounts</div>
+    </div>
+    <div class="card" id="cardToday">
+      <div class="card-label">// NEW TODAY</div>
+      <div class="card-val" id="valToday">—</div>
+      <div class="card-sub">registrations today UTC</div>
+      <div class="card-delta neutral" id="deltaToday"></div>
+    </div>
+    <div class="card" id="cardWeek">
+      <div class="card-label">// THIS WEEK</div>
+      <div class="card-val" id="valWeek">—</div>
+      <div class="card-sub">last 7 days</div>
+    </div>
+    <div class="card" id="cardWhispers">
+      <div class="card-label">// ACTIVE WHISPERS</div>
+      <div class="card-val" id="valWhispers">—</div>
+      <div class="card-sub">pending delivery</div>
+    </div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-box">
+      <div class="chart-title">// DAILY REGISTRATIONS — LAST 14 DAYS</div>
+      <div class="bar-chart" id="barChart"><div class="loading">loading...</div></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">// SYSTEM HEALTH</div>
+      <div id="healthPanel" style="font-size:11px;line-height:2.4;color:var(--txt2)">checking...</div>
+    </div>
+  </div>
+
+  <div class="list-section">
+    <div class="list-hdr">
+      <div class="list-hdr-title">// RECENT REGISTRATIONS</div>
+      <div class="list-hdr-count" id="recentCount">—</div>
+    </div>
+    <div id="userList"><div class="loading">loading...</div></div>
+  </div>
+
+  <div class="log-section">
+    <div class="list-hdr">
+      <div class="list-hdr-title">// ACTIVITY LOG</div>
+      <div class="list-hdr-count" id="logCount">—</div>
+    </div>
+    <div id="actLog"><div class="loading">// waiting for activity...</div></div>
+  </div>
+</div>
+
+<script>
+const ADMIN_PASS = 'tyst_admin_2026';
+const PB_EMAIL = 'nope.bukanguebanget@gmail.com';
+const PB_PASS = 'Aliya@05042006';
+const PB_URL = '/api/pb';
+let pbToken = null, tokenExp = 0, actLog = [];
+
+function doAuth() {
+  const pin = document.getElementById('authPin').value;
+  if (pin === ADMIN_PASS) {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    sessionStorage.setItem('tyst_adm', '1');
+    init();
+  } else {
+    const e = document.getElementById('authErr');
+    e.style.display = 'block';
+    setTimeout(() => e.style.display = 'none', 2000);
+  }
+}
+
+function logout() { sessionStorage.removeItem('tyst_adm'); location.reload(); }
+
+if (sessionStorage.getItem('tyst_adm') === '1') {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  init();
+}
+
+function init() {
+  startClock();
+  loadAll();
+  setInterval(loadAll, 60000);
+}
+
+function startClock() {
+  setInterval(() => {
+    document.getElementById('hdrTime').textContent =
+      new Date().toUTCString().slice(17, 25) + ' UTC';
+  }, 1000);
+}
+
+async function getPBToken() {
+  if (pbToken && Date.now() < tokenExp) return pbToken;
+  const r = await fetch(PB_URL + '/api/admins/auth-with-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ identity: PB_EMAIL, password: PB_PASS })
+  });
+  const d = await r.json();
+  pbToken = d.token;
+  tokenExp = Date.now() + 25 * 60 * 1000;
+  return pbToken;
+}
+
+async function pb(path) {
+  const token = await getPBToken();
+  const r = await fetch(PB_URL + path, { headers: { 'Authorization': 'Bearer ' + token } });
+  return r.json();
+}
+
+async function loadAll() {
+  document.getElementById('lastCheck').textContent =
+    'Last check: ' + new Date().toLocaleTimeString();
+  await Promise.all([checkServices(), loadStats(), loadRecentUsers()]);
+}
+
+async function checkServices() {
+  const checks = [
+    { id: 'Api', url: '/api/health', label: 'Express API' },
+    { id: 'Pb', url: PB_URL + '/api/health', label: 'PocketBase' },
+    { id: 'Caddy', url: '/', label: 'Caddy/TLS' },
+  ];
+  const results = [];
+  for (const c of checks) {
+    try {
+      const t0 = Date.now();
+      const r = await fetch(c.url, { signal: AbortSignal.timeout(6000) });
+      const ms = Date.now() - t0;
+      const ok = r.ok || r.status < 500;
+      setStatus(c.id, ok ? 'ok' : 'err',
+        `${c.label} · ${ok ? ms + 'ms' : 'ERROR ' + r.status}`);
+      results.push({ name: c.label, ok, ms });
+      addLog(ok ? 'ok' : 'err', `${c.label}: ${ok ? 'OK' : 'FAIL'} (${ms}ms)`);
+    } catch (e) {
+      setStatus(c.id, 'err', `${c.label} · UNREACHABLE`);
+      results.push({ name: c.label, ok: false, ms: null });
+      addLog('err', `${c.label} UNREACHABLE — action required`);
+    }
+  }
+
+  const failed = results.filter(r => !r.ok);
+  const banner = document.getElementById('alertBanner');
+  if (failed.length > 0) {
+    banner.className = 'alert-banner show';
+    document.getElementById('alertMsg').textContent =
+      `SERVICE DOWN: ${failed.map(f => f.name).join(', ')} — Immediate action required. SSH: ssh tyst && pm2 restart tyst-api`;
+  } else {
+    banner.className = 'alert-banner';
+  }
+
+  document.getElementById('healthPanel').innerHTML = results.map(r =>
+    `<div>
+      <span style="color:${r.ok ? 'var(--c0)' : 'var(--c2)'}">${r.ok ? '✓' : '✗'}</span>
+      &nbsp;&nbsp;<span style="color:var(--txt2)">${r.name}</span>
+      &nbsp;&nbsp;<span style="color:var(--txt3)">${r.ms != null ? r.ms + 'ms' : 'timeout'}</span>
+    </div>`
+  ).join('');
+}
+
+function setStatus(id, state, label) {
+  document.getElementById('dot' + id).className = 'status-dot ' + state;
+  document.getElementById('lbl' + id).textContent = label;
+}
+
+async function loadStats() {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+    const [all, todayR, weekR, whR] = await Promise.all([
+      pb('/api/collections/profiles/records?perPage=1'),
+      pb(`/api/collections/profiles/records?filter=(created>='${today}')&perPage=1`),
+      pb(`/api/collections/profiles/records?filter=(created>='${weekAgo}')&perPage=1`),
+      pb('/api/collections/whispers/records?perPage=1'),
+    ]);
+
+    document.getElementById('valTotal').textContent = all.totalItems ?? '—';
+    document.getElementById('valToday').textContent = todayR.totalItems ?? '—';
+    document.getElementById('valWeek').textContent = weekR.totalItems ?? '—';
+    document.getElementById('valWhispers').textContent = whR.totalItems ?? '—';
+
+    const t = todayR.totalItems || 0;
+    const delta = document.getElementById('deltaToday');
+    delta.textContent = t > 0 ? `↑ +${t} since midnight UTC` : '// no registrations today';
+    delta.className = 'card-delta ' + (t > 0 ? 'up' : 'neutral');
+
+    if ((whR.totalItems || 0) > 200)
+      document.getElementById('cardWhispers').className = 'card warn';
+
+    await loadBarChart();
+  } catch (e) {
+    addLog('err', 'Stats failed: ' + e.message);
+  }
+}
+
+async function loadBarChart() {
+  const days = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000);
+    days.push(d.toISOString().slice(0, 10));
+  }
+  const counts = await Promise.all(days.map(async (day) => {
+    const next = new Date(new Date(day).getTime() + 86400000).toISOString().slice(0, 10);
+    const r = await pb(
+      `/api/collections/profiles/records?filter=(created>='${day}'&&created<'${next}')&perPage=1`
+    );
+    return { day, count: r.totalItems || 0 };
+  }));
+
+  const max = Math.max(...counts.map(c => c.count), 1);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  document.getElementById('barChart').innerHTML = counts.map(c => {
+    const pct = Math.max((c.count / max) * 100, c.count > 0 ? 6 : 1);
+    const cls = c.day === todayStr ? 'today' : (c.count > 0 ? 'fill' : '');
+    return `<div class="bar-wrap">
+      <div class="bar-num">${c.count > 0 ? c.count : ''}</div>
+      <div class="bar ${cls}" style="height:${pct}%"></div>
+      <div class="bar-lbl">${c.day.slice(5)}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadRecentUsers() {
+  try {
+    const data = await pb('/api/collections/profiles/records?sort=-created&perPage=20');
+    const items = data.items || [];
+    document.getElementById('recentCount').textContent = items.length + ' shown';
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById('userList').innerHTML = items.map(u => {
+      const t = (u.created || '').slice(0, 16).replace('T', ' ') + ' UTC';
+      const isNew = (u.created || '').slice(0, 10) === today;
+      return `<div class="user-row">
+        <div class="user-name">// <span>${u.username}</span></div>
+        <div style="display:flex;align-items:center;gap:16px">
+          ${isNew ? '<div class="user-badge">NEW</div>' : ''}
+          <div class="user-time">${t}</div>
+        </div>
+      </div>`;
+    }).join('') || '<div class="loading">// no users yet</div>';
+  } catch (e) {
+    addLog('err', 'User list failed');
+  }
+}
+
+function addLog(type, msg) {
+  const time = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+  actLog.unshift({ type, msg, time });
+  if (actLog.length > 50) actLog.pop();
+  const el = document.getElementById('actLog');
+  document.getElementById('logCount').textContent = actLog.length + ' entries';
+  el.innerHTML = actLog.slice(0, 25).map(l =>
+    `<div class="log-entry ${l.type}">
+      <div class="log-time">${l.time}</div>
+      <div class="log-msg">${l.msg}</div>
+    </div>`
+  ).join('');
+}
+</script>
+</body>
+</html>
