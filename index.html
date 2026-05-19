@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TYST</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#040d0a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TYST">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#040d0a;--bg2:#071210;--bg3:#0a1a14;--bg4:#0d2018;
+  --c0:#00ff9d;--c1:#00b8ff;--c2:#ff6b35;--c3:#ffd700;--c4:#bf5fff;--c5:#ff3b6f;
+  --dim:#1a3a2a;--dim2:#0f2a1e;
+  --txt:#b8f0d0;--txt2:#7abf9a;--txt3:#3a6a4a;
+  --mono:'Share Tech Mono',monospace;--display:'VT323',monospace;
+  --scan:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,157,.015) 2px,rgba(0,255,157,.015) 4px);
+  --r:2px;
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--txt);font-family:var(--mono);font-size:13px;min-height:100svh;display:flex;flex-direction:column;background-image:var(--scan)}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,255,157,.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 1px,rgba(0,0,0,.3) 1px,rgba(0,0,0,.3) 2px);pointer-events:none;z-index:1;opacity:.4}
+
+.app{max-width:520px;margin:0 auto;width:100%;min-height:100svh;display:flex;flex-direction:column;position:relative;z-index:2;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
+
+/* HEADER */
+.hd{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid var(--dim);background:var(--bg2);position:sticky;top:0;z-index:100}
+.logo{font-family:var(--display);font-size:26px;letter-spacing:5px;color:var(--c0);text-shadow:0 0 16px rgba(0,255,157,.5),0 0 32px rgba(0,255,157,.2);line-height:1}
+.logo-sub{font-size:10px;color:var(--txt2);letter-spacing:2.5px;font-family:var(--mono);margin-top:3px;opacity:.7}
+.hd-r{display:flex;align-items:center;gap:8px}
+.btn-login{font-family:var(--mono);font-size:11px;color:var(--c0);background:transparent;border:1px solid var(--c0);padding:5px 12px;cursor:pointer;letter-spacing:1px;transition:all .15s;text-transform:uppercase}
+.btn-login:hover{background:rgba(0,255,157,.08);box-shadow:0 0 8px rgba(0,255,157,.3)}
+.user-chip{font-family:var(--mono);font-size:11px;color:var(--c1);border:1px solid rgba(0,184,255,.3);padding:4px 10px;background:rgba(0,184,255,.05)}
+.btn-icon{width:28px;height:28px;background:transparent;border:1px solid var(--dim);color:var(--txt3);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-icon:hover{border-color:var(--c0);color:var(--c0)}
+.dd{position:absolute;top:58px;right:18px;background:var(--bg3);border:1px solid var(--dim);z-index:200;min-width:160px;display:none}
+.dd.show{display:block}
+.dd-item{padding:10px 16px;font-family:var(--mono);font-size:11px;color:var(--txt);cursor:pointer;border-bottom:1px solid var(--dim);letter-spacing:.5px;transition:background .1s}
+.dd-item:hover{background:rgba(0,255,157,.05);color:var(--c0)}
+
+/* TERMINAL HEADER STRIP */
+.term-strip{padding:8px 18px;border-bottom:1px solid var(--dim);background:var(--bg3);display:flex;align-items:center;font-size:10px;color:var(--txt3);letter-spacing:1px}
+.term-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);animation:blink 2s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.term-status{color:var(--c0)}
+
+/* CONSOLE OUTPUT — HERO */
+
+.console-sect::before{content:'';position:absolute;inset:0;background:var(--scan);pointer-events:none}
+.c-line{font-family:var(--mono);font-size:12px;line-height:1.9;white-space:pre;overflow:hidden}
+.c-prompt{color:var(--c0)}
+.c-cmd{color:var(--txt)}
+.c-out1{color:var(--c1)}
+.c-out2{color:var(--c3)}
+.c-out3{color:var(--c4)}
+.c-out4{color:var(--c2)}
+.c-out5{color:var(--c0)}
+.c-dim{color:var(--txt3)}
+.c-err{color:var(--c5)}
+.c-ok{color:var(--c0)}
+        /* single green caret on recipient input only */
+        /* single green caret on recipient input only */
+
+/* COMPOSE SECTION */
+.compose-sect{padding:20px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
+.sect-head{font-size:10px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sect-head::before{content:'>';color:var(--c0)}
+.field{margin-bottom:14px}
+.f-label{font-size:10px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.f-label::before{content:'//';color:var(--dim);font-size:9px}
+.f-input{width:100%;padding:10px 13px;background:var(--bg3);border:1px solid var(--dim);border-left:2px solid var(--c1);color:var(--txt);font-size:13px;font-family:var(--mono);outline:none;transition:all .15s;-webkit-appearance:none;caret-color:var(--c0)}
+.f-input:focus{border-color:var(--c0);border-left-color:var(--c0);background:var(--bg4);box-shadow:0 0 0 1px rgba(0,255,157,.1) inset}
+.f-input::placeholder{color:var(--txt3)}
+.f-ta{resize:none;line-height:1.65;min-height:90px}
+.char{font-size:10px;color:var(--txt3);text-align:right;margin-top:4px}
+.char span{color:var(--c1)}
+
+/* TRUST STRIP */
+.trust{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(0,255,157,.03);border:1px solid rgba(0,255,157,.1);border-left:2px solid var(--c0);margin-bottom:16px}
+.trust-dot{width:5px;height:5px;border-radius:50%;background:var(--c0);flex-shrink:0;box-shadow:0 0 4px var(--c0);animation:blink 2s ease-in-out infinite}
+.trust-txt{font-size:11px;color:var(--txt2);flex:1;letter-spacing:.3px}
+.trust-lnk{font-size:10px;color:var(--c0);opacity:.5;cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:opacity .15s;letter-spacing:.5px}
+.trust-lnk:hover{opacity:1}
+
+/* SEND BUTTON */
+.btn-send{width:100%;padding:13px;background:transparent;border:1px solid var(--c0);color:var(--c0);font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.btn-send::before{content:'';position:absolute;inset:0;background:var(--c0);transform:translateX(-100%);transition:transform .2s;z-index:0}
+.btn-send:hover::before{transform:translateX(0)}
+.btn-send:hover{color:var(--bg);box-shadow:0 0 20px rgba(0,255,157,.3)}
+.btn-send span{position:relative;z-index:1}
+.btn-send:active{transform:scale(.99)}
+.btn-send:disabled{border-color:var(--dim);color:var(--txt3);cursor:not-allowed}
+.btn-send:disabled::before{display:none}
+
+/* INBOX BUTTON */
+.inbox-sect{padding:12px 18px;border-bottom:1px solid var(--dim);display:none}
+.btn-inbox{width:100%;padding:11px 14px;background:transparent;border:1px solid var(--dim);font-family:var(--mono);font-size:11px;color:var(--txt3);cursor:pointer;display:flex;justify-content:space-between;align-items:center;letter-spacing:1px;transition:all .15s}
+.btn-inbox:hover{border-color:var(--c1);color:var(--c1)}
+.inbox-badge{background:var(--c5);color:#fff;font-size:9px;padding:2px 7px;display:none;font-family:var(--mono);letter-spacing:1px}
+
+/* PROTOCOL FOOTER */
+.proto{padding:16px 18px;margin-top:auto;border-top:1px solid var(--dim)}
+.proto-txt{font-size:10px;color:var(--txt3);line-height:2.2;letter-spacing:.3px}
+.proto-txt b{color:var(--txt2)}
+
+/* PROCESSING OVERLAY */
+.proc-ov{display:none;position:fixed;inset:0;background:rgba(2,8,5,.92);z-index:1500;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.proc-ov.show{display:flex}
+.proc-sheet{background:var(--bg2);border:1px solid var(--dim);border-left:2px solid var(--c0);border-bottom:none;max-width:520px;width:100%;position:relative;min-height:200px;box-shadow:0 -4px 40px rgba(0,255,157,.1)}
+.p-layer{position:absolute;inset:0;background:var(--bg2);display:none;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;padding:32px 28px}
+.p-layer.show{display:flex}
+.proc-console{font-size:12px;line-height:2;width:100%}
+.proc-step{color:var(--txt3);transition:color .3s;font-size:11px;letter-spacing:.5px}
+.proc-step::before{content:'[ ] ';color:var(--txt3);transition:color .3s}
+.proc-step.act{color:var(--c3)}
+.proc-step.act::before{content:'[~] ';color:var(--c3)}
+.proc-step.done{color:var(--c0)}
+.proc-step.done::before{content:'[✓] ';color:var(--c0)}
+.sent-head{font-family:var(--display);font-size:38px;color:var(--c0);letter-spacing:3px;text-shadow:0 0 20px rgba(0,255,157,.5);line-height:1;margin-bottom:4px}
+.sent-sub{font-size:11px;color:var(--txt3);line-height:1.8;max-width:320px;letter-spacing:.3px}
+.btn-dismiss{background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:11px;padding:8px 20px;cursor:pointer;letter-spacing:1px;transition:all .15s;margin-top:8px}
+.btn-dismiss:hover{border-color:var(--c0);color:var(--c0)}
+.nopub-head{font-family:var(--display);font-size:28px;color:var(--c2);letter-spacing:2px;text-shadow:0 0 12px rgba(255,107,53,.4)}
+.nopub-sub{font-size:11px;color:var(--txt3);line-height:1.8;max-width:280px;letter-spacing:.3px}
+
+/* INBOX PANEL */
+.inbox-panel{position:fixed;inset:0;background:var(--bg);z-index:1600;display:none;flex-direction:column;max-width:520px;margin:0 auto;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
+.inbox-panel.show{display:flex}
+.panel-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
+.panel-title{font-family:var(--mono);font-size:10px;color:var(--c0);letter-spacing:3px;text-transform:uppercase}
+.btn-close{background:transparent;border:1px solid var(--dim);color:var(--txt3);width:26px;height:26px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-close:hover{border-color:var(--c5);color:var(--c5)}
+.msg-list{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--dim) transparent}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--txt3);font-size:11px;letter-spacing:2px}
+.empty-icon{font-family:var(--display);font-size:48px;color:var(--dim);line-height:1}
+.msg-row{padding:14px 18px;border-bottom:1px solid var(--dim);cursor:pointer;transition:background .1s;position:relative}
+.msg-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--c1);opacity:0;transition:opacity .15s;box-shadow:0 0 6px var(--c1)}
+.msg-row:hover{background:rgba(0,184,255,.04)}
+.msg-row:hover::before{opacity:1}
+.msg-meta{display:flex;justify-content:space-between;margin-bottom:4px}
+.msg-from{font-size:10px;color:var(--c1);letter-spacing:1px}
+.msg-ttl{font-size:10px;color:var(--c5)}
+.msg-prev{font-size:11px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px}
+
+/* READ PANEL */
+.read-panel{position:fixed;inset:0;background:var(--bg);z-index:1700;display:none;flex-direction:column;max-width:520px;margin:0 auto;border-left:1px solid var(--dim);border-right:1px solid var(--dim)}
+.read-panel.show{display:flex}
+.read-hd{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--dim);background:var(--bg2)}
+.btn-back{background:transparent;border:1px solid var(--dim);color:var(--txt3);padding:4px 10px;cursor:pointer;font-family:var(--mono);font-size:11px;transition:all .15s;letter-spacing:.5px}
+.btn-back:hover{border-color:var(--c0);color:var(--c0)}
+.read-from{font-size:10px;color:var(--c1);flex:1;letter-spacing:1px}
+.read-count{font-family:var(--display);font-weight:400;font-size:36px;color:var(--c5);line-height:1;text-shadow:0 0 12px rgba(255,59,111,.5)}
+
+/* MESSAGE BODY — hacker multicolor lines */
+.read-body{flex:1;padding:22px 18px;overflow-y:auto;background:var(--bg);font-size:13px;line-height:1.9;letter-spacing:.3px;background-image:var(--scan)}
+.read-body .ml0{color:var(--c0)}
+.read-body .ml1{color:var(--c1)}
+.read-body .ml2{color:var(--c3)}
+.read-body .ml3{color:var(--c4)}
+.read-body .ml4{color:var(--c2)}
+.read-body .ml5{color:var(--txt)}
+.read-body .ml6{color:var(--txt2)}
+.read-body .mhdr{color:var(--txt3);font-size:10px;letter-spacing:2px;margin-bottom:4px}
+.read-foot{border-top:1px solid var(--dim);padding:8px 18px;display:flex;justify-content:space-between;background:var(--bg2)}
+.read-foot span{font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase}
+@keyframes burn{0%{opacity:1;filter:brightness(1)}40%{opacity:.8;filter:brightness(2) hue-rotate(40deg)}100%{opacity:0;filter:brightness(4) blur(4px);transform:translateY(-8px)}}
+.burning{animation:burn .6s ease-in forwards}
+
+/* HOW OVERLAY */
+.how-ov{display:none;position:fixed;inset:0;background:rgba(2,8,5,.92);backdrop-filter:blur(4px);z-index:2000;align-items:flex-end;justify-content:center}
+.how-ov.show{display:flex}
+.how-sheet{background:var(--bg2);border:1px solid var(--dim);border-left:2px solid var(--c4);border-bottom:none;max-width:520px;width:100%;padding:24px 22px 36px;max-height:80svh;overflow-y:auto;box-shadow:0 -4px 30px rgba(191,95,255,.1)}
+.how-title{font-family:var(--display);font-size:26px;color:var(--c4);letter-spacing:3px;margin-bottom:20px;text-shadow:0 0 14px rgba(191,95,255,.4)}
+.how-row{display:flex;gap:14px;margin-bottom:18px}
+.how-num{width:22px;height:22px;border:1px solid var(--c4);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--c4);flex-shrink:0;margin-top:2px}
+.how-h{font-size:12px;color:var(--txt);margin-bottom:4px;letter-spacing:.5px}
+.how-p{font-size:11px;color:var(--txt3);line-height:1.85;letter-spacing:.3px}
+.how-tech{background:var(--bg3);border:1px solid var(--dim);padding:12px 14px;margin-top:4px;font-size:10px;color:var(--txt3);line-height:2.2;letter-spacing:.3px}
+.how-tech b{color:var(--txt2)}
+.btn-how-close{width:100%;margin-top:18px;padding:11px;background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:11px;cursor:pointer;letter-spacing:1px;transition:all .15s}
+.btn-how-close:hover{border-color:var(--c4);color:var(--c4)}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--c0);padding:9px 18px;border:1px solid var(--c0);font-family:var(--mono);font-size:11px;z-index:9998;display:none;white-space:nowrap;letter-spacing:.5px;box-shadow:0 0 16px rgba(0,255,157,.2)}
+.toast.show{display:block}
+
+/* LOGIN MODAL */
+.lm-bg{position:fixed;inset:0;background:rgba(2,8,5,.94);backdrop-filter:blur(6px);z-index:9997;display:none;align-items:center;justify-content:center;padding:20px}
+.lm-bg.show{display:flex}
+.lm-card{background:var(--bg2);border:1px solid var(--dim);border-top:2px solid var(--c0);max-width:360px;width:100%;box-shadow:0 0 40px rgba(0,255,157,.08)}
+.lm-top{padding:18px 22px 14px;border-bottom:1px solid var(--dim);background:var(--bg3)}
+.lm-wordmark{font-family:var(--display);font-size:30px;letter-spacing:4px;color:var(--c0);text-shadow:0 0 16px rgba(0,255,157,.5);line-height:1;margin-bottom:6px}
+.lm-disc{font-size:10px;color:var(--txt3);line-height:1.9;letter-spacing:.3px}
+.lm-body{padding:20px 22px;position:relative}
+.lm-x{position:absolute;top:12px;right:12px;background:transparent;border:1px solid var(--dim);color:var(--txt3);width:24px;height:24px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.lm-x:hover{border-color:var(--c5);color:var(--c5)}
+.lm-title{font-family:var(--display);font-size:22px;letter-spacing:3px;color:var(--txt);margin-bottom:16px}
+.lm-label{font-size:10px;color:var(--txt3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;display:block}
+.lm-input{width:100%;background:var(--bg3);border:1px solid var(--dim);border-left:2px solid var(--c1);padding:10px 12px;color:var(--txt);font-family:var(--mono);font-size:13px;outline:none;margin-bottom:11px;transition:all .15s;caret-color:var(--c0)}
+.lm-input:focus{border-color:var(--c0);border-left-color:var(--c0);background:var(--bg4)}
+.lm-input::placeholder{color:var(--txt3)}
+.lm-pin{text-align:center;letter-spacing:.7em;font-size:18px;-webkit-text-security:disc}
+.lm-pin::placeholder{letter-spacing:.3em;-webkit-text-security:none;font-size:12px}
+.lm-fb{font-size:10px;padding:7px 10px;border:1px solid;margin-bottom:10px;display:none;line-height:1.5;letter-spacing:.3px}
+.lm-fb.show{display:block}
+.lm-fb.e{border-color:var(--c5);color:var(--c5);background:rgba(255,59,111,.05)}
+.lm-fb.s{border-color:var(--c0);color:var(--c0);background:rgba(0,255,157,.05)}
+.lm-btn{width:100%;background:transparent;color:var(--c0);border:1px solid var(--c0);padding:12px;font-family:var(--mono);font-size:13px;letter-spacing:2px;cursor:pointer;transition:all .2s;text-transform:uppercase;position:relative;overflow:hidden}
+.lm-btn::before{content:'';position:absolute;inset:0;background:var(--c0);transform:translateX(-100%);transition:transform .2s;z-index:0}
+.lm-btn:hover::before{transform:translateX(0)}
+.lm-btn:hover{color:var(--bg)}
+.lm-btn span{position:relative;z-index:1}
+.lm-btn:disabled{border-color:var(--dim);color:var(--txt3);cursor:not-allowed}
+.lm-btn:disabled::before{display:none}
+.lm-sw{text-align:center;margin-top:10px;font-size:10px;color:var(--txt3);letter-spacing:.3px}
+.lm-sw button{background:transparent;border:none;color:var(--c1);text-decoration:underline;text-underline-offset:2px;cursor:pointer;font-family:var(--mono);font-size:10px;letter-spacing:.3px}
+.lm-note{font-size:9px;color:var(--txt3);text-align:center;margin-top:7px;letter-spacing:.3px}
+.lm-agree{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
+.lm-agree input{margin-top:2px;width:13px;height:13px;accent-color:var(--c0);flex-shrink:0}
+.lm-agree label{font-size:10px;color:var(--txt3);line-height:1.6;cursor:pointer;letter-spacing:.3px}
+.lm-agree label b{color:var(--c5)}
+
+        /* LANGUAGE FLAGS */
+        .lang-switcher{display:flex;align-items:center;gap:2px;margin-left:10px}
+        .lang-flag{cursor:pointer;opacity:.3;transition:opacity .15s,transform .15s;flex-shrink:0;font-size:14px;line-height:1;padding:3px}
+        .lang-flag:hover{opacity:.75;transform:scale(1.1)}
+        .lang-flag.active{opacity:1;transform:scale(1.1);box-shadow:0 0 4px rgba(0,255,157,.5)}
+
+
+        
+        .console-sect.collapsed{max-height:0!important;padding-top:0!important;padding-bottom:0!important;border-bottom:none}
+        .console-toggle{font-size:9px;color:var(--txt3);letter-spacing:1px;cursor:pointer;padding:5px 18px;background:var(--bg3);border-bottom:1px solid var(--dim);text-align:right;transition:color .15s}
+        .console-toggle:hover{color:var(--c0)}
+
+
+        .console-sect{
+          padding:20px 18px;
+          border-bottom:1px solid var(--dim);
+          background:var(--bg2);
+          overflow:hidden;
+          max-height:400px;
+          opacity:1;
+          transition:max-height .45s cubic-bezier(.4,0,.2,1),
+                     opacity .3s ease,
+                     padding .3s ease,
+                     border .3s ease;
+        }
+        .console-sect.collapsed{
+          max-height:0!important;
+          opacity:0!important;
+          padding:0!important;
+          border:none!important;
+          pointer-events:none;
+        }
+        /* Hide toggle when console collapsed — toggle moves up */
+        .console-toggle{
+          font-size:9px;color:var(--txt3);letter-spacing:1px;
+          cursor:pointer;padding:5px 18px;
+          background:var(--bg3);
+          border-bottom:1px solid var(--dim);
+          text-align:right;
+          transition:color .15s, background .15s;
+          user-select:none;
+        }
+        .console-toggle:hover{color:var(--c0);background:rgba(0,255,157,.03)}
+        @media(max-width:400px){
+          .c-line{font-size:11px;line-height:1.7}
+          
+        }
+
+
+        /* MSG ACTIONS — mute/block */
+        .msg-actions{display:flex;gap:4px;margin-left:auto}
+        .msg-actions button{background:transparent;border:none;color:var(--txt3);cursor:pointer;font-size:11px;padding:2px 4px;transition:color .15s;font-family:var(--mono)}
+        .msg-actions button:hover{color:var(--c5)}
+
+        /* SENDER REVEAL */
+        .sender-reveal{padding:8px 0}
+
+
+        /* GUEST STATUS */
+        .guest-status{font-family:var(--mono);font-size:10px;color:var(--txt3);letter-spacing:1px}
+        /* GUEST CTA */
+        .guest-cta{padding:16px 18px;border-bottom:1px solid var(--dim);background:rgba(0,255,157,.03);display:none}
+        .guest-cta-inner{border:1px solid rgba(0,255,157,.15);border-left:2px solid var(--c0);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+        .guest-cta-text{font-family:var(--mono);font-size:11px;color:var(--txt2);line-height:1.8;letter-spacing:.3px}
+        .guest-cta-text span{color:var(--c0)}
+        .guest-cta-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+        .btn-cta-primary{font-family:var(--mono);font-size:11px;color:var(--bg);background:var(--c0);border:none;padding:8px 16px;cursor:pointer;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;transition:opacity .15s}
+        .btn-cta-primary:hover{opacity:.85}
+        .guest-signin-link{font-family:var(--mono);font-size:10px;color:var(--txt3);cursor:pointer;text-align:center;margin-top:4px;letter-spacing:.3px;text-decoration:underline;text-underline-offset:2px;transition:color .15s}
+        .guest-signin-link:hover{color:var(--c0)}
+
+
+        /* COMPOSE LOCKED for guest — hidden */
+        .compose-locked{display:none!important}
+
+
+        /* BOTTOM NAV */
+        .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--bg2);border-top:1px solid var(--dim);display:none;grid-template-columns:1fr 1fr;height:56px}
+        .nav-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:all .15s;border:none;background:transparent;color:var(--txt3);font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:8px}
+        .nav-tab.active{color:var(--c0)}
+        .nav-tab.active .nav-icon{color:var(--c0);text-shadow:0 0 8px rgba(0,255,157,.4)}
+        .nav-tab:hover{color:var(--txt2)}
+        .nav-icon{font-size:18px;line-height:1;transition:all .15s}
+        .nav-badge{background:var(--c0);color:var(--bg);font-size:8px;font-weight:bold;padding:1px 4px;border-radius:4px;min-width:14px;text-align:center;display:none;position:absolute;top:6px;right:calc(50% - 20px)}
+        .nav-tab{position:relative}
+        
+        /* Push content above bottom nav */
+        .main-content{padding-bottom:56px}
+        
+        /* Console smooth collapse */
+        
+        /* Console toggle pill */
+        .console-toggle{
+          font-size:9px;color:var(--txt3);letter-spacing:1px;
+          cursor:pointer;padding:5px 18px;
+          background:var(--bg3);
+          border-bottom:1px solid var(--dim);
+          text-align:right;
+          transition:color .15s, background .15s;
+          user-select:none;
+        }
+        .console-toggle:hover{color:var(--c0);background:rgba(0,255,157,.03)}
+
+
+        /* QR PANEL */
+        .qr-panel{position:fixed;inset:0;background:rgba(4,13,10,.96);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+        .qr-panel.show{display:flex}
+        .qr-box{background:var(--bg2);border:1px solid var(--dim);border-radius:var(--border-radius-lg);padding:28px;text-align:center;max-width:320px;width:100%}
+        .qr-title{font-size:10px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+        .qr-username{font-size:16px;color:var(--c0);letter-spacing:2px;margin-bottom:20px}
+        .qr-canvas{border:8px solid #fff;border-radius:4px;display:block;margin:0 auto 20px}
+        .qr-hint{font-size:10px;color:var(--txt3);line-height:1.8;letter-spacing:.3px;margin-bottom:20px}
+        .qr-hint span{color:var(--txt2)}
+        .qr-actions{display:flex;gap:8px;justify-content:center}
+        .btn-qr{font-family:var(--mono);font-size:10px;padding:8px 16px;cursor:pointer;letter-spacing:.5px;border:1px solid var(--dim);background:transparent;color:var(--txt3);transition:all .15s}
+        .btn-qr:hover{border-color:var(--c0);color:var(--c0)}
+        .btn-qr.primary{background:var(--c0);color:var(--bg);border-color:var(--c0)}
+        .btn-qr.primary:hover{opacity:.85}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hd">
+    <div>
+      <div class="logo">TYST</div>
+      <div class="logo-sub">SECURE CHANNEL</div>
+    </div>
+    <div class="hd-r" id="userSection"></div>
+  </header>
+
+  <div class="term-strip">
+    <span class="term-dot"></span>
+    <span class="term-status">CHANNEL ACTIVE</span>
+    <span style="flex:1;text-align:center;font-size:9px" id="termClock"></span>
+    <div class="lang-switcher" id="langSwitcher"></div>
+  </div>
+
+  <!-- CONSOLE OUTPUT -->
+  <div class="console-sect" id="consoleSect">
+    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">init --mode passing-note</span></div>
+    <div class="c-line"><span class="c-out1">[ OK ]</span> <span class="c-dim">ephemeral keypair generation ready</span></div>
+    <div class="c-line"><span class="c-out2">[ OK ]</span> <span class="c-dim">aes-gcm-256 cipher loaded</span></div>
+    <div class="c-line"><span class="c-out3">[ OK ]</span> <span class="c-dim">anonymous relay configured · delay 2–47s</span></div>
+    <div class="c-line"><span class="c-out5">[ OK ]</span> <span class="c-dim">self-destruct timer armed · ttl 5s post-read</span></div>
+    <div class="c-line"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">await input</span></div>
+  </div>
+
+  <div class="console-toggle" id="consoleToggle" onclick="toggleConsole()">// hide ▲</div>
+
+  <!-- GUEST CTA — only visible when not logged in -->
+  <div class="main-content">
+  <div class="guest-cta" id="guestCTA">
+    <div class="guest-cta-inner">
+      <div class="guest-cta-text">
+        <span>// free account required to pass notes</span><br>
+        no phone &nbsp;·&nbsp; no email &nbsp;·&nbsp; no id &nbsp;·&nbsp; 60 seconds
+      </div>
+      <div class="guest-cta-actions">
+        <button class="btn-cta-primary" onclick="openLoginModal();lmSwitch('reg')">register free →</button>
+        <div class="guest-signin-link" onclick="openLoginModal();lmSwitch('login')">already have an account? sign in</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPOSE -->
+  <section class="compose-sect">
+    <div class="sect-head">compose encrypted message</div>
+    <div class="field">
+      <label class="f-label" for="tystTo">recipient</label>
+      <input type="text" class="f-input" id="tystTo" placeholder="target.username"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="tystValidate()" autofocus>
+      <div id="tystToHint" style="font-size:10px;color:var(--txt3);margin-top:4px;opacity:0;transition:opacity .2s;letter-spacing:.5px">// format: word.word</div>
+    </div>
+    <div class="field">
+      <label class="f-label" for="tystMsg">payload</label>
+      <textarea class="f-input f-ta" id="tystMsg" placeholder="// enter message..."
+        maxlength="500" oninput="tystValidate();tystChar()"></textarea>
+      <div class="char"><span id="charN">0</span> / 500</div>
+    </div>
+    <div class="trust">
+      <div class="trust-dot"></div>
+      <span class="trust-txt">origin is unknown to anyone, including the server</span>
+      <span class="trust-lnk" onclick="showHow()">protocol ↗</span>
+    </div>
+    <button class="btn-send" id="sendBtn" disabled onclick="tystSend()">
+      <span>&#x25B6; transmit encrypted</span>
+    </button>
+  </section>
+
+  <!-- INBOX -->
+  <section class="inbox-sect" id="inboxSect">
+    <button class="btn-inbox" id="inboxBtn">
+      <span>&#x25BC; open secure inbox</span>
+      <span class="inbox-badge" id="inboxBadge">new</span>
+    </button>
+  </section>
+
+  <footer class="proto">
+    <div class="proto-txt">
+      <b>enc</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256 &nbsp;|&nbsp;
+      <b>pad</b> · 256-byte blocks &nbsp;|&nbsp;
+      <b>relay</b> · header-stripped · timing-randomised &nbsp;|&nbsp;
+      <b>key</b> · device-only · never transmitted
+    </div>
+  </footer>
+</div>
+
+<!-- PROCESSING OVERLAY -->
+<div class="proc-ov" id="procOv">
+  <div class="proc-sheet">
+    <div class="p-layer" id="lProc">
+      <div class="proc-console">
+        <div class="c-line" style="margin-bottom:8px"><span class="c-prompt">tyst@node:~$</span> <span class="c-cmd">encrypt --send</span></div>
+        <div class="proc-step" id="ps1">generating ephemeral key · single use</div>
+        <div class="proc-step" id="ps2">sealing note · forward secrecy</div>
+        <div class="proc-step" id="ps3">passing via anonymous relay</div>
+      </div>
+    </div>
+    <div class="p-layer" id="lSent">
+      <div class="sent-head">NOTE PASSED</div>
+      <div class="c-line" style="margin-bottom:8px"><span class="c-ok">[ OK ]</span> <span class="c-dim">note passed · origin unknown · key discarded</span></div>
+      <div class="sent-sub" id="sentSub">note is passing. will be destroyed 5 seconds after they read it.</div>
+      <button class="btn-dismiss" onclick="closeProcOv()">[ close ]</button>
+    </div>
+    <div class="p-layer" id="lNoPub">
+      <div class="nopub-head">NO PUBKEY</div>
+      <div class="c-line" style="margin-bottom:8px"><span class="c-err">[ ERR ]</span> <span class="c-dim">recipient has no registered key</span></div>
+      <div class="nopub-sub">this user must sign in at least once to receive encrypted messages.</div>
+      <button class="btn-dismiss" onclick="closeProcOv()">[ go back ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- INBOX PANEL -->
+<div class="inbox-panel" id="inboxPanel">
+  <div class="panel-hd">
+    <span class="panel-title">&#x25C6; secure inbox</span>
+    <button class="btn-close" id="inboxClose">&#x2715;</button>
+  </div>
+  <div class="msg-list" id="msgList">
+    <div class="empty-state">
+      <div class="empty-icon">&#x25CB;</div>
+      <div>no messages</div>
+    </div>
+  </div>
+</div>
+
+<!-- READ PANEL -->
+<div class="read-panel" id="readPanel">
+  <div class="read-hd">
+    <button class="btn-back" id="readBack">&#x2190; back</button>
+    <span class="read-from" id="readFrom">anonymous</span>
+    <span class="read-count" id="readCount">5</span>
+  </div>
+  <div class="read-body" id="readBody"></div>
+  <div class="read-foot">
+    <span>self-destruct armed</span>
+    <button id="replyBtn" style="display:none;background:transparent;border:1px solid var(--dim);color:var(--txt3);font-family:var(--mono);font-size:10px;padding:4px 12px;cursor:pointer;letter-spacing:.5px;transition:border-color .15s,color .15s" onmouseover="this.style.borderColor='var(--c0)';this.style.color='var(--c0)'" onmouseout="this.style.borderColor='var(--dim)';this.style.color='var(--txt3)'">↩ reply</button>
+    <span>no record kept</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-ov" id="howOv">
+  <div class="how-sheet">
+    <div class="how-title">PROTOCOL</div>
+    <div class="how-row"><div class="how-num">1</div><div><div class="how-h">sender identity is untraceable</div><div class="how-p">messages route through an anonymous relay. the server only sees the relay IP, never yours. even if the server is seized, your identity is not there.</div></div></div>
+    <div class="how-row"><div class="how-num">2</div><div><div class="how-h">server cannot read your message</div><div class="how-p">encryption runs on your device before transmission. your private key never leaves your device — the server holds ciphertext only.</div></div></div>
+    <div class="how-row"><div class="how-num">3</div><div><div class="how-h">timing is randomised</div><div class="how-p">a random 2–47 second delay is injected so timing correlation attacks cannot identify the sender.</div></div></div>
+    <div class="how-row"><div class="how-num">4</div><div><div class="how-h">destroyed after reading</div><div class="how-p">5 seconds after the recipient opens the message it is permanently purged from the server. no backup. no log.</div></div></div>
+    <div class="how-tech"><b>protocol</b> · ecdh p-256 · aes-gcm 256-bit · hkdf-sha256<br><b>padding</b> · 256-byte blocks — payload size does not leak<br><b>relay</b> · all identifying headers stripped before forwarding<br><b>storage</b> · private key is device-only, never transmitted</div>
+    <button class="btn-how-close" onclick="hideHow()">[ close ]</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div class="lm-bg" id="lmBg" onclick="if(event.target===this)closeLM()">
+  <div class="lm-card">
+    <div class="lm-top">
+      <div class="lm-wordmark">TYST</div>
+      <div class="lm-disc">anonymous channel. identity unverified.<br>by connecting you confirm you are 17+ and accept full responsibility for transmitted content.</div>
+    </div>
+    <div class="lm-body">
+      <button class="lm-x" onclick="closeLM()">&#x2715;</button>
+      <div id="lmLogin">
+        <div class="lm-title">CONNECT</div>
+        <label class="lm-label">username</label>
+        <input class="lm-input" id="lmU" placeholder="word.word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+        <label class="lm-label">6-digit PIN</label>
+        <input class="lm-input lm-pin" id="lmP" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
+        <div class="lm-fb" id="lmFbL"></div>
+        <button class="lm-btn" id="lmBtnL" disabled onclick="lmDoLogin()"><span>connect &#x2192;</span></button>
+        <div class="lm-sw"><button onclick="lmSwitch('reg')">no account? register</button></div>
+        <div class="lm-note">lost PIN = lost account · no recovery possible</div>
+      </div>
+      <div id="lmReg" style="display:none">
+        <div class="lm-title">REGISTER</div>
+        <label class="lm-label">username — format <span style="color:var(--c1)">word.word</span></label>
+        <input class="lm-input" id="lmRU" placeholder="word.word" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" maxlength="30">
+        <label class="lm-label">6-digit PIN</label>
+        <input class="lm-input lm-pin" id="lmRP" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
+        <label class="lm-label">confirm PIN</label>
+        <input class="lm-input lm-pin" id="lmRP2" placeholder="&#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF; &#x25CF;" autocomplete="off" maxlength="6" inputmode="numeric">
+        <div class="lm-fb" id="lmFbR"></div>
+        <div class="lm-agree"><input type="checkbox" id="lmAg" onchange="lmUpdateReg()"><label for="lmAg">lost PIN = lost account — <b>PERMANENT</b>, no recovery</label></div>
+        <button class="lm-btn" id="lmBtnR" disabled onclick="lmDoReg()" style="margin-top:8px"><span>register &#x2192;</span></button>
+        <div class="lm-sw"><button onclick="lmSwitch('login')">already registered? connect</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+/* ── i18n ─────────────────────────────────────────────── */
+const LANGS = {
+  en: {
+    flag:'🇬🇧', name:'EN',
+    compose:'pass a note', recipient:'recipient', message:'payload',
+    msgPlaceholder:'Write anything…', recipPlaceholder:'target.username',
+    trust:'sender identity is unknown to anyone',
+    protocol:'protocol ↗', sendBtn:'▶ pass note',
+    inboxBtn:'↓ open secure inbox', secureInbox:'◆ secure inbox',
+    back:'← back', selfDestruct:'this message will self-destruct',
+    noRecord:'no record kept', howTitle:'How TYST protects you',
+    howClose:'[ close ]', signIn:'Sign in', register:'Register',
+    connect:'connect →', registerBtn:'register →',
+    username:'username', pin:'6-digit PIN', confirmPin:'confirm PIN',
+    noAccount:'no account? register', hasAccount:'already registered? connect',
+    recNotActive:'Recipient not active', recNotActiveSub:'This user must sign in at least once to receive encrypted messages.',
+    transmitted:'TRANSMITTED', goBack:'[ go back ]', close:'[ close ]',
+    signOut:'Sign out', channelActive:'CHANNEL ACTIVE',
+    secureChannel:'SECURE CHANNEL', noMessages:'no messages',
+    lostPin:'lost PIN = lost account · no recovery possible',
+    msgSelf:'this message will self-destruct',
+  },
+  sv: {
+    flag:'🇸🇪', name:'SV',
+    compose:'skicka en not', recipient:'mottagare', message:'meddelande',
+    msgPlaceholder:'Skriv vad som helst…', recipPlaceholder:'användarnamn',
+    trust:'avsändarens identitet är okänd för alla',
+    protocol:'protokoll ↗', sendBtn:'▶ skicka not',
+    inboxBtn:'↓ öppna säker inkorg', secureInbox:'◆ säker inkorg',
+    back:'← tillbaka', selfDestruct:'detta meddelande förstörs',
+    noRecord:'inget spår kvar', howTitle:'Hur TYST skyddar dig',
+    howClose:'[ stäng ]', signIn:'Logga in', register:'Registrera',
+    connect:'anslut →', registerBtn:'registrera →',
+    username:'användarnamn', pin:'6-siffrig PIN', confirmPin:'bekräfta PIN',
+    noAccount:'inget konto? registrera', hasAccount:'har konto? logga in',
+    recNotActive:'Mottagaren är inte aktiv', recNotActiveSub:'Användaren måste logga in minst en gång för att ta emot meddelanden.',
+    transmitted:'SKICKAT', goBack:'[ gå tillbaka ]', close:'[ stäng ]',
+    signOut:'Logga ut', channelActive:'KANAL AKTIV',
+    secureChannel:'SÄKER KANAL', noMessages:'inga meddelanden',
+    lostPin:'förlorad PIN = förlorat konto · ingen återhämtning',
+    msgSelf:'detta meddelande förstörs',
+  },
+  ru: {
+    flag:'🇷🇺', name:'RU',
+    compose:'передать записку', recipient:'получатель', message:'сообщение',
+    msgPlaceholder:'Напишите что угодно…', recipPlaceholder:'имя пользователя',
+    trust:'личность отправителя никому не известна',
+    protocol:'протокол ↗', sendBtn:'▶ передать записку',
+    inboxBtn:'↓ открыть защищённый ящик', secureInbox:'◆ защищённый ящик',
+    back:'← назад', selfDestruct:'сообщение будет уничтожено',
+    noRecord:'записей не сохранено', howTitle:'Как TYST защищает вас',
+    howClose:'[ закрыть ]', signIn:'Войти', register:'Регистрация',
+    connect:'войти →', registerBtn:'зарегистрироваться →',
+    username:'имя пользователя', pin:'6-значный PIN', confirmPin:'подтвердите PIN',
+    noAccount:'нет аккаунта? зарегистрируйтесь', hasAccount:'уже есть аккаунт? войдите',
+    recNotActive:'Получатель не активен', recNotActiveSub:'Пользователь должен войти хотя бы раз для получения сообщений.',
+    transmitted:'ОТПРАВЛЕНО', goBack:'[ назад ]', close:'[ закрыть ]',
+    signOut:'Выйти', channelActive:'КАНАЛ АКТИВЕН',
+    secureChannel:'ЗАЩИЩЁННЫЙ КАНАЛ', noMessages:'нет сообщений',
+    lostPin:'потеря PIN = потеря аккаунта · восстановление невозможно',
+    msgSelf:'сообщение будет уничтожено',
+  },
+  es: {
+    flag:'🇪🇸', name:'ES',
+    compose:'pasar una nota', recipient:'destinatario', message:'mensaje',
+    msgPlaceholder:'Escribe lo que quieras…', recipPlaceholder:'nombre.usuario',
+    trust:'la identidad del remitente es desconocida para todos',
+    protocol:'protocolo ↗', sendBtn:'▶ pasar nota',
+    inboxBtn:'↓ abrir bandeja segura', secureInbox:'◆ bandeja segura',
+    back:'← volver', selfDestruct:'este mensaje se autodestruirá',
+    noRecord:'sin registros', howTitle:'Cómo TYST te protege',
+    howClose:'[ cerrar ]', signIn:'Iniciar sesión', register:'Registrarse',
+    connect:'conectar →', registerBtn:'registrarse →',
+    username:'usuario', pin:'PIN de 6 dígitos', confirmPin:'confirmar PIN',
+    noAccount:'¿sin cuenta? regístrate', hasAccount:'¿ya tienes cuenta? entra',
+    recNotActive:'Destinatario inactivo', recNotActiveSub:'Este usuario debe iniciar sesión al menos una vez para recibir mensajes.',
+    transmitted:'TRANSMITIDO', goBack:'[ volver ]', close:'[ cerrar ]',
+    signOut:'Cerrar sesión', channelActive:'CANAL ACTIVO',
+    secureChannel:'CANAL SEGURO', noMessages:'sin mensajes',
+    lostPin:'PIN perdido = cuenta perdida · sin recuperación',
+    msgSelf:'este mensaje se autodestruirá',
+  },
+  de: {
+    flag:'🇩🇪', name:'DE',
+    compose:'notiz übergeben', recipient:'empfänger', message:'nachricht',
+    msgPlaceholder:'Schreib was du willst…', recipPlaceholder:'benutzername',
+    trust:'die Identität des Absenders ist niemandem bekannt',
+    protocol:'protokoll ↗', sendBtn:'▶ notiz übergeben',
+    inboxBtn:'↓ sicheren posteingang öffnen', secureInbox:'◆ sicherer posteingang',
+    back:'← zurück', selfDestruct:'diese nachricht wird zerstört',
+    noRecord:'keine aufzeichnungen', howTitle:'Wie TYST dich schützt',
+    howClose:'[ schließen ]', signIn:'Anmelden', register:'Registrieren',
+    connect:'verbinden →', registerBtn:'registrieren →',
+    username:'benutzername', pin:'6-stellige PIN', confirmPin:'PIN bestätigen',
+    noAccount:'kein konto? registrieren', hasAccount:'konto vorhanden? anmelden',
+    recNotActive:'Empfänger nicht aktiv', recNotActiveSub:'Dieser Benutzer muss sich mindestens einmal anmelden, um Nachrichten zu empfangen.',
+    transmitted:'GESENDET', goBack:'[ zurück ]', close:'[ schließen ]',
+    signOut:'Abmelden', channelActive:'KANAL AKTIV',
+    secureChannel:'SICHERER KANAL', noMessages:'keine nachrichten',
+    lostPin:'PIN verloren = konto verloren · keine wiederherstellung',
+    msgSelf:'diese nachricht wird zerstört',
+  }
+};
+
+// Auto-detect language from browser/device locale
+function detectLang() {
+  const saved = localStorage.getItem('tyst_lang');
+  if (saved && LANGS[saved]) return saved;
+  
+  const browser = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  
+  if (browser.startsWith('sv') || browser.startsWith('fi')) return 'sv';
+  if (browser.startsWith('ru') || browser.startsWith('uk') || browser.startsWith('be')) return 'ru';
+  if (browser.startsWith('es') || browser.startsWith('ca') || browser.startsWith('gl')) return 'es';
+  if (browser.startsWith('de') || browser.startsWith('at') || browser.startsWith('ch')) return 'de';
+  return 'en';
+}
+let currentLang = detectLang();
+
+function applyLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('tyst_lang', lang);
+  const t = LANGS[lang];
+  if(!t) return;
+
+  // Update flags
+  document.querySelectorAll('.lang-flag').forEach(f => {
+    const isActive = f.dataset.lang === lang;
+    f.classList.toggle('active', isActive);
+    f.style.opacity = isActive ? '1' : '.3';
+    f.style.transform = isActive ? 'scale(1.15)' : 'scale(1)';
+  });
+
+  // Labels
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+  const setPlaceholder = (id, val) => { const el = document.getElementById(id); if(el) el.placeholder = val; };
+  const setHtml = (id, val) => { const el = document.getElementById(id); if(el) el.innerHTML = val; };
+
+  // Header
+  document.querySelectorAll('.logo-sub').forEach(el => el.textContent = t.secureChannel);
+  document.querySelectorAll('.term-status').forEach(el => el.textContent = t.channelActive);
+
+  // Compose section
+  document.querySelectorAll('.eyebrow').forEach(el => el.textContent = t.compose);
+  const ce=document.getElementById('composeEyebrow');if(ce)ce.textContent=t.compose;
+  const recipLabel = document.querySelector('label[for="tystTo"]');
+  if(recipLabel) recipLabel.childNodes[recipLabel.childNodes.length-1].textContent = t.recipient;
+  const msgLabel = document.querySelector('label[for="tystMsg"]');
+  if(msgLabel) msgLabel.childNodes[msgLabel.childNodes.length-1].textContent = t.message;
+  setPlaceholder('tystTo', t.recipPlaceholder);
+  setPlaceholder('tystMsg', t.msgPlaceholder);
+  document.querySelectorAll('.trust-txt').forEach(el => el.textContent = t.trust);
+  document.querySelectorAll('.trust-lnk').forEach(el => el.textContent = t.protocol);
+  const sendBtn = document.getElementById('sendBtn');
+  if(sendBtn) sendBtn.innerHTML = '<span>' + t.sendBtn + '</span>';
+
+  // Inbox button
+  const inboxBtn = document.getElementById('inboxBtn');
+  if(inboxBtn) {
+    const badge = document.getElementById('inboxBadge');
+    const badgeHtml = badge ? badge.outerHTML : '';
+    inboxBtn.innerHTML = '<span>' + t.inboxBtn + '</span>' + badgeHtml;
+  }
+
+  // Inbox panel
+  document.querySelectorAll('.panel-title').forEach(el => el.textContent = t.secureInbox);
+  document.querySelectorAll('.empty-txt').forEach(el => el.textContent = t.noMessages);
+
+  // Read panel
+  document.querySelectorAll('.read-foot span:first-child').forEach(el => el.textContent = t.msgSelf);
+  document.querySelectorAll('.read-foot span:last-child').forEach(el => el.textContent = t.noRecord);
+  const readBack = document.getElementById('readBack');
+  if(readBack) readBack.textContent = t.back;
+
+  // How overlay title
+  document.querySelectorAll('.how-title').forEach(el => el.textContent = t.howTitle);
+  document.querySelectorAll('.btn-how-close').forEach(el => el.textContent = t.howClose);
+
+  // Processing layers
+  const lSentTitle = document.querySelector('#lSent .sent-title');
+  if(lSentTitle) lSentTitle.textContent = t.transmitted;
+  document.querySelectorAll('#lNoPub .nopub-title').forEach(el => el.textContent = t.recNotActive);
+  document.querySelectorAll('#lNoPub .nopub-sub').forEach(el => el.textContent = t.recNotActiveSub);
+  document.querySelectorAll('.btn-dismiss').forEach((el,i) => {
+    el.textContent = i === 0 ? t.close : t.goBack;
+  });
+
+  // Login modal
+  document.querySelectorAll('.lm-disc').forEach(el => {
+    if(lang === 'en') el.textContent = 'anonymous channel. identity unverified. by signing in you confirm you are 17+ and accept full responsibility for transmitted content.';
+    else if(lang === 'sv') el.textContent = 'anonymt kanal. identitet overifierad. genom att logga in bekräftar du att du är 17+ och tar fullt ansvar.';
+    else if(lang === 'ru') el.textContent = 'анонимный канал. личность не подтверждена. входя, вы подтверждаете, что вам 17+ и принимаете ответственность.';
+    else if(lang === 'es') el.textContent = 'canal anónimo. identidad no verificada. al entrar confirmas que tienes 17+ y aceptas responsabilidad total.';
+    else if(lang === 'de') el.textContent = 'anonymer kanal. identität ungeprüft. durch anmelden bestätigst du, dass du 17+ bist und volle verantwortung übernimmst.';
+  });
+
+  // Login/Register buttons & labels
+  const lmBtnL = document.getElementById('lmBtnL');
+  if(lmBtnL) lmBtnL.innerHTML = '<span>' + t.connect + '</span>';
+  const lmBtnR = document.getElementById('lmBtnR');
+  if(lmBtnR) lmBtnR.innerHTML = '<span>' + t.registerBtn + '</span>';
+
+  document.querySelectorAll('#lmLogin .lm-title').forEach(el => el.textContent = t.signIn);
+  document.querySelectorAll('#lmReg .lm-title').forEach(el => el.textContent = t.register);
+  document.querySelectorAll('.lm-note').forEach(el => el.textContent = t.lostPin);
+
+  // Sign out
+  const loutBtn = document.getElementById('loutBtn');
+  if(loutBtn) loutBtn.textContent = t.signOut;
+}
+
+const FLAG_EMOJI = {
+  en: '🇬🇧', sv: '🇸🇪', ru: '🇷🇺', es: '🇪🇸', de: '🇩🇪'
+};
+
+function initLangSwitcher() {
+  const switcher = document.getElementById('langSwitcher');
+  if(!switcher) return;
+  Object.entries(LANGS).forEach(([code, data]) => {
+    const span = document.createElement('span');
+    span.className = 'lang-flag' + (code === currentLang ? ' active' : '');
+    span.textContent = FLAG_EMOJI[code];
+    span.title = data.name;
+    span.dataset.lang = code;
+    span.style.cssText = 'font-size:14px;cursor:pointer;opacity:' + (code === currentLang ? '1' : '.3') + ';transition:opacity .15s,transform .15s;padding:3px 3px;line-height:1;display:inline-block';
+    span.onclick = () => applyLang(code);
+    switcher.appendChild(span);
+  });
+  applyLang(currentLang);
+}
+
+(function(){
+'use strict';
+const SU='https://urljqsszsxrwhhyvpfhr.supabase.co';
+const SK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODAzNzcsImV4cCI6MjA5Mzg1NjM3N30.SfNa4M6420z-GZPIBFBYezesNlrmnK3FSHUp8FDeP8M';
+const POLL=15000,POLL_INACTIVE=60000,LP='tyst_priv_v1',LPU='tyst_pub_v1';
+const K={u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'};
+const IS_GUEST=localStorage.getItem(K.l)!=='true';
+const ME=IS_GUEST?null:localStorage.getItem(K.u);
+const UID=IS_GUEST?null:localStorage.getItem(K.i);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const toast=(m,d=3000)=>{const o=$('toast');if(!o)return;o.textContent=m;o.classList.add('show');setTimeout(()=>o.classList.remove('show'),d);};
+function getAuth(){if(IS_GUEST)return{};const h=localStorage.getItem(K.a);return h?{'Authorization':'Bearer '+h}:{};}
+
+/* ECDH */
+const ECDH=(()=>{
+    const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+    const fb64=b64=>Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+    async function gen(){const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);const priv=await crypto.subtle.exportKey('jwk',kp.privateKey);delete pub.d;return{publicKey:kp.publicKey,privateKey:kp.privateKey,pub,priv};}
+    async function ipriv(j){return crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);}
+    async function ipub(j){return crypto.subtle.importKey('jwk',j,{name:'ECDH',namedCurve:'P-256'},true,[]);}
+    async function aes(pr,pu){const bits=await crypto.subtle.deriveBits({name:'ECDH',public:pu},pr,256);const hkdf=await crypto.subtle.importKey('raw',bits,'HKDF',false,['deriveKey']);return crypto.subtle.deriveKey({name:'HKDF',hash:'SHA-256',salt:new Uint8Array(32),info:new TextEncoder().encode('whisper-v2')},hkdf,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+    const P=256;
+    function pad(s){const e=new TextEncoder().encode(s);const l=P-(e.length%P);const o=new Uint8Array(e.length+l);o.set(e);return o;}
+    function unpad(b){let n=b.length;while(n>0&&b[n-1]===0)n--;return new TextDecoder().decode(b.slice(0,n));}
+    async function encrypt(plain,pubJWK){const e=await gen();const rp=await ipub(pubJWK);const k=await aes(e.privateKey,rp);const iv=crypto.getRandomValues(new Uint8Array(12));const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,pad(plain));return b64(iv)+':'+btoa(JSON.stringify(e.pub))+':'+b64(ct);}
+    async function decrypt(enc,privJWK){try{const[iv,ep,ct]=enc.split(':');const eph=await ipub(JSON.parse(atob(ep)));const my=await ipriv(privJWK);const k=await aes(my,eph);const p=await crypto.subtle.decrypt({name:'AES-GCM',iv:fb64(iv)},k,fb64(ct));return unpad(new Uint8Array(p));}catch(e){return '[could not decrypt]';}}
+    async function getOrCreate(){const ps=localStorage.getItem(LP),pu=localStorage.getItem(LPU);if(ps&&pu){try{const p=await ipriv(JSON.parse(ps));return{privateKey:p,priv:JSON.parse(ps),pub:JSON.parse(pu)};}catch(e){}}const kp=await gen();localStorage.setItem(LP,JSON.stringify(kp.priv));localStorage.setItem(LPU,JSON.stringify(kp.pub));return{privateKey:kp.publicKey,priv:kp.priv,pub:kp.pub};}
+    async function reg(){if(IS_GUEST)return null;const kp=await getOrCreate();if(sessionStorage.getItem('pk_reg')==='1')return kp;try{const r=await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({username:ME,userId:UID,pubkey:kp.pub})});if(r.ok)sessionStorage.setItem('pk_reg','1');}catch(e){}return kp;}
+    return{encrypt,decrypt,getOrCreate,reg};
+})();
+window._ECDH=ECDH;
+
+/* INBOX */
+const INBOX=(()=>{
+    let msgs=[],rid=null,dt=null,pt=null,kp=null;
+    function badge(s){const b=$('inboxBadge');if(b)b.style.display=s?'':'none';}
+    async function getKP(){if(!kp)kp=await ECDH.getOrCreate();return kp;}
+    async function load(){
+        if(IS_GUEST)return;
+        const tok=localStorage.getItem(K.a)||'';if(!tok)return;
+        try{
+            const r=await fetch('/api/whisper?username='+encodeURIComponent(ME),{headers:{'Authorization':'Bearer '+tok}});
+            if(r.status===401||r.status===403){toast('Session expired. Please sign in again.');return;}
+            if(!r.ok)return;
+            const raw=await r.json();
+            if(!Array.isArray(raw)||!raw.length){msgs=[];render();badge(false);return;}
+            const k=await getKP(),now=Date.now();
+            msgs=await Promise.all(raw.map(async m=>{
+                const exp=new Date(m.destroy_at).getTime(),rem=exp-now;
+                const h=Math.floor(rem/3600000),mn=Math.floor((rem%3600000)/60000);
+                const body=await ECDH.decrypt(m.message,k.priv);
+                return{id:m.id,from:'anonymous',body,prev:body.slice(0,58)+(body.length>58?'…':''),ttl:h>0?h+'h':(rem>0?mn+'m':'expired')};
+            }));
+            render();badge(msgs.length>0);
+        }catch(e){console.warn('[TYST]',e);}
+    }
+    function render(){const el=$('msgList');if(!el)return;if(!msgs.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">○</div><div class="empty-txt">no messages</div></div>';return;}el.innerHTML=msgs.map(m=>{
+      const hasFrom = m.senderUsername && m.senderUsername !== 'anonymous';
+      const safeId = esc(m.id);
+      const safeSender = hasFrom ? esc(m.senderUsername) : '';
+      const actionBtn = hasFrom
+        ? '<div class="msg-actions">'
+          + '<button onclick="event.stopPropagation();INBOX.muteUser(\'' + safeSender + '\')" title="mute">◌</button>'
+          + '<button onclick="event.stopPropagation();INBOX.blockUser(\'' + safeSender + '\')" title="block">✕</button>'
+          + '</div>'
+        : '';
+      const fromLabel = hasFrom ? '@' + safeSender : esc(m.from);
+      return '<div class="msg-row" onclick="INBOX.open(\'' + safeId + '\')">'
+        + '<div class="msg-meta">'
+        + '<span class="msg-from">' + fromLabel + '</span>'
+        + '<span class="msg-ttl">⏳ ' + m.ttl + '</span>'
+        + actionBtn
+        + '</div>'
+        + '<div class="msg-prev">' + esc(m.prev) + '</div>'
+        + '</div>';
+    }).join('');}
+    async function open(id){const m=msgs.find(x=>x.id===id);if(!m)return;rid=id;$('readFrom').textContent='from: '+m.from;$('readBody').textContent=m.body;$('readCount').textContent='5';$('readCount').style.color='var(--danger)';$('readPanel').classList.add('show');await fetch('/api/whisper',{method:'PATCH',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});destruct(id);}
+    function destruct(id){clearInterval(dt);let n=5;dt=setInterval(()=>{n--;const el=$('readCount');if(!el){clearInterval(dt);return;}el.textContent=n;if(n<=0){clearInterval(dt);burn(id);}},1000);}
+    function burn(id){const b=$('readBody');if(b)b.classList.add('burning');msgs=msgs.filter(m=>m.id!==id);fetch('/api/whisper',{method:'DELETE',headers:{'Content-Type':'application/json',...getAuth()},body:JSON.stringify({id,username:ME})}).catch(()=>{});setTimeout(()=>{$('readPanel').classList.remove('show');if(b){b.classList.remove('burning');b.textContent='';}$('readCount').style.color='var(--danger)';$('inboxPanel').classList.add('show');render();badge(msgs.length>0);},750);}
+    function closeRead(){clearInterval(dt);if(rid&&msgs.find(m=>m.id===rid))burn(rid);rid=null;$('readPanel').classList.remove('show');}
+    function poll(){
+    load();clearInterval(pt);
+    pt=setInterval(load,POLL);
+    document.addEventListener('visibilitychange',function(){
+      clearInterval(pt);
+      pt=setInterval(load,document.hidden?POLL_INACTIVE:POLL);
+      if(!document.hidden)load();
+    });
+  }
+    return{open,closeRead,poll,load};
+})();
+window.INBOX=INBOX;
+
+/* UI */
+function setupUI(){
+    const sec=$('userSection');
+    if(IS_GUEST){
+        sec.innerHTML='<span class="guest-status">// guest</span>';
+        const gh=document.getElementById('guestHint');if(gh)gh.style.display='block';
+        const gcta=document.getElementById('guestCTA');if(gcta)gcta.style.display='block';
+        const cs=document.querySelector('.compose-sect');if(cs)cs.classList.add('compose-locked');
+        document.getElementById('inboxSect').style.display='none';
+    }else{
+        const safeMe = ME ? ME.replace(/[^a-z0-9_.]/gi,'') : '';
+        sec.innerHTML='<span class="user-chip">@'+safeMe+'</span><button class="btn-icon" id="sBtn">⋮</button>';
+        const dd=document.createElement('div');dd.className='dd';dd.id='sDD';
+        dd.innerHTML=
+          '<div class="dd-item" onclick="showQR()">// share TYST</div>'+
+          '<div class="dd-item" id="addHomeBtn" onclick="promptAddToHome()">// save to home screen</div>'+
+          '<div class="dd-item" id="loutBtn">Sign out</div>';
+        document.querySelector('.app').appendChild(dd);
+        const sb=$('sBtn'),sd=$('sDD');
+        if(sb&&sd){sb.onclick=e=>{e.stopPropagation();sd.classList.toggle('show');};document.addEventListener('click',e=>{if(sb&&sd&&!sb.contains(e.target)&&!sd.contains(e.target))sd.classList.remove('show');});}
+        const lb=$('loutBtn');if(lb)lb.onclick=()=>{localStorage.removeItem(K.l);localStorage.removeItem(K.a);toast('Signed out.');setTimeout(()=>window.location.reload(),900);};
+        $('inboxSect').style.display='block';
+        const srw=document.getElementById('senderRevealWrap');if(srw)srw.style.display='block';
+        const cs2=document.querySelector('.compose-sect');if(cs2)cs2.classList.remove('compose-locked');
+        const gcta2=document.getElementById('guestCTA');if(gcta2)gcta2.style.display='none';
+        // Show bottom nav
+        const bn=document.getElementById('bottomNav');if(bn)bn.style.display='grid';
+        // Hide old inline inbox button
+        const ib2=document.getElementById('inboxSect');if(ib2)ib2.style.display='none';
+        // Init console visibility
+        initConsoleVisibility();
+        // Wrap content for bottom nav padding
+        const mc=document.querySelector('.main-content');
+    }
+}
+
+window.addEventListener('load',()=>{
+    initLangSwitcher();
+    setupUI();
+    initConsoleVisibility();
+
+    // Auto-focus recipient input on load
+    const toInp = document.getElementById('tystTo');
+    const msgInp = document.getElementById('tystMsg');
+    if(toInp) setTimeout(() => toInp.focus(), 300);
+
+    // Enter on tystTo → jump to tystMsg
+    if(toInp && msgInp) {
+      toInp.addEventListener('keydown', e => {
+        if(e.key === 'Enter') {
+          e.preventDefault();
+          msgInp.focus();
+          // Move caret to end if there's text
+          const len = msgInp.value.length;
+          msgInp.setSelectionRange(len, len);
+        }
+      });
+    }
+    if(!IS_GUEST){
+        ECDH.reg();INBOX.poll();
+        $('inboxBtn').onclick=()=>{INBOX.load();$('inboxPanel').classList.add('show');};
+    }
+    $('inboxClose').onclick=()=>$('inboxPanel').classList.remove('show');
+    $('readBack').onclick=()=>{INBOX.closeRead();$('inboxPanel').classList.add('show');};
+});
+})();
+
+/* SEND */
+function layerShow(id){['lProc','lSent','lNoPub'].forEach(l=>{const el=document.getElementById(l);if(el)el.classList.toggle('show',l===id);});}
+function closeProcOv(){document.getElementById('procOv').classList.remove('show');document.getElementById('tystTo').value='';document.getElementById('tystMsg').value='';const c=document.getElementById('charN');if(c)c.textContent='0';const b=document.getElementById('sendBtn');if(b)b.disabled=true;setTimeout(()=>layerShow(null),300);}
+
+function toast(msg, duration=2800){
+  let t=document.getElementById('toast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='toast';
+    t.style.cssText='position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--dim);color:var(--txt);font-family:var(--mono);font-size:11px;padding:8px 16px;letter-spacing:.5px;z-index:9999;transition:opacity .3s;pointer-events:none;opacity:0';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.opacity='1';
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.style.opacity='0', duration);
+}
+
+function tystValidate(){
+    const hint=document.getElementById('tystToHint');
+    if(hint){
+      const raw=(document.getElementById('tystTo').value||'').trim().replace('@','');
+      hint.style.opacity=(raw.length>0&&!/^[a-z0-9_.]{2,24}$/.test(raw))?'1':'0';
+    }
+    const to=(document.getElementById('tystTo').value||'').trim().replace('@','');const msg=(document.getElementById('tystMsg').value||'').trim();const ok=/^[a-z0-9_.]{2,24}$/.test(to)&&msg.length>0;const btn=document.getElementById('sendBtn');if(btn)btn.disabled=!ok;}
+function tystChar(){const el=document.getElementById('tystMsg'),c=document.getElementById('charN');if(el&&c)c.textContent=el.value.length;}
+function showHow(){document.getElementById('howOv').classList.add('show');}
+function hideHow(){document.getElementById('howOv').classList.remove('show');}
+function setStep(n){['ps1','ps2','ps3'].forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;el.className='proc-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
+async function tystSend(){
+    // TYST-to-TYST: require account to send
+    const isGuest = localStorage.getItem('tyst_logged_in') !== 'true';
+    if(isGuest){
+      openLoginModal();
+      const hint = document.getElementById('guestHint');
+      if(hint){
+        hint.textContent='// create a free account to send notes';
+        hint.style.color='var(--c2)';
+      }
+      return;
+    }
+    const btn=document.getElementById('sendBtn');
+    if(btn){btn.disabled=true;btn.innerHTML='<span>// encrypting...</span>';}
+    const to=(document.getElementById('tystTo').value||'').trim().replace('@','').toLowerCase();
+    const msg=(document.getElementById('tystMsg').value||'').trim();
+    if(!to||!msg)return;
+    document.getElementById('procOv').classList.add('show');
+    layerShow('lProc');setStep(0);
+    try{
+        await new Promise(r=>setTimeout(r,300));setStep(1);
+        const pk=await fetch('/api/pubkey?username='+encodeURIComponent(to));
+        if(!pk.ok){layerShow('lNoPub');return;}
+        const pkd=await pk.json();if(!pkd.pubkey){layerShow('lNoPub');return;}
+        setStep(2);
+        const enc=await window._ECDH.encrypt(msg,pkd.pubkey);
+        await new Promise(r=>setTimeout(r,200));
+        const r=await fetch('/api/whisper',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({to,messageEnc:enc})});
+        if(r.ok||r.status===202){const s=document.getElementById('sentSub');if(s)s.textContent=`No one can retrieve it. It will vanish 5 seconds after ${to} reads it.`;layerShow('lSent');}
+        else{
+        closeProcOv();
+        toast('Failed. Please try again.');
+        const b=document.getElementById('sendBtn');
+        if(b){b.disabled=false;b.innerHTML='<span>▶ pass note</span>';}
+      }
+    }catch(err){
+        console.error('[TYST]',err);
+        closeProcOv();
+        const b=document.getElementById('sendBtn');
+        if(b){b.disabled=false;b.innerHTML='<span>▶ pass note</span>';}
+      }
+}
+
+/* LOGIN */
+const LM={
+    SU:'https://tyst.site',
+    SK:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybGpxc3N6c3hyd2hoeXZwZmhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyODAzNzcsImV4cCI6MjA5Mzg1NjM3N30.SfNa4M6420z-GZPIBFBYezesNlrmnK3FSHUp8FDeP8M',
+    LS:{u:'tyst_username',i:'tyst_uid',l:'tyst_logged_in',a:'tyst_auth_v1'},
+    pbUrl(p){const col=p.match(/^\/([^?]+)/)[1];const qs=p.split('?')[1]||'';let filter='';const um=qs.match(/username=eq\.([^&]+)/);const im=qs.match(/id=eq\.([^&]+)/);if(um)filter='(username=\''+decodeURIComponent(um[1])+'\')';if(im)filter='(id=\''+decodeURIComponent(im[1])+'\')';return{col,url:'/api/pb/api/collections/'+col+'/records'+(filter?'?filter='+encodeURIComponent(filter):'')};},async get(p){const{url}=this.pbUrl(p);const r=await fetch(url,{headers:{'Content-Type':'application/json'}});const t=await r.text();const d=t?JSON.parse(t):null;if(d&&d.items)return d.items;return d?[d]:[];},
+    async post(p,b){const col=p.match(/^\/([^?]+)/)[1];const r=await fetch('/api/pb/api/collections/'+col+'/records',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});const t=await r.text();const d=t?JSON.parse(t):null;if(!r.ok){const e=new Error((d&&(d.message||d.code))||'Request failed');e.code=d&&d.code;throw e;}return d;},
+    async patch(p,b){const{col,url}=this.pbUrl(p);const g=await fetch(url,{headers:{'Content-Type':'application/json'}});const gd=await g.json();const id=gd&&gd.items&&gd.items[0]&&gd.items[0].id;if(!id)return null;const r=await fetch('/api/pb/api/collections/'+col+'/records/'+id,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});const t=await r.text();return t?JSON.parse(t):null;},
+    async sha256(s){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');},
+    async fp(){const p=[];try{const cv=document.createElement('canvas');cv.width=100;cv.height=30;const ctx=cv.getContext('2d');ctx.font='12px sans-serif';ctx.fillText('tyst_fp',2,15);p.push(cv.toDataURL());}catch(e){p.push('nc');}p.push(navigator.userAgent,screen.width+'x'+screen.height,navigator.language);return this.sha256(p.join('|'));},
+    async hash(pin,u){const f=await this.fp();return this.sha256(pin+':'+u+':'+f+':tyst_local_v1');},
+    vu(v){v=(v||'').trim().toLowerCase();if(!v||!v.includes('.'))return null;const p=v.split('.');if(p.length!==2)return null;if(p[0].length<2||p[1].length<2)return null;if(!/^[a-z][a-z0-9]*$/.test(p[0])||!/^[a-z][a-z0-9]*$/.test(p[1]))return null;return v;},
+    vp(p){if(!/^\d{6}$/.test(p))return false;if(p[0]===p[1]&&p[1]===p[2]&&p[2]===p[3]&&p[3]===p[4]&&p[4]===p[5])return false;if(['123456','654321','000000','999999'].includes(p))return false;return true;}
+};
+function openLoginModal(){document.getElementById('lmBg').classList.add('show');lmSwitch('login');setTimeout(()=>document.getElementById('lmU').focus(),120);}
+function closeLM(){document.getElementById('lmBg').classList.remove('show');}
+function lmSwitch(to){document.getElementById('lmLogin').style.display=to==='login'?'':'none';document.getElementById('lmReg').style.display=to==='reg'?'':'none';setTimeout(()=>document.getElementById(to==='login'?'lmU':'lmRU').focus(),100);}
+function lmFb(id,type,msg){const el=document.getElementById(id);if(!el)return;if(!type){el.className='lm-fb';el.textContent='';return;}el.className='lm-fb show '+type;el.textContent=msg;}
+function lmUpdateLogin(){const ok=LM.vu(document.getElementById('lmU').value)&&LM.vp(document.getElementById('lmP').value);document.getElementById('lmBtnL').disabled=!ok;}
+function lmUpdateReg(){const p=document.getElementById('lmRP').value,p2=document.getElementById('lmRP2').value;const ok=LM.vu(document.getElementById('lmRU').value)&&LM.vp(p)&&p===p2&&document.getElementById('lmAg').checked;document.getElementById('lmBtnR').disabled=!ok;}
+async function lmDoLogin(){
+    const u=LM.vu(document.getElementById('lmU').value),p=document.getElementById('lmP').value;
+    lmFb('lmFbL','','');
+    if(!u){lmFb('lmFbL','e','Username format: word.word');return;}
+    if(!LM.vp(p)){lmFb('lmFbL','e','PIN must be 6 digits');return;}
+    const btn=document.getElementById('lmBtnL');btn.disabled=true;btn.textContent='Verifying…';
+    try{
+        const data=await LM.get('/profiles?username=eq.'+encodeURIComponent(u)+'&select=id,username,auth_hash&limit=1');
+        const user=Array.isArray(data)?data[0]:null;if(!user)throw new Error('Username not found');
+        const h=await LM.hash(p,u);
+        if(!user.auth_hash)await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:h});
+        else if(user.auth_hash!==h)throw new Error('Wrong PIN or unrecognised device');
+        localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
+        localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,h);
+        lmFb('lmFbL','s','✓ Signed in!');setTimeout(()=>window.location.reload(),700);
+    }catch(err){lmFb('lmFbL','e',err.message||'Sign in failed');btn.disabled=false;btn.textContent='Sign in →';}
+}
+async function lmDoReg(){
+    const u=LM.vu(document.getElementById('lmRU').value),p=document.getElementById('lmRP').value,p2=document.getElementById('lmRP2').value;
+    lmFb('lmFbR','','');
+    if(!u){lmFb('lmFbR','e','Username format: word.word');return;}
+    if(!LM.vp(p)){lmFb('lmFbR','e','PIN is too weak');return;}
+    if(p!==p2){lmFb('lmFbR','e','PINs do not match');return;}
+    const btn=document.getElementById('lmBtnR');btn.disabled=true;btn.textContent='Processing…';
+    try{
+        const data=await LM.post('/profiles?select=id,username',{username:u});
+        const user=Array.isArray(data)?data[0]:data;if(!user||!user.id)throw new Error('No data returned');
+        const h=await LM.hash(p,u);
+        localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
+        localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,h);
+        await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:h});
+        lmFb('lmFbR','s','Account created!');
+        setTimeout(()=>{alert('Account created!\n\nUsername: '+user.username+'\n\nSave your PIN — it cannot be recovered.');window.location.reload();},800);
+    }catch(err){
+        const d=err.code==='23505'||(err.message||'').toLowerCase().includes('duplicate');
+        lmFb('lmFbR','e',d?'Username already taken':(err.message||'Failed'));
+        btn.disabled=false;btn.textContent='Register →';
+    }
+}
+(function wire(){
+    function toU(el){el.addEventListener('input',function(){let v=this.value.toLowerCase().replace(/[^a-z0-9.]/g,'');const di=v.indexOf('.');if(di!==-1)v=v.slice(0,di+1)+v.slice(di+1).replace(/\./g,'');if(v!==this.value)this.value=v;});}
+    function toP(el){el.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'').slice(0,6);});}
+    function w(id,fn,up){const el=document.getElementById(id);if(!el)return;fn(el);el.addEventListener('input',up);}
+    w('lmU',toU,lmUpdateLogin);w('lmP',toP,lmUpdateLogin);
+    w('lmRU',toU,lmUpdateReg);w('lmRP',toP,lmUpdateReg);w('lmRP2',toP,lmUpdateReg);
+    const ag=document.getElementById('lmAg');if(ag)ag.addEventListener('change',lmUpdateReg);
+})();
+</script>
+
+<script>
+// Clock
+(function(){
+  function tick(){
+    const el=document.getElementById('termClock');
+    if(!el)return;
+    const n=new Date();
+    el.textContent=n.toISOString().replace('T',' ').slice(0,19)+' UTC';
+  }
+  tick();setInterval(tick,1000);
+})();
+
+
+
+/* ── QR Code Generator ──────────────────────────────────── */
+// Minimal QR encoder — encodes URL to canvas
+// Uses qrcode-generator (loaded from cdnjs if available)
+// Falls back to link display if library not loaded
+
+function showQR() {
+  const panel = document.getElementById('qrPanel');
+  const usernameEl = document.getElementById('qrUsername');
+  const canvas = document.getElementById('qrCanvas');
+  if(!panel || !canvas) return;
+
+  const username = localStorage.getItem('tyst_username') || '';
+  if(!username) return;
+
+  // Close dropdown
+  const dd = document.getElementById('sDD');
+  if(dd) dd.classList.remove('show');
+
+  // URL to encode — app only, zero identity
+  const url = 'https://tyst.site/app';
+
+  // Draw QR using canvas
+  drawQRCanvas(canvas, url, 200);
+  panel.classList.add('show');
+}
+
+function closeQR() {
+  const panel = document.getElementById('qrPanel');
+  if(panel) panel.classList.remove('show');
+}
+
+function downloadQR() {
+  const canvas = document.getElementById('qrCanvas');
+  const username = localStorage.getItem('tyst_username') || 'tyst';
+  if(!canvas) return;
+  const a = document.createElement('a');
+  a.download = 'tyst-app-qr.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+  toast('// QR saved');
+}
+
+// Close on backdrop click
+document.addEventListener('click', e => {
+  const panel = document.getElementById('qrPanel');
+  if(panel && panel.classList.contains('show') && e.target === panel) {
+    closeQR();
+  }
+});
+
+// Escape to close QR panel
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') {
+    const panel = document.getElementById('qrPanel');
+    if(panel && panel.classList.contains('show')) closeQR();
+  }
+});
+
+/* QR canvas drawing — uses qr.js loaded below */
+function drawQRCanvas(canvas, text, size) {
+  const ctx = canvas.getContext('2d');
+  canvas.width = size;
+  canvas.height = size;
+
+  // Background white (QR needs white background)
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, size, size);
+
+  if(typeof qrcode !== 'undefined') {
+    // Use qrcode-generator library
+    try {
+      const qr = qrcode(0, 'M');
+      qr.addData(text);
+      qr.make();
+      const count = qr.getModuleCount();
+      const cellSize = Math.floor((size - 32) / count);
+      const offset = Math.floor((size - cellSize * count) / 2);
+
+      ctx.fillStyle = '#040d0a';
+      for(let row = 0; row < count; row++) {
+        for(let col = 0; col < count; col++) {
+          if(qr.isDark(row, col)) {
+            ctx.fillRect(
+              offset + col * cellSize,
+              offset + row * cellSize,
+              cellSize, cellSize
+            );
+          }
+        }
+      }
+
+      // Add subtle TYST branding in center
+      const centerSize = cellSize * 5;
+      const cx = size/2 - centerSize/2;
+      const cy = size/2 - centerSize/2;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(cx-2, cy-2, centerSize+4, centerSize+4);
+      ctx.fillStyle = '#040d0a';
+      ctx.font = 'bold ' + Math.floor(cellSize*2.5) + 'px monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = '#00ff9d';
+      ctx.fillText('T', size/2, size/2);
+    } catch(e) {
+      drawQRFallback(ctx, text, size);
+    }
+  } else {
+    drawQRFallback(ctx, text, size);
+  }
+}
+
+function drawQRFallback(ctx, text, size) {
+  // Fallback: styled text display if QR library not loaded
+  ctx.fillStyle = '#040d0a';
+  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#00ff9d';
+  ctx.font = '11px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('scan not available', size/2, size/2-10);
+  ctx.fillStyle = '#3a6a4a';
+  ctx.font = '9px monospace';
+  ctx.fillText('open in mobile browser', size/2, size/2+10);
+}
+
+/* ── Add to Home Screen ─────────────────────────────────── */
+let _deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredPrompt = e;
+});
+
+function promptAddToHome() {
+  // Close dropdown
+  const dd = document.getElementById('sDD');
+  if(dd) dd.classList.remove('show');
+
+  if (_deferredPrompt) {
+    // Chrome/Android — native prompt
+    _deferredPrompt.prompt();
+    _deferredPrompt.userChoice.then(r => {
+      if(r.outcome === 'accepted') toast('// TYST added to home screen');
+      _deferredPrompt = null;
+    });
+  } else {
+    // iOS Safari / already installed — show instructions
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isAndroid = /android/i.test(navigator.userAgent);
+    if(isIOS) {
+      toast('// tap Share → Add to Home Screen', 4000);
+    } else if(isAndroid) {
+      toast('// tap ⋮ menu → Add to Home Screen', 4000);
+    } else {
+      toast('// open in mobile browser to install', 4000);
+    }
+  }
+}
+
+/* ── Bottom Nav Tab Switching ──────────────────────────── */
+function switchTab(tab) {
+  const compose = document.getElementById('composeSect');
+  const inbox   = document.getElementById('inboxPanel');
+  const navC    = document.getElementById('navCompose');
+  const navI    = document.getElementById('navInbox');
+
+  if (tab === 'compose') {
+    if(compose) compose.style.display = 'block';
+    if(inbox)   inbox.classList.remove('show');
+    if(navC)    navC.classList.add('active');
+    if(navI)    navI.classList.remove('active');
+    // Update nav icon
+    if(navC)    navC.querySelector('.nav-icon').textContent = '✎';
+  } else {
+    if(compose) compose.style.display = 'none';
+    if(inbox)   inbox.classList.add('show');
+    if(navC)    navC.classList.remove('active');
+    if(navI)    navI.classList.add('active');
+    if(navI)    navI.querySelector('.nav-icon').textContent = '●';
+    // Clear badge
+    const badge = document.getElementById('navBadge');
+    if(badge) badge.style.display = 'none';
+    // Trigger inbox load
+    if(typeof INBOX !== 'undefined') INBOX.load();
+  }
+}
+
+function updateNavBadge(count) {
+  const badge = document.getElementById('navBadge');
+  const navI  = document.getElementById('navInbox');
+  if(!badge) return;
+  if(count > 0) {
+    badge.textContent = count > 9 ? '9+' : count;
+    badge.style.display = 'block';
+    if(navI) navI.querySelector('.nav-icon').textContent = '●';
+  } else {
+    badge.style.display = 'none';
+    if(navI) navI.querySelector('.nav-icon').textContent = '○';
+  }
+}
+
+/* ── Console smart show/hide ────────────────────────────── */
+function initConsoleVisibility() {
+  const sect = document.getElementById('consoleSect');
+  const btn  = document.getElementById('consoleToggle');
+  const isReturning = localStorage.getItem('tyst_returning') === '1';
+  const isLoggedIn  = localStorage.getItem('tyst_logged_in') === 'true';
+
+  if (isReturning && isLoggedIn) {
+    // Returning logged-in user — collapse instantly (no animation on load)
+    if(sect){
+      sect.style.transition='none'; // no animation on initial load
+      sect.classList.add('collapsed');
+      // Re-enable animation after paint
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+          sect.style.transition='';
+        });
+      });
+    }
+    if(btn) btn.textContent = '// show init log ▼';
+  } else if (!isReturning) {
+    // First visit — auto-collapse after 4s with smooth animation
+    setTimeout(() => {
+      localStorage.setItem('tyst_returning', '1');
+      if(sect) sect.classList.add('collapsed');
+      if(btn)  btn.textContent = '// show init log ▼';
+    }, 4000);
+  }
+}
+
+
+function toggleConsole(){
+  const sect=document.getElementById('consoleSect');
+  const btn=document.getElementById('consoleToggle');
+  if(!sect||!btn)return;
+  const willCollapse=!sect.classList.contains('collapsed');
+  if(willCollapse){
+    // Collapse: set explicit height first for smooth animation
+    sect.style.maxHeight=sect.scrollHeight+'px';
+    requestAnimationFrame(()=>{
+      sect.classList.add('collapsed');
+      btn.textContent='// show init log ▼';
+    });
+  } else {
+    // Expand: remove collapsed, let CSS transition handle it
+    sect.classList.remove('collapsed');
+    btn.textContent='// hide ▲';
+  }
+  localStorage.setItem('tyst_console_hidden',willCollapse?'1':'0');
+}
+(function initConsole(){
+  if(localStorage.getItem('tyst_console_hidden')==='1'){
+    const sect=document.getElementById('consoleSect');
+    const btn=document.getElementById('consoleToggle');
+    if(sect)sect.classList.add('collapsed');
+    if(btn)btn.textContent='// show init log ▼';
+  }
+})();
+
+
+/* Escape key dismiss */
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    const ov=document.getElementById('procOv');
+    const hw=document.getElementById('howOv');
+    const ib=document.getElementById('inboxPanel');
+    const rp=document.getElementById('readPanel');
+    if(ov&&ov.classList.contains('show'))closeProcOv();
+    else if(hw&&hw.classList.contains('show'))hideHow();
+    else if(rp&&rp.classList.contains('show')){INBOX.closeRead();document.getElementById('inboxPanel').classList.add('show');}
+    else if(ib&&ib.classList.contains('show'))ib.classList.remove('show');
+  }
+});
+
+/* Toast keyboard-aware positioning */
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',function(){
+    const toast=document.getElementById('toast');
+    if(!toast)return;
+    const keyboardH=window.innerHeight-window.visualViewport.height;
+    toast.style.bottom=(keyboardH>100?keyboardH+8:26)+'px';
+  });
+}
+
+
+/* ── Input cursor focus effect ─────────────────────────── */
+(function(){
+  const inp = document.getElementById('tystTo');
+  if(!inp) return;
+  // Buat fake cursor yang muncul sebelum user klik
+  inp.addEventListener('focus', () => {
+    inp.style.caretColor = 'var(--c0)';
+    inp.style.boxShadow = '0 0 0 1px rgba(0,255,157,.15) inset, 0 0 8px rgba(0,255,157,.08)';
+  });
+  inp.addEventListener('blur', () => {
+    inp.style.boxShadow = '';
+  });
+  // Auto-pulse border saat halaman load — menarik perhatian ke input
+  setTimeout(() => {
+    inp.style.transition = 'border-color .3s, box-shadow .3s';
+    inp.style.borderColor = 'rgba(0,255,157,.4)';
+    inp.style.borderLeft = '2px solid var(--c0)';
+    setTimeout(() => {
+      inp.style.borderColor = '';
+      inp.style.borderLeft = '';
+    }, 1800);
+  }, 1200);
+})();
+
+
+// Render message body as multicolor hacker lines
+(function(){
+  const orig = window.INBOX;
+  if(!orig) return;
+  const origOpen = orig.open;
+  orig.open = async function(id) {
+    await origOpen.call(orig, id);
+    const body = document.getElementById('readBody');
+    if(!body || !body.textContent) return;
+    const text = body.textContent;
+    // Escape message content before rendering as colored lines
+    const escapeHtml = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    const words = text.split(/\s+/).map(escapeHtml);
+    const colors = ['ml0','ml1','ml2','ml3','ml4','ml5','ml6','ml5','ml6'];
+    let html = '<div class="mhdr">// decrypted payload · handle with care</div>';
+    let lineWords = [], colorIdx = 0;
+    words.forEach((w,i) => {
+      lineWords.push(w);
+      const isEnd = i === words.length - 1;
+      const lineLen = lineWords.join(' ').length;
+      if(lineLen > 38 || isEnd) {
+        const cls = colors[colorIdx % colors.length];
+        html += '<div class="'+cls+'">'+lineWords.join(' ')+'</div>';
+        colorIdx++;
+        lineWords = [];
+      }
+    });
+    body.innerHTML = html;
+  };
+})();
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('[TYST] SW registered'))
+      .catch(e => console.log('[TYST] SW failed:', e));
+  });
+}
+</script>
+
+</div><!-- end main-content -->
+  <!-- BOTTOM NAV — visible when logged in -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="nav-tab active" id="navCompose" onclick="switchTab('compose')">
+      <span class="nav-icon">✎</span>
+      <span>compose</span>
+    </button>
+    <button class="nav-tab" id="navInbox" onclick="switchTab('inbox')">
+      <span class="nav-icon">○</span>
+      <span>inbox</span>
+      <span class="nav-badge" id="navBadge"></span>
+    </button>
+  </div>
+
+
+  <!-- QR CODE PANEL -->
+  <div class="qr-panel" id="qrPanel">
+    <div class="qr-box">
+      <div class="qr-title">// install tyst</div>
+      <div class="qr-username" style="font-size:11px;color:var(--txt3);letter-spacing:1px">tyst.site/app</div>
+      <canvas class="qr-canvas" id="qrCanvas" width="200" height="200"></canvas>
+      <div class="qr-hint">
+        <span>// scan to install TYST</span><br>
+        zero identity encoded · scan → install → send anonymously<br>
+        share freely — this QR reveals nothing about you
+      </div>
+      <div class="qr-actions">
+        <button class="btn-qr" onclick="downloadQR()">↓ save</button>
+        <button class="btn-qr primary" onclick="closeQR()">close</button>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qr.min.js"></script>
+</body>
+</html>
