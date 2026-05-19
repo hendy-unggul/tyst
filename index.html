@@ -560,6 +560,7 @@ const LANGS = {
     msgPlaceholder:'Write anything…', recipPlaceholder:'target.username',
     trust:'sender identity is unknown to anyone',
     protocol:'protocol ↗', sendBtn:'▶ pass note',
+    howRows:[{h:'sender identity is untraceable',p:'messages route through an anonymous relay.'},{h:'server cannot read your message',p:'encryption runs on your device.'},{h:'timing is randomised',p:'a random 2-47 second delay is injected.'},{h:'destroyed after reading',p:'5 seconds after opening, permanently purged.'}],
     inboxBtn:'↓ open secure inbox', secureInbox:'◆ secure inbox',
     back:'← back', selfDestruct:'this message will self-destruct',
     noRecord:'no record kept', howTitle:'How TYST protects you',
@@ -580,6 +581,7 @@ const LANGS = {
     msgPlaceholder:'Skriv vad som helst…', recipPlaceholder:'användarnamn',
     trust:'avsändarens identitet är okänd för alla',
     protocol:'protokoll ↗', sendBtn:'▶ skicka not',
+    howRows:[{h:'avsändarens identitet är ospårbar',p:'routas via anonymt relä.'},{h:'servern kan inte läsa',p:'kryptering sker på din enhet.'},{h:'timing är slumpmässig',p:'2-47 sekunders fördröjning.'},{h:'förstörs efter läsning',p:'5 sekunder efter öppning raderas permanent.'}],
     inboxBtn:'↓ öppna säker inkorg', secureInbox:'◆ säker inkorg',
     back:'← tillbaka', selfDestruct:'detta meddelande förstörs',
     noRecord:'inget spår kvar', howTitle:'Hur TYST skyddar dig',
@@ -600,6 +602,7 @@ const LANGS = {
     msgPlaceholder:'Напишите что угодно…', recipPlaceholder:'имя пользователя',
     trust:'личность отправителя никому не известна',
     protocol:'протокол ↗', sendBtn:'▶ передать записку',
+    howRows:[{h:'личность не отслеживается',p:'через анонимный ретранслятор.'},{h:'сервер не читает',p:'шифрование на устройстве.'},{h:'время рандомизировано',p:'задержка 2-47 секунд.'},{h:'уничтожается после прочтения',p:'через 5 секунд удаляется навсегда.'}],
     inboxBtn:'↓ открыть защищённый ящик', secureInbox:'◆ защищённый ящик',
     back:'← назад', selfDestruct:'сообщение будет уничтожено',
     noRecord:'записей не сохранено', howTitle:'Как TYST защищает вас',
@@ -620,6 +623,7 @@ const LANGS = {
     msgPlaceholder:'Escribe lo que quieras…', recipPlaceholder:'nombre.usuario',
     trust:'la identidad del remitente es desconocida para todos',
     protocol:'protocolo ↗', sendBtn:'▶ pasar nota',
+    howRows:[{h:'identidad no rastreable',p:'via relé anónimo.'},{h:'servidor no puede leer',p:'cifrado en tu dispositivo.'},{h:'tiempo aleatorio',p:'retraso 2-47 segundos.'},{h:'destruido tras lectura',p:'5 segundos después eliminado permanentemente.'}],
     inboxBtn:'↓ abrir bandeja segura', secureInbox:'◆ bandeja segura',
     back:'← volver', selfDestruct:'este mensaje se autodestruirá',
     noRecord:'sin registros', howTitle:'Cómo TYST te protege',
@@ -640,6 +644,7 @@ const LANGS = {
     msgPlaceholder:'Schreib was du willst…', recipPlaceholder:'benutzername',
     trust:'die Identität des Absenders ist niemandem bekannt',
     protocol:'protokoll ↗', sendBtn:'▶ notiz übergeben',
+    howRows:[{h:'absender nicht nachverfolgbar',p:'via anonymes relay.'},{h:'server kann nicht lesen',p:'verschlüsselung auf deinem gerät.'},{h:'timing zufällig',p:'2-47 sekunden verzögerung.'},{h:'nach lesen zerstört',p:'5 sekunden nach öffnen dauerhaft gelöscht.'}],
     inboxBtn:'↓ sicheren posteingang öffnen', secureInbox:'◆ sicherer posteingang',
     back:'← zurück', selfDestruct:'diese nachricht wird zerstört',
     noRecord:'keine aufzeichnungen', howTitle:'Wie TYST dich schützt',
@@ -971,7 +976,20 @@ function tystValidate(){
     const to=(document.getElementById('tystTo').value||'').trim().replace('@','');const msg=(document.getElementById('tystMsg').value||'').trim();const ok=/^[a-z0-9_.]{2,24}$/.test(to)&&msg.length>0;const btn=document.getElementById('sendBtn');if(btn)btn.disabled=!ok;}
 function tystChar(){const el=document.getElementById('tystMsg'),c=document.getElementById('charN');if(el&&c)c.textContent=el.value.length;}
 function showHow(){document.getElementById('howOv').classList.add('show');}
-function toggleProtocol(){const el=document.getElementById('protocolInline');const btn=document.getElementById('protocolToggle');if(!el||!btn)return;const visible=el.style.display!=='none';el.style.display=visible?'none':'block';btn.textContent=visible?'protocol ▼':'protocol ▲';}
+function toggleProtocol(){
+  var el=document.getElementById("protocolInline");
+  var btn=document.getElementById("protocolToggle");
+  if(!el||!btn)return;
+  var visible=el.style.display!=="none";
+  if(!visible){
+    var t=LANGS[currentLang]||LANGS.en;
+    var rows=(t.howRows||[]).map(function(r,i){return "<div class=\"how-row\"><div class=\"how-num\">"+(i+1)+"</div><div><div class=\"how-h\">"+r.h+"</div><div class=\"how-p\">"+r.p+"</div></div></div>";}).join("");
+    el.innerHTML=rows+"<div class=\"how-tech\"><b>protocol</b> · ecdh p-256 · aes-gcm 256-bit</div>";
+  }
+  el.style.display=visible?"none":"block";
+  var t2=LANGS[currentLang]||LANGS.en;
+  btn.textContent=visible?(t2.protocol||"protocol ▼"):"protocol ▲";
+}
 function hideHow(){document.getElementById('howOv').classList.remove('show');}
 function setStep(n){['ps1','ps2','ps3'].forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;el.className='proc-step';if(i<n)el.classList.add('done');else if(i===n)el.classList.add('act');});}
 async function tystSend(){
