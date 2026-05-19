@@ -560,7 +560,7 @@ const LANGS = {
     msgPlaceholder:'Write anything…', recipPlaceholder:'target.username',
     trust:'sender identity is unknown to anyone',
     protocol:'protocol ↗', sendBtn:'▶ pass note',
-    howRows:[{h:'sender identity is untraceable',p:'messages route through an anonymous relay.'},{h:'server cannot read your message',p:'encryption runs on your device.'},{h:'timing is randomised',p:'a random 2-47 second delay is injected.'},{h:'destroyed after reading',p:'5 seconds after opening, permanently purged.'}],
+    howRows:[{h:'sender identity is untraceable',p:'messages route through an anonymous relay. the server only sees the relay IP, never yours. even if the server is seized, your identity is not there.'},{h:'server cannot read your message',p:'encryption runs on your device before transmission. your private key never leaves your device — the server holds ciphertext only.'},{h:'timing is randomised',p:'a random 2-47 second delay is injected so timing correlation attacks cannot identify the sender.'},{h:'destroyed after reading',p:'5 seconds after the recipient opens the message it is permanently purged from the server. no backup. no log.'}],
     inboxBtn:'↓ open secure inbox', secureInbox:'◆ secure inbox',
     back:'← back', selfDestruct:'this message will self-destruct',
     noRecord:'no record kept', howTitle:'How TYST protects you',
