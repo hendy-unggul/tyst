@@ -1059,6 +1059,7 @@ async function lmDoReg(){
         localStorage.setItem(LM.LS.u,user.username);localStorage.setItem(LM.LS.i,user.id);
         localStorage.setItem(LM.LS.l,'true');localStorage.setItem(LM.LS.a,h);
         await LM.patch('/profiles?id=eq.'+user.id,{auth_hash:h});
+        try{const kp=await crypto.subtle.generateKey({name:'ECDH',namedCurve:'P-256'},true,['deriveKey','deriveBits']);const pub=await crypto.subtle.exportKey('jwk',kp.publicKey);const priv=await crypto.subtle.exportKey('jwk',kp.privateKey);delete pub.d;localStorage.setItem('tyst_priv_key',JSON.stringify(priv));await fetch('/api/pubkey',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+h},body:JSON.stringify({username:u,pubkey:pub})});}catch(e){console.warn('pubkey reg failed',e);}
         lmFb('lmFbR','s','Account created!');
         setTimeout(()=>{alert('Account created!\n\nUsername: '+user.username+'\n\nSave your PIN — it cannot be recovered.');window.location.reload();},800);
     }catch(err){
